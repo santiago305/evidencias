@@ -1,0 +1,389 @@
+[
+  {
+    "estado": "desconfiado",
+    "tipo": "informacion_general",
+    "respuestas": [
+      "Hola, me podrias explicar con mas detalle en que consiste este prestamo?",
+      "{saludo}, quisiera entender bien como funciona antes de avanzar.",
+      "Hola {asesor}, me puedes brindar toda la informacion completa para revisarla?",
+      "{saludo}, podrias explicarme exactamente como es este credito?",
+      "Hola, este prestamo como se gestiona realmente?",
+      "Hola {asesor}, me gustaria que me detalles bien todo el proceso.",
+      "{saludo}, quisiera revisar toda la informacion antes de confiar.",
+      "Hola, me puedes explicar paso a paso como funciona?",
+      "Hola {asesor}, necesito entender bien las condiciones del prestamo.",
+      "{saludo}, me podrias dar el detalle completo para analizarlo?",
+      [
+        "Hola",
+        "Me podrias explicar con mas detalle en que consiste este prestamo?"
+      ],
+      [
+        "{saludo}",
+        "Quisiera entender bien como funciona antes de avanzar."
+      ],
+      [
+        "Hola {asesor}",
+        "Me puedes brindar toda la informacion completa para revisarla?"
+      ],
+      [
+        "{saludo}",
+        "Podrias explicarme exactamente como es este credito?"
+      ],
+      [
+        "Hola",
+        "Este prestamo como se gestiona realmente?"
+      ],
+      [
+        "Hola {asesor}",
+        "Me gustaria que me detalles bien todo el proceso."
+      ],
+      [
+        "{saludo}",
+        "Quisiera revisar toda la informacion antes de confiar."
+      ],
+      [
+        "Hola",
+        "Me puedes explicar paso a paso como funciona?"
+      ],
+      [
+        "Hola {asesor}",
+        "Necesito entender bien las condiciones del prestamo."
+      ],
+      [
+        "{saludo}",
+        "Me podrias dar el detalle completo para analizarlo?"
+      ]
+    ]
+  },
+  {
+    "estado": "desconfiado",
+    "tipo": "analitico",
+    "respuestas": [
+      "Hola, me podrias indicar exactamente que tasa de interes aplica?",
+      "{saludo}, quisiera saber cuanto terminaria pagando en total.",
+      "Hola {asesor}, este monto incluye todos los costos o hay adicionales?",
+      "{saludo}, la cuota que mencionan ya contempla todo?",
+      "Hola, como se calcula la cuota mensual en este caso?",
+      "Hola {asesor}, la tasa se mantiene fija durante todo el prestamo?",
+      "{saludo}, quisiera tener claro el costo real del credito.",
+      "Hola, hay algun cargo adicional que deba considerar?",
+      "Hola {asesor}, me puedes detallar todos los pagos involucrados?",
+      "{saludo}, necesito entender bien los numeros antes de confiar.",
+      [
+        "Hola",
+        "Me podrias indicar exactamente que tasa de interes aplica?"
+      ],
+      [
+        "{saludo}",
+        "Quisiera saber cuanto terminaria pagando en total."
+      ],
+      [
+        "Hola {asesor}",
+        "Este monto incluye todos los costos o hay adicionales?"
+      ],
+      [
+        "{saludo}",
+        "La cuota que mencionan ya contempla todo?"
+      ],
+      [
+        "Hola",
+        "Como se calcula la cuota mensual en este caso?"
+      ],
+      [
+        "Hola {asesor}",
+        "La tasa se mantiene fija durante todo el prestamo?"
+      ],
+      [
+        "{saludo}",
+        "Quisiera tener claro el costo real del credito."
+      ],
+      [
+        "Hola",
+        "Hay algun cargo adicional que deba considerar?"
+      ],
+      [
+        "Hola {asesor}",
+        "Me puedes detallar todos los pagos involucrados?"
+      ],
+      [
+        "{saludo}",
+        "Necesito entender bien los numeros antes de confiar."
+      ]
+    ]
+  },
+  {
+    "estado": "desconfiado",
+    "tipo": "evaluador",
+    "respuestas": [
+      "Hola, podria ver una simulacion antes de tomar una decision?",
+      "{saludo}, quisiera evaluar como quedarian las cuotas en mi caso.",
+      "Hola {asesor}, me podrias mostrar un ejemplo real del prestamo?",
+      "{saludo}, prefiero revisar una simulacion antes de avanzar.",
+      "Hola, puedo ver como se estructuran los pagos?",
+      "Hola {asesor}, me muestras la simulacion detallada del prestamo?",
+      "{saludo}, quiero analizar bien antes de aceptar.",
+      "Hola, puedo ver el cronograma de pagos completo?",
+      "Hola {asesor}, quisiera validar con una simulacion detallada.",
+      "{saludo}, necesito evaluar bien antes de decidir.",
+      [
+        "Hola",
+        "Podria ver una simulacion antes de tomar una decision?"
+      ],
+      [
+        "{saludo}",
+        "Quisiera evaluar como quedarian las cuotas en mi caso."
+      ],
+      [
+        "Hola {asesor}",
+        "Me podrias mostrar un ejemplo real del prestamo?"
+      ],
+      [
+        "{saludo}",
+        "Prefiero revisar una simulacion antes de avanzar."
+      ],
+      [
+        "Hola",
+        "Puedo ver como se estructuran los pagos?"
+      ],
+      [
+        "Hola {asesor}",
+        "Me muestras la simulacion detallada del prestamo?"
+      ],
+      [
+        "{saludo}",
+        "Quiero analizar bien antes de aceptar."
+      ],
+      [
+        "Hola",
+        "Puedo ver el cronograma de pagos completo?"
+      ],
+      [
+        "Hola {asesor}",
+        "Quisiera validar con una simulacion detallada."
+      ],
+      [
+        "{saludo}",
+        "Necesito evaluar bien antes de decidir."
+      ]
+    ]
+  },
+  {
+    "estado": "desconfiado",
+    "tipo": "listo_para_proceso",
+    "respuestas": [
+      "Hola, podrias confirmarme exactamente que documentos debo presentar?",
+      "{saludo}, con lo que mencionas es suficiente o hay algo adicional?",
+      "Hola {asesor}, esto se realiza directamente en el banco?",
+      "{saludo}, los documentos deben ser originales o aceptan copias?",
+      "Hola, existe algun requisito adicional que no se haya mencionado?",
+      "Hola {asesor}, me puedes detallar todos los requisitos reales?",
+      "{saludo}, quisiera asegurarme de llevar todo correctamente.",
+      "Hola, solo con esos documentos puedo acceder sin problema?",
+      "Hola {asesor}, hay algo mas que deba considerar antes de ir?",
+      "{saludo}, necesito claridad total sobre lo que debo presentar.",
+      [
+        "Hola",
+        "Podrias confirmarme exactamente que documentos debo presentar?"
+      ],
+      [
+        "{saludo}",
+        "Con lo que mencionas es suficiente o hay algo adicional?"
+      ],
+      [
+        "Hola {asesor}",
+        "Esto se realiza directamente en el banco?"
+      ],
+      [
+        "{saludo}",
+        "Los documentos deben ser originales o aceptan copias?"
+      ],
+      [
+        "Hola",
+        "Existe algun requisito adicional que no se haya mencionado?"
+      ],
+      [
+        "Hola {asesor}",
+        "Me puedes detallar todos los requisitos reales?"
+      ],
+      [
+        "{saludo}",
+        "Quisiera asegurarme de llevar todo correctamente."
+      ],
+      [
+        "Hola",
+        "Solo con esos documentos puedo acceder sin problema?"
+      ],
+      [
+        "Hola {asesor}",
+        "Hay algo mas que deba considerar antes de ir?"
+      ],
+      [
+        "{saludo}",
+        "Necesito claridad total sobre lo que debo presentar."
+      ]
+    ]
+  },
+  {
+    "estado": "desconfiado",
+    "tipo": "practico_logistica",
+    "respuestas": [
+      "Hola, esto lo debo hacer directamente en una agencia del banco?",
+      "{saludo}, puedo acercarme a cualquier agencia o hay alguna especifica?",
+      "Hola {asesor}, como se a que sede debo ir?",
+      "{saludo}, el tramite es completamente presencial?",
+      "Hola, puedo realizar esto en otra ciudad sin inconvenientes?",
+      "Hola {asesor}, puedo acercarme sin cita previa?",
+      "{saludo}, cualquier asesor del banco puede ver mi caso?",
+      "Hola, hay alguna agencia recomendada para este tramite?",
+      "Hola {asesor}, como verifico que todo es correcto al llegar?",
+      "{saludo}, quisiera confirmar bien donde debo realizar el proceso.",
+      [
+        "Hola",
+        "Esto lo debo hacer directamente en una agencia del banco?"
+      ],
+      [
+        "{saludo}",
+        "Puedo acercarme a cualquier agencia o hay alguna especifica?"
+      ],
+      [
+        "Hola {asesor}",
+        "Como se a que sede debo ir?"
+      ],
+      [
+        "{saludo}",
+        "El tramite es completamente presencial?"
+      ],
+      [
+        "Hola",
+        "Puedo realizar esto en otra ciudad sin inconvenientes?"
+      ],
+      [
+        "Hola {asesor}",
+        "Puedo acercarme sin cita previa?"
+      ],
+      [
+        "{saludo}",
+        "Cualquier asesor del banco puede ver mi caso?"
+      ],
+      [
+        "Hola",
+        "Hay alguna agencia recomendada para este tramite?"
+      ],
+      [
+        "Hola {asesor}",
+        "Como verifico que todo es correcto al llegar?"
+      ],
+      [
+        "{saludo}",
+        "Quisiera confirmar bien donde debo realizar el proceso."
+      ]
+    ]
+  },
+  {
+    "estado": "desconfiado",
+    "tipo": "oportunista",
+    "respuestas": [
+      "Hola, hasta cuando se mantiene vigente esta preaprobacion?",
+      "{saludo}, esta oferta tiene una fecha limite definida?",
+      "Hola {asesor}, puede cambiar el monto o condiciones con el tiempo?",
+      "{saludo}, la promocion podria dejar de estar disponible pronto?",
+      "Hola, hay riesgo de que ya no este vigente si no voy ahora?",
+      "{saludo}, esta aprobacion se mantiene o puede caducar?",
+      "Hola, esto es por campaña o es permanente?",
+      "Hola {asesor}, la preaprobacion vence hoy o hasta que dia exacto mantiene su vigencia?",
+      "{saludo}, quisiera saber la vigencia exacta del prestamo.",
+      [
+        "Hola",
+        "Hasta cuando se mantiene vigente esta preaprobacion?"
+      ],
+      [
+        "{saludo}",
+        "Esta oferta tiene una fecha limite definida?"
+      ],
+      [
+        "Hola {asesor}",
+        "Puede cambiar el monto o condiciones con el tiempo?"
+      ],
+      [
+        "{saludo}",
+        "La promocion podria dejar de estar disponible pronto?"
+      ],
+      [
+        "Hola",
+        "Hay riesgo de que ya no este vigente si no voy ahora?"
+      ],
+      [
+        "{saludo}",
+        "Esta aprobacion se mantiene o puede caducar?"
+      ],
+      [
+        "Hola",
+        "Esto es por campaña o es permanente?"
+      ],
+      [
+        "Hola {asesor}",
+        "La preaprobacion vence hoy o hasta que dia exacto mantiene su vigencia?"
+      ],
+      [
+        "{saludo}",
+        "Quisiera saber la vigencia exacta del prestamo."
+      ]
+    ]
+  },
+  {
+    "estado": "desconfiado",
+    "tipo": "desinteresado",
+    "respuestas": [
+      "Hola, gracias por la informacion, pero no me genera suficiente confianza por ahora.",
+      "{saludo}, prefiero no avanzar en este momento.",
+      "Hola {asesor}, lo voy a dejar por ahora hasta estar mas seguro.",
+      "{saludo}, no estoy completamente convencido, asi que no continuare.",
+      "Hola, prefiero no tomar el prestamo por ahora.",
+      "Hola {asesor}, gracias, pero no avanzare en este momento.",
+      "{saludo}, no me siento seguro para continuar.",
+      "Hola, mejor lo dejo por ahora.",
+      "Hola {asesor}, lo voy a evaluar mas adelante.",
+      "Hola, gracias por la informacion, pero no me genera suficiente confianza por ahora.",
+      [
+        "Hola",
+        "Gracias por la informacion, pero no me genera suficiente confianza por ahora."
+      ],
+      [
+        "{saludo}",
+        "Prefiero no avanzar en este momento."
+      ],
+      [
+        "Hola {asesor}",
+        "Lo voy a dejar por ahora hasta estar mas seguro."
+      ],
+      [
+        "{saludo}",
+        "No estoy completamente convencido, asi que no continuare."
+      ],
+      [
+        "Hola",
+        "Prefiero no tomar el prestamo por ahora."
+      ],
+      [
+        "Hola {asesor}",
+        "Gracias, pero no avanzare en este momento."
+      ],
+      [
+        "{saludo}",
+        "No me siento seguro para continuar."
+      ],
+      [
+        "Hola",
+        "Mejor lo dejo por ahora."
+      ],
+      [
+        "Hola {asesor}",
+        "Lo voy a evaluar mas adelante."
+      ],
+      [
+        "Hola",
+        "Gracias por la informacion, pero no me genera suficiente confianza por ahora."
+      ]
+    ]
+  }
+]

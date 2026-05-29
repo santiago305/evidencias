@@ -1,0 +1,389 @@
+[
+  {
+    "estado": "frio",
+    "tipo": "informacion_general",
+    "respuestas": [
+      "Hola, que es ese prestamo?",
+      "{saludo}, de que trata eso?",
+      "Hola {asesor}, que me estan ofreciendo?",
+      "{saludo}, como funciona eso?",
+      "Hola, que incluye ese credito?",
+      "Hola {asesor}, que es exactamente eso?",
+      "{saludo}, de que va ese prestamo?",
+      "Hola, como es eso que mencionas?",
+      "Hola {asesor}, que significa eso de preaprobado?",
+      "{saludo}, que es lo que ofrecen?",
+      [
+        "Hola",
+        "Que es ese prestamo?"
+      ],
+      [
+        "{saludo}",
+        "De que trata eso?"
+      ],
+      [
+        "Hola {asesor}",
+        "Que me estan ofreciendo?"
+      ],
+      [
+        "{saludo}",
+        "Como funciona eso?"
+      ],
+      [
+        "Hola",
+        "Que incluye ese credito?"
+      ],
+      [
+        "Hola {asesor}",
+        "Que es exactamente eso?"
+      ],
+      [
+        "{saludo}",
+        "De que va ese prestamo?"
+      ],
+      [
+        "Hola",
+        "Como es eso que mencionas?"
+      ],
+      [
+        "Hola {asesor}",
+        "Que significa eso de preaprobado?"
+      ],
+      [
+        "{saludo}",
+        "Que es lo que ofrecen?"
+      ]
+    ]
+  },
+  {
+    "estado": "frio",
+    "tipo": "analitico",
+    "respuestas": [
+      "Hola, cuanto seria la cuota?",
+      "{saludo}, cuanto tendria que pagar?",
+      "Hola {asesor}, que tasa tiene?",
+      "{saludo}, cuanto me darian?",
+      "Hola, cuanto es el monto?",
+      "Hola {asesor}, cuanto sale mensual?",
+      "{saludo}, cuanto pagaria en total?",
+      "Hola, cuanto termina siendo?",
+      "Hola {asesor}, que numeros manejan?",
+      "{saludo}, cuanto es al final?",
+      [
+        "Hola",
+        "Cuanto seria la cuota?"
+      ],
+      [
+        "{saludo}",
+        "Cuanto tendria que pagar?"
+      ],
+      [
+        "Hola {asesor}",
+        "Que tasa tiene?"
+      ],
+      [
+        "{saludo}",
+        "Cuanto me darian?"
+      ],
+      [
+        "Hola",
+        "Cuanto es el monto?"
+      ],
+      [
+        "Hola {asesor}",
+        "Cuanto sale mensual?"
+      ],
+      [
+        "{saludo}",
+        "Cuanto pagaria en total?"
+      ],
+      [
+        "Hola",
+        "Cuanto termina siendo?"
+      ],
+      [
+        "Hola {asesor}",
+        "Que numeros manejan?"
+      ],
+      [
+        "{saludo}",
+        "Cuanto es al final?"
+      ]
+    ]
+  },
+  {
+    "estado": "frio",
+    "tipo": "evaluador",
+    "respuestas": [
+      "Hola, puedo ver como seria?",
+      "{saludo}, se puede simular?",
+      "Hola {asesor}, como quedaria la cuota?",
+      "{saludo}, puedo ver un ejemplo del prestamo?",
+      "Hola, como seria mas o menos?",
+      "Hola {asesor}, puedo ver antes de decidir?",
+      "{saludo}, como funcionaria en mi caso?",
+      "Hola, puedo revisarlo primero?",
+      "Hola {asesor}, puedes mostrarme algo?",
+      "{saludo}, puedo evaluarlo antes?",
+      [
+        "Hola",
+        "Puedo ver como seria?"
+      ],
+      [
+        "{saludo}",
+        "Se puede simular?"
+      ],
+      [
+        "Hola {asesor}",
+        "Como quedaria la cuota?"
+      ],
+      [
+        "{saludo}",
+        "Puedo ver un ejemplo del prestamo?"
+      ],
+      [
+        "Hola",
+        "Como seria mas o menos?"
+      ],
+      [
+        "Hola {asesor}",
+        "Puedo ver antes de decidir?"
+      ],
+      [
+        "{saludo}",
+        "Como funcionaria en mi caso?"
+      ],
+      [
+        "Hola",
+        "Puedo revisarlo primero?"
+      ],
+      [
+        "Hola {asesor}",
+        "Puedes mostrarme algo?"
+      ],
+      [
+        "{saludo}",
+        "Puedo evaluarlo antes?"
+      ]
+    ]
+  },
+  {
+    "estado": "frio",
+    "tipo": "listo_para_proceso",
+    "respuestas": [
+      "Hola, que piden?",
+      "{saludo}, que necesito?",
+      "Hola {asesor}, que documentos son?",
+      "{saludo}, que requisitos hay?",
+      "Hola, que tengo que llevar?",
+      "Hola {asesor}, piden algo mas?",
+      "{saludo}, solo DNI o algo mas?",
+      "Hola, que solicitan?",
+      "Hola {asesor}, que requisitos manejan?",
+      "{saludo}, que debo presentar?",
+      [
+        "Hola",
+        "Que piden?"
+      ],
+      [
+        "{saludo}",
+        "Que necesito?"
+      ],
+      [
+        "Hola {asesor}",
+        "Que documentos son?"
+      ],
+      [
+        "{saludo}",
+        "Que requisitos hay?"
+      ],
+      [
+        "Hola",
+        "Que tengo que llevar?"
+      ],
+      [
+        "Hola {asesor}",
+        "Piden algo mas?"
+      ],
+      [
+        "{saludo}",
+        "Solo DNI o algo mas?"
+      ],
+      [
+        "Hola",
+        "Que solicitan?"
+      ],
+      [
+        "Hola {asesor}",
+        "Que requisitos manejan?"
+      ],
+      [
+        "{saludo}",
+        "Que debo presentar?"
+      ]
+    ]
+  },
+  {
+    "estado": "frio",
+    "tipo": "practico_logistica",
+    "respuestas": [
+      "Hola, donde tengo que ir?",
+      "{saludo}, a que agencia?",
+      "Hola {asesor}, puedo ir a cualquiera?",
+      "{saludo}, donde se hace eso?",
+      "Hola, puedo ir hoy?",
+      "Hola {asesor}, es en el banco?",
+      "{saludo}, puedo ir manana?",
+      "Hola, en que lugar atienden?",
+      "Hola {asesor}, como hago eso?",
+      "{saludo}, donde lo tramito?",
+      [
+        "Hola",
+        "Donde tengo que ir?"
+      ],
+      [
+        "{saludo}",
+        "A que agencia?"
+      ],
+      [
+        "Hola {asesor}",
+        "Puedo ir a cualquiera?"
+      ],
+      [
+        "{saludo}",
+        "Donde se hace eso?"
+      ],
+      [
+        "Hola",
+        "Puedo ir hoy?"
+      ],
+      [
+        "Hola {asesor}",
+        "Es en el banco?"
+      ],
+      [
+        "{saludo}",
+        "Puedo ir manana?"
+      ],
+      [
+        "Hola",
+        "En que lugar atienden?"
+      ],
+      [
+        "Hola {asesor}",
+        "Como hago eso?"
+      ],
+      [
+        "{saludo}",
+        "Donde lo tramito?"
+      ]
+    ]
+  },
+  {
+    "estado": "frio",
+    "tipo": "oportunista",
+    "respuestas": [
+      "Hola, hasta cuando es?",
+      "{saludo}, eso dura mucho?",
+      "Hola {asesor}, es por tiempo limitado?",
+      "{saludo}, se vence pronto?",
+      "Hola, todavia aplica?",
+      "{saludo}, hasta cuando puedo?",
+      "Hola, eso sigue vigente?",
+      "Hola {asesor}, eso vence hoy o hasta que dia?",
+      "{saludo}, cuando termina?",
+      [
+        "Hola",
+        "Hasta cuando es?"
+      ],
+      [
+        "{saludo}",
+        "Eso dura mucho?"
+      ],
+      [
+        "Hola {asesor}",
+        "Es por tiempo limitado?"
+      ],
+      [
+        "{saludo}",
+        "Se vence pronto?"
+      ],
+      [
+        "Hola",
+        "Todavia aplica?"
+      ],
+      [
+        "{saludo}",
+        "Hasta cuando puedo?"
+      ],
+      [
+        "Hola",
+        "Eso sigue vigente?"
+      ],
+      [
+        "Hola {asesor}",
+        "Eso vence hoy o hasta que dia?"
+      ],
+      [
+        "{saludo}",
+        "Cuando termina?"
+      ]
+    ]
+  },
+  {
+    "estado": "frio",
+    "tipo": "desinteresado",
+    "respuestas": [
+      "Hola, no gracias.",
+      "{saludo}, no me interesa.",
+      "Hola {asesor}, paso.",
+      "{saludo}, no por ahora.",
+      "Hola, lo dejo ahi.",
+      "Hola {asesor}, no deseo eso.",
+      "{saludo}, mejor no.",
+      "Hola, no quiero.",
+      "Hola {asesor}, gracias pero no.",
+      "{saludo}, no estoy interesado.",
+      [
+        "Hola",
+        "No gracias."
+      ],
+      [
+        "{saludo}",
+        "No me interesa."
+      ],
+      [
+        "Hola {asesor}",
+        "Paso."
+      ],
+      [
+        "{saludo}",
+        "No por ahora."
+      ],
+      [
+        "Hola",
+        "Lo dejo ahi."
+      ],
+      [
+        "Hola {asesor}",
+        "No deseo eso."
+      ],
+      [
+        "{saludo}",
+        "Mejor no."
+      ],
+      [
+        "Hola",
+        "No quiero."
+      ],
+      [
+        "Hola {asesor}",
+        "Gracias pero no."
+      ],
+      [
+        "{saludo}",
+        "No estoy interesado."
+      ]
+    ]
+  }
+]

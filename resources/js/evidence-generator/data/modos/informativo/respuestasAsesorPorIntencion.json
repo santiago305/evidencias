@@ -1,0 +1,268 @@
+{
+  "informacion_general": {
+    "apurado": [
+      "Si, claro. Le explico rapido: usted cuenta con un prestamo preaprobado y, si desea, le puedo detallar monto, cuota, plazo y tasa por este medio.",
+      "Claro. Le resumo rapido: tiene un prestamo preaprobado y por aqui mismo le puedo compartir los detalles principales.",
+      "Si, claro. En breve, usted cuenta con un prestamo preaprobado y le puedo compartir los datos por aqui.",
+      "Claro. Le comento rapido que tiene un prestamo preaprobado y puedo detallarle monto, cuota, plazo y tasa."
+    ],
+    "sereno": [
+      "Si, claro. Le explico con gusto: usted cuenta con un prestamo preaprobado y, si desea, le puedo detallar monto, cuota, plazo y tasa por este medio.",
+      "Con gusto. Le comparto la informacion general de su prestamo preaprobado y, si desea, le detallo las condiciones principales.",
+      "Si, claro. Le comento con gusto que usted cuenta con un prestamo preaprobado y puedo explicarle sus datos principales.",
+      "Con gusto. Le brindo el resumen de su prestamo preaprobado y, si desea, le detallo monto, cuota, plazo y tasa."
+    ],
+    "desconfiado": [
+      "Si, claro. Le explico de forma puntual: usted cuenta con un prestamo preaprobado y por este medio le puedo detallar monto, cuota, plazo y tasa.",
+      "Con gusto. Le comparto la informacion principal de su prestamo preaprobado para que pueda revisarla con claridad.",
+      "Si, claro. Le confirmo que cuenta con un prestamo preaprobado y puedo detallarle por este medio sus condiciones principales.",
+      "Con gusto. Para que lo revise con claridad, le explico los datos referenciales de su prestamo preaprobado."
+    ],
+    "frio": [
+      "Si. Usted cuenta con un prestamo preaprobado y por aqui le puedo compartir los detalles.",
+      "Claro. Tiene un prestamo preaprobado y le puedo detallar la informacion por este medio.",
+      "Si. Cuenta con un prestamo preaprobado. Puedo compartirle los datos por aqui.",
+      "Claro. Tiene un prestamo preaprobado y puedo indicarle los detalles."
+    ],
+    "conversador": [
+      "Si, claro. Le comento: usted cuenta con un prestamo preaprobado y, si desea, por aqui mismo le comparto monto, cuota, plazo y tasa.",
+      "Con gusto. Le explico como es su prestamo preaprobado y le comparto por este medio los datos principales.",
+      "Si, claro. Le cuento por aqui: usted tiene un prestamo preaprobado y le puedo pasar los detalles principales.",
+      "Con gusto. Le voy comentando su prestamo preaprobado y por aqui mismo le comparto monto, cuota, plazo y tasa."
+    ],
+    "indeciso": [
+      "Si, claro. Le explico con gusto: usted cuenta con un prestamo preaprobado y, si desea, le comparto los detalles para que los revise con calma.",
+      "Con gusto. Le paso la informacion general de su prestamo preaprobado para que la pueda evaluar tranquilamente.",
+      "Si, claro. Le detallo su prestamo preaprobado para que pueda revisarlo con calma antes de decidir.",
+      "Con gusto. Le explico la informacion principal del prestamo para que la evalue con tranquilidad."
+    ]
+  },
+  "analitico": {
+    "apurado": [
+      "Si, claro. Le paso los datos directos: monto referencial S/{monto}, cuota S/{cuota}, plazo {plazo} meses y tasa {tasa}.",
+      "Claro. Los numeros referenciales son: monto S/{monto}, cuota S/{cuota}, plazo {plazo} meses y tasa {tasa}.",
+      "Si, claro. Le dejo los numeros principales: monto S/{monto}, cuota S/{cuota}, plazo {plazo} meses y tasa {tasa}.",
+      "Claro. Los datos clave son monto S/{monto}, cuota S/{cuota}, plazo {plazo} meses y tasa {tasa}."
+    ],
+    "sereno": [
+      "Si, claro. Le comparto los datos de referencia: monto S/{monto}, cuota aproximada S/{cuota}, plazo {plazo} meses y tasa {tasa}.",
+      "Con gusto. Estos son los datos principales del prestamo preaprobado: monto S/{monto}, cuota S/{cuota}, plazo {plazo} meses y tasa {tasa}.",
+      "Si, claro. Le detallo los valores referenciales del prestamo: monto S/{monto}, cuota aproximada S/{cuota}, plazo {plazo} meses y tasa {tasa}.",
+      "Con gusto. Los datos principales quedan asi: monto S/{monto}, cuota S/{cuota}, plazo {plazo} meses y tasa {tasa}."
+    ],
+    "desconfiado": [
+      "Si, claro. Le comparto los datos referenciales del prestamo: monto S/{monto}, cuota S/{cuota}, plazo {plazo} meses y tasa {tasa}.",
+      "Con gusto. Los datos principales de referencia son: monto S/{monto}, cuota S/{cuota}, plazo {plazo} meses y tasa {tasa}.",
+      "Si, claro. Le confirmo los datos referenciales de su prestamo preaprobado: monto S/{monto}, cuota S/{cuota}, plazo {plazo} meses y tasa {tasa}.",
+      "Con gusto. Para que lo valide con claridad, los datos son monto S/{monto}, cuota S/{cuota}, plazo {plazo} meses y tasa {tasa}."
+    ],
+    "frio": [
+      "Si. Datos referenciales: monto S/{monto}, cuota S/{cuota}, plazo {plazo} meses y tasa {tasa}.",
+      "Claro. Monto S/{monto}, cuota S/{cuota}, plazo {plazo} meses y tasa {tasa}.",
+      "Si. Datos: monto S/{monto}, cuota S/{cuota}, plazo {plazo} meses y tasa {tasa}.",
+      "Claro. Numeros del prestamo: monto S/{monto}, cuota S/{cuota}, plazo {plazo} meses y tasa {tasa}."
+    ],
+    "conversador": [
+      "Si, claro. Le paso los numeros principales para que los vea facil: monto S/{monto}, cuota aproximada S/{cuota}, plazo {plazo} meses y tasa {tasa}.",
+      "Con gusto. Estos son los datos referenciales del prestamo: monto S/{monto}, cuota S/{cuota}, plazo {plazo} meses y tasa {tasa}.",
+      "Si, claro. Le dejo los numeros del prestamo bien resumidos: monto S/{monto}, cuota S/{cuota}, plazo {plazo} meses y tasa {tasa}.",
+      "Con gusto. Para que lo vea rapido, los datos son monto S/{monto}, cuota aproximada S/{cuota}, plazo {plazo} meses y tasa {tasa}."
+    ],
+    "indeciso": [
+      "Si, claro. Le comparto los numeros de referencia para que los evalue con calma: monto S/{monto}, cuota aproximada S/{cuota}, plazo {plazo} meses y tasa {tasa}.",
+      "Con gusto. Estos son los datos principales del prestamo preaprobado: monto S/{monto}, cuota S/{cuota}, plazo {plazo} meses y tasa {tasa}.",
+      "Si, claro. Le paso los numeros del prestamo para que pueda revisarlos con tranquilidad: monto S/{monto}, cuota S/{cuota}, plazo {plazo} meses y tasa {tasa}.",
+      "Con gusto. Para que lo analice mejor, los datos referenciales son monto S/{monto}, cuota aproximada S/{cuota}, plazo {plazo} meses y tasa {tasa}."
+    ]
+  },
+  "evaluador": {
+    "apurado": [
+      "Si, claro. Le paso la simulacion referencial de su prestamo preaprobado.",
+      "Claro. En estos momentos le comparto la simulacion referencial del prestamo.",
+      "Si, claro. Le envio la simulacion referencial para que vea como quedaria.",
+      "Claro. Enseguida le paso la simulacion del prestamo."
+    ],
+    "sereno": [
+      "Si, claro. Le comparto la simulacion referencial de su prestamo preaprobado para que la revise con calma.",
+      "Con gusto. En estos momentos le paso la simulacion referencial del prestamo.",
+      "Si, claro. Le envio la simulacion referencial del prestamo para que la pueda revisar con tranquilidad.",
+      "Con gusto. Le comparto ahora la simulacion del prestamo con los datos principales."
+    ],
+    "desconfiado": [
+      "Si, claro. Le comparto una simulacion referencial de su prestamo preaprobado para que la revise con claridad.",
+      "Con gusto. Le paso la simulacion referencial del prestamo con los datos principales.",
+      "Si, claro. Le muestro una simulacion referencial para que pueda validar mejor el prestamo.",
+      "Con gusto. Le comparto la simulacion del prestamo con los datos referenciales para que la revise."
+    ],
+    "frio": [
+      "Si. Le comparto la simulacion referencial del prestamo.",
+      "Claro. En estos momentos le paso la simulacion.",
+      "Si. Le envio la simulacion del prestamo.",
+      "Claro. Aqui va la simulacion referencial."
+    ],
+    "conversador": [
+      "Si, claro. Le comparto la simulacion referencial del prestamo para que vea mejor como quedaria.",
+      "Con gusto. En estos momentos le paso la simulacion de su prestamo preaprobado.",
+      "Si, claro. Le envio la simulacion para que pueda ver mejor como se veria el prestamo.",
+      "Con gusto. Le paso la simulacion referencial para que lo revise mas claro."
+    ],
+    "indeciso": [
+      "Si, claro. Le comparto la simulacion referencial del prestamo para que la pueda evaluar con calma.",
+      "Con gusto. En estos momentos le paso la simulacion referencial de su prestamo preaprobado.",
+      "Si, claro. Le envio la simulacion para que la revise con tranquilidad antes de decidir.",
+      "Con gusto. Le comparto la simulacion del prestamo para que la pueda evaluar mejor."
+    ]
+  },
+  "listo_para_proceso": {
+    "apurado": [
+      "Si, claro. Para avanzar con su prestamo necesita su DNI fisico vigente, sus ultimas 3 boletas de pago y su tarjeta Multired.",
+      "Claro. Lo que necesita para avanzar con su prestamo es su DNI fisico vigente, sus ultimas 3 boletas de pago y su tarjeta Multired.",
+      "Si, claro. Para continuar necesita su DNI fisico vigente, sus ultimas 3 boletas de pago y su tarjeta Multired.",
+      "Claro. Para seguir con el prestamo debe tener su DNI fisico vigente, sus ultimas 3 boletas de pago y su tarjeta Multired."
+    ],
+    "sereno": [
+      "Si, claro. Para avanzar con su prestamo necesita su DNI fisico vigente, sus ultimas 3 boletas de pago y su tarjeta Multired.",
+      "Con gusto. Para continuar con su prestamo debe presentar su DNI fisico vigente, sus ultimas 3 boletas de pago y su tarjeta Multired.",
+      "Si, claro. Los requisitos para continuar son su DNI fisico vigente, sus ultimas 3 boletas de pago y su tarjeta Multired.",
+      "Con gusto. Para avanzar debe acercarse con su DNI fisico vigente, sus ultimas 3 boletas de pago y su tarjeta Multired."
+    ],
+    "desconfiado": [
+      "Si, claro. Para avanzar con su prestamo debe presentar su DNI fisico vigente, sus ultimas 3 boletas de pago y su tarjeta Multired.",
+      "Con gusto. Los documentos base para avanzar con su prestamo son su DNI fisico vigente, sus ultimas 3 boletas de pago y su tarjeta Multired.",
+      "Si, claro. Le confirmo que para avanzar necesita su DNI fisico vigente, sus ultimas 3 boletas de pago y su tarjeta Multired.",
+      "Con gusto. Los requisitos principales para continuar son su DNI fisico vigente, sus ultimas 3 boletas de pago y su tarjeta Multired."
+    ],
+    "frio": [
+      "Si. Para avanzar con su prestamo necesita DNI fisico vigente, sus ultimas 3 boletas de pago y su tarjeta Multired.",
+      "Claro. Para avanzar con su prestamo debe llevar DNI fisico vigente, sus ultimas 3 boletas de pago y su tarjeta Multired.",
+      "Si. Requiere DNI fisico vigente, sus ultimas 3 boletas de pago y su tarjeta Multired.",
+      "Claro. Debe presentar DNI fisico vigente, sus ultimas 3 boletas de pago y su tarjeta Multired."
+    ],
+    "conversador": [
+      "Si, claro. Para avanzar con su prestamo necesita su DNI fisico vigente, sus ultimas 3 boletas de pago y su tarjeta Multired; con eso ya puede continuar.",
+      "Con gusto. Lo basico para avanzar con su prestamo es su DNI fisico vigente, sus ultimas 3 boletas de pago y su tarjeta Multired.",
+      "Si, claro. Con su DNI fisico vigente, sus ultimas 3 boletas de pago y su tarjeta Multired ya puede seguir con el proceso.",
+      "Con gusto. Para continuar con el prestamo solo necesita su DNI fisico vigente, sus ultimas 3 boletas de pago y su tarjeta Multired."
+    ],
+    "indeciso": [
+      "Si, claro. Para avanzar con su prestamo necesita su DNI fisico vigente, sus ultimas 3 boletas de pago y su tarjeta Multired.",
+      "Con gusto. Para que lo revise con calma, lo necesario para avanzar con su prestamo es su DNI fisico vigente, sus ultimas 3 boletas de pago y su tarjeta Multired.",
+      "Si, claro. Le recuerdo que para continuar necesita su DNI fisico vigente, sus ultimas 3 boletas de pago y su tarjeta Multired.",
+      "Con gusto. Para que lo tenga presente, los requisitos son su DNI fisico vigente, sus ultimas 3 boletas de pago y su tarjeta Multired."
+    ]
+  },
+  "practico_logistica": {
+    "apurado": [
+      "Si, claro. El tramite se realiza en la agencia mas cercana del Banco de la Nacion.",
+      "Claro. Puede acercarse a la agencia mas cercana del Banco de la Nacion para continuar.",
+      "Si, claro. Debe ir a la agencia mas cercana del Banco de la Nacion para seguir con el tramite.",
+      "Claro. La gestion se realiza en la agencia del Banco de la Nacion que le quede mas cerca."
+    ],
+    "sereno": [
+      "Si, claro. El tramite se realiza en la agencia mas cercana del Banco de la Nacion, de forma presencial.",
+      "Con gusto. Para continuar debe acercarse a la agencia mas cercana del Banco de la Nacion, donde se realiza el proceso.",
+      "Si, claro. El proceso se realiza de manera presencial en la agencia mas cercana del Banco de la Nacion.",
+      "Con gusto. Para avanzar, puede dirigirse a la agencia del Banco de la Nacion que tenga mas cercana."
+    ],
+    "desconfiado": [
+      "Si, claro. El proceso se realiza de forma presencial en la agencia mas cercana del Banco de la Nacion.",
+      "Con gusto. Para continuar debe acercarse a una agencia del Banco de la Nacion, que es donde se realiza el tramite.",
+      "Si, claro. Le confirmo que el tramite se realiza presencialmente en la agencia mas cercana del Banco de la Nacion.",
+      "Con gusto. Para seguir con el proceso debe acudir a una agencia del Banco de la Nacion."
+    ],
+    "frio": [
+      "Si. El tramite se realiza en la agencia mas cercana del Banco de la Nacion.",
+      "Claro. Debe acercarse a la agencia mas cercana del Banco de la Nacion.",
+      "Si. Es presencial en la agencia mas cercana del Banco de la Nacion.",
+      "Claro. Se realiza en una agencia del Banco de la Nacion."
+    ],
+    "conversador": [
+      "Si, claro. El tramite se realiza en la agencia mas cercana del Banco de la Nacion, ahi es donde puede continuar con el proceso.",
+      "Con gusto. Para seguir, puede acercarse a la agencia mas cercana del Banco de la Nacion, donde se realiza la gestion.",
+      "Si, claro. Puede ir a la agencia del Banco de la Nacion que le quede mas cerca para continuar con el tramite.",
+      "Con gusto. El proceso se hace en la agencia mas cercana del Banco de la Nacion, ahi mismo puede seguir."
+    ],
+    "indeciso": [
+      "Si, claro. El tramite se realiza en la agencia mas cercana del Banco de la Nacion, de forma presencial.",
+      "Con gusto. Para continuar debe acercarse a la agencia mas cercana del Banco de la Nacion, donde se realiza el proceso.",
+      "Si, claro. Para avanzar tendria que ir a la agencia mas cercana del Banco de la Nacion, de forma presencial.",
+      "Con gusto. Puede acercarse a la agencia del Banco de la Nacion que le quede mas comoda para continuar."
+    ]
+  },
+  "oportunista": {
+    "apurado": [
+      "Si, claro. El prestamo preaprobado puede mantenerse vigente hasta fin de mes.",
+      "Claro. En este caso, la vigencia del prestamo es hasta fin de mes.",
+      "Si, claro. La vigencia de este prestamo puede mantenerse hasta fin de mes.",
+      "Claro. Por ahora, este prestamo puede seguir vigente hasta fin de mes."
+    ],
+    "sereno": [
+      "Si, claro. El prestamo preaprobado puede mantenerse vigente hasta fin de mes.",
+      "Con gusto. En este caso, la vigencia del prestamo se mantiene hasta fin de mes.",
+      "Si, claro. En este caso, el prestamo podria mantenerse vigente hasta fin de mes.",
+      "Con gusto. La vigencia de este prestamo se conserva hasta fin de mes."
+    ],
+    "desconfiado": [
+      "Si, claro. El prestamo preaprobado puede mantenerse vigente hasta fin de mes.",
+      "Con gusto. En este caso, la vigencia del prestamo se mantiene hasta fin de mes.",
+      "Si, claro. Le confirmo que el prestamo puede mantenerse vigente hasta fin de mes.",
+      "Con gusto. En principio, la vigencia del prestamo se mantiene hasta fin de mes."
+    ],
+    "frio": [
+      "Si. El prestamo puede mantenerse vigente hasta fin de mes.",
+      "Claro. La vigencia es hasta fin de mes.",
+      "Si. Sigue vigente hasta fin de mes.",
+      "Claro. Puede mantenerse hasta fin de mes."
+    ],
+    "conversador": [
+      "Si, claro. El prestamo preaprobado puede mantenerse vigente hasta fin de mes.",
+      "Con gusto. En este caso, la vigencia del prestamo se mantiene hasta fin de mes.",
+      "Si, claro. Por ahora este prestamo podria mantenerse vigente hasta fin de mes.",
+      "Con gusto. Le comento que la vigencia del prestamo se mantiene hasta fin de mes."
+    ],
+    "indeciso": [
+      "Si, claro. El prestamo preaprobado puede mantenerse vigente hasta fin de mes.",
+      "Con gusto. En este caso, la vigencia del prestamo se mantiene hasta fin de mes.",
+      "Si, claro. De momento, el prestamo puede mantenerse vigente hasta fin de mes.",
+      "Con gusto. La vigencia de este prestamo se mantiene hasta fin de mes."
+    ]
+  },
+  "desinteresado": {
+    "apurado": [
+      "Entiendo, no se preocupe. Gracias por su tiempo. Si mas adelante desea retomarlo, con gusto le apoyo.",
+      "Claro, no hay problema. Gracias por su tiempo. Si luego desea retomarlo, con gusto le apoyo.",
+      "Entiendo. Gracias por responder. Si mas adelante desea retomarlo, con gusto le apoyo.",
+      "Claro, no se preocupe. Si luego desea volver a revisarlo, con gusto le apoyo."
+    ],
+    "sereno": [
+      "Entiendo, no se preocupe. Gracias por su tiempo. Si mas adelante desea revisar nuevamente la propuesta, con gusto le apoyo.",
+      "Comprendo, no hay problema. Gracias por su tiempo. Si en otro momento desea retomar la propuesta, con gusto le apoyo.",
+      "Entiendo perfectamente. Gracias por su tiempo. Si luego desea volver a revisar la propuesta, con gusto le apoyo.",
+      "Comprendo. No hay inconveniente. Si mas adelante desea retomarlo, con gusto estare para apoyarle."
+    ],
+    "desconfiado": [
+      "Entiendo, no hay problema. Gracias por su tiempo. Si en otro momento desea revisar nuevamente la informacion con mas detalle, con gusto le apoyo.",
+      "Claro, no se preocupe. Gracias por su tiempo. Si mas adelante desea revisar la propuesta nuevamente, con gusto le apoyo.",
+      "Entiendo. Gracias por su tiempo. Si en otro momento desea validar nuevamente la informacion, con gusto le apoyo.",
+      "Claro, no hay inconveniente. Si mas adelante desea revisar la propuesta con mas detalle, con gusto le apoyo."
+    ],
+    "frio": [
+      "Entiendo. Gracias por su tiempo. Si luego desea retomarlo, con gusto le apoyo.",
+      "No hay problema. Gracias por su tiempo.",
+      "Entiendo. Quedo atento si luego desea retomarlo.",
+      "Claro. Si mas adelante desea revisarlo otra vez, con gusto le apoyo."
+    ],
+    "conversador": [
+      "Entiendo perfectamente, no se preocupe. Gracias por su tiempo y por responder. Si mas adelante desea retomar la propuesta, con gusto le apoyo por este medio.",
+      "Claro, no hay problema. Gracias por su tiempo. Si en otro momento desea volver a revisar la propuesta, con gusto le acompaño.",
+      "Entiendo, no se preocupe. Gracias por tomarse el tiempo de responder. Si luego desea retomarlo, con gusto le apoyo por aqui.",
+      "Claro, no hay problema. Cuando guste volver a revisar la propuesta, con gusto le acompaño."
+    ],
+    "indeciso": [
+      "Entiendo, no se preocupe. Gracias por su tiempo. Si mas adelante desea revisarlo nuevamente con calma, con gusto le apoyo.",
+      "Claro, no hay problema. Gracias por su tiempo. Si luego desea retomar la propuesta, con gusto le ayudo por este medio.",
+      "Entiendo. Gracias por su tiempo. Si despues desea volver a evaluarlo con calma, con gusto le apoyo.",
+      "Claro, no se preocupe. Si mas adelante desea retomarlo y revisarlo mejor, con gusto le apoyo."
+    ]
+  }
+}

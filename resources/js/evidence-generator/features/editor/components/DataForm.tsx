@@ -1,0 +1,209 @@
+import type { ChangeEvent } from "react";
+import type {
+  ActiveDesign,
+  ConversationProgressSummary,
+  FormState,
+  SavedData,
+} from "../../../types";
+import { Input } from "../../../components/ui/Input";
+
+interface DataFormProps {
+  form: FormState;
+  activeDesign: ActiveDesign;
+  saved: SavedData | null;
+  onChange: (key: keyof FormState) => (e: ChangeEvent<HTMLInputElement>) => void;
+  onGenerate: () => void;
+  isGenerating: boolean;
+  generatedSeedCode: string;
+  seedCodeInput: string;
+  onSeedCodeInputChange: (value: string) => void;
+  progress: ConversationProgressSummary | null;
+  conversationsCount: number;
+  onOpenConversationModal: () => void;
+  feedbackMessage: string | null;
+}
+
+// Componente que renderiza el formulario y el estado de guardado.
+export function DataForm({
+  form,
+  activeDesign,
+  saved,
+  onChange,
+  onGenerate,
+  isGenerating,
+  generatedSeedCode,
+  seedCodeInput,
+  onSeedCodeInputChange,
+  progress,
+  conversationsCount,
+  onOpenConversationModal,
+  feedbackMessage,
+}: DataFormProps) {
+  return (
+    <div className="p-4 md:p-5">
+      <div className="rounded-2xl border border-slate-200 bg-linear-to-b from-slate-50 to-white p-4 shadow-sm">
+        <div className="mb-4 flex items-start justify-between gap-3">
+          <div>
+            <div className="text-sm font-bold text-slate-900">Datos</div>
+          </div>
+
+          <span className="inline-flex items-center rounded-full border border-slate-200 bg-white px-2.5 py-1 text-[11px] font-semibold text-slate-700">
+            {activeDesign.toUpperCase()}
+          </span>
+        </div>
+
+        <div className="grid grid-cols-1 gap-3">
+          <div className="grid grid-cols-1 gap-2">
+            <button
+              type="button"
+              onClick={onOpenConversationModal}
+              className="inline-flex items-center justify-center rounded-2xl border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-slate-800 shadow-sm transition hover:bg-slate-50"
+            >
+              Nueva conversación
+            </button>
+            <div className="text-[11px] text-slate-500 text-center">
+              Conversaciones registradas: <b>{conversationsCount}</b>
+            </div>
+          </div>
+
+          <Input
+            label="Nombre de asesor"
+            id="nombre-asesor"
+            value={form.nombreAsesor}
+            onChange={onChange("nombreAsesor")}
+            placeholder="Ej: Ana Lopez"
+          />
+          <Input
+            label="DNI"
+            id="dni"
+            value={form.dni}
+            onChange={onChange("dni")}
+            placeholder="Ej: 12345678"
+          />
+          <Input
+            label="Telefono"
+            id="telefono"
+            value={form.telefono}
+            onChange={onChange("telefono")}
+            placeholder="Ej: 999 999 999"
+          />
+          <Input
+            label="Nombre"
+            id="nombre-cliente"
+            value={form.nombre}
+            onChange={onChange("nombre")}
+            placeholder="Ej: Juan PÇ¸rez"
+          />
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <Input
+              label="Monto"
+              id="monto"
+              value={form.monto}
+              onChange={onChange("monto")}
+              placeholder="Ej: 1500"
+              hint="Puedes poner S/ si quieres."
+            />
+            <Input
+              label="Tasa"
+              id="tasa"
+              value={form.tasa}
+              onChange={onChange("tasa")}
+              placeholder="Ej: 2.5%"
+            />
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <Input
+              label="Cuota"
+              id="cuota"
+              value={form.cuota}
+              onChange={onChange("cuota")}
+              placeholder="Ej: 250"
+            />
+            <Input
+              label="Plazo"
+              id="plazo"
+              value={form.plazo}
+              onChange={onChange("plazo")}
+              placeholder="Ej: 12 meses"
+            />
+          </div>
+
+          <Input
+            label="Fecha y hora"
+            id="fecha-hora"
+            type="datetime-local"
+            value={form.fechaHora}
+            onChange={onChange("fechaHora")}
+            hint="Se guarda tal cual lo ingresas."
+          />
+
+          <Input
+            label="Duracion (min)"
+            id="duracion"
+            value={form.duracion}
+            onChange={onChange("duracion")}
+            placeholder="Ej: 6"
+          />
+
+          <Input
+            label="Sal generada"
+            id="seed-generated"
+            value={generatedSeedCode}
+            onChange={() => {}}
+            placeholder="Se completa al generar"
+            readOnly
+          />
+
+          <Input
+            label="Completar por sal"
+            id="seed-input"
+            value={seedCodeInput}
+            onChange={(e) => onSeedCodeInputChange(e.target.value)}
+            placeholder="Ej: EVC1-C020-U01-R03-K8P2M"
+            hint="Opcional: pega una sal para repetir la conversación"
+          />
+
+          <button
+            type="button"
+            onClick={onGenerate}
+            disabled={isGenerating}
+            className={[
+              "mt-1 inline-flex items-center justify-center rounded-2xl px-4 py-2.5 text-sm font-semibold",
+              "bg-slate-900 text-white shadow-sm transition-all",
+              "hover:shadow-md hover:-translate-y-px active:translate-y-0",
+              "focus:outline-none focus:ring-2 focus:ring-slate-900/25 disabled:opacity-50 disabled:cursor-not-allowed",
+            ].join(" ")}
+          >
+            {isGenerating ? "Generando..." : "Generar evidencia"}
+          </button>
+
+          {feedbackMessage ? (
+            <div className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-700">
+              {feedbackMessage}
+            </div>
+          ) : null}
+
+          <div className="rounded-2xl border border-slate-200 bg-white px-3 py-2 text-xs text-slate-600 shadow-sm">
+            <div className="flex items-center justify-between gap-3">
+              <span>
+                Guardado actual:{" "}
+                <b className="text-slate-900">{saved ? "Si" : "No"}</b>
+              </span>
+             
+              <span>
+                Preview: <b className="text-slate-900">{activeDesign}</b>
+              </span>
+            </div>
+            {progress ? (
+              <div className="mt-2 border-t border-slate-100 pt-2 text-[11px] text-slate-600">
+                Ciclo: <b>{progress.cycle}</b> | Usadas: <b>{progress.used}</b> | Pendientes: <b>{progress.pending}</b> | Total: <b>{progress.total}</b>
+              </div>
+            ) : null}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

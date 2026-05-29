@@ -1,0 +1,11 @@
+[
+  [
+    "{saludo} Sr(a) {cliente}.",
+    "Le saluda {asesor_nombre} de la empresa Impulsa A365 por encargo del Banco de la Nacion.",
+    "Ha sido un gusto contactarl(a) y de acuerdo con la llamada telefonica que tuvimos en la {tramo}, puede acercarse a la agencia mas cercana con su DNI, boleta de pago y tarjeta Multired para realizar el desembolso y asi pueda aprovechar esta super promocion.",
+    "Desea que le envie por este medio, la propuesta que hoy conversamos?",
+    "Cualquier consulta, estoy para apoyarlo.",
+    "{asesor_nombre}",
+    "{firma}"
+  ]
+]

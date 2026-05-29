@@ -1,0 +1,389 @@
+[
+  {
+    "estado": "indeciso",
+    "tipo": "informacion_general",
+    "respuestas": [
+      "Hola, estoy revisando y me gustaria volver a ver los detalles del prestamo antes de decidir.",
+      "{saludo}, quisiera revisar nuevamente la informacion con calma antes de tomar una decision.",
+      "Hola {asesor}, me puedes reenviar toda la informacion para analizarla mejor?",
+      "{saludo}, quiero volver a entender bien el prestamo antes de avanzar.",
+      "Hola, me interesa pero quisiera repasar todo primero.",
+      "Hola {asesor}, me puedes mandar otra vez el detalle completo para evaluarlo?",
+      "{saludo}, prefiero volver a ver toda la informacion antes de decidir.",
+      "Hola, quisiera tener una idea clara otra vez antes de avanzar.",
+      "Hola {asesor}, me interesa pero quiero revisarlo bien nuevamente.",
+      "{saludo}, me gustaria analizar otra vez toda la informacion con calma.",
+      [
+        "Hola",
+        "Estoy revisando y me gustaria volver a ver los detalles del prestamo antes de decidir."
+      ],
+      [
+        "{saludo}",
+        "Quisiera revisar nuevamente la informacion con calma antes de tomar una decision."
+      ],
+      [
+        "Hola {asesor}",
+        "Me puedes reenviar toda la informacion para analizarla mejor?"
+      ],
+      [
+        "{saludo}",
+        "Quiero volver a entender bien el prestamo antes de avanzar."
+      ],
+      [
+        "Hola",
+        "Me interesa pero quisiera repasar todo primero."
+      ],
+      [
+        "Hola {asesor}",
+        "Me puedes mandar otra vez el detalle completo para evaluarlo?"
+      ],
+      [
+        "{saludo}",
+        "Prefiero volver a ver toda la informacion antes de decidir."
+      ],
+      [
+        "Hola",
+        "Quisiera tener una idea clara otra vez antes de avanzar."
+      ],
+      [
+        "Hola {asesor}",
+        "Me interesa pero quiero revisarlo bien nuevamente."
+      ],
+      [
+        "{saludo}",
+        "Me gustaria analizar otra vez toda la informacion con calma."
+      ]
+    ]
+  },
+  {
+    "estado": "indeciso",
+    "tipo": "analitico",
+    "respuestas": [
+      "Hola, quisiera saber cuanto seria la cuota para ver si me conviene.",
+      "{saludo}, estoy evaluando si puedo asumir la cuota mensual.",
+      "Hola {asesor}, me puedes indicar cuanto pagaria aproximadamente?",
+      "{saludo}, quiero ver si el monto se ajusta a mi presupuesto.",
+      "Hola, cuanto terminaria pagando en total mas o menos?",
+      "Hola {asesor}, quisiera entender bien los numeros antes de decidir.",
+      "{saludo}, me interesa pero quiero analizar la cuota primero.",
+      "Hola, que opciones de pago tendria?",
+      "Hola {asesor}, podrias darme un estimado de la cuota?",
+      "{saludo}, quiero evaluar bien el tema economico antes de avanzar.",
+      [
+        "Hola",
+        "Quisiera saber cuanto seria la cuota para ver si me conviene."
+      ],
+      [
+        "{saludo}",
+        "Estoy evaluando si puedo asumir la cuota mensual."
+      ],
+      [
+        "Hola {asesor}",
+        "Me puedes indicar cuanto pagaria aproximadamente?"
+      ],
+      [
+        "{saludo}",
+        "Quiero ver si el monto se ajusta a mi presupuesto."
+      ],
+      [
+        "Hola",
+        "Cuanto terminaria pagando en total mas o menos?"
+      ],
+      [
+        "Hola {asesor}",
+        "Quisiera entender bien los numeros antes de decidir."
+      ],
+      [
+        "{saludo}",
+        "Me interesa pero quiero analizar la cuota primero."
+      ],
+      [
+        "Hola",
+        "Que opciones de pago tendria?"
+      ],
+      [
+        "Hola {asesor}",
+        "Podrias darme un estimado de la cuota?"
+      ],
+      [
+        "{saludo}",
+        "Quiero evaluar bien el tema economico antes de avanzar."
+      ]
+    ]
+  },
+  {
+    "estado": "indeciso",
+    "tipo": "evaluador",
+    "respuestas": [
+      "Hola, me gustaria ver una simulacion antes de tomar una decision.",
+      "{saludo}, quisiera evaluar primero como quedarian las cuotas.",
+      "Hola {asesor}, puedo ver un ejemplo del prestamo antes de avanzar?",
+      "{saludo}, prefiero analizarlo con una simulacion previa.",
+      "Hola, quiero revisar como seria el prestamo en mi caso.",
+      "Hola {asesor}, me puedes ayudar a simular diferentes opciones?",
+      "{saludo}, quiero evaluarlo bien antes de decidir.",
+      "Hola, me puedes compartir la simulacion del prestamo?",
+      "Hola {asesor}, me interesa pero quiero analizar primero.",
+      "{saludo}, prefiero ver numeros antes de tomar una decision.",
+      [
+        "Hola",
+        "Me gustaria ver una simulacion antes de tomar una decision."
+      ],
+      [
+        "{saludo}",
+        "Quisiera evaluar primero como quedarian las cuotas."
+      ],
+      [
+        "Hola {asesor}",
+        "Puedo ver un ejemplo del prestamo antes de avanzar?"
+      ],
+      [
+        "{saludo}",
+        "Prefiero analizarlo con una simulacion previa."
+      ],
+      [
+        "Hola",
+        "Quiero revisar como seria el prestamo en mi caso."
+      ],
+      [
+        "Hola {asesor}",
+        "Me puedes ayudar a simular diferentes opciones?"
+      ],
+      [
+        "{saludo}",
+        "Quiero evaluarlo bien antes de decidir."
+      ],
+      [
+        "Hola",
+        "Me puedes compartir la simulacion del prestamo?"
+      ],
+      [
+        "Hola {asesor}",
+        "Me interesa pero quiero analizar primero."
+      ],
+      [
+        "{saludo}",
+        "Prefiero ver numeros antes de tomar una decision."
+      ]
+    ]
+  },
+  {
+    "estado": "indeciso",
+    "tipo": "listo_para_proceso",
+    "respuestas": [
+      "Hola, si decido avanzar quisiera saber que documentos debo presentar.",
+      "{saludo}, me interesa pero quisiera tener claros los requisitos.",
+      "Hola {asesor}, que necesitaria para iniciar el proceso?",
+      "{saludo}, quiero saber que debo llevar antes de acercarme.",
+      "Hola, solo con DNI basta o hay algo mas?",
+      "Hola {asesor}, quisiera saber todos los requisitos antes de decidir.",
+      "{saludo}, quiero estar seguro de cumplir con todo.",
+      "Hola, que condiciones debo cumplir para acceder?",
+      "Hola {asesor}, puedes explicarme bien los requisitos?",
+      "{saludo}, quisiera tener claro todo antes de avanzar.",
+      [
+        "Hola",
+        "Si decido avanzar quisiera saber que documentos debo presentar."
+      ],
+      [
+        "{saludo}",
+        "Me interesa pero quisiera tener claros los requisitos."
+      ],
+      [
+        "Hola {asesor}",
+        "Que necesitaria para iniciar el proceso?"
+      ],
+      [
+        "{saludo}",
+        "Quiero saber que debo llevar antes de acercarme."
+      ],
+      [
+        "Hola",
+        "Solo con DNI basta o hay algo mas?"
+      ],
+      [
+        "Hola {asesor}",
+        "Quisiera saber todos los requisitos antes de decidir."
+      ],
+      [
+        "{saludo}",
+        "Quiero estar seguro de cumplir con todo."
+      ],
+      [
+        "Hola",
+        "Que condiciones debo cumplir para acceder?"
+      ],
+      [
+        "Hola {asesor}",
+        "Puedes explicarme bien los requisitos?"
+      ],
+      [
+        "{saludo}",
+        "Quisiera tener claro todo antes de avanzar."
+      ]
+    ]
+  },
+  {
+    "estado": "indeciso",
+    "tipo": "practico_logistica",
+    "respuestas": [
+      "Hola, estoy viendo si avanzo, a que agencia tendria que ir?",
+      "{saludo}, quisiera saber donde tendria que hacer el tramite.",
+      "Hola {asesor}, puedo ir a cualquier agencia?",
+      "{saludo}, quiero saber como seria el proceso en el banco.",
+      "Hola, puedo acercarme cualquier dia?",
+      "Hola {asesor}, tambien atienden fines de semana?",
+      "{saludo}, a que agencia tendria que ir? ",
+      "Hola, puedo hacer esto en otra ciudad?",
+      "Hola {asesor}, puedo acercarme manana sin problema?",
+      "{saludo}, quiero tener claro el proceso antes de decidir.",
+      [
+        "Hola",
+        "Estoy viendo si avanzo, a que agencia tendria que ir?"
+      ],
+      [
+        "{saludo}",
+        "Quisiera saber donde tendria que hacer el tramite."
+      ],
+      [
+        "Hola {asesor}",
+        "Puedo ir a cualquier agencia?"
+      ],
+      [
+        "{saludo}",
+        "Quiero saber como seria el proceso en el banco."
+      ],
+      [
+        "Hola",
+        "Puedo acercarme cualquier dia?"
+      ],
+      [
+        "Hola {asesor}",
+        "Tambien atienden fines de semana?"
+      ],
+      [
+        "{saludo}",
+        "A que agencia tendria que ir? "
+      ],
+      [
+        "Hola",
+        "Puedo hacer esto en otra ciudad?"
+      ],
+      [
+        "Hola {asesor}",
+        "Puedo acercarme manana sin problema?"
+      ],
+      [
+        "{saludo}",
+        "Quiero tener claro el proceso antes de decidir."
+      ]
+    ]
+  },
+  {
+    "estado": "indeciso",
+    "tipo": "oportunista",
+    "respuestas": [
+      "Hola, me interesa pero quisiera saber hasta cuando esta vigente.",
+      "{saludo}, quiero saber cuanto tiempo tengo para decidir.",
+      "Hola {asesor}, cual es la fecha limite del prestamo?",
+      "{saludo}, puedo tomar la decision mas adelante?",
+      "Hola, esto se mantiene por algunos dias?",
+      "{saludo}, quisiera saber si puedo esperar un poco.",
+      "Hola, hasta cuando puedo acceder al prestamo?",
+      "Hola {asesor}, quisiera saber hasta que dia puedo tener el prestamo para evaluarlo.",
+      "{saludo}, quiero evaluar dentro del tiempo disponible.",
+      [
+        "Hola",
+        "Me interesa pero quisiera saber hasta cuando esta vigente."
+      ],
+      [
+        "{saludo}",
+        "Quiero saber cuanto tiempo tengo para decidir."
+      ],
+      [
+        "Hola {asesor}",
+        "Cual es la fecha limite del prestamo?"
+      ],
+      [
+        "{saludo}",
+        "Puedo tomar la decision mas adelante?"
+      ],
+      [
+        "Hola",
+        "Esto se mantiene por algunos dias?"
+      ],
+      [
+        "{saludo}",
+        "Quisiera saber si puedo esperar un poco."
+      ],
+      [
+        "Hola",
+        "Hasta cuando puedo acceder al prestamo?"
+      ],
+      [
+        "Hola {asesor}",
+        "Quisiera saber hasta que dia puedo tener el prestamo para evaluarlo."
+      ],
+      [
+        "{saludo}",
+        "Quiero evaluar dentro del tiempo disponible."
+      ]
+    ]
+  },
+  {
+    "estado": "indeciso",
+    "tipo": "desinteresado",
+    "respuestas": [
+      "Hola, gracias, lo voy a pensar un poco mas.",
+      "{saludo}, prefiero evaluarlo con calma antes de decidir.",
+      "Hola {asesor}, por ahora lo dejo en pausa.",
+      "{saludo}, no tomare una decision en este momento.",
+      "Hola, lo revisare mas adelante.",
+      "Hola {asesor}, gracias, pero por ahora no avanzare.",
+      "{saludo}, quiero analizarlo mejor antes de continuar.",
+      "Hola, mas adelante lo retomo.",
+      "Hola {asesor}, prefiero dejarlo para otro momento.",
+      "{saludo}, por ahora no seguire con el proceso.",
+      [
+        "Hola",
+        "Gracias, lo voy a pensar un poco mas."
+      ],
+      [
+        "{saludo}",
+        "Prefiero evaluarlo con calma antes de decidir."
+      ],
+      [
+        "Hola {asesor}",
+        "Por ahora lo dejo en pausa."
+      ],
+      [
+        "{saludo}",
+        "No tomare una decision en este momento."
+      ],
+      [
+        "Hola",
+        "Lo revisare mas adelante."
+      ],
+      [
+        "Hola {asesor}",
+        "Gracias, pero por ahora no avanzare."
+      ],
+      [
+        "{saludo}",
+        "Quiero analizarlo mejor antes de continuar."
+      ],
+      [
+        "Hola",
+        "Mas adelante lo retomo."
+      ],
+      [
+        "Hola {asesor}",
+        "Prefiero dejarlo para otro momento."
+      ],
+      [
+        "{saludo}",
+        "Por ahora no seguire con el proceso."
+      ]
+    ]
+  }
+]

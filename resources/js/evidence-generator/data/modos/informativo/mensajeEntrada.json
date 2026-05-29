@@ -1,0 +1,9 @@
+[
+  [
+    "{saludo}, Sr(a). {cliente}.",
+    "Le saluda {asesor_nombre}, de la empresa Impulsa A365, por encargo del Banco de la Nacion.",
+    "Le informamos que cuenta con un prestamo preaprobado de S/ {monto_formateado} a su nombre. Para acceder a este beneficio y aprovechar la promocion vigente, puede acercarse a la agencia del Banco de la Nacion mas cercana portando su DNI vigente, ultima boleta de pago y su tarjeta Multired.",
+    "Si desea mayor informacion o conocer los detalles de su prestamo, con gusto puedo apoyarlo por este medio.",
+    "Saludos cordiales,"
+  ]
+]

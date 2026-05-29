@@ -1,0 +1,389 @@
+[
+  {
+    "estado": "apurado",
+    "tipo": "informacion_general",
+    "respuestas": [
+      "Hola, pasame rapido nuevamente la informacion del prestamo.",
+      "{saludo}, me recuerdas rapido como era lo del prestamo?",
+      "Hola {asesor}, enviame otra vez el detalle rapido del credito.",
+      "{saludo}, me mandas nuevamente la informacion del prestamo de una vez?",
+      "Hola, dime rapido otra vez de que trataba el prestamo.",
+      "Hola {asesor}, me puedes pasar otra vez la informacion por aqui rapido?",
+      "{saludo}, explicamelo breve otra vez por favor.",
+      "Hola, necesito repasar rapido la informacion del prestamo.",
+      "Hola {asesor}, resumeme rapido otra vez como funciona el credito.",
+      "{saludo}, mandame nuevamente los detalles del prestamo rapido por favor.",
+      [
+        "Hola",
+        "Pasame rapido nuevamente la informacion del prestamo."
+      ],
+      [
+        "{saludo}",
+        "Me recuerdas rapido como era lo del prestamo?"
+      ],
+      [
+        "Hola {asesor}",
+        "Enviame otra vez el detalle rapido del credito."
+      ],
+      [
+        "{saludo}",
+        "Me mandas nuevamente la informacion del prestamo de una vez?"
+      ],
+      [
+        "Hola",
+        "Dime rapido otra vez de que trataba el prestamo."
+      ],
+      [
+        "Hola {asesor}",
+        "Me puedes pasar otra vez la informacion por aqui rapido?"
+      ],
+      [
+        "{saludo}",
+        "Explicamelo breve otra vez por favor."
+      ],
+      [
+        "Hola",
+        "Necesito repasar rapido la informacion del prestamo."
+      ],
+      [
+        "Hola {asesor}",
+        "Resumeme rapido otra vez como funciona el credito."
+      ],
+      [
+        "{saludo}",
+        "Mandame nuevamente los detalles del prestamo rapido por favor."
+      ]
+    ]
+  },
+  {
+    "estado": "apurado",
+    "tipo": "analitico",
+    "respuestas": [
+      "Hola, cuanto seria la cuota mensual?",
+      "{saludo}, de cuanto estamos hablando al mes?",
+      "Hola {asesor}, dime rapido cuanto me aprobarian.",
+      "{saludo}, que tasa de interes tiene?",
+      "Hola, cuanto terminaria pagando?",
+      "Hola {asesor}, cual seria la cuota aproximada?",
+      "{saludo}, necesito saber monto y cuota rapido.",
+      "Hola, que monto exacto me podrian dar?",
+      "Hola {asesor}, cuanto sale mensual mas o menos?",
+      "{saludo}, dime rapido cual es la tasa y la cuota.",
+      [
+        "Hola",
+        "Cuanto seria la cuota mensual?"
+      ],
+      [
+        "{saludo}",
+        "De cuanto estamos hablando al mes?"
+      ],
+      [
+        "Hola {asesor}",
+        "Dime rapido cuanto me aprobarian."
+      ],
+      [
+        "{saludo}",
+        "Que tasa de interes tiene?"
+      ],
+      [
+        "Hola",
+        "Cuanto terminaria pagando?"
+      ],
+      [
+        "Hola {asesor}",
+        "Cual seria la cuota aproximada?"
+      ],
+      [
+        "{saludo}",
+        "Necesito saber monto y cuota rapido."
+      ],
+      [
+        "Hola",
+        "Que monto exacto me podrian dar?"
+      ],
+      [
+        "Hola {asesor}",
+        "Cuanto sale mensual mas o menos?"
+      ],
+      [
+        "{saludo}",
+        "Dime rapido cual es la tasa y la cuota."
+      ]
+    ]
+  },
+  {
+    "estado": "apurado",
+    "tipo": "evaluador",
+    "respuestas": [
+      "Hola, me puedes simular la cuota rapido?",
+      "{saludo}, quisiera ver cuanto saldria en mi caso.",
+      "Hola {asesor}, hazme una simulacion rapida por favor.",
+      "{saludo}, puedo ver mi cuota antes de ir?",
+      "Hola, calculame rapido cuanto pagaria.",
+      "Hola {asesor}, quiero ver un ejemplo rapido del prestamo.",
+      "{saludo}, muestrame como quedaria la cuota.",
+      "Hola, quisiera evaluarlo rapido con una simulacion.",
+      "Hola {asesor}, me puedes decir cuanto saldria aproximadamente?",
+      "{saludo}, simulame eso rapido por favor.",
+      [
+        "Hola",
+        "Me puedes simular la cuota rapido?"
+      ],
+      [
+        "{saludo}",
+        "Quisiera ver cuanto saldria en mi caso."
+      ],
+      [
+        "Hola {asesor}",
+        "Hazme una simulacion rapida por favor."
+      ],
+      [
+        "{saludo}",
+        "Puedo ver mi cuota antes de ir?"
+      ],
+      [
+        "Hola",
+        "Calculame rapido cuanto pagaria."
+      ],
+      [
+        "Hola {asesor}",
+        "Quiero ver un ejemplo rapido del prestamo."
+      ],
+      [
+        "{saludo}",
+        "Muestrame como quedaria la cuota."
+      ],
+      [
+        "Hola",
+        "Quisiera evaluarlo rapido con una simulacion."
+      ],
+      [
+        "Hola {asesor}",
+        "Me puedes decir cuanto saldria aproximadamente?"
+      ],
+      [
+        "{saludo}",
+        "Simulame eso rapido por favor."
+      ]
+    ]
+  },
+  {
+    "estado": "apurado",
+    "tipo": "listo_para_proceso",
+    "respuestas": [
+      "Hola, que necesito llevar?",
+      "{saludo}, dime rapido que requisitos piden.",
+      "Hola {asesor}, solo necesito DNI o algo mas?",
+      "{saludo}, que documentos exactos debo presentar?",
+      "Hola, pasame la lista rapida de requisitos.",
+      "Hola {asesor}, que me van a pedir en el banco?",
+      "{saludo}, necesito llevar algo aparte del DNI?",
+      "Hola, puedo llevar copia o tiene que ser original?",
+      "Hola {asesor}, dime rapido que documentos necesito.",
+      "{saludo}, que tengo que presentar para avanzar ya?",
+      [
+        "Hola",
+        "Que necesito llevar?"
+      ],
+      [
+        "{saludo}",
+        "Dime rapido que requisitos piden."
+      ],
+      [
+        "Hola {asesor}",
+        "Solo necesito DNI o algo mas?"
+      ],
+      [
+        "{saludo}",
+        "Que documentos exactos debo presentar?"
+      ],
+      [
+        "Hola",
+        "Pasame la lista rapida de requisitos."
+      ],
+      [
+        "Hola {asesor}",
+        "Que me van a pedir en el banco?"
+      ],
+      [
+        "{saludo}",
+        "Necesito llevar algo aparte del DNI?"
+      ],
+      [
+        "Hola",
+        "Puedo llevar copia o tiene que ser original?"
+      ],
+      [
+        "Hola {asesor}",
+        "Dime rapido que documentos necesito."
+      ],
+      [
+        "{saludo}",
+        "Que tengo que presentar para avanzar ya?"
+      ]
+    ]
+  },
+  {
+    "estado": "apurado",
+    "tipo": "practico_logistica",
+    "respuestas": [
+      "Hola, a que agencia puedo ir?",
+      "{saludo}, puedo acercarme hoy mismo?",
+      "Hola {asesor}, puedo ir directo a cualquier agencia?",
+      "{saludo}, donde hago el tramite?",
+      "Hola, puedo acercarme manana?",
+      "Hola {asesor}, atienden en cualquier sede?",
+      "{saludo}, puedo hacer el tramite en otra ciudad?",
+      "Hola, puedo acercarme el fin de semana?",
+      "Hola {asesor}, dime rapido donde tendria que ir.",
+      "{saludo}, puedo ir de frente al banco para avanzar?",
+      [
+        "Hola",
+        "A que agencia puedo ir?"
+      ],
+      [
+        "{saludo}",
+        "Puedo acercarme hoy mismo?"
+      ],
+      [
+        "Hola {asesor}",
+        "Puedo ir directo a cualquier agencia?"
+      ],
+      [
+        "{saludo}",
+        "Donde hago el tramite?"
+      ],
+      [
+        "Hola",
+        "Puedo acercarme manana?"
+      ],
+      [
+        "Hola {asesor}",
+        "Atienden en cualquier sede?"
+      ],
+      [
+        "{saludo}",
+        "Puedo hacer el tramite en otra ciudad?"
+      ],
+      [
+        "Hola",
+        "Puedo acercarme el fin de semana?"
+      ],
+      [
+        "Hola {asesor}",
+        "Dime rapido donde tendria que ir."
+      ],
+      [
+        "{saludo}",
+        "Puedo ir de frente al banco para avanzar?"
+      ]
+    ]
+  },
+  {
+    "estado": "apurado",
+    "tipo": "oportunista",
+    "respuestas": [
+      "Hola, hasta cuando esta vigente?",
+      "{saludo}, este prestamo vence pronto?",
+      "Hola {asesor}, hasta cuando puedo aprovecharlo?",
+      "{saludo}, todavia sigue disponible?",
+      "Hola, hoy aun aplica este prestamo?",
+      "{saludo}, es por tiempo limitado?",
+      "Hola, cuanto tiempo tengo para decidir?",
+      "Hola {asesor}, hasta que dia puedo tener este prestamo?",
+      "{saludo}, se acaba hoy o todavia tengo tiempo?",
+      [
+        "Hola",
+        "Hasta cuando esta vigente?"
+      ],
+      [
+        "{saludo}",
+        "Este prestamo vence pronto?"
+      ],
+      [
+        "Hola {asesor}",
+        "Hasta cuando puedo aprovecharlo?"
+      ],
+      [
+        "{saludo}",
+        "Todavia sigue disponible?"
+      ],
+      [
+        "Hola",
+        "Hoy aun aplica este prestamo?"
+      ],
+      [
+        "{saludo}",
+        "Es por tiempo limitado?"
+      ],
+      [
+        "Hola",
+        "Cuanto tiempo tengo para decidir?"
+      ],
+      [
+        "Hola {asesor}",
+        "Hasta que dia puedo tener este prestamo?"
+      ],
+      [
+        "{saludo}",
+        "Se acaba hoy o todavia tengo tiempo?"
+      ]
+    ]
+  },
+  {
+    "estado": "apurado",
+    "tipo": "desinteresado",
+    "respuestas": [
+      "Hola, gracias, pero por ahora no.",
+      "{saludo}, en este momento no estoy interesado.",
+      "Hola {asesor}, gracias, lo vere despues.",
+      "{saludo}, por ahora paso, gracias.",
+      "Hola, gracias, mas adelante lo reviso.",
+      "Hola {asesor}, no me interesa por ahora.",
+      "{saludo}, gracias, luego lo evaluo.",
+      "Hola, en este momento no deseo mas adelante quizas.",
+      "Hola {asesor}, gracias, lo voy a pensar luego.",
+      "{saludo}, por ahora no voy a tomarlo, gracias.",
+      [
+        "Hola",
+        "Gracias, pero por ahora no."
+      ],
+      [
+        "{saludo}",
+        "En este momento no estoy interesado."
+      ],
+      [
+        "Hola {asesor}",
+        "Gracias, lo vere despues."
+      ],
+      [
+        "{saludo}",
+        "Por ahora paso, gracias."
+      ],
+      [
+        "Hola",
+        "Gracias, mas adelante lo reviso."
+      ],
+      [
+        "Hola {asesor}",
+        "No me interesa por ahora."
+      ],
+      [
+        "{saludo}",
+        "Gracias, luego lo evaluo."
+      ],
+      [
+        "Hola",
+        "en este momento no deseo mas adelante quizas."
+      ],
+      [
+        "Hola {asesor}",
+        "Gracias, lo voy a pensar luego."
+      ],
+      [
+        "{saludo}",
+        "Por ahora no voy a tomarlo, gracias."
+      ]
+    ]
+  }
+]
