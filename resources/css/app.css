@@ -4,6 +4,7 @@
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 
+@import './fonts/segoe-ui/stylesheet.css'
 @custom-variant dark (&:is(.dark *));
 
 @theme {
@@ -156,7 +157,9 @@
         @apply bg-background text-foreground;
     }
 }
-
+.segoe-ui{
+    font-family: 'Segoe UI';
+}
 .scrollbar-soft {
     scrollbar-width: thin;
     overflow: auto;

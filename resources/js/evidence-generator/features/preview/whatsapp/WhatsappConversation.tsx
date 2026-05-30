@@ -8,6 +8,7 @@ import {
   DayChip,
   Bubble,
   type MsgStatus,
+  TempporalMessage,
 } from "./WhatsappPieces";
 import { buildWhatsappConversation } from "./buildWhatsappConversation";
 import { getDayChipText } from "../../../lib/whatsapp/time";
@@ -52,6 +53,7 @@ export function WhatsappConversation({
             <div className="h-full w-full overflow-y-auto scrollbar-soft">
               <DayChip text={getDayChipText(data.fechaHora)} />
               <EncryptedMessage />
+              <TempporalMessage />
             
               {conversationMessages.map((msg, idx) => {
                 const prev = conversationMessages[idx - 1];
