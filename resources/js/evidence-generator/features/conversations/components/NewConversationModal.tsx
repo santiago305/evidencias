@@ -1,7 +1,6 @@
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -9,6 +8,7 @@ import {
 import { useMemo, useState } from "react";
 
 interface ConversationDraftMessage {
+  id: string;
   side: "in" | "out";
   delayMinutes: number;
   linesText: string;
@@ -31,7 +31,10 @@ interface NewConversationModalProps {
   errorMessage: string | null;
 }
 
+const createMessageId = () => Math.random().toString(36).slice(2);
+
 const createEmptyMessage = (): ConversationDraftMessage => ({
+  id: createMessageId(),
   side: "out",
   delayMinutes: 0,
   linesText: "",
@@ -49,6 +52,10 @@ export function NewConversationModal({
     createEmptyMessage(),
   ]);
 
+  const [collapsedMessages, setCollapsedMessages] = useState<
+    Record<string, boolean>
+  >({});
+
   const canSubmit = useMemo(() => {
     return (
       code.trim() !== "" &&
@@ -58,26 +65,46 @@ export function NewConversationModal({
   }, [code, messages]);
 
   const updateMessage = (
-    index: number,
+    id: string,
     patch: Partial<ConversationDraftMessage>
   ) => {
     setMessages((previous) =>
-      previous.map((message, currentIndex) =>
-        currentIndex === index ? { ...message, ...patch } : message
+      previous.map((message) =>
+        message.id === id ? { ...message, ...patch } : message
       )
     );
   };
 
   const addMessage = () => {
-    setMessages((previous) => [...previous, createEmptyMessage()]);
+    const newMessage = createEmptyMessage();
+    setMessages((previous) => [...previous, newMessage]);
   };
 
-  const removeMessage = (index: number) => {
-    setMessages((previous) =>
-      previous.length === 1
-        ? previous
-        : previous.filter((_, currentIndex) => currentIndex !== index)
-    );
+  const removeMessage = (id: string) => {
+    setMessages((previous) => {
+      if (previous.length === 1) return previous;
+
+      return previous.filter((message) => message.id !== id);
+    });
+
+    setCollapsedMessages((previous) => {
+      const next = { ...previous };
+      delete next[id];
+      return next;
+    });
+  };
+
+  const toggleCollapsed = (id: string) => {
+    setCollapsedMessages((previous) => ({
+      ...previous,
+      [id]: !previous[id],
+    }));
+  };
+
+  const resetForm = () => {
+    setCode("");
+    setMessages([createEmptyMessage()]);
+    setCollapsedMessages({});
   };
 
   const handleSubmit = async () => {
@@ -94,133 +121,170 @@ export function NewConversationModal({
     };
 
     await onSubmit(payload);
-    setCode("");
-    setMessages([createEmptyMessage()]);
+    resetForm();
   };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-3xl">
-        <DialogHeader>
-          <DialogTitle>Nueva conversación</DialogTitle>
-          <DialogDescription>
-            Registra manualmente una conversación para que el sistema la use al
-            generar evidencias.
-          </DialogDescription>
+      <DialogContent className="max-w-3xl overflow-hidden p-0">
+        <DialogHeader className="border-b border-slate-100 px-5 py-4">
+          <DialogTitle className="text-base font-semibold text-slate-900">
+            Nueva conversación
+          </DialogTitle>
         </DialogHeader>
 
-        <div className="grid gap-4 max-h-[70vh] overflow-y-auto pr-1">
-          <label className="grid gap-1 text-sm">
-            <span className="font-medium text-slate-700">Código</span>
+        <div className="max-h-[72vh] overflow-y-auto px-5 py-4">
+          <div className="mb-4">
             <input
               type="text"
               value={code}
               onChange={(event) => setCode(event.target.value)}
-              placeholder="Ej: conv_020"
-              className="rounded-lg border border-slate-300 px-3 py-2"
+              placeholder="Código de conversación"
+              className="h-10 w-full rounded-md border border-slate-200 bg-white px-3 text-sm text-slate-900 outline-none placeholder:text-slate-400 focus:border-slate-400"
             />
-          </label>
+          </div>
 
-          <div className="grid gap-3">
-            {messages.map((message, index) => (
-              <div
-                key={`message-${index}`}
-                className="rounded-xl border border-slate-200 bg-slate-50 p-3"
-              >
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-2">
-                  <label className="grid gap-1 text-sm">
-                    <span className="font-medium text-slate-700">Lado</span>
-                    <select
-                      value={message.side}
-                      onChange={(event) =>
-                        updateMessage(index, {
-                          side: event.target.value as "in" | "out",
-                        })
-                      }
-                      className="rounded-lg border border-slate-300 px-2 py-2"
-                    >
-                      <option value="out">Asesor (out)</option>
-                      <option value="in">Cliente (in)</option>
-                    </select>
-                  </label>
+          <div className="space-y-2">
+            {messages.map((message, index) => {
+              const isCollapsed = Boolean(collapsedMessages[message.id]);
 
-                  <label className="grid gap-1 text-sm">
-                    <span className="font-medium text-slate-700">
-                      Delay (min)
-                    </span>
-                    <input
-                      type="number"
-                      min={0}
-                      value={message.delayMinutes}
-                      onChange={(event) =>
-                        updateMessage(index, {
-                          delayMinutes: Number(event.target.value),
-                        })
-                      }
-                      className="rounded-lg border border-slate-300 px-3 py-2"
-                    />
-                  </label>
+              const firstLine =
+                message.linesText
+                  .split("\n")
+                  .map((line) => line.trim())
+                  .find(Boolean) || "Sin mensaje";
 
-                  <div className="md:col-span-2 flex items-end justify-end">
+              return (
+                <div
+                  key={message.id}
+                  className="rounded-lg border border-slate-200 bg-white"
+                >
+                  <div className="flex items-center gap-2 px-3 py-2">
                     <button
                       type="button"
-                      onClick={() => removeMessage(index)}
-                      className="rounded-lg border border-red-200 bg-white px-3 py-2 text-sm font-semibold text-red-700 hover:bg-red-50 disabled:opacity-50"
-                      disabled={messages.length === 1}
+                      onClick={() => toggleCollapsed(message.id)}
+                      className="flex h-7 w-7 items-center justify-center rounded-md bg-slate-100 text-xs font-medium text-slate-700 hover:bg-slate-200"
                     >
-                      Eliminar bloque
+                      {isCollapsed ? "+" : "-"}
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => toggleCollapsed(message.id)}
+                      className="min-w-0 flex-1 text-left"
+                    >
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm font-medium text-slate-900">
+                          Mensaje {index + 1}
+                        </span>
+
+                        <span className="rounded bg-slate-100 px-2 py-0.5 text-[11px] font-medium text-slate-600">
+                          {message.side === "out" ? "Asesor" : "Cliente"}
+                        </span>
+
+                        {message.delayMinutes > 0 ? (
+                          <span className="text-[11px] text-slate-400">
+                            {message.delayMinutes} min
+                          </span>
+                        ) : null}
+                      </div>
+
+                      {isCollapsed ? (
+                        <p className="mt-0.5 truncate text-xs text-slate-400">
+                          {firstLine}
+                        </p>
+                      ) : null}
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => removeMessage(message.id)}
+                      disabled={messages.length === 1}
+                      className="rounded-md px-2 py-1 text-xs font-medium text-slate-400 hover:bg-slate-100 hover:text-red-600 disabled:cursor-not-allowed disabled:opacity-30"
+                    >
+                      Eliminar
                     </button>
                   </div>
-                </div>
 
-                <label className="mt-3 grid gap-1 text-sm">
-                  <span className="font-medium text-slate-700">
-                    Líneas (una por renglón)
-                  </span>
-                  <textarea
-                    value={message.linesText}
-                    onChange={(event) =>
-                      updateMessage(index, { linesText: event.target.value })
-                    }
-                    rows={4}
-                    placeholder="Ej: {saludo}, Sr(a). {cliente}."
-                    className="rounded-lg border border-slate-300 px-3 py-2"
-                  />
-                </label>
-              </div>
-            ))}
+                  {!isCollapsed ? (
+                    <div className="border-t border-slate-100 p-3 pt-2">
+                      <div className="mb-2 flex items-center gap-2">
+                        <select
+                          value={message.side}
+                          onChange={(event) =>
+                            updateMessage(message.id, {
+                              side: event.target.value as "in" | "out",
+                            })
+                          }
+                          className="h-8 rounded-md border border-slate-200 bg-white px-2 text-xs text-slate-700 outline-none focus:border-slate-400"
+                        >
+                          <option value="out">Asesor</option>
+                          <option value="in">Cliente</option>
+                        </select>
+
+                        <input
+                          type="number"
+                          min={0}
+                          value={message.delayMinutes}
+                          onChange={(event) =>
+                            updateMessage(message.id, {
+                              delayMinutes: Number(event.target.value),
+                            })
+                          }
+                          placeholder="Min"
+                          className="h-8 w-20 rounded-md border border-slate-200 bg-white px-2 text-xs text-slate-700 outline-none focus:border-slate-400"
+                        />
+                      </div>
+
+                      <textarea
+                        value={message.linesText}
+                        onChange={(event) =>
+                          updateMessage(message.id, {
+                            linesText: event.target.value,
+                          })
+                        }
+                        rows={3}
+                        placeholder="Escribe el mensaje..."
+                        className="w-full resize-none rounded-md border border-slate-200 bg-slate-50 px-3 py-2 text-sm leading-5 text-slate-900 outline-none placeholder:text-slate-400 focus:border-slate-400 focus:bg-white"
+                      />
+                    </div>
+                  ) : null}
+                </div>
+              );
+            })}
           </div>
 
           <button
             type="button"
             onClick={addMessage}
-            className="rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-800 hover:bg-slate-50"
+            className="mt-3 w-full rounded-md border border-dashed border-slate-300 py-2 text-sm font-medium text-slate-600 hover:border-slate-400 hover:bg-slate-50"
           >
-            + Agregar bloque de mensaje
+            + Agregar mensaje
           </button>
 
           {errorMessage ? (
-            <div className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+            <div className="mt-4 rounded-md bg-red-50 px-3 py-2 text-sm text-red-600">
               {errorMessage}
             </div>
           ) : null}
         </div>
 
-        <DialogFooter>
+        <DialogFooter className="border-t border-slate-100 px-5 py-4">
           <button
             type="button"
             onClick={() => onOpenChange(false)}
-            className="rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50"
+            className="rounded-md px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100"
           >
             Cancelar
           </button>
+
           <button
             type="button"
             onClick={handleSubmit}
             disabled={!canSubmit || isSubmitting}
-            className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-800 disabled:opacity-50"
+            className="rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-50"
           >
-            {isSubmitting ? "Guardando..." : "Guardar conversación"}
+            {isSubmitting ? "Guardando..." : "Guardar"}
           </button>
         </DialogFooter>
       </DialogContent>

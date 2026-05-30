@@ -225,7 +225,7 @@ export function Bubble({
 
         <div
           className={[
-            "relative z-200",
+            "relative z-10",
             "rounded-[7.5px]",
             cornerCut,
             bubbleBg,
@@ -353,7 +353,7 @@ export function EncryptedMessage () {
               <div className="w-125 mx-auto flex flex-col justify-center px-15.75">
                 <span></span>
                 <div className="mb-0 bg-[#FFF0D4] text-black/60 box-border inline-block flex-none max-w-full px-3 pt-1.25 pb-1.5 text-[10px] leading-4.25 text-center rounded-[7.35px] shadow-[0_1px_0.5px_rgba(11,20,26,0.13)] relative">
-                  <div className="relative z-200 rounded-[7.35px]">
+                  <div className="relative z-10 rounded-[7.35px]">
                     <div className="cursorpointer">
                       <span>
                         <div className="mt-1 text-black/60 me-1 inline-block align-top">

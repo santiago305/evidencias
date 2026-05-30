@@ -52,7 +52,7 @@ export function FormPanel({
 }: FormPanelProps) {
   return (
     <div className="lg:col-span-2">
-      <div className="rounded-3xl border border-slate-200 bg-white shadow-sm overflow-hidden">
+      <div className="h-full border border-slate-200 bg-white shadow-sm overflow-hidden">
         <DesignTabs
           activeDesign={activeDesign}
           tabItems={tabItems}

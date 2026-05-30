@@ -164,7 +164,7 @@ export default function App() {
 
   return (
     <div className="h-screen w-full bg-slate-50">
-      <div className="mx-auto w-full p-4 md:p-6 h-full">
+      <div className="w-full h-full">
         <div className="grid grid-cols-1 lg:grid-cols-8 gap-4 h-full">
           <PreviewPanel activeDesign={activeDesign} saved={saved} />
           <FormPanel
@@ -181,7 +181,10 @@ export default function App() {
             onSeedCodeInputChange={setSeedCodeInput}
             progress={progress}
             conversationsCount={conversationsCount}
-            onOpenConversationModal={() => setIsConversationModalOpen(true)}
+            onOpenConversationModal={() => {
+              setConversationModalError(null);
+              setIsConversationModalOpen(true);
+            }}
             feedbackMessage={feedbackMessage}
           />
         </div>

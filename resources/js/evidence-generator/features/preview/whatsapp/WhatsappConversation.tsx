@@ -12,6 +12,7 @@ import {
 import { buildWhatsappConversation } from "./buildWhatsappConversation";
 import { getDayChipText } from "../../../lib/whatsapp/time";
 import type { GeneratedMessage } from "../../../types";
+import type { WhatsappConversationMessage } from "./buildWhatsappConversation";
 
 function linesToSpans(lines: ReactNode[]) {
   return lines.map((line, idx) => {
@@ -31,23 +32,24 @@ export function WhatsappConversation({
   messages?: GeneratedMessage[];
 }) {
   const conversationMessages = useMemo(
-    () => messages ?? buildWhatsappConversation(data, messageStatus),
+    (): WhatsappConversationMessage[] =>
+      messages ?? buildWhatsappConversation(data, messageStatus),
     [data, messageStatus, messages]
   );
 
   return (
-    <div className="w-full h-full">
+    <div className="h-full w-full overflow-hidden">
       {/* Fondo WhatsApp */}
-      <div className="relative h-full">
+      <div className="relative h-full min-h-0 overflow-hidden">
         <div
           className="absolute inset-0 opacity-[0.18]"
           style={{ backgroundImage: `url(${bgWhatsapp})` }}
         />
 
-        <div className="relative flex h-full flex-col">
+        <div className="relative flex h-full min-h-0 flex-col overflow-hidden">
           {/* Mensajes */}
-          <div className="flex-1 w-full h-full ">
-            <div className="w-full h-full">
+          <div className="min-h-0 flex-1 overflow-hidden">
+            <div className="h-full w-full overflow-y-auto scrollbar-soft">
               <DayChip text={getDayChipText(data.fechaHora)} />
               <EncryptedMessage />
             
@@ -68,28 +70,30 @@ export function WhatsappConversation({
                   <MessageGroup key={groupKey}>
                     {group.map((item, itemIdx) => {
                       const overallIdx = idx + itemIdx;
-                      const isLast = overallIdx === conversationMessages.length - 1;
+                      const isLast =
+                        overallIdx === conversationMessages.length - 1;
                       return (
-                      <Bubble
-                        key={`${groupKey}-${itemIdx}`}
-                        side={item.side}
-                        firstInGroup={itemIdx === 0}
-                        time={item.time}
-                        status={item.status}
-                        id={isLast ? "ult-mensaje" : undefined}
-                      >
-                        {linesToSpans(item.lines)}
-                      </Bubble>
+                        <Bubble
+                          key={`${groupKey}-${itemIdx}`}
+                          side={item.side}
+                          firstInGroup={itemIdx === 0}
+                          time={item.time}
+                          status={item.status}
+                          id={isLast ? "ult-mensaje" : undefined}
+                        >
+                          {linesToSpans(item.lines)}
+                        </Bubble>
                       );
                     })}
                   </MessageGroup>
                 );
               })}
             </div>
-            
           </div>
 
-          <WhatsappInputBar />
+          <div className="shrink-0">
+            <WhatsappInputBar />
+          </div>
         </div>
       </div>
     </div>

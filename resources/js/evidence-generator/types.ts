@@ -22,6 +22,7 @@ export interface FormState {
   fechaHora: string;
   duracion: string;
   modoEntrada: ModoEntrada;
+  color: string;
 }
 
 export interface GeneratedMessage {
@@ -54,6 +55,8 @@ export interface InputProps {
   placeholder?: string;
   hint?: string;
   readOnly?: boolean;
+  compact?: boolean;
+  maxLength?: number;
 }
 
 export interface PreviewProps {

@@ -159,6 +159,8 @@
 
 .scrollbar-soft {
     scrollbar-width: thin;
+    overflow: auto;
+    scrollbar-gutter: stable;
     scrollbar-color: rgba(0, 0, 0, 0.28) transparent;
 }
 

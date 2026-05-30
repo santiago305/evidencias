@@ -10,6 +10,7 @@ export function Input({
   placeholder,
   hint,
   readOnly = false,
+  maxLength
 }: InputProps) {
   return (
     <label className="block">
@@ -18,7 +19,7 @@ export function Input({
         {hint ? <span className="text-[11px] text-slate-500">{hint}</span> : null}
       </div>
 
-      <div className="mt-1 rounded-2xl border border-slate-200 bg-white shadow-sm transition focus-within:border-slate-300 focus-within:ring-2 focus-within:ring-slate-900/10">
+      <div className="mt-1 rounded-sm border border-slate-200 bg-white shadow-sm transition focus-within:border-slate-300 focus-within:ring-2 focus-within:ring-slate-900/10">
         <input
           id={id}
           type={type}
@@ -26,8 +27,9 @@ export function Input({
           onChange={onChange}
           readOnly={readOnly}
           placeholder={placeholder ?? label}
+          maxLength={maxLength}
           className={[
-            "w-full rounded-2xl bg-transparent px-3 py-2.5 text-sm text-slate-900",
+            "w-full bg-transparent p-2 text-xs text-slate-900",
             "outline-none placeholder:text-slate-400",
           ].join(" ")}
         />

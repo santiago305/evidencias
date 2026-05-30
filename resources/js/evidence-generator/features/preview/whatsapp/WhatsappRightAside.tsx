@@ -237,7 +237,7 @@ export function WhatsappRightAside({ data }: { data: WhatsappData }) {
                 className="w-full px-4 py-3 flex items-start justify-between gap-3 text-left hover:bg-black/5 active:bg-black/10 transition"
               >
                 <div className="flex items-start gap-3 min-w-0">
-                  <span className="text-[#54656f] shrink-0 mt-[2px]">
+                  <span className="text-[#54656f] shrink-0 mt-0.5">
                     {/* disappearing-messages-refreshed */}
                     <svg viewBox="0 0 24 24" height="18" width="18" fill="none">
                       <path
@@ -288,7 +288,7 @@ export function WhatsappRightAside({ data }: { data: WhatsappData }) {
                 className="w-full px-4 py-3 flex items-start justify-between gap-3 text-left hover:bg-black/5 active:bg-black/10 transition"
               >
                 <div className="flex items-start gap-3 min-w-0">
-                  <span className="text-[#54656f] shrink-0 mt-[2px]">
+                  <span className="text-[#54656f] shrink-0 mt-0.5">
                     {/* shield */}
                     <svg viewBox="0 0 24 24" height="18" width="18" fill="none">
                       <path
@@ -312,7 +312,7 @@ export function WhatsappRightAside({ data }: { data: WhatsappData }) {
 
               {/* Cifrado (con descripción) */}
               <div className="w-full px-4 py-3 flex items-start gap-3">
-                <span className="text-[#54656f] shrink-0 mt-[2px]">
+                <span className="text-[#54656f] shrink-0 mt-0.5">
                   {/* lock-refreshed */}
                   <svg viewBox="0 0 24 24" height="18" width="18" fill="none">
                     <path
@@ -332,7 +332,7 @@ export function WhatsappRightAside({ data }: { data: WhatsappData }) {
             </div>
 
             {/*foteer */}
-            <div className="bg-white border-t border-black/10 mt-4 flex flex-col gap-3">
+            <div className="bg-white border-t border-black/10 mt-4 flex flex-col">
               {/* Añadir a Favoritos */}
               <button
                 type="button"
@@ -350,6 +350,41 @@ export function WhatsappRightAside({ data }: { data: WhatsappData }) {
                   </svg>
                 </span>
                 <span className="text-[12px] text-[#111b21]">Añadir a Favoritos</span>
+              </button>
+              {/* añadir lista */}
+              <button
+                type="button"
+                className="w-full px-4 py-3 flex items-center gap-3 text-left hover:bg-black/5 active:bg-black/10 transition"
+              >
+                <span className="text-[#54656f] shrink-0">
+                  {/* favorite-refreshed */}
+                  <svg viewBox="0 0 24 24" height="18" width="18" fill="none">
+                    <path
+                      fillRule="evenodd"
+                      clipRule="evenodd"
+                      d="M8 18.3813C7.45 18.3813 6.97917 18.1855 6.5875 17.7938C6.19583 17.4022 6 16.9313 6 16.3813V4.38135C6 3.83135 6.19583 3.36051 6.5875 2.96885C6.97917 2.57718 7.45 2.38135 8 2.38135H20C20.55 2.38135 21.0208 2.57718 21.4125 2.96885C21.8042 3.36051 22 3.83135 22 4.38135V16.3813C22 16.9313 21.8042 17.4022 21.4125 17.7938C21.0208 18.1855 20.55 18.3813 20 18.3813H8ZM15.7375 15.6313C16.2958 15.798 16.8167 16.048 17.3 16.3813H10.7C11.1833 16.048 11.7042 15.798 12.2625 15.6313C12.8208 15.4647 13.4 15.3813 14 15.3813C14.6 15.3813 15.1792 15.4647 15.7375 15.6313ZM4 22.3813C3.45 22.3813 2.97917 22.1855 2.5875 21.7938C2.19583 21.4022 2 20.9313 2 20.3813V7.38135C2 7.09801 2.09583 6.86051 2.2875 6.66885C2.47917 6.47718 2.71667 6.38135 3 6.38135C3.28333 6.38135 3.52083 6.47718 3.7125 6.66885C3.90417 6.86051 4 7.09801 4 7.38135V20.3813H17C17.2833 20.3813 17.5208 20.4772 17.7125 20.6688C17.9042 20.8605 18 21.098 18 21.3813C18 21.6647 17.9042 21.9022 17.7125 22.0938C17.5208 22.2855 17.2833 22.3813 17 22.3813H4ZM8 16.0843C8.69919 15.2911 9.5242 14.6568 10.475 14.1813C11.5417 13.648 12.7167 13.3813 14 13.3813C15.2833 13.3813 16.4583 13.648 17.525 14.1813C18.4758 14.6568 19.3008 15.2911 20 16.0843V4.38135H8V16.0843ZM16.125 11.0063C15.5417 11.5897 14.8333 11.8813 14 11.8813C13.1667 11.8813 12.4583 11.5897 11.875 11.0063C11.2917 10.423 11 9.71468 11 8.88135C11 8.04801 11.2917 7.33968 11.875 6.75635C12.4583 6.17301 13.1667 5.88135 14 5.88135C14.8333 5.88135 15.5417 6.17301 16.125 6.75635C16.7083 7.33968 17 8.04801 17 8.88135C17 9.71468 16.7083 10.423 16.125 11.0063ZM15 8.88135C15 9.43363 14.5523 9.88135 14 9.88135C13.4477 9.88135 13 9.43363 13 8.88135C13 8.32906 13.4477 7.88135 14 7.88135C14.5523 7.88135 15 8.32906 15 8.88135Z"
+                      fill="currentColor"
+                    />
+                  </svg>
+                </span>
+                <span className="text-[12px] text-[#111b21]">Añadir a la lista</span>
+              </button>
+
+              {/* vaciar */}
+              <button
+                type="button"
+                className="w-full px-4 py-3 flex items-center gap-3 text-left hover:bg-black/5 active:bg-black/10 transition"
+              >
+                <span className="text-[#e1193e] shrink-0">
+                  {/* delete-refreshed */}
+                  <svg viewBox="0 0 24 24" height="18" width="18" fill="none">
+                    <path
+                      d="M7 12C7 12.5523 7.44772 13 8 13H16C16.5523 13 17 12.5523 17 12C17 11.4477 16.5523 11 16 11H8C7.44772 11 7 11.4477 7 12ZM12 22C10.6167 22 9.31667 21.7375 8.1 21.2125C6.88333 20.6875 5.825 19.975 4.925 19.075C4.025 18.175 3.3125 17.1167 2.7875 15.9C2.2625 14.6833 2 13.3833 2 12C2 10.6167 2.2625 9.31667 2.7875 8.1C3.3125 6.88333 4.025 5.825 4.925 4.925C5.825 4.025 6.88333 3.3125 8.1 2.7875C9.31667 2.2625 10.6167 2 12 2C13.3833 2 14.6833 2.2625 15.9 2.7875C17.1167 3.3125 18.175 4.025 19.075 4.925C19.975 5.825 20.6875 6.88333 21.2125 8.1C21.7375 9.31667 22 10.6167 22 12C22 13.3833 21.7375 14.6833 21.2125 15.9C20.6875 17.1167 19.975 18.175 19.075 19.075C18.175 19.975 17.1167 20.6875 15.9 21.2125C14.6833 21.7375 13.3833 22 12 22ZM12 20C14.2333 20 16.125 19.225 17.675 17.675C19.225 16.125 20 14.2333 20 12C20 9.76667 19.225 7.875 17.675 6.325C16.125 4.775 14.2333 4 12 4C9.76667 4 7.875 4.775 6.325 6.325C4.775 7.875 4 9.76667 4 12C4 14.2333 4.775 16.125 6.325 17.675C7.875 19.225 9.76667 20 12 20Z"
+                      fill="currentColor"
+                    />
+                  </svg>
+                </span>
+                <span className="text-[12px] text-[#e1193e]">Vaciar chat</span>
               </button>
 
               {/* Bloquear */}
