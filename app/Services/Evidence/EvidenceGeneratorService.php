@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Models\UserConversationProgress;
 use App\Services\Conversation\ConversationBagService;
 use App\Services\Conversation\ConversationRenderService;
+use Illuminate\Database\QueryException;
 use Illuminate\Validation\ValidationException;
 
 class EvidenceGeneratorService
@@ -103,11 +104,10 @@ class EvidenceGeneratorService
             $selected = $this->bagService->takeNextForUser($user);
             $conversation = $selected['conversation'];
             $cycle = (int) $selected['progress']->cycle;
-            $seedCode = $this->seedService->generateSeedCode($user, $conversation, $cycle);
         }
 
         $messages = $this->renderService->render($conversation, $input);
-        $this->storeEvidence($user, $conversation, $seedCode, $input);
+        $seedCode = $this->storeEvidenceWithUniqueSeed($user, $conversation, $cycle, $input);
 
         $progress = UserConversationProgress::query()->where('user_id', $user->id)->first();
         $pending = is_array($progress?->pending_ids) ? count($progress->pending_ids) : Conversation::query()->where('is_active', true)->count();
@@ -309,14 +309,40 @@ class EvidenceGeneratorService
     /**
      * @param  array<string, mixed>  $input
      */
-    private function storeEvidence(User $user, Conversation $conversation, string $seedCode, array $input): void
+    private function storeEvidenceWithUniqueSeed(User $user, Conversation $conversation, int $cycle, array $input): string
     {
-        GeneratedEvidence::query()->create([
-            'user_id' => $user->id,
-            'conversation_id' => $conversation->id,
-            'seed_code' => $seedCode,
-            'input_data' => $input,
-            'generated_at' => now(),
+        $maxAttempts = 10;
+
+        for ($attempt = 0; $attempt < $maxAttempts; $attempt++) {
+            $seedCode = $this->seedService->generateSeedCode($user, $conversation, $cycle);
+
+            try {
+                GeneratedEvidence::query()->create([
+                    'user_id' => $user->id,
+                    'conversation_id' => $conversation->id,
+                    'seed_code' => $seedCode,
+                    'input_data' => $input,
+                    'generated_at' => now(),
+                ]);
+
+                return $seedCode;
+            } catch (QueryException $exception) {
+                if (! $this->isSeedCodeUniqueConstraintViolation($exception)) {
+                    throw $exception;
+                }
+            }
+        }
+
+        throw ValidationException::withMessages([
+            'seedCode' => 'No se pudo generar una sal única. Intenta nuevamente.',
         ]);
+    }
+
+    private function isSeedCodeUniqueConstraintViolation(QueryException $exception): bool
+    {
+        $message = strtolower($exception->getMessage());
+
+        return str_contains($message, 'generated_evidences.seed_code')
+            && (str_contains($message, 'unique') || str_contains($message, 'duplicate'));
     }
 }

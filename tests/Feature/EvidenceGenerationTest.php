@@ -228,7 +228,7 @@ test('random generation does not repeat until cycle is completed', function () {
     expect($first['conversationId'])->not->toBe($second['conversationId']);
 });
 
-test('generating by seed reuses the same conversation without consuming bag', function () {
+test('generating by seed reuses the same conversation without consuming bag and returns a new unique seed', function () {
     $user = User::factory()->create();
 
     createConversationForTest('conv_001', [
@@ -250,6 +250,7 @@ test('generating by seed reuses the same conversation without consuming bag', fu
     $progressAfter = UserConversationProgress::query()->where('user_id', $user->id)->firstOrFail();
 
     expect($seedResponse['conversationId'])->toBe($first['conversationId']);
+    expect($seedResponse['seedCode'])->not->toBe($first['seedCode']);
     expect($progressAfter->used_ids)->toBe($progressBefore->used_ids);
     expect($progressAfter->pending_ids)->toBe($progressBefore->pending_ids);
 });
