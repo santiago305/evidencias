@@ -22,7 +22,6 @@ export interface FormState {
   fechaHora: string;
   duracion: string;
   modoEntrada: ModoEntrada;
-  color: string;
 }
 
 export interface GeneratedMessage {
@@ -38,12 +37,33 @@ export interface ConversationProgressSummary {
   total: number;
 }
 
+export interface WindowsTrayIcon {
+  key: string;
+  glyph: string;
+  title: string;
+  className?: string | null;
+  iconClassName?: string | null;
+}
+
+export interface WindowsTrayLanguage {
+  top: string;
+  bottom?: string | null;
+}
+
+export interface WindowsTrayProfile {
+  taskbarColor: string;
+  icons: WindowsTrayIcon[];
+  language: WindowsTrayLanguage;
+  languagePosition: "next-to-hidden" | "next-to-clock";
+}
+
 export type SavedData = FormState & {
   tipoCliente: TipoCliente;
   conversationId?: string;
   seedCode?: string;
   generatedMessages?: GeneratedMessage[];
   progress?: ConversationProgressSummary;
+  trayProfile?: WindowsTrayProfile;
 };
 
 export interface InputProps {

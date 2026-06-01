@@ -11,7 +11,7 @@ import {
 import { FormPanel } from './features/editor/components/FormPanel';
 import { PreviewPanel } from './features/preview/components/PreviewPanel';
 import { getJson, postJson, putJson } from './lib/api';
-import type { ActiveDesign, ConversationProgressSummary, FormState, GeneratedMessage, SavedData } from './types';
+import type { ActiveDesign, ConversationProgressSummary, FormState, GeneratedMessage, SavedData, WindowsTrayProfile } from './types';
 
 interface ConversationsIndexResponse {
     data: ConversationApiModel[];
@@ -31,6 +31,7 @@ interface GenerateEvidenceResponse {
     seedCode: string;
     messages: GeneratedMessage[];
     progress: ConversationProgressSummary;
+    trayProfile: WindowsTrayProfile;
 }
 
 interface StoreConversationResponse {
@@ -61,7 +62,6 @@ const initialTestFormState: FormState = {
     fechaHora: '2026-05-31T10:30',
     duracion: '30',
     modoEntrada: 'informativo',
-    color: '654245',
 };
 
 /* ---------------- App ---------------- */
@@ -129,6 +129,7 @@ export default function App() {
                 seedCode: response.seedCode,
                 generatedMessages: response.messages,
                 progress: response.progress,
+                trayProfile: response.trayProfile,
             });
             setGeneratedSeedCode(response.seedCode);
             setProgress(response.progress);

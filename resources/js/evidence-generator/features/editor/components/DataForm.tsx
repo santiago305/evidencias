@@ -38,11 +38,6 @@ export function DataForm({
   onOpenConversationsListModal,
   feedbackMessage,
 }: DataFormProps) {
-
-  const normalizedColor = form.color?.replace("#", "") ?? "";
-  const previewColor =
-    normalizedColor.length === 6 ? `#${normalizedColor}` : "#ffffff";
-
   return (
     <div className="grid grid-cols-1 gap-2 p-3">
       <div className="grid grid-cols-2 gap-2">
@@ -97,16 +92,6 @@ export function DataForm({
         value={form.nombre}
         onChange={onChange("nombre")}
         placeholder="Ej: Juan Pérez"
-      />
-
-      <Input
-        label="color"
-        id="color"
-        type="text"
-        value={form.color}
-        onChange={onChange("color")}
-        placeholder="654245"
-        maxLength={6}
       />
 
       <div className="grid grid-cols-1 gap-3 md:grid-cols-2">

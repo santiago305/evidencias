@@ -174,9 +174,42 @@ test('generate evidence returns seed and rendered messages', function () {
             'seedCode',
             'messages' => [['side', 'time', 'lines']],
             'progress' => ['cycle', 'used', 'pending', 'total'],
+            'trayProfile' => [
+                'taskbarColor',
+                'icons',
+                'language' => ['top', 'bottom'],
+                'languagePosition',
+            ],
         ]);
 
     $this->assertDatabaseCount('generated_evidences', 1);
+});
+
+test('windows tray profile is persisted and reused for the same user', function () {
+    $user = User::factory()->create();
+
+    createConversationForTest('conv_001', [
+        ['side' => 'out', 'delay_minutes' => 0, 'lines' => ['Uno']],
+    ]);
+    createConversationForTest('conv_002', [
+        ['side' => 'out', 'delay_minutes' => 0, 'lines' => ['Dos']],
+    ]);
+
+    $firstResponse = $this->actingAs($user)->postJson(route('evidences.generate'), evidencePayload());
+    $firstResponse->assertOk();
+
+    $firstTrayProfile = $firstResponse->json('trayProfile');
+
+    $user->refresh();
+    expect($user->windows_tray_color)->not->toBeNull();
+    expect($user->windows_tray_config)->toBeArray();
+
+    $secondResponse = $this->actingAs($user)->postJson(route('evidences.generate'), evidencePayload());
+    $secondResponse->assertOk();
+
+    $secondTrayProfile = $secondResponse->json('trayProfile');
+
+    expect($secondTrayProfile)->toBe($firstTrayProfile);
 });
 
 test('random generation does not repeat until cycle is completed', function () {
