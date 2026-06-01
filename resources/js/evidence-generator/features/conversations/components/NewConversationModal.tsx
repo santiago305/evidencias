@@ -5,20 +5,19 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 interface ConversationDraftMessage {
   id: string;
   side: "in" | "out";
-  delayMinutes: number;
   linesText: string;
 }
 
 export interface NewConversationPayload {
   code: string;
+  total_minutes: number;
   messages: Array<{
     side: "in" | "out";
-    delay_minutes: number;
     lines: string[];
   }>;
 }
@@ -29,6 +28,7 @@ interface NewConversationModalProps {
   onSubmit: (payload: NewConversationPayload) => Promise<void>;
   isSubmitting: boolean;
   errorMessage: string | null;
+  defaultTotalMinutes: string;
 }
 
 const createMessageId = () => Math.random().toString(36).slice(2);
@@ -36,7 +36,6 @@ const createMessageId = () => Math.random().toString(36).slice(2);
 const createEmptyMessage = (): ConversationDraftMessage => ({
   id: createMessageId(),
   side: "out",
-  delayMinutes: 0,
   linesText: "",
 });
 
@@ -46,43 +45,69 @@ export function NewConversationModal({
   onSubmit,
   isSubmitting,
   errorMessage,
+  defaultTotalMinutes,
 }: NewConversationModalProps) {
   const [code, setCode] = useState("");
+  const [totalMinutes, setTotalMinutes] = useState(defaultTotalMinutes);
   const [messages, setMessages] = useState<ConversationDraftMessage[]>([
     createEmptyMessage(),
   ]);
-
   const [collapsedMessages, setCollapsedMessages] = useState<
     Record<string, boolean>
   >({});
 
+  useEffect(() => {
+    if (open) {
+      setTotalMinutes(defaultTotalMinutes);
+    }
+  }, [defaultTotalMinutes, open]);
+
+  const minimumRequiredMinutes = Math.max(0, (messages.length - 1) * 6);
+  const parsedTotalMinutes = Number(totalMinutes);
+  const hasValidTotalMinutes =
+    totalMinutes.trim() !== "" &&
+    Number.isFinite(parsedTotalMinutes) &&
+    Number.isInteger(parsedTotalMinutes) &&
+    parsedTotalMinutes >= minimumRequiredMinutes;
+
+  const totalMinutesError =
+    totalMinutes.trim() === ""
+      ? "Ingresa el tiempo total."
+      : Number.isFinite(parsedTotalMinutes) &&
+          Number.isInteger(parsedTotalMinutes) &&
+          parsedTotalMinutes < minimumRequiredMinutes
+        ? `Necesitas al menos ${minimumRequiredMinutes} min para ${messages.length} mensajes.`
+        : null;
+
   const canSubmit = useMemo(() => {
     return (
       code.trim() !== "" &&
+      hasValidTotalMinutes &&
       messages.length > 0 &&
       messages.every((message) => message.linesText.trim() !== "")
     );
-  }, [code, messages]);
+  }, [code, hasValidTotalMinutes, messages]);
 
   const updateMessage = (
     id: string,
-    patch: Partial<ConversationDraftMessage>
+    patch: Partial<ConversationDraftMessage>,
   ) => {
     setMessages((previous) =>
       previous.map((message) =>
-        message.id === id ? { ...message, ...patch } : message
-      )
+        message.id === id ? { ...message, ...patch } : message,
+      ),
     );
   };
 
   const addMessage = () => {
-    const newMessage = createEmptyMessage();
-    setMessages((previous) => [...previous, newMessage]);
+    setMessages((previous) => [...previous, createEmptyMessage()]);
   };
 
   const removeMessage = (id: string) => {
     setMessages((previous) => {
-      if (previous.length === 1) return previous;
+      if (previous.length === 1) {
+        return previous;
+      }
 
       return previous.filter((message) => message.id !== id);
     });
@@ -103,16 +128,21 @@ export function NewConversationModal({
 
   const resetForm = () => {
     setCode("");
+    setTotalMinutes(defaultTotalMinutes);
     setMessages([createEmptyMessage()]);
     setCollapsedMessages({});
   };
 
   const handleSubmit = async () => {
+    if (!canSubmit) {
+      return;
+    }
+
     const payload: NewConversationPayload = {
       code: code.trim(),
+      total_minutes: Math.max(0, Number(totalMinutes) || 0),
       messages: messages.map((message) => ({
         side: message.side,
-        delay_minutes: Math.max(0, Number(message.delayMinutes) || 0),
         lines: message.linesText
           .split("\n")
           .map((line) => line.trim())
@@ -129,7 +159,7 @@ export function NewConversationModal({
       <DialogContent className="max-w-3xl overflow-hidden p-0">
         <DialogHeader className="border-b border-slate-100 px-5 py-4">
           <DialogTitle className="text-base font-semibold text-slate-900">
-            Nueva conversación
+            Nueva conversacion
           </DialogTitle>
         </DialogHeader>
 
@@ -139,9 +169,31 @@ export function NewConversationModal({
               type="text"
               value={code}
               onChange={(event) => setCode(event.target.value)}
-              placeholder="Código de conversación"
+              placeholder="Codigo de conversacion"
               className="h-10 w-full rounded-md border border-slate-200 bg-white px-3 text-sm text-slate-900 outline-none placeholder:text-slate-400 focus:border-slate-400"
             />
+          </div>
+
+          <div className="mb-4">
+            <label className="mb-1 block text-xs font-medium text-slate-600">
+              Tiempo total a repartir (min)
+            </label>
+            <input
+              type="number"
+              min={0}
+              step={1}
+              value={totalMinutes}
+              onChange={(event) => setTotalMinutes(event.target.value)}
+              placeholder="Ej: 30"
+              className="h-10 w-full rounded-md border border-slate-200 bg-white px-3 text-sm text-slate-900 outline-none placeholder:text-slate-400 focus:border-slate-400"
+            />
+            <p className="mt-1 text-[11px] text-slate-500">
+              Minimo requerido: {minimumRequiredMinutes} min para{" "}
+              {messages.length} mensajes.
+            </p>
+            {totalMinutesError ? (
+              <p className="mt-1 text-[11px] text-red-600">{totalMinutesError}</p>
+            ) : null}
           </div>
 
           <div className="space-y-2">
@@ -181,12 +233,6 @@ export function NewConversationModal({
                         <span className="rounded bg-slate-100 px-2 py-0.5 text-[11px] font-medium text-slate-600">
                           {message.side === "out" ? "Asesor" : "Cliente"}
                         </span>
-
-                        {message.delayMinutes > 0 ? (
-                          <span className="text-[11px] text-slate-400">
-                            {message.delayMinutes} min
-                          </span>
-                        ) : null}
                       </div>
 
                       {isCollapsed ? (
@@ -221,19 +267,6 @@ export function NewConversationModal({
                           <option value="out">Asesor</option>
                           <option value="in">Cliente</option>
                         </select>
-
-                        <input
-                          type="number"
-                          min={0}
-                          value={message.delayMinutes}
-                          onChange={(event) =>
-                            updateMessage(message.id, {
-                              delayMinutes: Number(event.target.value),
-                            })
-                          }
-                          placeholder="Min"
-                          className="h-8 w-20 rounded-md border border-slate-200 bg-white px-2 text-xs text-slate-700 outline-none focus:border-slate-400"
-                        />
                       </div>
 
                       <textarea

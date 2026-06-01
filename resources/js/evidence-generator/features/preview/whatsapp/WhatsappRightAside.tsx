@@ -89,54 +89,164 @@ export function WhatsappRightAside({ data }: { data: WhatsappData }) {
                   </div>
 
                   {/* AQUÍ VA EL TELÉFONO FORMATEADO */}
-                  <div className="text-[13px] text-slate-500 truncate segoe-ui">
+                  <div className="text-[11.5px] text-slate-500 truncate segoe-ui">
                     +51 {formatTelefonoPE(data.telefono)}
                   </div>
+                  <div className="w-full flex items-center justify-center gap-2">
+                    <button
+                      type="button"
+                      className="
+                        mt-1
+                        flex flex-col items-center justify-center gap-1
+                        px-12 py-2
+                        rounded-2xl
+                        border border-[#e0dfde]
+                        bg-white
+                        text-[#111b21]
+                        text-[12px]
+                        font-medium
+                        hover:bg-black/5
+                        active:bg-black/10
+                        transition
+                        segoe-ui
+                      "
+                    >
+                      {/* Icono lupa */}
+                      <span className="text-[#00a884]">
+                        <svg
+                          viewBox="0 0 24 24"
+                          height="16"
+                          width="16"
+                          preserveAspectRatio="xMidYMid meet"
+                          fill="none"
+                        >
+                          <path
+                            d="M9.5 16C7.68333 16 6.14583 15.3708 4.8875 14.1125C3.62917 12.8542 3 11.3167 3 9.5C3 7.68333 3.62917 6.14583 4.8875 4.8875C6.14583 3.62917 7.68333 3 9.5 3C11.3167 3 12.8542 3.62917 14.1125 4.8875C15.3708 6.14583 16 7.68333 16 9.5C16 10.2333 15.8833 10.925 15.65 11.575C15.4167 12.225 15.1 12.8 14.7 13.3L20.3 18.9C20.4833 19.0833 20.575 19.3167 20.575 19.6C20.575 19.8833 20.4833 20.1167 20.3 20.3C20.1167 20.4833 19.8833 20.575 19.6 20.575C19.3167 20.575 19.0833 20.4833 18.9 20.3L13.3 14.7C12.8 15.1 12.225 15.4167 11.575 15.65C10.925 15.8833 10.2333 16 9.5 16ZM9.5 14C10.75 14 11.8125 13.5625 12.6875 12.6875C13.5625 11.8125 14 10.75 14 9.5C14 8.25 13.5625 7.1875 12.6875 6.3125C11.8125 5.4375 10.75 5 9.5 5C8.25 5 7.1875 5.4375 6.3125 6.3125C5.4375 7.1875 5 8.25 5 9.5C5 10.75 5.4375 11.8125 6.3125 12.6875C7.1875 13.5625 8.25 14 9.5 14Z"
+                            fill="currentColor"
+                          />
+                        </svg>
+                      </span>
 
-                  <button
-                    type="button"
-                    className="
-                      mt-2
-                      flex flex-col items-center justify-center gap-1
-                      px-12 py-2
-                      rounded-2xl
-                      border border-[#e0dfde]
-                      bg-white
-                      text-[#111b21]
-                      text-[12px]
-                      font-medium
-                      hover:bg-black/5
-                      active:bg-black/10
-                      transition
-                      segoe-ui
-                    "
-                  >
-                    {/* Icono lupa */}
-                    <span className="text-[#00a884]">
-                      <svg
-                        viewBox="0 0 24 24"
-                        height="16"
-                        width="16"
-                        preserveAspectRatio="xMidYMid meet"
-                        fill="none"
-                      >
-                        <path
-                          d="M9.5 16C7.68333 16 6.14583 15.3708 4.8875 14.1125C3.62917 12.8542 3 11.3167 3 9.5C3 7.68333 3.62917 6.14583 4.8875 4.8875C6.14583 3.62917 7.68333 3 9.5 3C11.3167 3 12.8542 3.62917 14.1125 4.8875C15.3708 6.14583 16 7.68333 16 9.5C16 10.2333 15.8833 10.925 15.65 11.575C15.4167 12.225 15.1 12.8 14.7 13.3L20.3 18.9C20.4833 19.0833 20.575 19.3167 20.575 19.6C20.575 19.8833 20.4833 20.1167 20.3 20.3C20.1167 20.4833 19.8833 20.575 19.6 20.575C19.3167 20.575 19.0833 20.4833 18.9 20.3L13.3 14.7C12.8 15.1 12.225 15.4167 11.575 15.65C10.925 15.8833 10.2333 16 9.5 16ZM9.5 14C10.75 14 11.8125 13.5625 12.6875 12.6875C13.5625 11.8125 14 10.75 14 9.5C14 8.25 13.5625 7.1875 12.6875 6.3125C11.8125 5.4375 10.75 5 9.5 5C8.25 5 7.1875 5.4375 6.3125 6.3125C5.4375 7.1875 5 8.25 5 9.5C5 10.75 5.4375 11.8125 6.3125 12.6875C7.1875 13.5625 8.25 14 9.5 14Z"
-                          fill="currentColor"
-                        />
-                      </svg>
-                    </span>
+                      {/* Texto */}
+                      <span className="segoe-ui">Voz</span>
+                    </button>
+                    <button
+                      type="button"
+                      className="
+                        mt-1
+                        flex flex-col items-center justify-center gap-1
+                        px-12 py-2
+                        rounded-2xl
+                        border border-[#e0dfde]
+                        bg-white
+                        text-[#111b21]
+                        text-[12px]
+                        font-medium
+                        hover:bg-black/5
+                        active:bg-black/10
+                        transition
+                        segoe-ui
+                      "
+                    >
+                      {/* Icono lupa */}
+                      <span className="text-[#00a884]">
+                        <svg
+                          viewBox="0 0 24 24"
+                          height="16"
+                          width="16"
+                          preserveAspectRatio="xMidYMid meet"
+                          fill="none"
+                        >
+                          <path
+                            d="M9.5 16C7.68333 16 6.14583 15.3708 4.8875 14.1125C3.62917 12.8542 3 11.3167 3 9.5C3 7.68333 3.62917 6.14583 4.8875 4.8875C6.14583 3.62917 7.68333 3 9.5 3C11.3167 3 12.8542 3.62917 14.1125 4.8875C15.3708 6.14583 16 7.68333 16 9.5C16 10.2333 15.8833 10.925 15.65 11.575C15.4167 12.225 15.1 12.8 14.7 13.3L20.3 18.9C20.4833 19.0833 20.575 19.3167 20.575 19.6C20.575 19.8833 20.4833 20.1167 20.3 20.3C20.1167 20.4833 19.8833 20.575 19.6 20.575C19.3167 20.575 19.0833 20.4833 18.9 20.3L13.3 14.7C12.8 15.1 12.225 15.4167 11.575 15.65C10.925 15.8833 10.2333 16 9.5 16ZM9.5 14C10.75 14 11.8125 13.5625 12.6875 12.6875C13.5625 11.8125 14 10.75 14 9.5C14 8.25 13.5625 7.1875 12.6875 6.3125C11.8125 5.4375 10.75 5 9.5 5C8.25 5 7.1875 5.4375 6.3125 6.3125C5.4375 7.1875 5 8.25 5 9.5C5 10.75 5.4375 11.8125 6.3125 12.6875C7.1875 13.5625 8.25 14 9.5 14Z"
+                            fill="currentColor"
+                          />
+                        </svg>
+                      </span>
 
-                    {/* Texto */}
-                    <span>Busca</span>
-                  </button>
+                      {/* Texto */}
+                      <span className="segoe-ui">Video</span>
+                    </button>
+                    <button
+                      type="button"
+                      className="
+                        mt-1
+                        flex flex-col items-center justify-center gap-1
+                        px-12 py-2
+                        rounded-2xl
+                        border border-[#e0dfde]
+                        bg-white
+                        text-[#111b21]
+                        text-[12px]
+                        font-medium
+                        hover:bg-black/5
+                        active:bg-black/10
+                        transition
+                        segoe-ui
+                      "
+                    >
+                      {/* Icono lupa */}
+                      <span className="text-[#00a884]">
+                        <svg
+                          viewBox="0 0 24 24"
+                          height="16"
+                          width="16"
+                          preserveAspectRatio="xMidYMid meet"
+                          fill="none"
+                        >
+                          <path
+                            d="M9.5 16C7.68333 16 6.14583 15.3708 4.8875 14.1125C3.62917 12.8542 3 11.3167 3 9.5C3 7.68333 3.62917 6.14583 4.8875 4.8875C6.14583 3.62917 7.68333 3 9.5 3C11.3167 3 12.8542 3.62917 14.1125 4.8875C15.3708 6.14583 16 7.68333 16 9.5C16 10.2333 15.8833 10.925 15.65 11.575C15.4167 12.225 15.1 12.8 14.7 13.3L20.3 18.9C20.4833 19.0833 20.575 19.3167 20.575 19.6C20.575 19.8833 20.4833 20.1167 20.3 20.3C20.1167 20.4833 19.8833 20.575 19.6 20.575C19.3167 20.575 19.0833 20.4833 18.9 20.3L13.3 14.7C12.8 15.1 12.225 15.4167 11.575 15.65C10.925 15.8833 10.2333 16 9.5 16ZM9.5 14C10.75 14 11.8125 13.5625 12.6875 12.6875C13.5625 11.8125 14 10.75 14 9.5C14 8.25 13.5625 7.1875 12.6875 6.3125C11.8125 5.4375 10.75 5 9.5 5C8.25 5 7.1875 5.4375 6.3125 6.3125C5.4375 7.1875 5 8.25 5 9.5C5 10.75 5.4375 11.8125 6.3125 12.6875C7.1875 13.5625 8.25 14 9.5 14Z"
+                            fill="currentColor"
+                          />
+                        </svg>
+                      </span>
+
+                      {/* Texto */}
+                      <span className="segoe-ui">Añadir</span>
+                    </button>
+                    <button
+                      type="button"
+                      className="
+                        mt-1
+                        flex flex-col items-center justify-center gap-1
+                        px-12 py-2
+                        rounded-2xl
+                        border border-[#e0dfde]
+                        bg-white
+                        text-[#111b21]
+                        text-[12px]
+                        font-medium
+                        hover:bg-black/5
+                        active:bg-black/10
+                        transition
+                        segoe-ui
+                      "
+                    >
+                      {/* Icono lupa */}
+                      <span className="text-[#00a884]">
+                        <svg
+                          viewBox="0 0 24 24"
+                          height="16"
+                          width="16"
+                          preserveAspectRatio="xMidYMid meet"
+                          fill="none"
+                        >
+                          <path
+                            d="M9.5 16C7.68333 16 6.14583 15.3708 4.8875 14.1125C3.62917 12.8542 3 11.3167 3 9.5C3 7.68333 3.62917 6.14583 4.8875 4.8875C6.14583 3.62917 7.68333 3 9.5 3C11.3167 3 12.8542 3.62917 14.1125 4.8875C15.3708 6.14583 16 7.68333 16 9.5C16 10.2333 15.8833 10.925 15.65 11.575C15.4167 12.225 15.1 12.8 14.7 13.3L20.3 18.9C20.4833 19.0833 20.575 19.3167 20.575 19.6C20.575 19.8833 20.4833 20.1167 20.3 20.3C20.1167 20.4833 19.8833 20.575 19.6 20.575C19.3167 20.575 19.0833 20.4833 18.9 20.3L13.3 14.7C12.8 15.1 12.225 15.4167 11.575 15.65C10.925 15.8833 10.2333 16 9.5 16ZM9.5 14C10.75 14 11.8125 13.5625 12.6875 12.6875C13.5625 11.8125 14 10.75 14 9.5C14 8.25 13.5625 7.1875 12.6875 6.3125C11.8125 5.4375 10.75 5 9.5 5C8.25 5 7.1875 5.4375 6.3125 6.3125C5.4375 7.1875 5 8.25 5 9.5C5 10.75 5.4375 11.8125 6.3125 12.6875C7.1875 13.5625 8.25 14 9.5 14Z"
+                            fill="currentColor"
+                          />
+                        </svg>
+                      </span>
+
+                      {/* Texto */}
+                      <span className="segoe-ui">Busca</span>
+                    </button>
+                  </div>
+                  
+                  
 
 
                 </div>
-                <div className="block w-full text-[11px] my-3 segoe-ui">
-                  Info.
-                </div>
-
               </div>
             </div>
 

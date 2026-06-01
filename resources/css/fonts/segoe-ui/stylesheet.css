@@ -7,3 +7,11 @@
     font-display: swap;
 }
 
+@font-face {
+    font-family: 'segoe_ui_bold';
+    src: url('segoe_ui_bold-webfont.woff2') format('woff2'),
+         url('segoe_ui_bold-webfont.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+
+}

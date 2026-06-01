@@ -30,23 +30,43 @@ test('authenticated user can create a conversation manually', function () {
 
     $response = $this->actingAs($user)->postJson(route('conversations.store'), [
         'code' => 'conv_001',
+        'total_minutes' => 30,
         'messages' => [
             [
                 'side' => 'out',
-                'delay_minutes' => 0,
                 'lines' => ['Hola {cliente}'],
             ],
             [
                 'side' => 'in',
-                'delay_minutes' => 2,
                 'lines' => ['Hola asesor'],
+            ],
+            [
+                'side' => 'out',
+                'lines' => ['Perfecto, gracias'],
+            ],
+            [
+                'side' => 'in',
+                'lines' => ['De nada'],
             ],
         ],
     ]);
 
     $response->assertCreated();
     $this->assertDatabaseHas('conversations', ['code' => 'conv_001']);
-    $this->assertDatabaseCount('conversation_messages', 2);
+    $this->assertDatabaseCount('conversation_messages', 4);
+
+    $delays = ConversationMessage::query()
+        ->whereHas('conversation', fn ($query) => $query->where('code', 'conv_001'))
+        ->orderBy('position')
+        ->pluck('delay_minutes')
+        ->all();
+
+    expect($delays)->toHaveCount(4);
+    expect($delays[0])->toBe(0);
+    expect(array_sum($delays))->toBe(30);
+    expect($delays[1])->toBeGreaterThanOrEqual(6);
+    expect($delays[2])->toBeGreaterThanOrEqual(6);
+    expect($delays[3])->toBeGreaterThanOrEqual(6);
 });
 
 test('generate evidence returns seed and rendered messages', function () {

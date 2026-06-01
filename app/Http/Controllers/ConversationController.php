@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreConversationRequest;
 use App\Models\Conversation;
 use App\Models\ConversationMessage;
+use App\Services\Conversation\ConversationDelayDistributionService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 
@@ -22,11 +23,17 @@ class ConversationController extends Controller
         ]);
     }
 
-    public function store(StoreConversationRequest $request): JsonResponse
-    {
+    public function store(
+        StoreConversationRequest $request,
+        ConversationDelayDistributionService $delayDistributionService,
+    ): JsonResponse {
         $validated = $request->validated();
+        $delays = $delayDistributionService->distribute(
+            (int) $validated['total_minutes'],
+            count($validated['messages']),
+        );
 
-        $conversation = DB::transaction(function () use ($validated) {
+        $conversation = DB::transaction(function () use ($validated, $delays) {
             $conversation = Conversation::query()->create([
                 'code' => $validated['code'],
                 'is_active' => true,
@@ -37,7 +44,7 @@ class ConversationController extends Controller
                     'conversation_id' => $conversation->id,
                     'position' => $index + 1,
                     'side' => $message['side'],
-                    'delay_minutes' => (int) $message['delay_minutes'],
+                    'delay_minutes' => $delays[$index] ?? 0,
                     'lines' => $message['lines'],
                 ]);
             }
