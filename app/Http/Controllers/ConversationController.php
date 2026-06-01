@@ -8,6 +8,7 @@ use App\Models\ConversationMessage;
 use App\Services\Conversation\ConversationDelayDistributionService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class ConversationController extends Controller
 {
@@ -28,14 +29,12 @@ class ConversationController extends Controller
         ConversationDelayDistributionService $delayDistributionService,
     ): JsonResponse {
         $validated = $request->validated();
-        $delays = $delayDistributionService->distribute(
-            (int) $validated['total_minutes'],
-            count($validated['messages']),
-        );
+        $delays = $delayDistributionService->distribute($validated['messages']);
+        $conversationCode = $this->generateUniqueConversationCode();
 
-        $conversation = DB::transaction(function () use ($validated, $delays) {
+        $conversation = DB::transaction(function () use ($validated, $delays, $conversationCode) {
             $conversation = Conversation::query()->create([
-                'code' => $validated['code'],
+                'code' => $conversationCode,
                 'is_active' => true,
             ]);
 
@@ -56,5 +55,16 @@ class ConversationController extends Controller
             'message' => 'Conversacion registrada correctamente.',
             'data' => $conversation->load('messages'),
         ], 201);
+    }
+
+    private function generateUniqueConversationCode(): string
+    {
+        do {
+            $timestamp = now()->format('YmdHis');
+            $suffix = Str::lower(Str::random(4));
+            $code = "conv_{$timestamp}_{$suffix}";
+        } while (Conversation::query()->where('code', $code)->exists());
+
+        return $code;
     }
 }

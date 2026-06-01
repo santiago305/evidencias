@@ -1,213 +1,189 @@
-import { useMemo, useState } from "react";
-import type { ChangeEvent } from "react";
-import { FormPanel } from "./features/editor/components/FormPanel";
-import { PreviewPanel } from "./features/preview/components/PreviewPanel";
-import { pickRandomClientProfile } from "./config/whatsapp/clientProfiles";
-import {
-  pickRandomModoEntrada,
-} from "./config/whatsapp/conversationModes";
-import type {
-  ActiveDesign,
-  ConversationProgressSummary,
-  FormState,
-  GeneratedMessage,
-  SavedData,
-} from "./types";
-import { getJson, postJson } from "./lib/api";
-import {
-  NewConversationModal,
-  type NewConversationPayload,
-} from "./features/conversations/components/NewConversationModal";
-import { useEffect } from "react";
+import type { ChangeEvent } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { pickRandomClientProfile } from './config/whatsapp/clientProfiles';
+import { pickRandomModoEntrada } from './config/whatsapp/conversationModes';
+import { NewConversationModal, type NewConversationPayload } from './features/conversations/components/NewConversationModal';
+import { FormPanel } from './features/editor/components/FormPanel';
+import { PreviewPanel } from './features/preview/components/PreviewPanel';
+import { getJson, postJson } from './lib/api';
+import type { ActiveDesign, ConversationProgressSummary, FormState, GeneratedMessage, SavedData } from './types';
 
 interface ConversationsIndexResponse {
-  data: Array<{ id: number; code: string }>;
+    data: Array<{ id: number; code: string }>;
 }
 
 interface GenerateEvidenceResponse {
-  conversationId: string;
-  seedCode: string;
-  messages: GeneratedMessage[];
-  progress: ConversationProgressSummary;
+    conversationId: string;
+    seedCode: string;
+    messages: GeneratedMessage[];
+    progress: ConversationProgressSummary;
+}
+
+interface StoreConversationResponse {
+    message: string;
+    data: {
+        code: string;
+    };
 }
 
 // Valores temporales de prueba para validar el flujo completo del formulario.
-// Se eliminarán cuando terminemos de verificar la experiencia de captura.
+// Se eliminaran cuando terminemos de verificar la experiencia de captura.
 const initialTestFormState: FormState = {
-  nombreAsesor: "Ana Lopez",
-  dni: "12345678",
-  telefono: "999999999",
-  nombre: "Juan Perez",
-  monto: "1500",
-  tasa: "2.5",
-  cuota: "250",
-  plazo: "12",
-  fechaHora: "2026-05-31T10:30",
-  duracion: "30",
-  modoEntrada: "informativo",
-  color: "654245",
+    nombreAsesor: 'Ana Lopez',
+    dni: '12345678',
+    telefono: '999999999',
+    nombre: 'Juan Perez',
+    monto: '1500',
+    tasa: '2.5',
+    cuota: '250',
+    plazo: '12',
+    fechaHora: '2026-05-31T10:30',
+    duracion: '30',
+    modoEntrada: 'informativo',
+    color: '654245',
 };
 
 /* ---------------- App ---------------- */
 // Componente raiz que coordina estado, tabs y vistas.
 export default function App() {
-  const [activeDesign, setActiveDesign] = useState<ActiveDesign>("whatsapp");
-  const [form, setForm] = useState<FormState>(initialTestFormState);
+    const [activeDesign, setActiveDesign] = useState<ActiveDesign>('whatsapp');
+    const [form, setForm] = useState<FormState>(initialTestFormState);
 
-  const [saved, setSaved] = useState<SavedData | null>(null);
-  const [isGenerating, setIsGenerating] = useState(false);
-  const [generatedSeedCode, setGeneratedSeedCode] = useState("");
-  const [seedCodeInput, setSeedCodeInput] = useState("");
-  const [progress, setProgress] = useState<ConversationProgressSummary | null>(
-    null
-  );
-  const [conversationsCount, setConversationsCount] = useState(0);
-  const [feedbackMessage, setFeedbackMessage] = useState<string | null>(null);
-  const [isConversationModalOpen, setIsConversationModalOpen] = useState(false);
-  const [isSavingConversation, setIsSavingConversation] = useState(false);
-  const [conversationModalError, setConversationModalError] = useState<
-    string | null
-  >(null);
+    const [saved, setSaved] = useState<SavedData | null>(null);
+    const [isGenerating, setIsGenerating] = useState(false);
+    const [generatedSeedCode, setGeneratedSeedCode] = useState('');
+    const [seedCodeInput, setSeedCodeInput] = useState('');
+    const [progress, setProgress] = useState<ConversationProgressSummary | null>(null);
+    const [conversationsCount, setConversationsCount] = useState(0);
+    const [feedbackMessage, setFeedbackMessage] = useState<string | null>(null);
+    const [isConversationModalOpen, setIsConversationModalOpen] = useState(false);
+    const [isSavingConversation, setIsSavingConversation] = useState(false);
+    const [conversationModalError, setConversationModalError] = useState<string | null>(null);
 
-  const handleChange =
-    (key: keyof FormState) => (e: ChangeEvent<HTMLInputElement>) => {
-      setForm((prev) => ({ ...prev, [key]: e.target.value }));
+    const handleChange = (key: keyof FormState) => (e: ChangeEvent<HTMLInputElement>) => {
+        setForm((prev) => ({ ...prev, [key]: e.target.value }));
     };
 
-  const loadConversations = async () => {
-    try {
-      const response = await getJson<ConversationsIndexResponse>(
-        route("conversations.index")
-      );
-      setConversationsCount(response.data.length);
-    } catch {
-      setFeedbackMessage("No se pudo cargar el listado de conversaciones.");
-    }
-  };
-
-  useEffect(() => {
-    void loadConversations();
-  }, []);
-
-  const handleGenerate = async () => {
-    setIsGenerating(true);
-    setFeedbackMessage(null);
-
-    try {
-      const response = await postJson<GenerateEvidenceResponse>(
-        route("evidences.generate"),
-        {
-          ...form,
-          ...(seedCodeInput.trim() !== "" ? { seedCode: seedCodeInput.trim() } : {}),
+    const loadConversations = async () => {
+        try {
+            const response = await getJson<ConversationsIndexResponse>(route('conversations.index'));
+            setConversationsCount(response.data.length);
+        } catch {
+            setFeedbackMessage('No se pudo cargar el listado de conversaciones.');
         }
-      );
+    };
 
-      setSaved({
-        ...form,
-        modoEntrada: pickRandomModoEntrada(),
-        tipoCliente: pickRandomClientProfile(),
-        conversationId: response.conversationId,
-        seedCode: response.seedCode,
-        generatedMessages: response.messages,
-        progress: response.progress,
-      });
-      setGeneratedSeedCode(response.seedCode);
-      setProgress(response.progress);
-      setFeedbackMessage(`Conversación usada: ${response.conversationId}`);
-    } catch (error) {
-      const errorPayload = error as {
-        errors?: Record<string, string[]>;
-        message?: string;
-      };
-      const firstError =
-        errorPayload?.errors &&
-        Object.values(errorPayload.errors)[0] &&
-        Object.values(errorPayload.errors)[0][0];
+    useEffect(() => {
+        void loadConversations();
+    }, []);
 
-      setFeedbackMessage(firstError ?? errorPayload?.message ?? "No se pudo generar la evidencia.");
-    } finally {
-      setIsGenerating(false);
-    }
-  };
+    const handleGenerate = async () => {
+        setIsGenerating(true);
+        setFeedbackMessage(null);
 
-  const handleCreateConversation = async (payload: NewConversationPayload) => {
-    setIsSavingConversation(true);
-    setConversationModalError(null);
+        try {
+            const response = await postJson<GenerateEvidenceResponse>(route('evidences.generate'), {
+                ...form,
+                ...(seedCodeInput.trim() !== '' ? { seedCode: seedCodeInput.trim() } : {}),
+            });
 
-    try {
-      await postJson(route("conversations.store"), payload);
-      setIsConversationModalOpen(false);
-      setFeedbackMessage(`Conversación ${payload.code} guardada correctamente.`);
-      await loadConversations();
-    } catch (error) {
-      const errorPayload = error as {
-        errors?: Record<string, string[]>;
-        message?: string;
-      };
-      const firstError =
-        errorPayload?.errors &&
-        Object.values(errorPayload.errors)[0] &&
-        Object.values(errorPayload.errors)[0][0];
+            setSaved({
+                ...form,
+                modoEntrada: pickRandomModoEntrada(),
+                tipoCliente: pickRandomClientProfile(),
+                conversationId: response.conversationId,
+                seedCode: response.seedCode,
+                generatedMessages: response.messages,
+                progress: response.progress,
+            });
+            setGeneratedSeedCode(response.seedCode);
+            setProgress(response.progress);
+            setFeedbackMessage(`Conversacion usada: ${response.conversationId}`);
+        } catch (error) {
+            const errorPayload = error as {
+                errors?: Record<string, string[]>;
+                message?: string;
+            };
+            const firstError = errorPayload?.errors && Object.values(errorPayload.errors)[0] && Object.values(errorPayload.errors)[0][0];
 
-      setConversationModalError(
-        firstError ?? errorPayload?.message ?? "No se pudo guardar la conversación."
-      );
-    } finally {
-      setIsSavingConversation(false);
-    }
-  };
+            setFeedbackMessage(firstError ?? errorPayload?.message ?? 'No se pudo generar la evidencia.');
+        } finally {
+            setIsGenerating(false);
+        }
+    };
 
-  const tabItems = useMemo(
-    () =>
-      [
-        { key: "whatsapp" as const, label: "WhatsApp", accent: "bg-emerald-600" },
-        { key: "llamada" as const, label: "Llamada", accent: "bg-sky-600" },
-        { key: "sms" as const, label: "SMS", accent: "bg-indigo-600" },
-      ] as const,
-    []
-  );
+    const handleCreateConversation = async (payload: NewConversationPayload) => {
+        setIsSavingConversation(true);
+        setConversationModalError(null);
 
-  return (
-    <div className="h-screen w-full bg-slate-50">
-      <div className="w-full h-full">
-        <div className="grid grid-cols-1 lg:grid-cols-8 gap-4 h-full">
-          <PreviewPanel activeDesign={activeDesign} saved={saved} />
-          <FormPanel
-            activeDesign={activeDesign}
-            form={form}
-            saved={saved}
-            tabItems={tabItems}
-            onSelectDesign={setActiveDesign}
-            onChange={handleChange}
-            onGenerate={handleGenerate}
-            isGenerating={isGenerating}
-            generatedSeedCode={generatedSeedCode}
-            seedCodeInput={seedCodeInput}
-            onSeedCodeInputChange={setSeedCodeInput}
-            progress={progress}
-            conversationsCount={conversationsCount}
-            onOpenConversationModal={() => {
-              setConversationModalError(null);
-              setIsConversationModalOpen(true);
-            }}
-            feedbackMessage={feedbackMessage}
-          />
+        try {
+            const response = await postJson<StoreConversationResponse>(route('conversations.store'), payload);
+            setIsConversationModalOpen(false);
+            setFeedbackMessage(`Conversacion ${response.data.code} guardada correctamente.`);
+            await loadConversations();
+        } catch (error) {
+            const errorPayload = error as {
+                errors?: Record<string, string[]>;
+                message?: string;
+            };
+            const firstError = errorPayload?.errors && Object.values(errorPayload.errors)[0] && Object.values(errorPayload.errors)[0][0];
+
+            setConversationModalError(firstError ?? errorPayload?.message ?? 'No se pudo guardar la conversacion.');
+        } finally {
+            setIsSavingConversation(false);
+        }
+    };
+
+    const tabItems = useMemo(
+        () =>
+            [
+                { key: 'whatsapp' as const, label: 'WhatsApp', accent: 'bg-emerald-600' },
+                { key: 'llamada' as const, label: 'Llamada', accent: 'bg-sky-600' },
+                { key: 'sms' as const, label: 'SMS', accent: 'bg-indigo-600' },
+            ] as const,
+        [],
+    );
+
+    return (
+        <div className="h-screen w-full bg-slate-50">
+            <div className="h-full w-full">
+                <div className="grid h-full grid-cols-1 gap-4 lg:grid-cols-8">
+                    <PreviewPanel activeDesign={activeDesign} saved={saved} />
+                    <FormPanel
+                        activeDesign={activeDesign}
+                        form={form}
+                        saved={saved}
+                        tabItems={tabItems}
+                        onSelectDesign={setActiveDesign}
+                        onChange={handleChange}
+                        onGenerate={handleGenerate}
+                        isGenerating={isGenerating}
+                        generatedSeedCode={generatedSeedCode}
+                        seedCodeInput={seedCodeInput}
+                        onSeedCodeInputChange={setSeedCodeInput}
+                        progress={progress}
+                        conversationsCount={conversationsCount}
+                        onOpenConversationModal={() => {
+                            setConversationModalError(null);
+                            setIsConversationModalOpen(true);
+                        }}
+                        feedbackMessage={feedbackMessage}
+                    />
+                </div>
+            </div>
+
+            <NewConversationModal
+                open={isConversationModalOpen}
+                onOpenChange={(open) => {
+                    setIsConversationModalOpen(open);
+                    if (!open) {
+                        setConversationModalError(null);
+                    }
+                }}
+                onSubmit={handleCreateConversation}
+                isSubmitting={isSavingConversation}
+                errorMessage={conversationModalError}
+            />
         </div>
-      </div>
-
-      <NewConversationModal
-        open={isConversationModalOpen}
-        defaultTotalMinutes={form.duracion}
-        onOpenChange={(open) => {
-          setIsConversationModalOpen(open);
-          if (!open) {
-            setConversationModalError(null);
-          }
-        }}
-        onSubmit={handleCreateConversation}
-        isSubmitting={isSavingConversation}
-        errorMessage={conversationModalError}
-      />
-    </div>
-  );
+    );
 }

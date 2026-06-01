@@ -4,10 +4,13 @@ namespace App\Services\Conversation;
 
 use App\Models\Conversation;
 use Carbon\Carbon;
-use Illuminate\Support\Str;
 
 class ConversationRenderService
 {
+    public function __construct(
+        private readonly ConversationDelayDistributionService $delayDistributionService,
+    ) {}
+
     /**
      * @param  array<string, mixed>  $input
      * @return list<array{side:string,time:string,lines:list<string>}>
@@ -21,10 +24,21 @@ class ConversationRenderService
         $clock = $baseDate->copy();
         $variables = $this->buildVariables($input, $baseDate);
         $rendered = [];
+        $conversationMessages = $conversation->messages->values();
+        $durationMinutes = $this->parseDurationMinutes($input);
+        $delays = $this->delayDistributionService->distribute(
+            $conversationMessages
+                ->map(fn ($message) => [
+                    'side' => (string) $message->side,
+                    'lines' => array_values((array) $message->lines),
+                ])
+                ->all(),
+            $durationMinutes,
+        );
 
-        foreach ($conversation->messages as $index => $message) {
+        foreach ($conversationMessages as $index => $message) {
             if ($index > 0) {
-                $clock->addMinutes((int) $message->delay_minutes);
+                $clock->addMinutes((int) ($delays[$index] ?? $message->delay_minutes));
             }
 
             $lines = [];
@@ -40,6 +54,21 @@ class ConversationRenderService
         }
 
         return $rendered;
+    }
+
+    /**
+     * @param  array<string, mixed>  $input
+     */
+    private function parseDurationMinutes(array $input): ?int
+    {
+        $rawDuration = isset($input['duracion']) ? trim((string) $input['duracion']) : '';
+        if ($rawDuration === '') {
+            return null;
+        }
+
+        $parsed = (int) $rawDuration;
+
+        return $parsed > 0 ? $parsed : null;
     }
 
     /**
