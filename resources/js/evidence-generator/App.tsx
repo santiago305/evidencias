@@ -48,19 +48,17 @@ interface ConversationListItem {
     messages: ConversationModalMessageDraft[];
 }
 
-// Valores temporales de prueba para validar el flujo completo del formulario.
-// Se eliminaran cuando terminemos de verificar la experiencia de captura.
-const initialTestFormState: FormState = {
-    nombreAsesor: 'Ana Lopez',
-    dni: '12345678',
-    telefono: '999999999',
-    nombre: 'Juan Perez',
-    monto: '1500',
-    tasa: '2.5',
-    cuota: '250',
-    plazo: '12',
-    fechaHora: '2026-05-31T10:30',
-    duracion: '30',
+const initialFormState: FormState = {
+    nombreAsesor: '',
+    dni: '',
+    telefono: '',
+    nombre: '',
+    monto: '',
+    tasa: '',
+    cuota: '',
+    plazo: '',
+    fechaHora: '',
+    duracion: '',
     modoEntrada: 'informativo',
 };
 
@@ -68,7 +66,7 @@ const initialTestFormState: FormState = {
 // Componente raiz que coordina estado, tabs y vistas.
 export default function App() {
     const [activeDesign, setActiveDesign] = useState<ActiveDesign>('whatsapp');
-    const [form, setForm] = useState<FormState>(initialTestFormState);
+    const [form, setForm] = useState<FormState>(initialFormState);
 
     const [saved, setSaved] = useState<SavedData | null>(null);
     const [isGenerating, setIsGenerating] = useState(false);

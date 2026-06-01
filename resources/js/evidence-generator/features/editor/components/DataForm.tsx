@@ -147,11 +147,11 @@ export function DataForm({
       />
 
       <Input
-        label="Sal generada"
-        id="seed-generated"
+        label="ID de sal generada"
+        id="generated-seed-id"
         value={generatedSeedCode}
         onChange={() => {}}
-        placeholder="Se completa al generar"
+        placeholder="Se muestra al generar"
         readOnly
       />
 
