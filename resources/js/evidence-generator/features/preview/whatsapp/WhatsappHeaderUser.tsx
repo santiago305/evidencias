@@ -141,7 +141,7 @@ export function WhatsappHeaderUser({
                 </div>
 
                 {/* Right: actions */}
-                <div className="flex shrink-0 items-center gap-1 text-[#54656f]">
+                <div className="flex shrink-0 items-center gap-5 text-[#54656f]">
                     {/* Video */}
                     <span aria-hidden="true" data-icon="video-call-refreshed" className="h-5 w-5 text-black">
                         <svg viewBox="0 0 24 24" height="20" width="20" fill="none">
@@ -153,20 +153,19 @@ export function WhatsappHeaderUser({
                         </svg>
                     </span>
 
-                    {/* Arrow */}
-                    <span aria-hidden="true" className="text-black">
-                        <svg viewBox="0 0 24 24" height="16" fill="none">
-                            <title>ic-arrow-drop-down</title>
+                    <span aria-hidden="true" data-icon="audio-call-refreshed" className="h-5 w-5 text-black">
+                        <svg viewBox="0 0 24 24" height="20" width="20" preserveAspectRatio="xMidYMid meet" fill="currentColor">
+                            <title>ic-call</title>
                             <path
-                                d="M11.475 14.475L7.85001 10.85C7.80001 10.8 7.76251 10.7458 7.73751 10.6875C7.71251 10.6292 7.70001 10.5667 7.70001 10.5C7.70001 10.3667 7.74585 10.25 7.83751 10.15C7.92918 10.05 8.05001 10 8.20001 10H15.8C15.95 10 16.0708 10.05 16.1625 10.15C16.2542 10.25 16.3 10.3667 16.3 10.5C16.3 10.5333 16.25 10.65 16.15 10.85L12.525 14.475C12.4417 14.5583 12.3583 14.6167 12.275 14.65C12.1917 14.6833 12.1 14.7 12 14.7C11.9 14.7 11.8083 14.6833 11.725 14.65C11.6417 14.6167 11.5583 14.5583 11.475 14.475Z"
+                                d="M19.95 21C17.8667 21 15.8083 20.5458 13.775 19.6375C11.7417 18.7292 9.89167 17.4417 8.225 15.775C6.55833 14.1083 5.27083 12.2583 4.3625 10.225C3.45417 8.19167 3 6.13333 3 4.05C3 3.75 3.1 3.5 3.3 3.3C3.5 3.1 3.75 3 4.05 3H8.1C8.33333 3 8.54167 3.07917 8.725 3.2375C8.90833 3.39583 9.01667 3.58333 9.05 3.8L9.7 7.3C9.73333 7.56667 9.725 7.79167 9.675 7.975C9.625 8.15833 9.53333 8.31667 9.4 8.45L6.975 10.9C7.30833 11.5167 7.70417 12.1125 8.1625 12.6875C8.62083 13.2625 9.125 13.8167 9.675 14.35C10.1917 14.8667 10.7333 15.3458 11.3 15.7875C11.8667 16.2292 12.4667 16.6333 13.1 17L15.45 14.65C15.6 14.5 15.7958 14.3875 16.0375 14.3125C16.2792 14.2375 16.5167 14.2167 16.75 14.25L20.2 14.95C20.4333 15.0167 20.625 15.1375 20.775 15.3125C20.925 15.4875 21 15.6833 21 15.9V19.95C21 20.25 20.9 20.5 20.7 20.7C20.5 20.9 20.25 21 19.95 21ZM6.025 9L7.675 7.35L7.25 5H5.025C5.10833 5.68333 5.225 6.35833 5.375 7.025C5.525 7.69167 5.74167 8.35 6.025 9ZM14.975 17.95C15.625 18.2333 16.2875 18.4583 16.9625 18.625C17.6375 18.7917 18.3167 18.9 19 18.95V16.75L16.65 16.275L14.975 17.95Z"
                                 fill="currentColor"
                             />
                         </svg>
                     </span>
 
                     {/* Search */}
-                    <span aria-hidden="true" data-icon="search-refreshed" className="ml-2 h-6 w-6 text-black">
-                        <svg viewBox="0 0 24 24" height="22" width="22" fill="none">
+                    <span aria-hidden="true" data-icon="search-refreshed" className="h-5 w-5 text-black">
+                        <svg viewBox="0 0 24 24" height="20" width="20" fill="none">
                             <title>search-refreshed</title>
                             <path
                                 d="M9.5 16C7.68333 16 6.14583 15.3708 4.8875 14.1125C3.62917 12.8542 3 11.3167 3 9.5C3 7.68333 3.62917 6.14583 4.8875 4.8875C6.14583 3.62917 7.68333 3 9.5 3C11.3167 3 12.8542 3.62917 14.1125 4.8875C15.3708 6.14583 16 7.68333 16 9.5C16 10.2333 15.8833 10.925 15.65 11.575C15.4167 12.225 15.1 12.8 14.7 13.3L20.3 18.9C20.4833 19.0833 20.575 19.3167 20.575 19.6C20.575 19.8833 20.4833 20.1167 20.3 20.3C20.1167 20.4833 19.8833 20.575 19.6 20.575C19.3167 20.575 19.0833 20.4833 18.9 20.3L13.3 14.7C12.8 15.1 12.225 15.4167 11.575 15.65C10.925 15.8833 10.2333 16 9.5 16ZM9.5 14C10.75 14 11.8125 13.5625 12.6875 12.6875C13.5625 11.8125 14 10.75 14 9.5C14 8.25 13.5625 7.1875 12.6875 6.3125C11.8125 5.4375 10.75 5 9.5 5C8.25 5 7.1875 5.4375 6.3125 6.3125C5.4375 7.1875 5 8.25 5 9.5C5 10.75 5.4375 11.8125 6.3125 12.6875C7.1875 13.5625 8.25 14 9.5 14Z"
@@ -178,7 +177,7 @@ export function WhatsappHeaderUser({
                     {/* Menu */}
                     <button
                         type="button"
-                        className="grid h-9 w-9 place-items-center rounded-full text-black transition hover:bg-black/5 active:bg-black/10"
+                        className="grid h-5 w-5 place-items-center rounded-full text-black transition hover:bg-black/5 active:bg-black/10"
                         aria-label="Menú"
                         title="Menú"
                     >
