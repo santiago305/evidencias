@@ -1,9 +1,10 @@
-import { useMemo, type ReactNode } from "react";
+import { Fragment, useMemo, type ReactNode } from "react";
 import bgWhatsapp from "../../../assets/1.png";
 import { WhatsappInputBar } from "./WhatsappInputBar";
 import type { WhatsappData } from "./whatsappTypes";
 import {
-  MessageGroup,
+  ActiveTemporalMessage,
+  DesactiveTemporalMessage,
   EncryptedMessage,
   DayChip,
   Bubble,
@@ -27,16 +28,28 @@ export function WhatsappConversation({
   data,
   messageStatus,
   messages,
+  showDefaultTemporalMessage = true,
+  inlineTemporalMode = null,
 }: {
   data: WhatsappData;
   messageStatus?: MsgStatus;
   messages?: GeneratedMessage[];
+  showDefaultTemporalMessage?: boolean;
+  inlineTemporalMode?: "active" | "deactive" | null;
 }) {
   const conversationMessages = useMemo(
     (): WhatsappConversationMessage[] =>
       messages ?? buildWhatsappConversation(data, messageStatus),
     [data, messageStatus, messages]
   );
+
+  const inlineTemporalInsertIndex = useMemo(() => {
+    if (!inlineTemporalMode || conversationMessages.length < 2) {
+      return null;
+    }
+
+    return Math.floor(Math.random() * (conversationMessages.length - 1)) + 1;
+  }, [conversationMessages, inlineTemporalMode, data.nombre, data.fechaHora]);
 
   return (
     <div className="h-full w-full overflow-hidden">
@@ -53,41 +66,41 @@ export function WhatsappConversation({
             <div className="h-full w-full overflow-y-auto scrollbar-soft">
               <DayChip text={getDayChipText(data.fechaHora)} />
               <EncryptedMessage />
-              <TempporalMessage />
-            
+              {showDefaultTemporalMessage && <TempporalMessage />}
+
               {conversationMessages.map((msg, idx) => {
                 const prev = conversationMessages[idx - 1];
-                const isFirst = !prev || prev.side !== msg.side;
-                const groupKey = `${msg.side}-${idx}`;
-
-                if (!isFirst) return null;
-
-                const group = [msg];
-                for (let i = idx + 1; i < conversationMessages.length; i += 1) {
-                  if (conversationMessages[i].side !== msg.side) break;
-                  group.push(conversationMessages[i]);
-                }
+                const next = conversationMessages[idx + 1];
+                const markerBeforeCurrent = inlineTemporalInsertIndex === idx;
+                const markerAfterCurrent = inlineTemporalInsertIndex === idx + 1;
+                const isFirstInGroup =
+                  idx === 0 || markerBeforeCurrent || prev.side !== msg.side;
+                const staysInSameGroup =
+                  !!next && !markerAfterCurrent && next.side === msg.side;
+                const wrapperSpacing = staysInSameGroup ? "mb-0.5" : "mb-4";
+                const isLast = idx === conversationMessages.length - 1;
 
                 return (
-                  <MessageGroup key={groupKey}>
-                    {group.map((item, itemIdx) => {
-                      const overallIdx = idx + itemIdx;
-                      const isLast =
-                        overallIdx === conversationMessages.length - 1;
-                      return (
-                        <Bubble
-                          key={`${groupKey}-${itemIdx}`}
-                          side={item.side}
-                          firstInGroup={itemIdx === 0}
-                          time={item.time}
-                          status={item.status}
-                          id={isLast ? "ult-mensaje" : undefined}
-                        >
-                          {linesToSpans(item.lines)}
-                        </Bubble>
-                      );
-                    })}
-                  </MessageGroup>
+                  <Fragment key={`message-${idx}-${msg.side}`}>
+                    <div className={wrapperSpacing}>
+                      <Bubble
+                        side={msg.side}
+                        firstInGroup={isFirstInGroup}
+                        time={msg.time}
+                        status={msg.status}
+                        id={isLast ? "ult-mensaje" : undefined}
+                      >
+                        {linesToSpans(msg.lines)}
+                      </Bubble>
+                    </div>
+
+                    {markerAfterCurrent && inlineTemporalMode === "active" && (
+                      <ActiveTemporalMessage />
+                    )}
+                    {markerAfterCurrent && inlineTemporalMode === "deactive" && (
+                      <DesactiveTemporalMessage />
+                    )}
+                  </Fragment>
                 );
               })}
             </div>

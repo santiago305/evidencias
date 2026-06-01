@@ -176,7 +176,7 @@ function WindowsTrayBar() {
         {/* Hora y fecha */}
         <div
           id="fecha-captura"
-          className="ml-[10px] flex h-10 min-w-[72px] flex-col items-end justify-center text-[11px] leading-[14px] tracking-tight text-white"
+          className="ml-[7px] flex h-10 min-w-[50px] flex-col items-end justify-center text-[11px] leading-[14px] tracking-tight text-white"
         >
           <span>20:31</span>
           <span>31/05/2026</span>
@@ -192,22 +192,62 @@ export function PreviewBlockWhatsapp({ data }: PreviewProps) {
     [data]
   );
 
+  const temporalBehavior = useMemo(() => {
+    const showsTimerIcon = Math.random() < 0.5;
+
+    if (!showsTimerIcon) {
+      return {
+        showTemporaryIcon: false,
+        showDefaultTemporalMessage: true,
+        temporalStatusLabel: "Desactivado" as const,
+        inlineTemporalMode: "deactive" as const,
+      };
+    }
+
+    const usesInlineActivationVariant = Math.random() < 0.5;
+
+    if (usesInlineActivationVariant) {
+      return {
+        showTemporaryIcon: true,
+        showDefaultTemporalMessage: false,
+        temporalStatusLabel: "90 días" as const,
+        inlineTemporalMode: "active" as const,
+      };
+    }
+
+    return {
+      showTemporaryIcon: true,
+      showDefaultTemporalMessage: true,
+      temporalStatusLabel: "90 días" as const,
+      inlineTemporalMode: null,
+    };
+  }, [data]);
+
   if (!data) return <EmptyState />;
 
   return (
     <div className="flex h-full w-full flex-col bg-[#efeae2]" id="CAPTURA">
       <div className="flex min-h-0 w-full flex-1">
-        <div className="flex-[3.5] min-w-0 flex flex-col">
-          <WhatsappHeaderUser data={data} status={messageStatus} />
+        <div className="flex-[3.3] min-w-0 flex flex-col">
+          <WhatsappHeaderUser
+            data={data}
+            status={messageStatus}
+            showTemporaryIndicator={temporalBehavior.showTemporaryIcon}
+          />
 
           <WhatsappConversation
             data={data}
             messageStatus={messageStatus}
             messages={data.generatedMessages}
+            showDefaultTemporalMessage={temporalBehavior.showDefaultTemporalMessage}
+            inlineTemporalMode={temporalBehavior.inlineTemporalMode}
           />
         </div>
 
-        <WhatsappRightAside data={data} />
+        <WhatsappRightAside
+          data={data}
+          temporalStatusLabel={temporalBehavior.temporalStatusLabel}
+        />
       </div>
 
       <WindowsTrayBar />

@@ -1,3 +1,6 @@
+import { useMemo } from "react";
+import { ContactActionButtons } from "./ContactActionButtons";
+import { createWhatsappAvatarTheme } from "./avatarTheme";
 import type { WhatsappData } from "./whatsappTypes";
 
 /* --------- util para formatear teléfono Perú --------- */
@@ -18,7 +21,17 @@ function formatTelefonoPE(phone?: string) {
 }
 
 /* --------- componente --------- */
-export function WhatsappRightAside({ data }: { data: WhatsappData }) {
+export function WhatsappRightAside({
+  data,
+  temporalStatusLabel,
+}: {
+  data: WhatsappData;
+  temporalStatusLabel: "90 días" | "Desactivado";
+}) {
+  const avatarTheme = useMemo(() => {
+    return createWhatsappAvatarTheme(data.nombre);
+  }, [data.nombre]);
+
   return (
     <aside className="w-45 border-l border-black/5 bg-white/95 flex-2 min-h-0 flex flex-col">
 
@@ -69,22 +82,26 @@ export function WhatsappRightAside({ data }: { data: WhatsappData }) {
             <div className="py-3 border-b-[1.5px] border-black/5 bg-white">
               <div className="flex flex-col items-center gap-2">
                 {/* avatar */}
-                <div className="h-26 w-26 rounded-full bg-slate-300 overflow-hidden">
+                <div className="h-26 w-26 rounded-full overflow-hidden">
                   <svg
                     viewBox="0 0 48 48"
-                    className="rounded-full w-full h-full bg-[#F7F5F3] border border-[#e0dfde]"
+                    className="rounded-full w-full h-full border"
+                    style={{
+                      backgroundColor: avatarTheme.bg,
+                      borderColor: avatarTheme.border,
+                    }}
                     fill="none"
                   >
                     <path
                       d="M24 23q-1.857 0-3.178-1.322Q19.5 20.357 19.5 18.5t1.322-3.178T24 14t3.178 1.322Q28.5 16.643 28.5 18.5t-1.322 3.178T24 23m-6.75 10q-.928 0-1.59-.66-.66-.662-.66-1.59v-.9q0-.956.492-1.758A3.3 3.3 0 0 1 16.8 26.87a16.7 16.7 0 0 1 3.544-1.308q1.8-.435 3.656-.436 1.856 0 3.656.436T31.2 26.87q.816.422 1.308 1.223T33 29.85v.9q0 .928-.66 1.59-.662.66-1.59.66z"
-                      fill="#606263"
+                      fill={avatarTheme.icon}
                     />
                   </svg>
                 </div>
 
                 {/* name + phone */}
                 <div className="min-w-0 flex flex-col items-center">
-                  <div className="text-[20px] font-normal text-slate-900 truncate p-1 text-wrap segoe-ui">
+                  <div className="text-[20px] font-normal text-slate-900 truncate p-1 text-wrap segoe-ui-semibold">
                     {data.nombre?.trim() ? data.nombre : "Sin nombre"}
                   </div>
 
@@ -92,160 +109,11 @@ export function WhatsappRightAside({ data }: { data: WhatsappData }) {
                   <div className="text-[11.5px] text-slate-500 truncate segoe-ui">
                     +51 {formatTelefonoPE(data.telefono)}
                   </div>
-                  <div className="w-full flex items-center justify-center gap-2">
-                    <button
-                      type="button"
-                      className="
-                        mt-1
-                        flex flex-col items-center justify-center gap-1
-                        px-12 py-2
-                        rounded-2xl
-                        border border-[#e0dfde]
-                        bg-white
-                        text-[#111b21]
-                        text-[12px]
-                        font-medium
-                        hover:bg-black/5
-                        active:bg-black/10
-                        transition
-                        segoe-ui
-                      "
-                    >
-                      {/* Icono lupa */}
-                      <span className="text-[#00a884]">
-                        <svg
-                          viewBox="0 0 24 24"
-                          height="16"
-                          width="16"
-                          preserveAspectRatio="xMidYMid meet"
-                          fill="none"
-                        >
-                          <path
-                            d="M9.5 16C7.68333 16 6.14583 15.3708 4.8875 14.1125C3.62917 12.8542 3 11.3167 3 9.5C3 7.68333 3.62917 6.14583 4.8875 4.8875C6.14583 3.62917 7.68333 3 9.5 3C11.3167 3 12.8542 3.62917 14.1125 4.8875C15.3708 6.14583 16 7.68333 16 9.5C16 10.2333 15.8833 10.925 15.65 11.575C15.4167 12.225 15.1 12.8 14.7 13.3L20.3 18.9C20.4833 19.0833 20.575 19.3167 20.575 19.6C20.575 19.8833 20.4833 20.1167 20.3 20.3C20.1167 20.4833 19.8833 20.575 19.6 20.575C19.3167 20.575 19.0833 20.4833 18.9 20.3L13.3 14.7C12.8 15.1 12.225 15.4167 11.575 15.65C10.925 15.8833 10.2333 16 9.5 16ZM9.5 14C10.75 14 11.8125 13.5625 12.6875 12.6875C13.5625 11.8125 14 10.75 14 9.5C14 8.25 13.5625 7.1875 12.6875 6.3125C11.8125 5.4375 10.75 5 9.5 5C8.25 5 7.1875 5.4375 6.3125 6.3125C5.4375 7.1875 5 8.25 5 9.5C5 10.75 5.4375 11.8125 6.3125 12.6875C7.1875 13.5625 8.25 14 9.5 14Z"
-                            fill="currentColor"
-                          />
-                        </svg>
-                      </span>
 
-                      {/* Texto */}
-                      <span className="segoe-ui">Voz</span>
-                    </button>
-                    <button
-                      type="button"
-                      className="
-                        mt-1
-                        flex flex-col items-center justify-center gap-1
-                        px-12 py-2
-                        rounded-2xl
-                        border border-[#e0dfde]
-                        bg-white
-                        text-[#111b21]
-                        text-[12px]
-                        font-medium
-                        hover:bg-black/5
-                        active:bg-black/10
-                        transition
-                        segoe-ui
-                      "
-                    >
-                      {/* Icono lupa */}
-                      <span className="text-[#00a884]">
-                        <svg
-                          viewBox="0 0 24 24"
-                          height="16"
-                          width="16"
-                          preserveAspectRatio="xMidYMid meet"
-                          fill="none"
-                        >
-                          <path
-                            d="M9.5 16C7.68333 16 6.14583 15.3708 4.8875 14.1125C3.62917 12.8542 3 11.3167 3 9.5C3 7.68333 3.62917 6.14583 4.8875 4.8875C6.14583 3.62917 7.68333 3 9.5 3C11.3167 3 12.8542 3.62917 14.1125 4.8875C15.3708 6.14583 16 7.68333 16 9.5C16 10.2333 15.8833 10.925 15.65 11.575C15.4167 12.225 15.1 12.8 14.7 13.3L20.3 18.9C20.4833 19.0833 20.575 19.3167 20.575 19.6C20.575 19.8833 20.4833 20.1167 20.3 20.3C20.1167 20.4833 19.8833 20.575 19.6 20.575C19.3167 20.575 19.0833 20.4833 18.9 20.3L13.3 14.7C12.8 15.1 12.225 15.4167 11.575 15.65C10.925 15.8833 10.2333 16 9.5 16ZM9.5 14C10.75 14 11.8125 13.5625 12.6875 12.6875C13.5625 11.8125 14 10.75 14 9.5C14 8.25 13.5625 7.1875 12.6875 6.3125C11.8125 5.4375 10.75 5 9.5 5C8.25 5 7.1875 5.4375 6.3125 6.3125C5.4375 7.1875 5 8.25 5 9.5C5 10.75 5.4375 11.8125 6.3125 12.6875C7.1875 13.5625 8.25 14 9.5 14Z"
-                            fill="currentColor"
-                          />
-                        </svg>
-                      </span>
-
-                      {/* Texto */}
-                      <span className="segoe-ui">Video</span>
-                    </button>
-                    <button
-                      type="button"
-                      className="
-                        mt-1
-                        flex flex-col items-center justify-center gap-1
-                        px-12 py-2
-                        rounded-2xl
-                        border border-[#e0dfde]
-                        bg-white
-                        text-[#111b21]
-                        text-[12px]
-                        font-medium
-                        hover:bg-black/5
-                        active:bg-black/10
-                        transition
-                        segoe-ui
-                      "
-                    >
-                      {/* Icono lupa */}
-                      <span className="text-[#00a884]">
-                        <svg
-                          viewBox="0 0 24 24"
-                          height="16"
-                          width="16"
-                          preserveAspectRatio="xMidYMid meet"
-                          fill="none"
-                        >
-                          <path
-                            d="M9.5 16C7.68333 16 6.14583 15.3708 4.8875 14.1125C3.62917 12.8542 3 11.3167 3 9.5C3 7.68333 3.62917 6.14583 4.8875 4.8875C6.14583 3.62917 7.68333 3 9.5 3C11.3167 3 12.8542 3.62917 14.1125 4.8875C15.3708 6.14583 16 7.68333 16 9.5C16 10.2333 15.8833 10.925 15.65 11.575C15.4167 12.225 15.1 12.8 14.7 13.3L20.3 18.9C20.4833 19.0833 20.575 19.3167 20.575 19.6C20.575 19.8833 20.4833 20.1167 20.3 20.3C20.1167 20.4833 19.8833 20.575 19.6 20.575C19.3167 20.575 19.0833 20.4833 18.9 20.3L13.3 14.7C12.8 15.1 12.225 15.4167 11.575 15.65C10.925 15.8833 10.2333 16 9.5 16ZM9.5 14C10.75 14 11.8125 13.5625 12.6875 12.6875C13.5625 11.8125 14 10.75 14 9.5C14 8.25 13.5625 7.1875 12.6875 6.3125C11.8125 5.4375 10.75 5 9.5 5C8.25 5 7.1875 5.4375 6.3125 6.3125C5.4375 7.1875 5 8.25 5 9.5C5 10.75 5.4375 11.8125 6.3125 12.6875C7.1875 13.5625 8.25 14 9.5 14Z"
-                            fill="currentColor"
-                          />
-                        </svg>
-                      </span>
-
-                      {/* Texto */}
-                      <span className="segoe-ui">Añadir</span>
-                    </button>
-                    <button
-                      type="button"
-                      className="
-                        mt-1
-                        flex flex-col items-center justify-center gap-1
-                        px-12 py-2
-                        rounded-2xl
-                        border border-[#e0dfde]
-                        bg-white
-                        text-[#111b21]
-                        text-[12px]
-                        font-medium
-                        hover:bg-black/5
-                        active:bg-black/10
-                        transition
-                        segoe-ui
-                      "
-                    >
-                      {/* Icono lupa */}
-                      <span className="text-[#00a884]">
-                        <svg
-                          viewBox="0 0 24 24"
-                          height="16"
-                          width="16"
-                          preserveAspectRatio="xMidYMid meet"
-                          fill="none"
-                        >
-                          <path
-                            d="M9.5 16C7.68333 16 6.14583 15.3708 4.8875 14.1125C3.62917 12.8542 3 11.3167 3 9.5C3 7.68333 3.62917 6.14583 4.8875 4.8875C6.14583 3.62917 7.68333 3 9.5 3C11.3167 3 12.8542 3.62917 14.1125 4.8875C15.3708 6.14583 16 7.68333 16 9.5C16 10.2333 15.8833 10.925 15.65 11.575C15.4167 12.225 15.1 12.8 14.7 13.3L20.3 18.9C20.4833 19.0833 20.575 19.3167 20.575 19.6C20.575 19.8833 20.4833 20.1167 20.3 20.3C20.1167 20.4833 19.8833 20.575 19.6 20.575C19.3167 20.575 19.0833 20.4833 18.9 20.3L13.3 14.7C12.8 15.1 12.225 15.4167 11.575 15.65C10.925 15.8833 10.2333 16 9.5 16ZM9.5 14C10.75 14 11.8125 13.5625 12.6875 12.6875C13.5625 11.8125 14 10.75 14 9.5C14 8.25 13.5625 7.1875 12.6875 6.3125C11.8125 5.4375 10.75 5 9.5 5C8.25 5 7.1875 5.4375 6.3125 6.3125C5.4375 7.1875 5 8.25 5 9.5C5 10.75 5.4375 11.8125 6.3125 12.6875C7.1875 13.5625 8.25 14 9.5 14Z"
-                            fill="currentColor"
-                          />
-                        </svg>
-                      </span>
-
-                      {/* Texto */}
-                      <span className="segoe-ui">Busca</span>
-                    </button>
-                  </div>
-                  
-                  
-
-
+                  <ContactActionButtons />
+                </div>
+                <div className="block w-full text-[11px] my-2 segoe-ui">
+                  Info.
                 </div>
               </div>
             </div>
@@ -387,7 +255,7 @@ export function WhatsappRightAside({ data }: { data: WhatsappData }) {
                       Mensajes temporales
                     </div>
                     <div className="text-[11px] text-[#667781] truncate">
-                      90 días o Desactivado
+                      {temporalStatusLabel}
                     </div>
                   </div>
                 </div>

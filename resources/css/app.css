@@ -129,6 +129,9 @@
 .segoe-ui-bold{
     font-family: 'segoe_ui_bold';
 }
+.segoe-ui-semibold{
+    font-family: 'segoe_ui_semibold';
+}
 .scrollbar-soft {
     scrollbar-width: thin;
     overflow: auto;
