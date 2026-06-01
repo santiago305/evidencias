@@ -343,38 +343,52 @@ export function VoiceBubble({
   );
 }
 
-export function EncryptedMessage () {
+export function EncryptedMessage() {
   return (
     <div className="relative">
       <div>
         <div className="relative pb-2">
-          <div className="flex flex-col">
+          <div className="flex justify-center">
             <div>
-              <div className="w-125 mx-auto flex flex-col justify-center px-15.75">
+              <div className="mx-auto flex max-w-125 flex-col justify-center px-15.75">
                 <span></span>
-                <div className="mb-0 bg-[#FFF0D4] text-black/60 box-border inline-block flex-none max-w-full px-3 pt-1.25 pb-1.5 text-[10px] leading-4.25 text-center rounded-[7.35px] shadow-[0_1px_0.5px_rgba(11,20,26,0.13)] relative">
-                <div className="segoe-ui relative z-10 rounded-[7.35px]">
+
+                <div className="relative mb-0 box-border inline-block max-w-full flex-none rounded-[7.35px] bg-[#FFF0D4] px-3 pt-1.25 pb-1.5 text-center text-[10px] leading-4.25 text-black/60 shadow-[0_1px_0.5px_rgba(11,20,26,0.13)]">
+                  <div className="segoe-ui relative z-10 rounded-[7.35px]">
                     <div className="cursorpointer">
                       <span>
-                        <div className="mt-1 text-black/60 me-1 inline-block align-top">
+                        <div className="me-1 mt-1 inline-block align-top text-black/60">
                           <span aria-hidden="true" data-icon="lock-small">
-                            <svg viewBox="0 0 10 12" height="10" width="8" preserveAspectRatio="xMidYMid meet" version="1.1">
+                            <svg
+                              viewBox="0 0 10 12"
+                              height="10"
+                              width="8"
+                              preserveAspectRatio="xMidYMid meet"
+                              version="1.1"
+                            >
                               <title>lock-small</title>
-                              <path d="M5.00847986,1.6 C6.38255462,1.6 7.50937014,2.67435859 7.5940156,4.02703389 L7.59911976,4.1906399 L7.599,5.462 L7.75719976,5.46214385 C8.34167974,5.46214385 8.81591972,5.94158383 8.81591972,6.53126381 L8.81591972,9.8834238 C8.81591972,10.4731038 8.34167974,10.9525438 7.75719976,10.9525438 L2.25767996,10.9525438 C1.67527998,10.9525438 1.2,10.4731038 1.2,9.8834238 L1.2,6.53126381 C1.2,5.94158383 1.67423998,5.46214385 2.25767996,5.46214385 L2.416,5.462 L2.41679995,4.1906399 C2.41679995,2.81636129 3.49135449,1.68973395 4.84478101,1.60510326 L5.00847986,1.6 Z M5.00847986,2.84799995 C4.31163824,2.84799995 3.73624912,3.38200845 3.6709675,4.06160439 L3.6647999,4.1906399 L3.663,5.462 L6.35,5.462 L6.35111981,4.1906399 C6.35111981,3.53817142 5.88169076,2.99180999 5.26310845,2.87228506 L5.13749818,2.85416626 L5.00847986,2.84799995 Z" fill="currentColor">
-                              </path>
+                              <path
+                                d="M5.00847986,1.6 C6.38255462,1.6 7.50937014,2.67435859 7.5940156,4.02703389 L7.59911976,4.1906399 L7.599,5.462 L7.75719976,5.46214385 C8.34167974,5.46214385 8.81591972,5.94158383 8.81591972,6.53126381 L8.81591972,9.8834238 C8.81591972,10.4731038 8.34167974,10.9525438 7.75719976,10.9525438 L2.25767996,10.9525438 C1.67527998,10.9525438 1.2,10.4731038 1.2,9.8834238 L1.2,6.53126381 C1.2,5.94158383 1.67423998,5.46214385 2.25767996,5.46214385 L2.416,5.462 L2.41679995,4.1906399 C2.41679995,2.81636129 3.49135449,1.68973395 4.84478101,1.60510326 L5.00847986,1.6 Z M5.00847986,2.84799995 C4.31163824,2.84799995 3.73624912,3.38200845 3.6709675,4.06160439 L3.6647999,4.1906399 L3.663,5.462 L6.35,5.462 L6.35111981,4.1906399 C6.35111981,3.53817142 5.88169076,2.99180999 5.26310845,2.87228506 L5.13749818,2.85416626 L5.00847986,2.84799995 Z"
+                                fill="currentColor"
+                              />
                             </svg>
                           </span>
                         </div>
-                        <span className="segoe-ui min-h-0 visible wrap-break-word text-[9.8px]">
-                          Los mensajes y las llamadas están cifrados de extremo a extremo. Solo las personas en este chat pueden leerlos, escucharlos o compartirlos. Haz clic para obtener más información.
+
+                        <span className="segoe-ui visible min-h-0 wrap-break-word text-[9.8px]">
+                          Los mensajes y las llamadas están cifrados de extremo
+                          a extremo. Solo las personas en este chat pueden
+                          leerlos, escucharlos o compartirlos. Haz clic para
+                          obtener más información.
                         </span>
                       </span>
                     </div>
+
                     <span></span>
                     <div></div>
                   </div>
-                  <div className="absolute top-1/2 -mt-3.25 w-25.25 px-1 flex flex-row items-center justify-start flex-nowrap shrink min-w-0 min-h-0 basis-auto grow-0 self-auto order-0 justify-self-auto">
-                  </div>
+
+                  <div className="absolute top-1/2 -mt-3.25 flex w-25.25 shrink grow-0 basis-auto flex-row flex-nowrap items-center justify-start self-auto justify-self-auto px-1 order-0 min-w-0 min-h-0"></div>
                 </div>
               </div>
             </div>
@@ -382,22 +396,23 @@ export function EncryptedMessage () {
         </div>
       </div>
     </div>
-  )
+  );
 }
-export function TempporalMessage () {
+export function TempporalMessage() {
   return (
     <div className="relative">
       <div>
         <div className="relative pb-2">
-          <div className="flex flex-col">
+          <div className="flex justify-center">
             <div>
-              <div className="w-125 mx-auto flex flex-col justify-center px-15.75">
+              <div className="mx-auto flex max-w-125 flex-col justify-center px-15.75">
                 <span></span>
-                <div className="mb-0 bg-[#fefdfc] text-[#667781] box-border inline-block flex-none max-w-full px-3 pt-1.25 pb-1.5 text-[10px] leading-4.25 text-center rounded-[7.35px] shadow-[0_1px_0.5px_rgba(11,20,26,0.13)] relative">
-                <div className="segoe-ui relative z-10 rounded-[7.35px]">
+
+                <div className="relative mb-0 box-border inline-block max-w-full flex-none rounded-[7.35px] bg-[#fefdfc] px-3 pt-1.25 pb-1.5 text-center text-[10px] leading-4.25 text-[#667781] shadow-[0_1px_0.5px_rgba(11,20,26,0.13)]">
+                  <div className="segoe-ui relative z-10 rounded-[7.35px]">
                     <div className="cursorpointer">
                       <span>
-                        <div className=" text-[#667781] me-0.5 inline-block align-top">
+                        <div className="me-0.5 inline-block align-top text-[#667781]">
                           <span aria-hidden="true" data-icon="lock-small">
                             <svg
                               viewBox="0 0 24 24"
@@ -418,16 +433,18 @@ export function TempporalMessage () {
                             </svg>
                           </span>
                         </div>
-                        <span className="segoe-ui min-h-0 visible wrap-break-word text-[9.8px]">
+
+                        <span className="segoe-ui visible min-h-0 wrap-break-word text-[9.8px]">
                           Usas una duración predeterminada para los mensajes temporales en chats nuevos. Los mensajes nuevos desaparecerán de este chat después de 90 días de haber sido enviados, a menos que se use la opción para conservarlos. Haz clic para cambiar la duración predeterminada.
                         </span>
                       </span>
                     </div>
+
                     <span></span>
                     <div></div>
                   </div>
-                  <div className="absolute top-1/2 -mt-3.25 w-25.25 px-1 flex flex-row items-center justify-start flex-nowrap shrink min-w-0 min-h-0 basis-auto grow-0 self-auto order-0 justify-self-auto">
-                  </div>
+
+                  <div className="absolute top-1/2 -mt-3.25 flex w-25.25 shrink grow-0 basis-auto flex-row flex-nowrap items-center justify-start self-auto justify-self-auto px-1 order-0 min-w-0 min-h-0"></div>
                 </div>
               </div>
             </div>
@@ -435,23 +452,24 @@ export function TempporalMessage () {
         </div>
       </div>
     </div>
-  )
+  );
 }
 
-export function ActiveTemporalMessage () {
+export function ActiveTemporalMessage() {
   return (
     <div className="relative">
       <div>
         <div className="relative pb-2">
-          <div className="flex flex-col">
+          <div className="flex justify-center">
             <div>
-              <div className="w-125 mx-auto flex flex-col justify-center px-15.75">
+              <div className="mx-auto flex max-w-125 flex-col justify-center px-15.75">
                 <span></span>
-                <div className="mb-0 bg-[#fefdfc] text-[#667781] box-border inline-block flex-none max-w-full px-3 pt-1.25 pb-1.5 text-[10px] leading-4.25 text-center rounded-[7.35px] shadow-[0_1px_0.5px_rgba(11,20,26,0.13)] relative">
-                <div className="segoe-ui relative z-10 rounded-[7.35px]">
+
+                <div className="relative mb-0 box-border inline-block max-w-full flex-none rounded-[7.35px] bg-[#fefdfc] px-3 pt-1.25 pb-1.5 text-center text-[10px] leading-4.25 text-[#667781] shadow-[0_1px_0.5px_rgba(11,20,26,0.13)]">
+                  <div className="segoe-ui relative z-10 rounded-[7.35px]">
                     <div className="cursorpointer">
                       <span>
-                        <div className=" text-[#667781] me-0.5 inline-block align-top">
+                        <div className="me-0.5 inline-block align-top text-[#667781]">
                           <span aria-hidden="true" data-icon="lock-small">
                             <svg
                               viewBox="0 0 24 24"
@@ -472,16 +490,18 @@ export function ActiveTemporalMessage () {
                             </svg>
                           </span>
                         </div>
-                        <span className="segoe-ui min-h-0 visible wrap-break-word text-[9.8px]">
+
+                        <span className="segoe-ui visible min-h-0 wrap-break-word text-[9.8px]">
                           Activaste los mensajes temporales. Los mensajes nuevos desaparecerán de este chat después de 90 días de haber sido enviados, a menos que se use la opción para conservarlos. Haz clic para cambiar esto.
                         </span>
                       </span>
                     </div>
+
                     <span></span>
                     <div></div>
                   </div>
-                  <div className="absolute top-1/2 -mt-3.25 w-25.25 px-1 flex flex-row items-center justify-start flex-nowrap shrink min-w-0 min-h-0 basis-auto grow-0 self-auto order-0 justify-self-auto">
-                  </div>
+
+                  <div className="absolute top-1/2 -mt-3.25 flex w-25.25 shrink grow-0 basis-auto flex-row flex-nowrap items-center justify-start self-auto justify-self-auto px-1 order-0 min-w-0 min-h-0"></div>
                 </div>
               </div>
             </div>
@@ -489,9 +509,10 @@ export function ActiveTemporalMessage () {
         </div>
       </div>
     </div>
-  )
+  );
 }
-export function DesactiveTemporalMessage () {
+
+export function DesactiveTemporalMessage() {
   return (
     <div className="relative">
       <div>
@@ -500,11 +521,12 @@ export function DesactiveTemporalMessage () {
             <div>
               <div className="mx-auto flex flex-col justify-center px-15.75">
                 <span></span>
-                <div className="mb-0 bg-[#fefdfc] text-[#667781] box-border inline-block flex-none max-w-full px-3 pt-1.25 pb-1.5 text-[10px] leading-4.25 text-center rounded-[7.35px] shadow-[0_1px_0.5px_rgba(11,20,26,0.13)] relative">
-                <div className="segoe-ui relative z-10 rounded-[7.35px]">
+
+                <div className="relative mb-0 box-border inline-block max-w-full flex-none rounded-[7.35px] bg-[#fefdfc] px-3 pt-1.25 pb-1.5 text-center text-[10px] leading-4.25 text-[#667781] shadow-[0_1px_0.5px_rgba(11,20,26,0.13)]">
+                  <div className="segoe-ui relative z-10 rounded-[7.35px]">
                     <div className="cursorpointer">
                       <span>
-                        <div className=" text-[#667781] me-0.5 mb-1 inline-block align-top">
+                        <div className="me-0.5 mb-1 inline-block align-top text-[#667781]">
                           <span aria-hidden="true" data-icon="lock-small">
                             <svg
                               viewBox="0 0 24 24"
@@ -525,16 +547,18 @@ export function DesactiveTemporalMessage () {
                             </svg>
                           </span>
                         </div>
-                        <span className="segoe-ui min-h-0 visible wrap-break-word text-[9.8px]">
+
+                        <span className="segoe-ui visible min-h-0 wrap-break-word text-[9.8px]">
                           Desactivaste los mensajes temporales. Haz clic para cambiar esto.
                         </span>
                       </span>
                     </div>
+
                     <span></span>
                     <div></div>
                   </div>
-                  <div className="absolute top-1/2 -mt-3.25 w-25.25 px-1 flex flex-row items-center justify-start flex-nowrap shrink min-w-0 min-h-0 basis-auto grow-0 self-auto order-0 justify-self-auto">
-                  </div>
+
+                  <div className="absolute top-1/2 -mt-3.25 flex w-25.25 shrink grow-0 basis-auto flex-row flex-nowrap items-center justify-start self-auto justify-self-auto px-1 order-0 min-w-0 min-h-0"></div>
                 </div>
               </div>
             </div>
@@ -542,5 +566,5 @@ export function DesactiveTemporalMessage () {
         </div>
       </div>
     </div>
-  )
+  );
 }

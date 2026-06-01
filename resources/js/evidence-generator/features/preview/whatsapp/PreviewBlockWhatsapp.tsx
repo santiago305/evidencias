@@ -196,6 +196,17 @@ export function PreviewBlockWhatsapp({ data }: PreviewProps) {
     const showsTimerIcon = Math.random() < 0.5;
 
     if (!showsTimerIcon) {
+      const showsTemporalMessagesWhileDisabled = Math.random() < 0.5;
+
+      if (!showsTemporalMessagesWhileDisabled) {
+        return {
+          showTemporaryIcon: false,
+          showDefaultTemporalMessage: false,
+          temporalStatusLabel: "Desactivado" as const,
+          inlineTemporalMode: null,
+        };
+      }
+
       return {
         showTemporaryIcon: false,
         showDefaultTemporalMessage: true,
