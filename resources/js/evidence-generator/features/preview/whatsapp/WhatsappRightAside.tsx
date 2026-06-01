@@ -34,8 +34,13 @@ export function WhatsappRightAside({
     temporalStatusLabel: '90 días' | 'Desactivado';
 }) {
     const avatarTheme = useMemo(() => {
-        return createWhatsappAvatarTheme(data.nombre);
-    }, [data.nombre]);
+        const avatarSeed =
+            [data.telefono, data.nombre, data.dni, data.nombreAsesor]
+                .map((value) => value?.trim())
+                .find((value) => !!value) ?? 'contact';
+
+        return createWhatsappAvatarTheme(avatarSeed);
+    }, [data.telefono, data.nombre, data.dni, data.nombreAsesor]);
 
     return (
         <aside className="flex min-h-0 w-45 flex-2 flex-col border-l border-black/5 bg-white/95">

@@ -7,6 +7,89 @@ export type WhatsappAvatarTheme = {
   badgeRing: string;
 };
 
+const DEFAULT_BADGE_THEME: Pick<
+  WhatsappAvatarTheme,
+  "badgeBg" | "badgeIcon" | "badgeRing"
+> = {
+  badgeBg: "#f7f5f3",
+  badgeIcon: "#667781",
+  badgeRing: "#ffffff",
+};
+
+const WHATSAPP_AVATAR_THEMES: WhatsappAvatarTheme[] = [
+  // 1. Azul WhatsApp claro
+  {
+    bg: "#d2e8fe",
+    icon: "#0063cb",
+    border: "#b8d4f0",
+    ...DEFAULT_BADGE_THEME,
+  },
+
+  // 2. Coral / naranja suave
+  {
+    bg: "#fee2d8",
+    icon: "#c4532d",
+    border: "#edc7ba",
+    ...DEFAULT_BADGE_THEME,
+  },
+
+  // 3. Verde agua / teal
+  {
+    bg: "#cbf2ee",
+    icon: "#028377",
+    border: "#afe0dc",
+    ...DEFAULT_BADGE_THEME,
+  },
+
+  // 4. Rosado WhatsApp
+  {
+    bg: "#fbd8dc",
+    icon: "#b80531",
+    border: "#edbdc5",
+    ...DEFAULT_BADGE_THEME,
+  },
+
+  // 5. Marrón / beige
+  {
+    bg: "#f4ded1",
+    icon: "#855538",
+    border: "#dec2b2",
+    ...DEFAULT_BADGE_THEME,
+  },
+
+  // 6. Amarillo crema
+  {
+    bg: "#fff0d4",
+    icon: "#9d6c2c",
+    border: "#ead3a3",
+    ...DEFAULT_BADGE_THEME,
+  },
+
+  // 7. Celeste WhatsApp
+  {
+    bg: "#caecfa",
+    icon: "#027eb5",
+    border: "#acd9eb",
+    ...DEFAULT_BADGE_THEME,
+  },
+
+  // 8. Naranja WhatsApp
+  {
+    bg: "#fee2d8",
+    icon: "#c4532d",
+    border: "#edc7ba",
+    ...DEFAULT_BADGE_THEME,
+  },
+
+  // 9. Verde claro
+  {
+    bg: "#d9fdd3",
+    icon: "#1b8755",
+    border: "#bcecad",
+    ...DEFAULT_BADGE_THEME,
+  },
+];
+
 function hashString(value: string): number {
   let hash = 2166136261;
 
@@ -18,98 +101,12 @@ function hashString(value: string): number {
   return hash >>> 0;
 }
 
-function createSeededRandom(seed: number): () => number {
-  let state = seed || 1;
-
-  return () => {
-    state += 0x6d2b79f5;
-    let temp = state;
-    temp = Math.imul(temp ^ (temp >>> 15), temp | 1);
-    temp ^= temp + Math.imul(temp ^ (temp >>> 7), temp | 61);
-    return ((temp ^ (temp >>> 14)) >>> 0) / 4294967296;
-  };
-}
-
-function hslToHex(hue: number, saturation: number, lightness: number): string {
-  const h = hue / 360;
-  const s = saturation / 100;
-  const l = lightness / 100;
-
-  if (s === 0) {
-    const gray = Math.round(l * 255)
-      .toString(16)
-      .padStart(2, "0");
-    return `#${gray}${gray}${gray}`;
-  }
-
-  const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
-  const p = 2 * l - q;
-
-  const toChannel = (t: number): string => {
-    let value = t;
-
-    if (value < 0) {
-      value += 1;
-    }
-    if (value > 1) {
-      value -= 1;
-    }
-
-    let channel = p;
-
-    if (value < 1 / 6) {
-      channel = p + (q - p) * 6 * value;
-    } else if (value < 1 / 2) {
-      channel = q;
-    } else if (value < 2 / 3) {
-      channel = p + (q - p) * (2 / 3 - value) * 6;
-    }
-
-    return Math.round(channel * 255)
-      .toString(16)
-      .padStart(2, "0");
-  };
-
-  const red = toChannel(h + 1 / 3);
-  const green = toChannel(h);
-  const blue = toChannel(h - 1 / 3);
-
-  return `#${red}${green}${blue}`;
-}
-
 export function createWhatsappAvatarTheme(seedInput?: string): WhatsappAvatarTheme {
-  const seed = hashString((seedInput || "contact").trim().toLowerCase());
-  const random = createSeededRandom(seed);
+  const normalizedSeed = (seedInput ?? "contact").trim().toLowerCase() || "contact";
+  const seed = hashString(normalizedSeed);
 
-  // Base naranja WhatsApp, con variaciones suaves y apagadas.
-  const baseHue = 28;
-  const hue = baseHue + Math.round((random() - 0.5) * 14);
+  const themeIndex = seed % WHATSAPP_AVATAR_THEMES.length;
+  const theme = WHATSAPP_AVATAR_THEMES[themeIndex];
 
-  const bgSaturation = 42 + Math.round(random() * 10);
-  const bgLightness = 83 + Math.round(random() * 7);
-
-  const iconSaturation = 43 + Math.round(random() * 12);
-  const iconLightness = 33 + Math.round(random() * 8);
-
-  const borderSaturation = Math.max(30, bgSaturation - 8);
-  const borderLightness = Math.max(68, bgLightness - 8);
-
-  // TODO: modo dark temporalmente desactivado, no eliminar referencia.
-  // const darkThemePreset: WhatsappAvatarTheme = {
-  //   bg: "#3b261f",
-  //   icon: "#d8a078",
-  //   border: "#4a332b",
-  //   badgeBg: "#202c33",
-  //   badgeIcon: "#aebac1",
-  //   badgeRing: "#111b21",
-  // };
-
-  return {
-    bg: hslToHex(hue, bgSaturation, bgLightness),
-    icon: hslToHex(hue + 2, iconSaturation, iconLightness),
-    border: hslToHex(hue, borderSaturation, borderLightness),
-    badgeBg: "#f7f5f3",
-    badgeIcon: "#667781",
-    badgeRing: "#ffffff",
-  };
+  return { ...theme };
 }

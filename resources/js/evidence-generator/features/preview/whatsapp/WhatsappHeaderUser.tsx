@@ -25,6 +25,11 @@ export function WhatsappHeaderUser({
     }, [data, status]);
 
     const avatarTheme = useMemo(() => {
+        const avatarSeed =
+            [data.telefono, data.nombre, data.dni, data.nombreAsesor]
+                .map((value) => value?.trim())
+                .find((value) => !!value) ?? 'contact';
+
         /* const themes = [
       // TODO: Modo dark temporalmente desactivado. No eliminar, se reactivará después.
       // {
@@ -61,8 +66,8 @@ export function WhatsappHeaderUser({
       },
     ]; */
 
-        return createWhatsappAvatarTheme(data.nombre);
-    }, [data.nombre]);
+        return createWhatsappAvatarTheme(avatarSeed);
+    }, [data.telefono, data.nombre, data.dni, data.nombreAsesor]);
 
     return (
         <div className="w-full border-b border-black/10 bg-white px-3 py-2">
