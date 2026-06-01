@@ -16,7 +16,8 @@ class ConversationController extends Controller
     {
         $conversations = Conversation::query()
             ->with('messages')
-            ->orderBy('id', 'desc')
+            ->orderByDesc('updated_at')
+            ->orderByDesc('id')
             ->get();
 
         return response()->json([
@@ -38,15 +39,7 @@ class ConversationController extends Controller
                 'is_active' => true,
             ]);
 
-            foreach ($validated['messages'] as $index => $message) {
-                ConversationMessage::query()->create([
-                    'conversation_id' => $conversation->id,
-                    'position' => $index + 1,
-                    'side' => $message['side'],
-                    'delay_minutes' => $delays[$index] ?? 0,
-                    'lines' => $message['lines'],
-                ]);
-            }
+            $this->replaceMessages($conversation, $validated['messages'], $delays);
 
             return $conversation;
         });
@@ -55,6 +48,46 @@ class ConversationController extends Controller
             'message' => 'Conversacion registrada correctamente.',
             'data' => $conversation->load('messages'),
         ], 201);
+    }
+
+    public function update(
+        StoreConversationRequest $request,
+        Conversation $conversation,
+        ConversationDelayDistributionService $delayDistributionService,
+    ): JsonResponse {
+        $validated = $request->validated();
+        $delays = $delayDistributionService->distribute($validated['messages']);
+
+        DB::transaction(function () use ($conversation, $validated, $delays) {
+            $this->replaceMessages($conversation, $validated['messages'], $delays);
+            $conversation->touch();
+        });
+
+        return response()->json([
+            'message' => 'Conversacion actualizada correctamente.',
+            'data' => $conversation->fresh()->load('messages'),
+        ]);
+    }
+
+    /**
+     * @param  list<array{side:string,lines:list<string>}>  $messages
+     * @param  list<int>  $delays
+     */
+    private function replaceMessages(Conversation $conversation, array $messages, array $delays): void
+    {
+        ConversationMessage::query()
+            ->where('conversation_id', $conversation->id)
+            ->delete();
+
+        foreach ($messages as $index => $message) {
+            ConversationMessage::query()->create([
+                'conversation_id' => $conversation->id,
+                'position' => $index + 1,
+                'side' => $message['side'],
+                'delay_minutes' => $delays[$index] ?? 0,
+                'lines' => $message['lines'],
+            ]);
+        }
     }
 
     private function generateUniqueConversationCode(): string

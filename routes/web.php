@@ -18,6 +18,7 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/api/conversations', [ConversationController::class, 'index'])->name('conversations.index');
     Route::post('/api/conversations', [ConversationController::class, 'store'])->name('conversations.store');
+    Route::put('/api/conversations/{conversation}', [ConversationController::class, 'update'])->name('conversations.update');
     Route::post('/api/evidences/generate', [EvidenceController::class, 'generate'])->name('evidences.generate');
 });
 

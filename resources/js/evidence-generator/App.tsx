@@ -2,14 +2,28 @@ import type { ChangeEvent } from 'react';
 import { useEffect, useMemo, useState } from 'react';
 import { pickRandomClientProfile } from './config/whatsapp/clientProfiles';
 import { pickRandomModoEntrada } from './config/whatsapp/conversationModes';
-import { NewConversationModal, type NewConversationPayload } from './features/conversations/components/NewConversationModal';
+import { ConversationsListModal } from './features/conversations/components/ConversationsListModal';
+import {
+    NewConversationModal,
+    type ConversationModalMessageDraft,
+    type NewConversationPayload,
+} from './features/conversations/components/NewConversationModal';
 import { FormPanel } from './features/editor/components/FormPanel';
 import { PreviewPanel } from './features/preview/components/PreviewPanel';
-import { getJson, postJson } from './lib/api';
+import { getJson, postJson, putJson } from './lib/api';
 import type { ActiveDesign, ConversationProgressSummary, FormState, GeneratedMessage, SavedData } from './types';
 
 interface ConversationsIndexResponse {
-    data: Array<{ id: number; code: string }>;
+    data: ConversationApiModel[];
+}
+
+interface ConversationApiModel {
+    id: number;
+    code: string;
+    messages: Array<{
+        side: 'in' | 'out';
+        lines: string[];
+    }>;
 }
 
 interface GenerateEvidenceResponse {
@@ -22,8 +36,15 @@ interface GenerateEvidenceResponse {
 interface StoreConversationResponse {
     message: string;
     data: {
+        id: number;
         code: string;
     };
+}
+
+interface ConversationListItem {
+    id: number;
+    code: string;
+    messages: ConversationModalMessageDraft[];
 }
 
 // Valores temporales de prueba para validar el flujo completo del formulario.
@@ -57,8 +78,11 @@ export default function App() {
     const [conversationsCount, setConversationsCount] = useState(0);
     const [feedbackMessage, setFeedbackMessage] = useState<string | null>(null);
     const [isConversationModalOpen, setIsConversationModalOpen] = useState(false);
+    const [isConversationsListModalOpen, setIsConversationsListModalOpen] = useState(false);
     const [isSavingConversation, setIsSavingConversation] = useState(false);
     const [conversationModalError, setConversationModalError] = useState<string | null>(null);
+    const [conversations, setConversations] = useState<ConversationListItem[]>([]);
+    const [editingConversation, setEditingConversation] = useState<ConversationListItem | null>(null);
 
     const handleChange = (key: keyof FormState) => (e: ChangeEvent<HTMLInputElement>) => {
         setForm((prev) => ({ ...prev, [key]: e.target.value }));
@@ -67,7 +91,17 @@ export default function App() {
     const loadConversations = async () => {
         try {
             const response = await getJson<ConversationsIndexResponse>(route('conversations.index'));
-            setConversationsCount(response.data.length);
+            const normalizedConversations: ConversationListItem[] = response.data.map((conversation) => ({
+                id: conversation.id,
+                code: conversation.code,
+                messages: conversation.messages.map((message) => ({
+                    side: message.side,
+                    lines: message.lines,
+                })),
+            }));
+
+            setConversations(normalizedConversations);
+            setConversationsCount(normalizedConversations.length);
         } catch {
             setFeedbackMessage('No se pudo cargar el listado de conversaciones.');
         }
@@ -117,9 +151,21 @@ export default function App() {
         setConversationModalError(null);
 
         try {
-            const response = await postJson<StoreConversationResponse>(route('conversations.store'), payload);
+            const isEditingConversation = editingConversation !== null;
+            const response = isEditingConversation
+                ? await putJson<StoreConversationResponse>(
+                      route('conversations.update', { conversation: editingConversation.id }),
+                      payload,
+                  )
+                : await postJson<StoreConversationResponse>(route('conversations.store'), payload);
+
             setIsConversationModalOpen(false);
-            setFeedbackMessage(`Conversacion ${response.data.code} guardada correctamente.`);
+            setEditingConversation(null);
+            setFeedbackMessage(
+                isEditingConversation
+                    ? `Conversacion ${response.data.code} actualizada correctamente.`
+                    : `Conversacion ${response.data.code} guardada correctamente.`,
+            );
             await loadConversations();
         } catch (error) {
             const errorPayload = error as {
@@ -164,8 +210,12 @@ export default function App() {
                         progress={progress}
                         conversationsCount={conversationsCount}
                         onOpenConversationModal={() => {
+                            setEditingConversation(null);
                             setConversationModalError(null);
                             setIsConversationModalOpen(true);
+                        }}
+                        onOpenConversationsListModal={() => {
+                            setIsConversationsListModalOpen(true);
                         }}
                         feedbackMessage={feedbackMessage}
                     />
@@ -178,11 +228,36 @@ export default function App() {
                     setIsConversationModalOpen(open);
                     if (!open) {
                         setConversationModalError(null);
+                        setEditingConversation(null);
                     }
                 }}
                 onSubmit={handleCreateConversation}
                 isSubmitting={isSavingConversation}
                 errorMessage={conversationModalError}
+                mode={editingConversation ? 'edit' : 'create'}
+                initialMessages={editingConversation?.messages ?? []}
+                conversationCode={editingConversation?.code ?? null}
+            />
+
+            <ConversationsListModal
+                open={isConversationsListModalOpen}
+                onOpenChange={setIsConversationsListModalOpen}
+                conversations={conversations.map((conversation) => ({
+                    id: conversation.id,
+                    code: conversation.code,
+                    messagesCount: conversation.messages.length,
+                }))}
+                onSelectConversation={(conversationId) => {
+                    const selectedConversation = conversations.find((conversation) => conversation.id === conversationId);
+                    if (!selectedConversation) {
+                        return;
+                    }
+
+                    setEditingConversation(selectedConversation);
+                    setConversationModalError(null);
+                    setIsConversationsListModalOpen(false);
+                    setIsConversationModalOpen(true);
+                }}
             />
         </div>
     );

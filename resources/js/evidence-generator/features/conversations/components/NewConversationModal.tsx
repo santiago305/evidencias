@@ -1,5 +1,5 @@
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 interface ConversationDraftMessage {
     id: string;
@@ -14,12 +14,20 @@ export interface NewConversationPayload {
     }>;
 }
 
+export interface ConversationModalMessageDraft {
+    side: 'in' | 'out';
+    lines: string[];
+}
+
 interface NewConversationModalProps {
     open: boolean;
     onOpenChange: (open: boolean) => void;
     onSubmit: (payload: NewConversationPayload) => Promise<void>;
     isSubmitting: boolean;
     errorMessage: string | null;
+    mode?: 'create' | 'edit';
+    initialMessages?: ConversationModalMessageDraft[];
+    conversationCode?: string | null;
 }
 
 const createMessageId = () => Math.random().toString(36).slice(2);
@@ -30,9 +38,30 @@ const createEmptyMessage = (): ConversationDraftMessage => ({
     linesText: '',
 });
 
-export function NewConversationModal({ open, onOpenChange, onSubmit, isSubmitting, errorMessage }: NewConversationModalProps) {
+export function NewConversationModal({
+    open,
+    onOpenChange,
+    onSubmit,
+    isSubmitting,
+    errorMessage,
+    mode = 'create',
+    initialMessages = [],
+    conversationCode = null,
+}: NewConversationModalProps) {
     const [messages, setMessages] = useState<ConversationDraftMessage[]>([createEmptyMessage()]);
     const [collapsedMessages, setCollapsedMessages] = useState<Record<string, boolean>>({});
+
+    const mapDraftMessages = (sourceMessages: ConversationModalMessageDraft[]): ConversationDraftMessage[] => {
+        if (sourceMessages.length === 0) {
+            return [createEmptyMessage()];
+        }
+
+        return sourceMessages.map((message) => ({
+            id: createMessageId(),
+            side: message.side,
+            linesText: message.lines.join('\n'),
+        }));
+    };
 
     const canSubmit = useMemo(() => {
         return messages.length > 0 && messages.every((message) => message.linesText.trim() !== '');
@@ -70,9 +99,18 @@ export function NewConversationModal({ open, onOpenChange, onSubmit, isSubmittin
     };
 
     const resetForm = () => {
-        setMessages([createEmptyMessage()]);
+        setMessages(mapDraftMessages(initialMessages));
         setCollapsedMessages({});
     };
+
+    useEffect(() => {
+        if (!open) {
+            return;
+        }
+
+        setMessages(mapDraftMessages(initialMessages));
+        setCollapsedMessages({});
+    }, [initialMessages, open]);
 
     const handleSubmit = async () => {
         if (!canSubmit) {
@@ -97,7 +135,12 @@ export function NewConversationModal({ open, onOpenChange, onSubmit, isSubmittin
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent className="max-w-3xl overflow-hidden p-0">
                 <DialogHeader className="border-b border-slate-100 px-5 py-4">
-                    <DialogTitle className="text-base font-semibold text-slate-900">Nueva conversacion</DialogTitle>
+                    <DialogTitle className="text-base font-semibold text-slate-900">
+                        {mode === 'edit' ? 'Editar conversación' : 'Nueva conversación'}
+                    </DialogTitle>
+                    {mode === 'edit' && conversationCode ? (
+                        <p className="text-sm text-slate-500">Código: {conversationCode}</p>
+                    ) : null}
                 </DialogHeader>
 
                 <div className="max-h-[72vh] overflow-y-auto px-5 py-4">
@@ -205,7 +248,7 @@ export function NewConversationModal({ open, onOpenChange, onSubmit, isSubmittin
                         disabled={!canSubmit || isSubmitting}
                         className="rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-50"
                     >
-                        {isSubmitting ? 'Guardando...' : 'Guardar'}
+                        {isSubmitting ? 'Guardando...' : mode === 'edit' ? 'Guardar cambios' : 'Guardar'}
                     </button>
                 </DialogFooter>
             </DialogContent>

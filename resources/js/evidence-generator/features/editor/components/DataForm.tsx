@@ -20,6 +20,7 @@ interface DataFormProps {
   progress: ConversationProgressSummary | null;
   conversationsCount: number;
   onOpenConversationModal: () => void;
+  onOpenConversationsListModal: () => void;
   feedbackMessage: string | null;
 }
 
@@ -34,6 +35,7 @@ export function DataForm({
   onSeedCodeInputChange,
   conversationsCount,
   onOpenConversationModal,
+  onOpenConversationsListModal,
   feedbackMessage,
 }: DataFormProps) {
 
@@ -43,7 +45,7 @@ export function DataForm({
 
   return (
     <div className="grid grid-cols-1 gap-2 p-3">
-      <div className="grid grid-cols-1">
+      <div className="grid grid-cols-2 gap-2">
         <button
           type="button"
           onClick={onOpenConversationModal}
@@ -52,7 +54,15 @@ export function DataForm({
           Nueva conversación
         </button>
 
-        <div className="text-center text-[10px] text-slate-500">
+        <button
+          type="button"
+          onClick={onOpenConversationsListModal}
+          className="inline-flex items-center justify-center rounded-sm border border-slate-300 bg-white p-2 text-xs font-semibold text-slate-800 shadow-sm transition hover:bg-slate-50"
+        >
+          Ver conversaciones
+        </button>
+
+        <div className="col-span-2 text-center text-[10px] text-slate-500">
           Conversaciones registradas: <b>{conversationsCount}</b>
         </div>
       </div>

@@ -29,6 +29,7 @@ interface FormPanelProps {
   progress: ConversationProgressSummary | null;
   conversationsCount: number;
   onOpenConversationModal: () => void;
+  onOpenConversationsListModal: () => void;
   feedbackMessage: string | null;
 }
 
@@ -48,6 +49,7 @@ export function FormPanel({
   progress,
   conversationsCount,
   onOpenConversationModal,
+  onOpenConversationsListModal,
   feedbackMessage,
 }: FormPanelProps) {
   return (
@@ -72,6 +74,7 @@ export function FormPanel({
           progress={progress}
           conversationsCount={conversationsCount}
           onOpenConversationModal={onOpenConversationModal}
+          onOpenConversationsListModal={onOpenConversationsListModal}
           feedbackMessage={feedbackMessage}
         />
       </div>

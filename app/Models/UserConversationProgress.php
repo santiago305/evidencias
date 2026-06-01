@@ -18,6 +18,7 @@ class UserConversationProgress extends Model
         'pending_ids',
         'used_ids',
         'last_conversation_id',
+        'start_conversation_id',
     ];
 
     protected $casts = [
@@ -39,5 +40,13 @@ class UserConversationProgress extends Model
     public function lastConversation(): BelongsTo
     {
         return $this->belongsTo(Conversation::class, 'last_conversation_id');
+    }
+
+    /**
+     * @return BelongsTo<Conversation, $this>
+     */
+    public function startConversation(): BelongsTo
+    {
+        return $this->belongsTo(Conversation::class, 'start_conversation_id');
     }
 }

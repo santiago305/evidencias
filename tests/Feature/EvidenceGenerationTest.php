@@ -25,6 +25,25 @@ function createConversationForTest(string $code, array $messages): Conversation
     return $conversation;
 }
 
+/**
+ * @return array<string, string>
+ */
+function evidencePayload(): array
+{
+    return [
+        'nombreAsesor' => 'Ana Lopez',
+        'dni' => '12345678',
+        'telefono' => '999999999',
+        'nombre' => 'Juan Perez',
+        'monto' => '1500',
+        'tasa' => '2.5',
+        'cuota' => '250',
+        'plazo' => '12',
+        'fechaHora' => '2026-05-29T10:30',
+        'duracion' => '8',
+    ];
+}
+
 test('authenticated user can create a conversation manually', function () {
     $user = User::factory()->create();
 
@@ -69,6 +88,74 @@ test('authenticated user can create a conversation manually', function () {
     expect($delays[3])->toBeGreaterThanOrEqual(6)->toBeLessThanOrEqual(720);
 });
 
+test('authenticated user can list conversations ordered from newest to oldest', function () {
+    $user = User::factory()->create();
+
+    $first = createConversationForTest('conv_001', [
+        ['side' => 'out', 'delay_minutes' => 0, 'lines' => ['Uno']],
+    ]);
+    $second = createConversationForTest('conv_002', [
+        ['side' => 'in', 'delay_minutes' => 0, 'lines' => ['Dos']],
+    ]);
+
+    $response = $this->actingAs($user)->getJson(route('conversations.index'));
+
+    $response->assertOk()
+        ->assertJsonStructure([
+            'data' => [
+                ['id', 'code', 'messages'],
+            ],
+        ]);
+
+    $data = $response->json('data');
+
+    expect($data)->toHaveCount(2);
+    expect($data[0]['id'])->toBe($second->id);
+    expect($data[1]['id'])->toBe($first->id);
+});
+
+test('authenticated user can update a conversation and replace its messages', function () {
+    $user = User::factory()->create();
+
+    $conversation = createConversationForTest('conv_edit_001', [
+        ['side' => 'out', 'delay_minutes' => 0, 'lines' => ['Mensaje original']],
+        ['side' => 'in', 'delay_minutes' => 15, 'lines' => ['Respuesta original']],
+    ]);
+
+    $response = $this->actingAs($user)->putJson(route('conversations.update', ['conversation' => $conversation->id]), [
+        'messages' => [
+            ['side' => 'out', 'lines' => ['Nuevo 1']],
+            ['side' => 'in', 'lines' => ['Nuevo 2']],
+            ['side' => 'out', 'lines' => ['Nuevo 3']],
+        ],
+    ]);
+
+    $response->assertOk()
+        ->assertJsonPath('data.id', $conversation->id)
+        ->assertJsonPath('data.code', $conversation->code);
+
+    $this->assertDatabaseHas('conversations', [
+        'id' => $conversation->id,
+        'code' => $conversation->code,
+    ]);
+
+    $this->assertDatabaseCount('conversation_messages', 3);
+
+    $messages = ConversationMessage::query()
+        ->where('conversation_id', $conversation->id)
+        ->orderBy('position')
+        ->get(['position', 'side', 'lines'])
+        ->toArray();
+
+    expect($messages)->toHaveCount(3);
+    expect($messages[0]['position'])->toBe(1);
+    expect($messages[0]['side'])->toBe('out');
+    expect($messages[0]['lines'])->toBe(['Nuevo 1']);
+    expect($messages[2]['position'])->toBe(3);
+    expect($messages[2]['side'])->toBe('out');
+    expect($messages[2]['lines'])->toBe(['Nuevo 3']);
+});
+
 test('generate evidence returns seed and rendered messages', function () {
     $user = User::factory()->create();
 
@@ -79,18 +166,7 @@ test('generate evidence returns seed and rendered messages', function () {
         ['side' => 'out', 'delay_minutes' => 0, 'lines' => ['Buenos dias {cliente}']],
     ]);
 
-    $response = $this->actingAs($user)->postJson(route('evidences.generate'), [
-        'nombreAsesor' => 'Ana Lopez',
-        'dni' => '12345678',
-        'telefono' => '999999999',
-        'nombre' => 'Juan Perez',
-        'monto' => '1500',
-        'tasa' => '2.5',
-        'cuota' => '250',
-        'plazo' => '12',
-        'fechaHora' => '2026-05-29T10:30',
-        'duracion' => '8',
-    ]);
+    $response = $this->actingAs($user)->postJson(route('evidences.generate'), evidencePayload());
 
     $response->assertOk()
         ->assertJsonStructure([
@@ -113,21 +189,8 @@ test('random generation does not repeat until cycle is completed', function () {
         ['side' => 'out', 'delay_minutes' => 0, 'lines' => ['Dos']],
     ]);
 
-    $payload = [
-        'nombreAsesor' => 'Ana Lopez',
-        'dni' => '12345678',
-        'telefono' => '999999999',
-        'nombre' => 'Juan Perez',
-        'monto' => '1500',
-        'tasa' => '2.5',
-        'cuota' => '250',
-        'plazo' => '12',
-        'fechaHora' => '2026-05-29T10:30',
-        'duracion' => '8',
-    ];
-
-    $first = $this->actingAs($user)->postJson(route('evidences.generate'), $payload)->json();
-    $second = $this->actingAs($user)->postJson(route('evidences.generate'), $payload)->json();
+    $first = $this->actingAs($user)->postJson(route('evidences.generate'), evidencePayload())->json();
+    $second = $this->actingAs($user)->postJson(route('evidences.generate'), evidencePayload())->json();
 
     expect($first['conversationId'])->not->toBe($second['conversationId']);
 });
@@ -142,25 +205,12 @@ test('generating by seed reuses the same conversation without consuming bag', fu
         ['side' => 'out', 'delay_minutes' => 0, 'lines' => ['Dos']],
     ]);
 
-    $payload = [
-        'nombreAsesor' => 'Ana Lopez',
-        'dni' => '12345678',
-        'telefono' => '999999999',
-        'nombre' => 'Juan Perez',
-        'monto' => '1500',
-        'tasa' => '2.5',
-        'cuota' => '250',
-        'plazo' => '12',
-        'fechaHora' => '2026-05-29T10:30',
-        'duracion' => '8',
-    ];
-
-    $first = $this->actingAs($user)->postJson(route('evidences.generate'), $payload)->json();
+    $first = $this->actingAs($user)->postJson(route('evidences.generate'), evidencePayload())->json();
 
     $progressBefore = UserConversationProgress::query()->where('user_id', $user->id)->firstOrFail();
 
     $seedResponse = $this->actingAs($user)->postJson(route('evidences.generate'), [
-        ...$payload,
+        ...evidencePayload(),
         'seedCode' => $first['seedCode'],
     ])->json();
 
@@ -169,4 +219,57 @@ test('generating by seed reuses the same conversation without consuming bag', fu
     expect($seedResponse['conversationId'])->toBe($first['conversationId']);
     expect($progressAfter->used_ids)->toBe($progressBefore->used_ids);
     expect($progressAfter->pending_ids)->toBe($progressBefore->pending_ids);
+});
+
+test('different users start with different conversations when available', function () {
+    createConversationForTest('conv_001', [
+        ['side' => 'out', 'delay_minutes' => 0, 'lines' => ['Uno']],
+    ]);
+    createConversationForTest('conv_002', [
+        ['side' => 'out', 'delay_minutes' => 0, 'lines' => ['Dos']],
+    ]);
+    createConversationForTest('conv_003', [
+        ['side' => 'out', 'delay_minutes' => 0, 'lines' => ['Tres']],
+    ]);
+
+    $users = User::factory()->count(3)->create();
+    $firstConversationByUser = [];
+
+    foreach ($users as $user) {
+        $response = $this->actingAs($user)->postJson(route('evidences.generate'), evidencePayload())->json();
+        $firstConversationByUser[$user->id] = $response['conversationId'];
+    }
+
+    expect(array_unique(array_values($firstConversationByUser)))->toHaveCount(3);
+
+    $conversationCodeById = Conversation::query()->pluck('code', 'id');
+
+    foreach (array_keys($firstConversationByUser) as $userId) {
+        $progress = UserConversationProgress::query()->where('user_id', $userId)->firstOrFail();
+        $startConversationId = $progress->getAttribute('start_conversation_id');
+
+        expect($startConversationId)->not->toBeNull();
+        expect($conversationCodeById->get($startConversationId))->toBe($firstConversationByUser[$userId]);
+    }
+});
+
+test('user keeps same start conversation when a new cycle begins', function () {
+    $user = User::factory()->create();
+
+    createConversationForTest('conv_001', [
+        ['side' => 'out', 'delay_minutes' => 0, 'lines' => ['Uno']],
+    ]);
+    createConversationForTest('conv_002', [
+        ['side' => 'out', 'delay_minutes' => 0, 'lines' => ['Dos']],
+    ]);
+    createConversationForTest('conv_003', [
+        ['side' => 'out', 'delay_minutes' => 0, 'lines' => ['Tres']],
+    ]);
+
+    $first = $this->actingAs($user)->postJson(route('evidences.generate'), evidencePayload())->json();
+    $this->actingAs($user)->postJson(route('evidences.generate'), evidencePayload())->json();
+    $this->actingAs($user)->postJson(route('evidences.generate'), evidencePayload())->json();
+    $fourth = $this->actingAs($user)->postJson(route('evidences.generate'), evidencePayload())->json();
+
+    expect($fourth['conversationId'])->toBe($first['conversationId']);
 });

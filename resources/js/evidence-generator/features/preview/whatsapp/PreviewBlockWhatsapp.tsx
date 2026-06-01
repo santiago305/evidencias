@@ -184,8 +184,8 @@ export function PreviewBlockWhatsapp({ data }: PreviewProps) {
     );
 
     const windowsTrayData = useMemo(() => {
-        const baseDate = parseLocalDateTime(data.fechaHora) ?? new Date();
-        const parsedDuration = Number.parseInt(data.duracion.trim(), 10);
+        const baseDate = parseLocalDateTime(data?.fechaHora ?? '') ?? new Date();
+        const parsedDuration = Number.parseInt((data?.duracion ?? '').trim(), 10);
         const durationMinutes = Number.isFinite(parsedDuration) && parsedDuration > 0 ? parsedDuration : 0;
 
         const conversationEnd = new Date(baseDate);
@@ -196,11 +196,11 @@ export function PreviewBlockWhatsapp({ data }: PreviewProps) {
         trayMoment.setMinutes(trayMoment.getMinutes() + extraAfterConversation);
 
         return {
-            taskbarColor: normalizeHexColor(data.color),
+            taskbarColor: normalizeHexColor(data?.color),
             trayTime: formatWindowsTime(trayMoment),
             trayDate: formatWindowsDate(trayMoment),
         };
-    }, [data.color, data.duracion, data.fechaHora]);
+    }, [data]);
 
     if (!data) return <EmptyState />;
 
