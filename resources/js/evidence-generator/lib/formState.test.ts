@@ -1,0 +1,19 @@
+import assert from 'node:assert/strict';
+import test from 'node:test';
+import { createInitialFormState } from './formState.ts';
+
+test('createInitialFormState returns an empty form ready for a new evidence', () => {
+    assert.deepEqual(createInitialFormState(), {
+        nombreAsesor: '',
+        dni: '',
+        telefono: '',
+        nombre: '',
+        monto: '',
+        tasa: '',
+        cuota: '',
+        plazo: '',
+        fechaHora: '',
+        duracion: '',
+        modoEntrada: 'informativo',
+    });
+});

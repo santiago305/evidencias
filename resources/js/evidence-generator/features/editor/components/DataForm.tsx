@@ -165,6 +165,7 @@ export function DataForm({
 
       <button
         type="button"
+        id="generate-evidence-btn"
         onClick={onGenerate}
         disabled={isGenerating}
         className={[

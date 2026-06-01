@@ -11,6 +11,7 @@ import {
 import { FormPanel } from './features/editor/components/FormPanel';
 import { PreviewPanel } from './features/preview/components/PreviewPanel';
 import { getJson, postJson, putJson } from './lib/api';
+import { createInitialFormState } from './lib/formState';
 import type { ActiveDesign, ConversationProgressSummary, FormState, GeneratedMessage, SavedData, WindowsTrayProfile } from './types';
 
 interface ConversationsIndexResponse {
@@ -48,25 +49,11 @@ interface ConversationListItem {
     messages: ConversationModalMessageDraft[];
 }
 
-const initialFormState: FormState = {
-    nombreAsesor: '',
-    dni: '',
-    telefono: '',
-    nombre: '',
-    monto: '',
-    tasa: '',
-    cuota: '',
-    plazo: '',
-    fechaHora: '',
-    duracion: '',
-    modoEntrada: 'informativo',
-};
-
 /* ---------------- App ---------------- */
 // Componente raiz que coordina estado, tabs y vistas.
 export default function App() {
     const [activeDesign, setActiveDesign] = useState<ActiveDesign>('whatsapp');
-    const [form, setForm] = useState<FormState>(initialFormState);
+    const [form, setForm] = useState<FormState>(createInitialFormState);
 
     const [saved, setSaved] = useState<SavedData | null>(null);
     const [isGenerating, setIsGenerating] = useState(false);
@@ -132,6 +119,8 @@ export default function App() {
             setGeneratedSeedCode(response.seedCode);
             setProgress(response.progress);
             setFeedbackMessage(`Conversacion usada: ${response.conversationId}`);
+            setForm(createInitialFormState());
+            setSeedCodeInput('');
         } catch (error) {
             const errorPayload = error as {
                 errors?: Record<string, string[]>;
