@@ -63,22 +63,6 @@ export function DataForm({
       </div>
 
       <Input
-        label="Nombre de asesor"
-        id="nombre-asesor"
-        value={form.nombreAsesor}
-        onChange={onChange("nombreAsesor")}
-        placeholder="Ej: Ana Lopez"
-      />
-
-      <Input
-        label="DNI"
-        id="dni"
-        value={form.dni}
-        onChange={onChange("dni")}
-        placeholder="Ej: 12345678"
-      />
-
-      <Input
         label="Telefono"
         id="telefono"
         value={form.telefono}
@@ -138,6 +122,13 @@ export function DataForm({
         onChange={onChange("fechaHora")}
       />
 
+      <Input
+        label="Fecha y hora de registro"
+        id="fecha-hora-registro"
+        type="datetime-local"
+        value={form.fechaHoraRegistro}
+        onChange={onChange("fechaHoraRegistro")}
+      />
       <Input
         label="Duracion (min)"
         id="duracion"

@@ -11,8 +11,6 @@ export type TipoCliente =
   | "indeciso";
 
 export interface FormState {
-  nombreAsesor: string;
-  dni: string;
   telefono: string;
   nombre: string;
   monto: string;
@@ -20,6 +18,7 @@ export interface FormState {
   cuota: string;
   plazo: string;
   fechaHora: string;
+  fechaHoraRegistro: string;
   duracion: string;
   modoEntrada: ModoEntrada;
 }

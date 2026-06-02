@@ -19,7 +19,6 @@ class DatabaseSeeder extends Seeder
             User::factory()->create([
                 'name' => "Usuario {$i}",
                 'dni' => (string) (10000000 + $i),
-                'email' => "usuario{$i}@example.local",
             ]);
         }
     }

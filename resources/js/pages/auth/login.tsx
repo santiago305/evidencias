@@ -60,7 +60,7 @@ export default function Login({ status }: LoginProps) {
             <div className="text-muted-foreground text-center text-sm">
                 ¿No tienes registro?{' '}
                 <Link href={route('register')} className="font-medium text-slate-900 hover:underline">
-                    Regístrate con tu DNI
+                    Regístrate con tu nombre y DNI
                 </Link>
             </div>
 

@@ -1,9 +1,14 @@
 import type { FormState } from '../types';
 
-export function createInitialFormState(): FormState {
+interface UserIdentity {
+    name: string;
+    dni: string;
+}
+
+export function createInitialFormState(user?: UserIdentity): FormState {
     return {
-        nombreAsesor: '',
-        dni: '',
+        nombreAsesor: user?.name ?? '',
+        dni: user?.dni ?? '',
         telefono: '',
         nombre: '',
         monto: '',

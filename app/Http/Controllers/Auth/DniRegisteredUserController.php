@@ -28,15 +28,16 @@ class DniRegisteredUserController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $validated = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
             'dni' => ['required', 'string', 'digits:8', Rule::unique(User::class, 'dni')],
         ]);
 
+        $name = trim((string) $validated['name']);
         $dni = $validated['dni'];
 
         $user = User::query()->create([
-            'name' => "Usuario {$dni}",
+            'name' => $name,
             'dni' => $dni,
-            'email' => "dni{$dni}@example.local",
             'password' => Str::random(40),
         ]);
 

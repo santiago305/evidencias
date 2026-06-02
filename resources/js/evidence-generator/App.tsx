@@ -14,6 +14,15 @@ import { getJson, postJson, putJson } from './lib/api';
 import { createInitialFormState } from './lib/formState';
 import type { ActiveDesign, ConversationProgressSummary, FormState, GeneratedMessage, SavedData, WindowsTrayProfile } from './types';
 
+interface CurrentUser {
+    name: string;
+    dni: string;
+}
+
+interface AppProps {
+    currentUser: CurrentUser;
+}
+
 interface ConversationsIndexResponse {
     data: ConversationApiModel[];
 }
@@ -52,9 +61,9 @@ interface ConversationListItem {
 
 /* ---------------- App ---------------- */
 // Componente raiz que coordina estado, tabs y vistas.
-export default function App() {
+export default function App({ currentUser }: AppProps) {
     const [activeDesign, setActiveDesign] = useState<ActiveDesign>('whatsapp');
-    const [form, setForm] = useState<FormState>(createInitialFormState);
+    const [form, setForm] = useState<FormState>(() => createInitialFormState(currentUser));
 
     const [saved, setSaved] = useState<SavedData | null>(null);
     const [isGenerating, setIsGenerating] = useState(false);
@@ -121,7 +130,7 @@ export default function App() {
             setGeneratedSeedCode(response.seedCode);
             setProgress(response.progress);
             setFeedbackMessage(`Conversacion usada: ${response.conversationId}`);
-            setForm(createInitialFormState());
+            setForm(createInitialFormState(currentUser));
             setSeedCodeInput('');
         } catch (error) {
             const errorPayload = error as {

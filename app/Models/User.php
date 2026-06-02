@@ -23,7 +23,6 @@ class User extends Authenticatable
         'dni',
         'windows_tray_color',
         'windows_tray_config',
-        'email',
         'password',
     ];
 
@@ -45,7 +44,6 @@ class User extends Authenticatable
     protected function casts(): array
     {
         return [
-            'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'windows_tray_config' => 'array',
         ];

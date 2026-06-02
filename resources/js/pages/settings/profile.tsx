@@ -1,6 +1,6 @@
 import { type BreadcrumbItem, type SharedData } from '@/types';
 import { Transition } from '@headlessui/react';
-import { Head, Link, useForm, usePage } from '@inertiajs/react';
+import { Head, useForm, usePage } from '@inertiajs/react';
 import { FormEventHandler } from 'react';
 
 import DeleteUser from '@/components/delete-user';
@@ -19,12 +19,12 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
-export default function Profile({ mustVerifyEmail, status }: { mustVerifyEmail: boolean; status?: string }) {
+export default function Profile() {
     const { auth } = usePage<SharedData>().props;
 
     const { data, setData, patch, errors, processing, recentlySuccessful } = useForm({
         name: auth.user.name,
-        email: auth.user.email,
+        dni: auth.user.dni,
     });
 
     const submit: FormEventHandler = (e) => {
@@ -39,7 +39,7 @@ export default function Profile({ mustVerifyEmail, status }: { mustVerifyEmail: 
 
             <SettingsLayout>
                 <div className="space-y-6">
-                    <HeadingSmall title="Profile information" description="Update your name and email address" />
+                    <HeadingSmall title="Profile information" description="Update your name and DNI" />
 
                     <form onSubmit={submit} className="space-y-6">
                         <div className="grid gap-2">
@@ -59,43 +59,23 @@ export default function Profile({ mustVerifyEmail, status }: { mustVerifyEmail: 
                         </div>
 
                         <div className="grid gap-2">
-                            <Label htmlFor="email">Email address</Label>
+                            <Label htmlFor="dni">DNI</Label>
 
                             <Input
-                                id="email"
-                                type="email"
+                                id="dni"
+                                type="text"
+                                inputMode="numeric"
+                                pattern="[0-9]*"
                                 className="mt-1 block w-full"
-                                value={data.email}
-                                onChange={(e) => setData('email', e.target.value)}
+                                value={data.dni}
+                                onChange={(e) => setData('dni', e.target.value.replace(/\D/g, '').slice(0, 8))}
                                 required
-                                autoComplete="username"
-                                placeholder="Email address"
+                                autoComplete="off"
+                                placeholder="DNI"
                             />
 
-                            <InputError className="mt-2" message={errors.email} />
+                            <InputError className="mt-2" message={errors.dni} />
                         </div>
-
-                        {mustVerifyEmail && auth.user.email_verified_at === null && (
-                            <div>
-                                <p className="mt-2 text-sm text-neutral-800">
-                                    Your email address is unverified.
-                                    <Link
-                                        href={route('verification.send')}
-                                        method="post"
-                                        as="button"
-                                        className="rounded-md text-sm text-neutral-600 underline hover:text-neutral-900 focus:ring-2 focus:ring-offset-2 focus:outline-hidden"
-                                    >
-                                        Click here to re-send the verification email.
-                                    </Link>
-                                </p>
-
-                                {status === 'verification-link-sent' && (
-                                    <div className="mt-2 text-sm font-medium text-green-600">
-                                        A new verification link has been sent to your email address.
-                                    </div>
-                                )}
-                            </div>
-                        )}
 
                         <div className="flex items-center gap-4">
                             <Button disabled={processing}>Save</Button>

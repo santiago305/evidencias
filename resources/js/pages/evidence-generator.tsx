@@ -1,7 +1,11 @@
 import EvidenceGeneratorApp from '@/evidence-generator/App';
+import { type SharedData } from '@/types';
 import { Head, Link } from '@inertiajs/react';
+import { usePage } from '@inertiajs/react';
 
 export default function EvidenceGeneratorPage() {
+    const { auth } = usePage<SharedData>().props;
+
     return (
         <div className="relative min-h-screen">
             <Head title="Inicio" />
@@ -17,7 +21,7 @@ export default function EvidenceGeneratorPage() {
                 </Link>
             </div>
 
-            <EvidenceGeneratorApp />
+            <EvidenceGeneratorApp currentUser={auth.user} />
         </div>
     );
 }
