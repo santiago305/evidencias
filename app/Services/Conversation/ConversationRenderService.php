@@ -99,11 +99,9 @@ class ConversationRenderService
         $clienteFormatted = $this->toTitleCase($cliente);
 
         return [
-            'cliente' => $clienteFormatted !== '' ? $clienteFormatted : 'Cliente',
             'nombre_cliente' => $clienteFormatted !== '' ? $clienteFormatted : 'Cliente',
             'primer_nombre_cliente' => $this->getFirstName($clienteFormatted, 'Cliente'),
-            'asesor' => $asesorFormatted !== '' ? $asesorFormatted : 'Asesor',
-            'asesor_nombre' => $asesorFormatted !== '' ? $asesorFormatted : 'Asesor',
+            'nombre_asesor' => $asesorFormatted !== '' ? $asesorFormatted : 'Asesor',
             'primer_nombre_asesor' => $this->getFirstName($asesorFormatted, 'Asesor'),
             'dni' => (string) ($input['dni'] ?? ''),
             'telefono' => (string) ($input['telefono'] ?? ''),

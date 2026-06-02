@@ -43,11 +43,11 @@ test('generate evidence includes a preview snapshot and reproduces it from the s
     $user = User::factory()->create();
 
     createSnapshotConversation('conv_snapshot_001', [
-        ['side' => 'out', 'delay_minutes' => 0, 'lines' => ['Hola {cliente}']],
+        ['side' => 'out', 'delay_minutes' => 0, 'lines' => ['Hola {nombre_cliente}']],
         ['side' => 'in', 'delay_minutes' => 6, 'lines' => ['Hola asesor']],
     ]);
     createSnapshotConversation('conv_snapshot_002', [
-        ['side' => 'out', 'delay_minutes' => 0, 'lines' => ['Buenos dias {cliente}']],
+        ['side' => 'out', 'delay_minutes' => 0, 'lines' => ['Buenos dias {nombre_cliente}']],
         ['side' => 'in', 'delay_minutes' => 12, 'lines' => ['Gracias']],
     ]);
 

@@ -51,7 +51,7 @@ test('authenticated user can create a conversation manually', function () {
         'messages' => [
             [
                 'side' => 'out',
-                'lines' => ['Hola {cliente}'],
+                'lines' => ['Hola {nombre_cliente}'],
             ],
             [
                 'side' => 'in',
@@ -160,10 +160,10 @@ test('generate evidence returns seed and rendered messages', function () {
     $user = User::factory()->create();
 
     createConversationForTest('conv_001', [
-        ['side' => 'out', 'delay_minutes' => 0, 'lines' => ['Hola {cliente}']],
+        ['side' => 'out', 'delay_minutes' => 0, 'lines' => ['Hola {nombre_cliente}']],
     ]);
     createConversationForTest('conv_002', [
-        ['side' => 'out', 'delay_minutes' => 0, 'lines' => ['Buenos dias {cliente}']],
+        ['side' => 'out', 'delay_minutes' => 0, 'lines' => ['Buenos dias {nombre_cliente}']],
     ]);
 
     $response = $this->actingAs($user)->postJson(route('evidences.generate'), evidencePayload());
@@ -185,7 +185,7 @@ test('generate evidence returns seed and rendered messages', function () {
     $this->assertDatabaseCount('generated_evidences', 1);
 });
 
-test('generate evidence renders client and advisor name aliases', function () {
+test('generate evidence renders only canonical client and advisor name variables', function () {
     $user = User::factory()->create([
         'name' => 'MARIA ELENA LOPEZ',
     ]);
@@ -193,7 +193,9 @@ test('generate evidence renders client and advisor name aliases', function () {
     createConversationForTest('conv_alias_001', [
         ['side' => 'out', 'delay_minutes' => 0, 'lines' => ['Hola {nombre_cliente}']],
         ['side' => 'out', 'delay_minutes' => 4, 'lines' => ['Primer nombre {primer_nombre_cliente}']],
-        ['side' => 'out', 'delay_minutes' => 8, 'lines' => ['Soy {primer_nombre_asesor}']],
+        ['side' => 'out', 'delay_minutes' => 8, 'lines' => ['Asesor completo {nombre_asesor}']],
+        ['side' => 'out', 'delay_minutes' => 12, 'lines' => ['Primer asesor {primer_nombre_asesor}']],
+        ['side' => 'out', 'delay_minutes' => 16, 'lines' => ['Alias viejo {cliente} {asesor} {asesor_nombre}']],
     ]);
 
     $response = $this->actingAs($user)->postJson(route('evidences.generate'), [
@@ -207,14 +209,16 @@ test('generate evidence renders client and advisor name aliases', function () {
 
     expect($messages[0]['lines'][0])->toBe('Hola George Santiago Yacila Sandoval');
     expect($messages[1]['lines'][0])->toBe('Primer nombre George');
-    expect($messages[2]['lines'][0])->toBe('Soy Maria');
+    expect($messages[2]['lines'][0])->toBe('Asesor completo Maria Elena Lopez');
+    expect($messages[3]['lines'][0])->toBe('Primer asesor Maria');
+    expect($messages[4]['lines'][0])->toBe('Alias viejo {cliente} {asesor} {asesor_nombre}');
 });
 
 test('generate evidence accepts the registration timestamp without advisor identity in the payload', function () {
     $user = User::factory()->create();
 
     createConversationForTest('conv_registration_001', [
-        ['side' => 'out', 'delay_minutes' => 0, 'lines' => ['Hola {cliente}']],
+        ['side' => 'out', 'delay_minutes' => 0, 'lines' => ['Hola {nombre_cliente}']],
     ]);
 
     $response = $this->actingAs($user)->postJson(route('evidences.generate'), [

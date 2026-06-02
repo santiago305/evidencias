@@ -192,10 +192,7 @@ export default function App({ currentUser }: AppProps) {
         [],
     );
 
-    const conversationVariables = useMemo(
-        () => buildConversationVariables(form, currentUser.name),
-        [form, currentUser.name],
-    );
+    const conversationVariables = useMemo(() => buildConversationVariables(), []);
 
     return (
         <div className="h-screen w-full bg-slate-50">
