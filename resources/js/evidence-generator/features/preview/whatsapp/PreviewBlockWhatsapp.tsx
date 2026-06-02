@@ -366,24 +366,14 @@ export function PreviewBlockWhatsapp({ data }: PreviewProps) {
             };
         }
 
-        const baseDate = parseLocalDateTime(data?.fechaHora ?? '') ?? new Date();
-        const parsedDuration = Number.parseInt((data?.duracion ?? '').trim(), 10);
-        const durationMinutes = Number.isFinite(parsedDuration) && parsedDuration > 0 ? parsedDuration : 0;
-        const trayRandom = createSeededRandom(hashString(`${userSeed}|clock`));
-
-        const conversationEnd = new Date(baseDate);
-        conversationEnd.setMinutes(conversationEnd.getMinutes() + durationMinutes);
-
-        const extraAfterConversation = 3 + Math.floor(trayRandom() * 18);
-        const trayMoment = new Date(conversationEnd);
-        trayMoment.setMinutes(trayMoment.getMinutes() + extraAfterConversation);
+        const trayMoment = parseLocalDateTime(data?.fechaHoraRegistro ?? '') ?? parseLocalDateTime(data?.fechaHora ?? '') ?? new Date();
 
         return {
             profile: data?.trayProfile ?? createWindowsTrayProfile(userSeed),
             trayTime: formatWindowsTime(trayMoment),
             trayDate: formatWindowsDate(trayMoment),
         };
-    }, [data?.fechaHora, data?.duracion, data?.previewSnapshot, data?.trayProfile, userSeed]);
+    }, [data?.fechaHora, data?.fechaHoraRegistro, data?.previewSnapshot, data?.trayProfile, userSeed]);
 
     if (!data) return <EmptyState />;
 

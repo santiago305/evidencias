@@ -39,7 +39,7 @@ function evidencePayload(): array
         'cuota' => '250',
         'plazo' => '12',
         'fechaHora' => '2026-05-29T10:30',
-        'fechaHoraRegistro' => '2026-05-29T10:25',
+        'fechaHoraRegistro' => '2026-05-29T10:55',
         'duracion' => '8',
     ];
 }
@@ -229,7 +229,7 @@ test('generate evidence accepts the registration timestamp without advisor ident
         'cuota' => '250',
         'plazo' => '12',
         'fechaHora' => '2026-05-29T10:30',
-        'fechaHoraRegistro' => '2026-05-29T10:25',
+        'fechaHoraRegistro' => '2026-05-29T10:55',
         'duracion' => '8',
     ]);
 
@@ -390,7 +390,7 @@ test('user keeps same start conversation when a new cycle begins', function () {
     expect($fourth['conversationId'])->toBe($first['conversationId']);
 });
 
-test('generated conversation starts with a small delay and keeps duration from first message', function () {
+test('generated conversation finishes before registration time and keeps duration backwards', function () {
     $user = User::factory()->create();
 
     createConversationForTest('conv_time_001', [
@@ -400,32 +400,61 @@ test('generated conversation starts with a small delay and keeps duration from f
 
     $response = $this->actingAs($user)->postJson(route('evidences.generate'), [
         ...evidencePayload(),
-        'fechaHora' => '2026-05-29T10:30',
-        'duracion' => '120',
+        'fechaHora' => '2026-06-02T15:00',
+        'fechaHoraRegistro' => '2026-06-02T17:00',
+        'duracion' => '100',
     ]);
 
     $response->assertOk();
+    $response->assertJsonPath('previewSnapshot.trayTime', '17:00');
+    $response->assertJsonPath('previewSnapshot.trayDate', '02/06/2026');
 
     $messages = $response->json('messages');
 
     expect($messages)->toBeArray();
     expect($messages)->toHaveCount(2);
 
-    $baseDate = Carbon::parse('2026-05-29T10:30');
-    $firstMessageAt = Carbon::parse($baseDate->format('Y-m-d').' '.$messages[0]['time']);
-    $lastMessageAt = Carbon::parse($baseDate->format('Y-m-d').' '.$messages[1]['time']);
+    $minimumDate = Carbon::parse('2026-06-02T15:00');
+    $registrationDate = Carbon::parse('2026-06-02T17:00');
+    $firstMessageAt = Carbon::parse($minimumDate->format('Y-m-d').' '.$messages[0]['time']);
+    $lastMessageAt = Carbon::parse($minimumDate->format('Y-m-d').' '.$messages[1]['time']);
 
-    if ($firstMessageAt->lessThan($baseDate)) {
-        $firstMessageAt->addDay();
+    if ($firstMessageAt->greaterThan($registrationDate)) {
+        $firstMessageAt->subDay();
+    }
+
+    if ($lastMessageAt->greaterThan($registrationDate)) {
+        $lastMessageAt->subDay();
     }
 
     if ($lastMessageAt->lessThan($firstMessageAt)) {
         $lastMessageAt->addDay();
     }
 
-    $firstDelayMinutes = $baseDate->diffInMinutes($firstMessageAt);
     $conversationDurationMinutes = $firstMessageAt->diffInMinutes($lastMessageAt);
+    $lastMessageRegistrationGap = $lastMessageAt->diffInMinutes($registrationDate);
 
-    expect($firstDelayMinutes)->toBeGreaterThanOrEqual(3)->toBeLessThanOrEqual(10);
-    expect((int) $conversationDurationMinutes)->toBe(120);
+    expect($firstMessageAt->greaterThanOrEqualTo($minimumDate))->toBeTrue();
+    expect($lastMessageAt->lessThan($registrationDate))->toBeTrue();
+    expect((int) $lastMessageRegistrationGap)->toBeGreaterThanOrEqual(3)->toBeLessThanOrEqual(10);
+    expect((int) $conversationDurationMinutes)->toBe(100);
+});
+
+test('generated conversation rejects durations that start before the minimum timestamp', function () {
+    $user = User::factory()->create();
+
+    createConversationForTest('conv_time_invalid_001', [
+        ['side' => 'out', 'delay_minutes' => 0, 'lines' => ['Inicio']],
+        ['side' => 'in', 'delay_minutes' => 1, 'lines' => ['Fin']],
+    ]);
+
+    $response = $this->actingAs($user)->postJson(route('evidences.generate'), [
+        ...evidencePayload(),
+        'fechaHora' => '2026-06-02T15:00',
+        'fechaHoraRegistro' => '2026-06-02T17:00',
+        'duracion' => '180',
+    ]);
+
+    $response->assertUnprocessable();
+    $response->assertJsonValidationErrorFor('duracion');
 });

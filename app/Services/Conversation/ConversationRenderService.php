@@ -4,6 +4,7 @@ namespace App\Services\Conversation;
 
 use App\Models\Conversation;
 use Carbon\Carbon;
+use Illuminate\Validation\ValidationException;
 
 class ConversationRenderService
 {
@@ -17,24 +18,37 @@ class ConversationRenderService
      */
     public function render(Conversation $conversation, array $input): array
     {
-        $baseDate = isset($input['fechaHora']) && is_string($input['fechaHora']) && $input['fechaHora'] !== ''
+        $minimumDate = isset($input['fechaHora']) && is_string($input['fechaHora']) && $input['fechaHora'] !== ''
             ? Carbon::parse($input['fechaHora'])
             : now();
+        $registrationDate = isset($input['fechaHoraRegistro']) && is_string($input['fechaHoraRegistro']) && $input['fechaHoraRegistro'] !== ''
+            ? Carbon::parse($input['fechaHoraRegistro'])
+            : $minimumDate->copy();
 
         $previewSeed = isset($input['previewSeed']) && is_string($input['previewSeed']) && trim($input['previewSeed']) !== ''
             ? trim($input['previewSeed'])
             : null;
 
-        $startOffset = $previewSeed !== null
+        $registrationGap = $previewSeed !== null
             ? $this->seededInt($previewSeed.'|start', 3, 10)
             : random_int(3, 10);
 
-        $startDate = $baseDate->copy()->addMinutes($startOffset);
+        $conversationMessages = $conversation->messages->values();
+        $durationMinutes = $this->parseDurationMinutes($input);
+        $lastMessageDate = $registrationDate->copy()->subMinutes($registrationGap);
+        $startDate = $durationMinutes !== null
+            ? $lastMessageDate->copy()->subMinutes($durationMinutes)
+            : $minimumDate->copy()->addMinutes($registrationGap);
+
+        if ($startDate->lessThan($minimumDate)) {
+            throw ValidationException::withMessages([
+                'duracion' => 'La duración hace que la conversación empiece antes de la fecha y hora indicada.',
+            ]);
+        }
+
         $clock = $startDate->copy();
         $variables = $this->buildVariables($input, $startDate);
         $rendered = [];
-        $conversationMessages = $conversation->messages->values();
-        $durationMinutes = $this->parseDurationMinutes($input);
         $delays = $this->delayDistributionService->distribute(
             $conversationMessages
                 ->map(fn ($message) => [

@@ -34,7 +34,7 @@ function snapshotEvidencePayload(): array
         'cuota' => '250',
         'plazo' => '12',
         'fechaHora' => '2026-05-29T10:30',
-        'fechaHoraRegistro' => '2026-05-29T10:25',
+        'fechaHoraRegistro' => '2026-05-29T10:55',
         'duracion' => '8',
     ];
 }

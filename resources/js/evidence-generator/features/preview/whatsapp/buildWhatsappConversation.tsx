@@ -137,7 +137,10 @@ export function buildWhatsappConversation(
   );
   const rng = mulberry32(seed);
 
-  const baseDate = parseLocalDateTime(data.fechaHora) ?? new Date();
+  const minimumDate = parseLocalDateTime(data.fechaHora) ?? new Date();
+  const registrationDate =
+    parseLocalDateTime(data.fechaHoraRegistro) ?? minimumDate;
+  const baseDate = new Date(minimumDate);
   const { saludo, tramo } = getTimeOfDayParts(baseDate);
 
   const nombreCliente = data.nombre?.trim() ? data.nombre.trim() : "Pedro Vazquez";
@@ -285,8 +288,13 @@ export function buildWhatsappConversation(
   const gap6 = 1 + (gapExtras[5 + replyGapMinCount] ?? 0);
   const gap7 = 1 + (gapExtras[6 + replyGapMinCount] ?? 0);
 
-  const t1 = new Date(baseDate);
-  const t2 = new Date(baseDate);
+  const registrationGap = 3 + Math.floor(rng() * 8);
+  const conversationEnd = new Date(registrationDate);
+  conversationEnd.setMinutes(conversationEnd.getMinutes() - registrationGap);
+
+  const t1 = new Date(conversationEnd);
+  t1.setMinutes(t1.getMinutes() - totalMinutes);
+  const t2 = new Date(t1);
   t2.setMinutes(t2.getMinutes() + gap1);
   const t3 = new Date(t2);
   const replyGapTotal = replyGaps.reduce((sum, gap) => sum + gap, 0);

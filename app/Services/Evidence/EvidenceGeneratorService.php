@@ -399,7 +399,7 @@ class EvidenceGeneratorService
         $messageStatus = $this->buildMessageStatus($stateSeed);
         $temporalBehavior = $this->buildTemporalBehavior($stateSeed);
         $inlineTemporalInsertIndex = $this->buildInlineTemporalInsertIndex($stateSeed, count($messages), $temporalBehavior['inlineTemporalMode']);
-        ['trayTime' => $trayTime, 'trayDate' => $trayDate] = $this->buildTrayClock($input, $stateSeed);
+        ['trayTime' => $trayTime, 'trayDate' => $trayDate] = $this->buildTrayClock($input);
 
         return [
             'messageStatus' => $messageStatus,
@@ -500,21 +500,11 @@ class EvidenceGeneratorService
      * @param  array<string, mixed>  $input
      * @return array{trayTime:string, trayDate:string}
      */
-    private function buildTrayClock(array $input, string $stateSeed): array
+    private function buildTrayClock(array $input): array
     {
-        $baseDate = isset($input['fechaHora']) && is_string($input['fechaHora']) && trim($input['fechaHora']) !== ''
-            ? Carbon::parse($input['fechaHora'])
+        $trayMoment = isset($input['fechaHoraRegistro']) && is_string($input['fechaHoraRegistro']) && trim($input['fechaHoraRegistro']) !== ''
+            ? Carbon::parse($input['fechaHoraRegistro'])
             : now();
-
-        $parsedDuration = isset($input['duracion']) ? (int) trim((string) $input['duracion']) : 0;
-        $durationMinutes = $parsedDuration > 0 ? $parsedDuration : 0;
-
-        $conversationEnd = $baseDate->copy();
-        $conversationEnd->addMinutes($durationMinutes);
-
-        $extraAfterConversation = $this->seededInt($stateSeed.'|tray-extra', 3, 20);
-        $trayMoment = $conversationEnd->copy();
-        $trayMoment->addMinutes($extraAfterConversation);
 
         return [
             'trayTime' => $trayMoment->format('H:i'),
