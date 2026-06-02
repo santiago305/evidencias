@@ -73,6 +73,8 @@ export interface PreviewSnapshot {
 }
 
 export type SavedData = FormState & {
+  nombreAsesor: string;
+  dni: string;
   tipoCliente: TipoCliente;
   conversationId?: string;
   seedCode?: string;

@@ -27,8 +27,6 @@ function createSnapshotConversation(string $code, array $messages): Conversation
 function snapshotEvidencePayload(): array
 {
     return [
-        'nombreAsesor' => 'Ana Lopez',
-        'dni' => '12345678',
         'telefono' => '999999999',
         'nombre' => 'Juan Perez',
         'monto' => '1500',
@@ -36,6 +34,7 @@ function snapshotEvidencePayload(): array
         'cuota' => '250',
         'plazo' => '12',
         'fechaHora' => '2026-05-29T10:30',
+        'fechaHoraRegistro' => '2026-05-29T10:25',
         'duracion' => '8',
     ];
 }

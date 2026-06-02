@@ -1,14 +1,7 @@
 import type { FormState } from '../types';
 
-interface UserIdentity {
-    name: string;
-    dni: string;
-}
-
-export function createInitialFormState(user?: UserIdentity): FormState {
+export function createInitialFormState(): FormState {
     return {
-        nombreAsesor: user?.name ?? '',
-        dni: user?.dni ?? '',
         telefono: '',
         nombre: '',
         monto: '',
@@ -16,6 +9,7 @@ export function createInitialFormState(user?: UserIdentity): FormState {
         cuota: '',
         plazo: '',
         fechaHora: '',
+        fechaHoraRegistro: '',
         duracion: '',
         modoEntrada: 'informativo',
     };

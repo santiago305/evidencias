@@ -95,11 +95,16 @@ class ConversationRenderService
         $cuota = (string) ($input['cuota'] ?? '');
         $asesor = trim((string) ($input['nombreAsesor'] ?? ''));
         $cliente = trim((string) ($input['nombre'] ?? ''));
+        $asesorFormatted = $this->toTitleCase($asesor);
+        $clienteFormatted = $this->toTitleCase($cliente);
 
         return [
-            'cliente' => $cliente !== '' ? $cliente : 'Cliente',
-            'asesor' => $asesor !== '' ? $asesor : 'Asesor',
-            'asesor_nombre' => $asesor !== '' ? $asesor : 'Asesor',
+            'cliente' => $clienteFormatted !== '' ? $clienteFormatted : 'Cliente',
+            'nombre_cliente' => $clienteFormatted !== '' ? $clienteFormatted : 'Cliente',
+            'primer_nombre_cliente' => $this->getFirstName($clienteFormatted, 'Cliente'),
+            'asesor' => $asesorFormatted !== '' ? $asesorFormatted : 'Asesor',
+            'asesor_nombre' => $asesorFormatted !== '' ? $asesorFormatted : 'Asesor',
+            'primer_nombre_asesor' => $this->getFirstName($asesorFormatted, 'Asesor'),
             'dni' => (string) ($input['dni'] ?? ''),
             'telefono' => (string) ($input['telefono'] ?? ''),
             'monto' => $monto,
@@ -114,6 +119,30 @@ class ConversationRenderService
             'fecha' => $baseDate->format('Y-m-d'),
             'hora' => $baseDate->format('H:i'),
         ];
+    }
+
+    private function toTitleCase(string $value): string
+    {
+        $trimmedValue = trim($value);
+
+        if ($trimmedValue === '') {
+            return '';
+        }
+
+        return mb_convert_case($trimmedValue, MB_CASE_TITLE, 'UTF-8');
+    }
+
+    private function getFirstName(string $value, string $fallback): string
+    {
+        $trimmedValue = trim($value);
+
+        if ($trimmedValue === '') {
+            return $fallback;
+        }
+
+        $parts = preg_split('/\s+/', $trimmedValue);
+
+        return is_array($parts) && isset($parts[0]) && $parts[0] !== '' ? $parts[0] : $fallback;
     }
 
     /**

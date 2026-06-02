@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class GenerateEvidenceRequest extends FormRequest
@@ -17,14 +18,12 @@ class GenerateEvidenceRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     * @return array<string, ValidationRule|array<mixed>|string>
      */
     public function rules(): array
     {
         return [
             'seedCode' => ['nullable', 'string', 'max:100'],
-            'nombreAsesor' => ['required', 'string', 'max:150'],
-            'dni' => ['required', 'string', 'digits:8'],
             'telefono' => ['required', 'string', 'max:30'],
             'nombre' => ['required', 'string', 'max:150'],
             'monto' => ['required', 'string', 'max:40'],
@@ -32,6 +31,7 @@ class GenerateEvidenceRequest extends FormRequest
             'cuota' => ['required', 'string', 'max:40'],
             'plazo' => ['required', 'string', 'max:40'],
             'fechaHora' => ['required', 'string', 'max:40'],
+            'fechaHoraRegistro' => ['required', 'string', 'max:40'],
             'duracion' => ['required', 'string', 'max:40'],
         ];
     }

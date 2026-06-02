@@ -32,8 +32,6 @@ function createConversationForTest(string $code, array $messages): Conversation
 function evidencePayload(): array
 {
     return [
-        'nombreAsesor' => 'Ana Lopez',
-        'dni' => '12345678',
         'telefono' => '999999999',
         'nombre' => 'Juan Perez',
         'monto' => '1500',
@@ -41,6 +39,7 @@ function evidencePayload(): array
         'cuota' => '250',
         'plazo' => '12',
         'fechaHora' => '2026-05-29T10:30',
+        'fechaHoraRegistro' => '2026-05-29T10:25',
         'duracion' => '8',
     ];
 }
@@ -183,6 +182,54 @@ test('generate evidence returns seed and rendered messages', function () {
             ],
         ]);
 
+    $this->assertDatabaseCount('generated_evidences', 1);
+});
+
+test('generate evidence renders client and advisor name aliases', function () {
+    $user = User::factory()->create([
+        'name' => 'MARIA ELENA LOPEZ',
+    ]);
+
+    createConversationForTest('conv_alias_001', [
+        ['side' => 'out', 'delay_minutes' => 0, 'lines' => ['Hola {nombre_cliente}']],
+        ['side' => 'out', 'delay_minutes' => 4, 'lines' => ['Primer nombre {primer_nombre_cliente}']],
+        ['side' => 'out', 'delay_minutes' => 8, 'lines' => ['Soy {primer_nombre_asesor}']],
+    ]);
+
+    $response = $this->actingAs($user)->postJson(route('evidences.generate'), [
+        ...evidencePayload(),
+        'nombre' => 'GEORGE SANTIAGO YACILA SANDOVAL',
+    ]);
+
+    $response->assertOk();
+
+    $messages = $response->json('messages');
+
+    expect($messages[0]['lines'][0])->toBe('Hola George Santiago Yacila Sandoval');
+    expect($messages[1]['lines'][0])->toBe('Primer nombre George');
+    expect($messages[2]['lines'][0])->toBe('Soy Maria');
+});
+
+test('generate evidence accepts the registration timestamp without advisor identity in the payload', function () {
+    $user = User::factory()->create();
+
+    createConversationForTest('conv_registration_001', [
+        ['side' => 'out', 'delay_minutes' => 0, 'lines' => ['Hola {cliente}']],
+    ]);
+
+    $response = $this->actingAs($user)->postJson(route('evidences.generate'), [
+        'telefono' => '999999999',
+        'nombre' => 'Juan Perez',
+        'monto' => '1500',
+        'tasa' => '2.5',
+        'cuota' => '250',
+        'plazo' => '12',
+        'fechaHora' => '2026-05-29T10:30',
+        'fechaHoraRegistro' => '2026-05-29T10:25',
+        'duracion' => '8',
+    ]);
+
+    $response->assertOk();
     $this->assertDatabaseCount('generated_evidences', 1);
 });
 

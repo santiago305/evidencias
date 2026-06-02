@@ -1,10 +1,26 @@
+import { Button } from '@/components/ui/button';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import type { ConversationVariable } from '../conversationVariables';
+import { insertTextAtSelection } from '../conversationInsertion';
 
 interface ConversationDraftMessage {
     id: string;
     side: 'in' | 'out';
     linesText: string;
+}
+
+interface SelectionRange {
+    start: number;
+    end: number;
 }
 
 export interface NewConversationPayload {
@@ -28,6 +44,7 @@ interface NewConversationModalProps {
     mode?: 'create' | 'edit';
     initialMessages?: ConversationModalMessageDraft[];
     conversationCode?: string | null;
+    variables: ConversationVariable[];
 }
 
 const createMessageId = () => Math.random().toString(36).slice(2);
@@ -47,9 +64,12 @@ export function NewConversationModal({
     mode = 'create',
     initialMessages = [],
     conversationCode = null,
+    variables,
 }: NewConversationModalProps) {
     const [messages, setMessages] = useState<ConversationDraftMessage[]>([createEmptyMessage()]);
     const [collapsedMessages, setCollapsedMessages] = useState<Record<string, boolean>>({});
+    const textareaRefs = useRef<Record<string, HTMLTextAreaElement | null>>({});
+    const selectionRefs = useRef<Record<string, SelectionRange | null>>({});
 
     const mapDraftMessages = (sourceMessages: ConversationModalMessageDraft[]): ConversationDraftMessage[] => {
         if (sourceMessages.length === 0) {
@@ -71,6 +91,50 @@ export function NewConversationModal({
         setMessages((previous) => previous.map((message) => (message.id === id ? { ...message, ...patch } : message)));
     };
 
+    const captureSelection = (messageId: string) => {
+        const textarea = textareaRefs.current[messageId];
+
+        if (textarea === null || textarea === undefined) {
+            return;
+        }
+
+        const { selectionStart, selectionEnd } = textarea;
+
+        if (typeof selectionStart !== 'number' || typeof selectionEnd !== 'number') {
+            return;
+        }
+
+        selectionRefs.current[messageId] = {
+            start: selectionStart,
+            end: selectionEnd,
+        };
+    };
+
+    const getSelectionForInsertion = (messageId: string): SelectionRange | null => {
+        const storedSelection = selectionRefs.current[messageId];
+
+        if (storedSelection !== null && storedSelection !== undefined) {
+            return storedSelection;
+        }
+
+        const textarea = textareaRefs.current[messageId];
+
+        if (textarea === null || textarea === undefined) {
+            return null;
+        }
+
+        const { selectionStart, selectionEnd } = textarea;
+
+        if (typeof selectionStart !== 'number' || typeof selectionEnd !== 'number') {
+            return null;
+        }
+
+        return {
+            start: selectionStart,
+            end: selectionEnd,
+        };
+    };
+
     const addMessage = () => {
         setMessages((previous) => [...previous, createEmptyMessage()]);
     };
@@ -89,6 +153,8 @@ export function NewConversationModal({
             delete next[id];
             return next;
         });
+
+        delete selectionRefs.current[id];
     };
 
     const toggleCollapsed = (id: string) => {
@@ -98,9 +164,43 @@ export function NewConversationModal({
         }));
     };
 
+    const insertVariable = (messageId: string, placeholder: string) => {
+        const textarea = textareaRefs.current[messageId];
+        const selection = getSelectionForInsertion(messageId);
+        let nextSelection: SelectionRange | null = null;
+
+        setMessages((previous) =>
+            previous.map((message) => {
+                if (message.id !== messageId) {
+                    return message;
+                }
+
+                const result = insertTextAtSelection(message.linesText, placeholder, selection?.start, selection?.end);
+                nextSelection = {
+                    start: result.selectionStart,
+                    end: result.selectionEnd,
+                };
+
+                return {
+                    ...message,
+                    linesText: result.text,
+                };
+            }),
+        );
+
+        if (textarea !== null && nextSelection !== null) {
+            window.requestAnimationFrame(() => {
+                textarea.focus();
+                textarea.setSelectionRange(nextSelection.start, nextSelection.end);
+                selectionRefs.current[messageId] = nextSelection;
+            });
+        }
+    };
+
     const resetForm = () => {
         setMessages(mapDraftMessages(initialMessages));
         setCollapsedMessages({});
+        selectionRefs.current = {};
     };
 
     useEffect(() => {
@@ -110,6 +210,7 @@ export function NewConversationModal({
 
         setMessages(mapDraftMessages(initialMessages));
         setCollapsedMessages({});
+        selectionRefs.current = {};
     }, [initialMessages, open]);
 
     const handleSubmit = async () => {
@@ -189,7 +290,7 @@ export function NewConversationModal({
 
                                     {!isCollapsed ? (
                                         <div className="border-t border-slate-100 p-3 pt-2">
-                                            <div className="mb-2 flex items-center gap-2">
+                                            <div className="mb-2 flex flex-wrap items-center gap-2">
                                                 <select
                                                     value={message.side}
                                                     onChange={(event) =>
@@ -198,13 +299,50 @@ export function NewConversationModal({
                                                         })
                                                     }
                                                     className="h-8 rounded-md border border-slate-200 bg-white px-2 text-xs text-slate-700 outline-none focus:border-slate-400"
-                                                >
+                                                    >
                                                     <option value="out">Asesor</option>
                                                     <option value="in">Cliente</option>
                                                 </select>
+
+                                                <DropdownMenu>
+                                                    <DropdownMenuTrigger asChild>
+                                                        <Button
+                                                            type="button"
+                                                            variant="outline"
+                                                            size="sm"
+                                                            className="h-8 px-2 text-xs"
+                                                            onMouseDown={() => captureSelection(message.id)}
+                                                        >
+                                                            Variables
+                                                        </Button>
+                                                    </DropdownMenuTrigger>
+
+                                                    <DropdownMenuContent align="start" className="w-72">
+                                                        <DropdownMenuLabel>Variables disponibles</DropdownMenuLabel>
+                                                        <DropdownMenuSeparator />
+
+                                                        {variables.map((variable) => (
+                                                            <DropdownMenuItem
+                                                                key={variable.key}
+                                                                onSelect={() => insertVariable(message.id, variable.placeholder)}
+                                                                className="py-2"
+                                                            >
+                                                                <span className="font-mono text-xs font-medium text-slate-900">{variable.placeholder}</span>
+                                                            </DropdownMenuItem>
+                                                        ))}
+                                                    </DropdownMenuContent>
+                                                </DropdownMenu>
                                             </div>
 
                                             <textarea
+                                                ref={(element) => {
+                                                    textareaRefs.current[message.id] = element;
+                                                }}
+                                                onSelect={() => captureSelection(message.id)}
+                                                onMouseUp={() => captureSelection(message.id)}
+                                                onKeyUp={() => captureSelection(message.id)}
+                                                onClick={() => captureSelection(message.id)}
+                                                onBlur={() => captureSelection(message.id)}
                                                 value={message.linesText}
                                                 onChange={(event) =>
                                                     updateMessage(message.id, {

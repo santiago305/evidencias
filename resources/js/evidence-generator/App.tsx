@@ -8,6 +8,7 @@ import {
     type ConversationModalMessageDraft,
     type NewConversationPayload,
 } from './features/conversations/components/NewConversationModal';
+import { buildConversationVariables } from './features/conversations/conversationVariables';
 import { FormPanel } from './features/editor/components/FormPanel';
 import { PreviewPanel } from './features/preview/components/PreviewPanel';
 import { getJson, postJson, putJson } from './lib/api';
@@ -63,7 +64,7 @@ interface ConversationListItem {
 // Componente raiz que coordina estado, tabs y vistas.
 export default function App({ currentUser }: AppProps) {
     const [activeDesign, setActiveDesign] = useState<ActiveDesign>('whatsapp');
-    const [form, setForm] = useState<FormState>(() => createInitialFormState(currentUser));
+    const [form, setForm] = useState<FormState>(() => createInitialFormState());
 
     const [saved, setSaved] = useState<SavedData | null>(null);
     const [isGenerating, setIsGenerating] = useState(false);
@@ -118,6 +119,8 @@ export default function App({ currentUser }: AppProps) {
 
             setSaved({
                 ...form,
+                nombreAsesor: currentUser.name,
+                dni: currentUser.dni,
                 modoEntrada: pickRandomModoEntrada(),
                 tipoCliente: pickRandomClientProfile(),
                 conversationId: response.conversationId,
@@ -130,7 +133,7 @@ export default function App({ currentUser }: AppProps) {
             setGeneratedSeedCode(response.seedCode);
             setProgress(response.progress);
             setFeedbackMessage(`Conversacion usada: ${response.conversationId}`);
-            setForm(createInitialFormState(currentUser));
+            setForm(createInitialFormState());
             setSeedCodeInput('');
         } catch (error) {
             const errorPayload = error as {
@@ -189,6 +192,11 @@ export default function App({ currentUser }: AppProps) {
         [],
     );
 
+    const conversationVariables = useMemo(
+        () => buildConversationVariables(form, currentUser.name),
+        [form, currentUser.name],
+    );
+
     return (
         <div className="h-screen w-full bg-slate-50">
             <div className="h-full w-full">
@@ -236,6 +244,7 @@ export default function App({ currentUser }: AppProps) {
                 mode={editingConversation ? 'edit' : 'create'}
                 initialMessages={editingConversation?.messages ?? []}
                 conversationCode={editingConversation?.code ?? null}
+                variables={conversationVariables}
             />
 
             <ConversationsListModal
