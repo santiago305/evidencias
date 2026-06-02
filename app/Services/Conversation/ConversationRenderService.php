@@ -21,8 +21,17 @@ class ConversationRenderService
             ? Carbon::parse($input['fechaHora'])
             : now();
 
-        $clock = $baseDate->copy();
-        $variables = $this->buildVariables($input, $baseDate);
+        $previewSeed = isset($input['previewSeed']) && is_string($input['previewSeed']) && trim($input['previewSeed']) !== ''
+            ? trim($input['previewSeed'])
+            : null;
+
+        $startOffset = $previewSeed !== null
+            ? $this->seededInt($previewSeed.'|start', 3, 10)
+            : random_int(3, 10);
+
+        $startDate = $baseDate->copy()->addMinutes($startOffset);
+        $clock = $startDate->copy();
+        $variables = $this->buildVariables($input, $startDate);
         $rendered = [];
         $conversationMessages = $conversation->messages->values();
         $durationMinutes = $this->parseDurationMinutes($input);
@@ -34,6 +43,7 @@ class ConversationRenderService
                 ])
                 ->all(),
             $durationMinutes,
+            $previewSeed !== null ? "{$previewSeed}|delays" : null,
         );
 
         foreach ($conversationMessages as $index => $message) {
@@ -128,5 +138,13 @@ class ConversationRenderService
         $number = (float) $normalized;
 
         return number_format($number, 2, '.', ',');
+    }
+
+    private function seededInt(string $seed, int $min, int $max): int
+    {
+        $range = $max - $min + 1;
+        $value = hexdec(substr(hash('sha256', $seed), 0, 8));
+
+        return $min + ((int) $value % $range);
     }
 }

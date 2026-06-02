@@ -57,6 +57,22 @@ export interface WindowsTrayProfile {
   languagePosition: "next-to-hidden" | "next-to-clock";
 }
 
+export interface PreviewTemporalBehavior {
+  showTemporaryIcon: boolean;
+  showDefaultTemporalMessage: boolean;
+  temporalStatusLabel: "90 días" | "Desactivado";
+  inlineTemporalMode: "active" | "deactive" | null;
+}
+
+export interface PreviewSnapshot {
+  messageStatus: "read" | "delivered";
+  temporalBehavior: PreviewTemporalBehavior;
+  inlineTemporalInsertIndex: number | null;
+  trayTime: string;
+  trayDate: string;
+  trayProfile: WindowsTrayProfile;
+}
+
 export type SavedData = FormState & {
   tipoCliente: TipoCliente;
   conversationId?: string;
@@ -64,6 +80,7 @@ export type SavedData = FormState & {
   generatedMessages?: GeneratedMessage[];
   progress?: ConversationProgressSummary;
   trayProfile?: WindowsTrayProfile;
+  previewSnapshot?: PreviewSnapshot;
 };
 
 export interface InputProps {

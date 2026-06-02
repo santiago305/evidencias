@@ -29,25 +29,31 @@ export function WhatsappConversation({
     messages,
     showDefaultTemporalMessage = true,
     inlineTemporalMode = null,
+    inlineTemporalInsertIndex: initialInlineTemporalInsertIndex = null,
 }: {
     data: WhatsappData;
     messageStatus?: MsgStatus;
     messages?: GeneratedMessage[];
     showDefaultTemporalMessage?: boolean;
     inlineTemporalMode?: 'active' | 'deactive' | null;
+    inlineTemporalInsertIndex?: number | null;
 }) {
     const conversationMessages = useMemo(
         (): WhatsappConversationMessage[] => messages ?? buildWhatsappConversation(data, messageStatus),
         [data, messageStatus, messages],
     );
 
-    const inlineTemporalInsertIndex = useMemo(() => {
+    const resolvedInlineTemporalInsertIndex = useMemo(() => {
+        if (initialInlineTemporalInsertIndex !== null) {
+            return initialInlineTemporalInsertIndex;
+        }
+
         if (!inlineTemporalMode || conversationMessages.length < 2) {
             return null;
         }
 
         return Math.floor(Math.random() * (conversationMessages.length - 1)) + 1;
-    }, [conversationMessages, inlineTemporalMode, data.nombre, data.fechaHora]);
+    }, [conversationMessages, initialInlineTemporalInsertIndex, inlineTemporalMode, data.nombre, data.fechaHora]);
 
     return (
         <div className="h-full w-full overflow-hidden">
@@ -66,8 +72,8 @@ export function WhatsappConversation({
                             {conversationMessages.map((msg, idx) => {
                                 const prev = conversationMessages[idx - 1];
                                 const next = conversationMessages[idx + 1];
-                                const markerBeforeCurrent = inlineTemporalInsertIndex === idx;
-                                const markerAfterCurrent = inlineTemporalInsertIndex === idx + 1;
+                                const markerBeforeCurrent = resolvedInlineTemporalInsertIndex === idx;
+                                const markerAfterCurrent = resolvedInlineTemporalInsertIndex === idx + 1;
                                 const isFirstInGroup = idx === 0 || markerBeforeCurrent || prev.side !== msg.side;
                                 const staysInSameGroup = !!next && !markerAfterCurrent && next.side === msg.side;
                                 const wrapperSpacing = staysInSameGroup ? 'mb-0.5' : 'mb-4';

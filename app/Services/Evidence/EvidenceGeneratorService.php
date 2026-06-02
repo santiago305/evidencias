@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Models\UserConversationProgress;
 use App\Services\Conversation\ConversationBagService;
 use App\Services\Conversation\ConversationRenderService;
+use Carbon\Carbon;
 use Illuminate\Database\QueryException;
 use Illuminate\Validation\ValidationException;
 
@@ -18,7 +19,6 @@ class EvidenceGeneratorService
      */
     private const NETWORK_ICON_OPTIONS = [
         ['key' => 'wifi', 'glyph' => "\u{E701}", 'title' => 'WiFi', 'className' => null, 'iconClassName' => 'text-[14px]'],
-        ['key' => 'internet', 'glyph' => "\u{E774}", 'title' => 'Internet', 'className' => null, 'iconClassName' => 'text-[14px]'],
     ];
 
     /**
@@ -63,6 +63,24 @@ class EvidenceGeneratorService
      *   conversationId:string,
      *   seedCode:string,
      *   messages:list<array{side:string,time:string,lines:list<string>}>,
+     *   previewSnapshot:array{
+     *     messageStatus:'read'|'delivered',
+     *     temporalBehavior:array{
+     *       showTemporaryIcon:bool,
+     *       showDefaultTemporalMessage:bool,
+     *       temporalStatusLabel:'90 días'|'Desactivado',
+     *       inlineTemporalMode:'active'|'deactive'|null
+     *     },
+     *     inlineTemporalInsertIndex:int|null,
+     *     trayTime:string,
+     *     trayDate:string,
+     *     trayProfile:array{
+     *       taskbarColor:string,
+     *       icons:list<array{key:string,glyph:string,title:string,className:string|null,iconClassName:string|null}>,
+     *       language:array{top:string,bottom:string|null},
+     *       languagePosition:'next-to-hidden'|'next-to-clock'
+     *     }
+     *   },
      *   progress:array{cycle:int,used:int,pending:int,total:int},
      *   trayProfile:array{
      *     taskbarColor:string,
@@ -78,6 +96,7 @@ class EvidenceGeneratorService
 
         $conversation = null;
         $cycle = 1;
+        $previewSeed = $this->seedService->generatePreviewSeed();
 
         if ($seedCode !== '') {
             $decoded = $this->seedService->decodeSeedCode($seedCode);
@@ -100,25 +119,35 @@ class EvidenceGeneratorService
             }
 
             $cycle = (int) $decoded['cycle'];
+            $previewSeed = $decoded['preview_seed'] !== null
+                ? (string) $decoded['preview_seed']
+                : strtoupper(substr(hash('sha256', $seedCode), 0, 8));
         } else {
             $selected = $this->bagService->takeNextForUser($user);
             $conversation = $selected['conversation'];
             $cycle = (int) $selected['progress']->cycle;
         }
 
-        $messages = $this->renderService->render($conversation, $input);
-        $seedCode = $this->storeEvidenceWithUniqueSeed($user, $conversation, $cycle, $input);
+        $renderInput = [
+            ...$input,
+            'previewSeed' => $previewSeed,
+        ];
+
+        $messages = $this->renderService->render($conversation, $renderInput);
+        $trayProfile = $this->resolveWindowsTrayProfile($user);
+        $previewSnapshot = $this->buildPreviewSnapshot($renderInput, $messages, $previewSeed, $trayProfile);
+        $seedCode = $this->storeEvidenceWithUniqueSeed($user, $conversation, $cycle, $renderInput, $previewSeed);
 
         $progress = UserConversationProgress::query()->where('user_id', $user->id)->first();
         $pending = is_array($progress?->pending_ids) ? count($progress->pending_ids) : Conversation::query()->where('is_active', true)->count();
         $used = is_array($progress?->used_ids) ? count($progress->used_ids) : 0;
         $progressCycle = (int) ($progress?->cycle ?? 1);
-        $trayProfile = $this->resolveWindowsTrayProfile($user);
 
         return [
             'conversationId' => $conversation->code,
             'seedCode' => $seedCode,
             'messages' => $messages,
+            'previewSnapshot' => $previewSnapshot,
             'progress' => [
                 'cycle' => $progressCycle,
                 'used' => $used,
@@ -193,7 +222,7 @@ class EvidenceGeneratorService
             return false;
         }
 
-        $networkKeys = ['wifi', 'internet'];
+        $networkKeys = ['wifi'];
         $audioKeys = ['volume', 'muted'];
         $networkCount = 0;
         $audioCount = 0;
@@ -309,12 +338,12 @@ class EvidenceGeneratorService
     /**
      * @param  array<string, mixed>  $input
      */
-    private function storeEvidenceWithUniqueSeed(User $user, Conversation $conversation, int $cycle, array $input): string
+    private function storeEvidenceWithUniqueSeed(User $user, Conversation $conversation, int $cycle, array $input, string $previewSeed): string
     {
         $maxAttempts = 10;
 
         for ($attempt = 0; $attempt < $maxAttempts; $attempt++) {
-            $seedCode = $this->seedService->generateSeedCode($user, $conversation, $cycle);
+            $seedCode = $this->seedService->generateSeedCode($user, $conversation, $cycle, $previewSeed);
 
             try {
                 GeneratedEvidence::query()->create([
@@ -344,5 +373,160 @@ class EvidenceGeneratorService
 
         return str_contains($message, 'generated_evidences.seed_code')
             && (str_contains($message, 'unique') || str_contains($message, 'duplicate'));
+    }
+
+    /**
+     * @param  array<string, mixed>  $input
+     * @param  list<array{side:string,time:string,lines:list<string>}>  $messages
+     * @param  array{taskbarColor:string,icons:list<array{key:string,glyph:string,title:string,className:string|null,iconClassName:string|null}>,language:array{top:string,bottom:string|null},languagePosition:'next-to-hidden'|'next-to-clock'}  $trayProfile
+     * @return array{
+     *   messageStatus:'read'|'delivered',
+     *   temporalBehavior:array{
+     *     showTemporaryIcon:bool,
+     *     showDefaultTemporalMessage:bool,
+     *     temporalStatusLabel:'90 días'|'Desactivado',
+     *     inlineTemporalMode:'active'|'deactive'|null
+     *   },
+     *   inlineTemporalInsertIndex:int|null,
+     *   trayTime:string,
+     *   trayDate:string,
+     *   trayProfile:array{taskbarColor:string,icons:list<array{key:string,glyph:string,title:string,className:string|null,iconClassName:string|null}>,language:array{top:string,bottom:string|null},languagePosition:'next-to-hidden'|'next-to-clock'}
+     * }
+     */
+    private function buildPreviewSnapshot(array $input, array $messages, string $previewSeed, array $trayProfile): array
+    {
+        $stateSeed = $this->buildStateSeed($input, $previewSeed);
+        $messageStatus = $this->buildMessageStatus($stateSeed);
+        $temporalBehavior = $this->buildTemporalBehavior($stateSeed);
+        $inlineTemporalInsertIndex = $this->buildInlineTemporalInsertIndex($stateSeed, count($messages), $temporalBehavior['inlineTemporalMode']);
+        ['trayTime' => $trayTime, 'trayDate' => $trayDate] = $this->buildTrayClock($input, $stateSeed);
+
+        return [
+            'messageStatus' => $messageStatus,
+            'temporalBehavior' => $temporalBehavior,
+            'inlineTemporalInsertIndex' => $inlineTemporalInsertIndex,
+            'trayTime' => $trayTime,
+            'trayDate' => $trayDate,
+            'trayProfile' => $trayProfile,
+        ];
+    }
+
+    /**
+     * @param  array<string, mixed>  $input
+     */
+    private function buildStateSeed(array $input, string $previewSeed): string
+    {
+        $values = [
+            trim((string) ($input['telefono'] ?? '')),
+            trim((string) ($input['dni'] ?? '')),
+            trim((string) ($input['nombre'] ?? '')),
+            trim((string) ($input['nombreAsesor'] ?? '')),
+            $previewSeed,
+        ];
+
+        $normalized = array_values(array_filter($values, static fn (string $value): bool => $value !== ''));
+
+        return $normalized === [] ? 'preview-default' : implode('|', $normalized);
+    }
+
+    private function buildMessageStatus(string $stateSeed): string
+    {
+        $roll = $this->seededInt($stateSeed.'|status', 1, 100);
+
+        return $roll <= 50 ? 'read' : 'delivered';
+    }
+
+    /**
+     * @return array{
+     *   showTemporaryIcon:bool,
+     *   showDefaultTemporalMessage:bool,
+     *   temporalStatusLabel:'90 días'|'Desactivado',
+     *   inlineTemporalMode:'active'|'deactive'|null
+     * }
+     */
+    private function buildTemporalBehavior(string $stateSeed): array
+    {
+        $firstRoll = $this->seededInt($stateSeed.'|temporal-1', 1, 100);
+
+        if ($firstRoll <= 50) {
+            $showsInlineVariant = $this->seededInt($stateSeed.'|temporal-2', 1, 100) <= 50;
+
+            if ($showsInlineVariant) {
+                return [
+                    'showTemporaryIcon' => true,
+                    'showDefaultTemporalMessage' => false,
+                    'temporalStatusLabel' => '90 días',
+                    'inlineTemporalMode' => 'active',
+                ];
+            }
+
+            return [
+                'showTemporaryIcon' => true,
+                'showDefaultTemporalMessage' => true,
+                'temporalStatusLabel' => '90 días',
+                'inlineTemporalMode' => null,
+            ];
+        }
+
+        $showsDefaultTemporalMessage = $this->seededInt($stateSeed.'|temporal-3', 1, 100) <= 50;
+
+        if ($showsDefaultTemporalMessage) {
+            return [
+                'showTemporaryIcon' => false,
+                'showDefaultTemporalMessage' => true,
+                'temporalStatusLabel' => 'Desactivado',
+                'inlineTemporalMode' => 'deactive',
+            ];
+        }
+
+        return [
+            'showTemporaryIcon' => false,
+            'showDefaultTemporalMessage' => false,
+            'temporalStatusLabel' => 'Desactivado',
+            'inlineTemporalMode' => null,
+        ];
+    }
+
+    private function buildInlineTemporalInsertIndex(string $stateSeed, int $messageCount, ?string $inlineTemporalMode): ?int
+    {
+        if ($inlineTemporalMode === null || $messageCount < 2) {
+            return null;
+        }
+
+        return $this->seededInt($stateSeed.'|inline-temporal', 1, $messageCount - 1);
+    }
+
+    /**
+     * @param  array<string, mixed>  $input
+     * @return array{trayTime:string, trayDate:string}
+     */
+    private function buildTrayClock(array $input, string $stateSeed): array
+    {
+        $baseDate = isset($input['fechaHora']) && is_string($input['fechaHora']) && trim($input['fechaHora']) !== ''
+            ? Carbon::parse($input['fechaHora'])
+            : now();
+
+        $parsedDuration = isset($input['duracion']) ? (int) trim((string) $input['duracion']) : 0;
+        $durationMinutes = $parsedDuration > 0 ? $parsedDuration : 0;
+
+        $conversationEnd = $baseDate->copy();
+        $conversationEnd->addMinutes($durationMinutes);
+
+        $extraAfterConversation = $this->seededInt($stateSeed.'|tray-extra', 3, 20);
+        $trayMoment = $conversationEnd->copy();
+        $trayMoment->addMinutes($extraAfterConversation);
+
+        return [
+            'trayTime' => $trayMoment->format('H:i'),
+            'trayDate' => $trayMoment->format('d/m/Y'),
+        ];
+    }
+
+    private function seededInt(string $seed, int $min, int $max): int
+    {
+        $range = $max - $min + 1;
+        $value = hexdec(substr(hash('sha256', $seed), 0, 8));
+
+        return $min + ((int) $value % $range);
     }
 }

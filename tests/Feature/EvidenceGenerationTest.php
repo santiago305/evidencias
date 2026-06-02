@@ -4,6 +4,7 @@ use App\Models\Conversation;
 use App\Models\ConversationMessage;
 use App\Models\User;
 use App\Models\UserConversationProgress;
+use Carbon\Carbon;
 
 function createConversationForTest(string $code, array $messages): Conversation
 {
@@ -199,6 +200,9 @@ test('windows tray profile is persisted and reused for the same user', function 
     $firstResponse->assertOk();
 
     $firstTrayProfile = $firstResponse->json('trayProfile');
+    $firstIconKeys = array_values(array_map(fn (array $icon): string => (string) $icon['key'], $firstTrayProfile['icons']));
+    expect($firstIconKeys)->toContain('wifi');
+    expect($firstIconKeys)->not->toContain('internet');
 
     $user->refresh();
     expect($user->windows_tray_color)->not->toBeNull();
@@ -210,6 +214,33 @@ test('windows tray profile is persisted and reused for the same user', function 
     $secondTrayProfile = $secondResponse->json('trayProfile');
 
     expect($secondTrayProfile)->toBe($firstTrayProfile);
+});
+
+test('stored tray profile with internet icon is regenerated with wifi icon', function () {
+    $user = User::factory()->create([
+        'windows_tray_color' => '#223344',
+        'windows_tray_config' => [
+            'icons' => [
+                ['key' => 'internet', 'glyph' => "\u{E774}", 'title' => 'Internet', 'className' => null, 'iconClassName' => 'text-[14px]'],
+                ['key' => 'volume', 'glyph' => "\u{E995}", 'title' => 'Volumen', 'className' => 'min-w-5.5', 'iconClassName' => 'text-[13px]'],
+            ],
+            'language' => ['top' => 'ESP', 'bottom' => 'LAA'],
+            'languagePosition' => 'next-to-hidden',
+        ],
+    ]);
+
+    createConversationForTest('conv_001', [
+        ['side' => 'out', 'delay_minutes' => 0, 'lines' => ['Uno']],
+    ]);
+
+    $response = $this->actingAs($user)->postJson(route('evidences.generate'), evidencePayload());
+    $response->assertOk();
+
+    $trayProfile = $response->json('trayProfile');
+    $iconKeys = array_values(array_map(fn (array $icon): string => (string) $icon['key'], $trayProfile['icons']));
+
+    expect($iconKeys)->toContain('wifi');
+    expect($iconKeys)->not->toContain('internet');
 });
 
 test('random generation does not repeat until cycle is completed', function () {
@@ -306,4 +337,44 @@ test('user keeps same start conversation when a new cycle begins', function () {
     $fourth = $this->actingAs($user)->postJson(route('evidences.generate'), evidencePayload())->json();
 
     expect($fourth['conversationId'])->toBe($first['conversationId']);
+});
+
+test('generated conversation starts with a small delay and keeps duration from first message', function () {
+    $user = User::factory()->create();
+
+    createConversationForTest('conv_time_001', [
+        ['side' => 'out', 'delay_minutes' => 0, 'lines' => ['Inicio']],
+        ['side' => 'in', 'delay_minutes' => 1, 'lines' => ['Fin']],
+    ]);
+
+    $response = $this->actingAs($user)->postJson(route('evidences.generate'), [
+        ...evidencePayload(),
+        'fechaHora' => '2026-05-29T10:30',
+        'duracion' => '120',
+    ]);
+
+    $response->assertOk();
+
+    $messages = $response->json('messages');
+
+    expect($messages)->toBeArray();
+    expect($messages)->toHaveCount(2);
+
+    $baseDate = Carbon::parse('2026-05-29T10:30');
+    $firstMessageAt = Carbon::parse($baseDate->format('Y-m-d').' '.$messages[0]['time']);
+    $lastMessageAt = Carbon::parse($baseDate->format('Y-m-d').' '.$messages[1]['time']);
+
+    if ($firstMessageAt->lessThan($baseDate)) {
+        $firstMessageAt->addDay();
+    }
+
+    if ($lastMessageAt->lessThan($firstMessageAt)) {
+        $lastMessageAt->addDay();
+    }
+
+    $firstDelayMinutes = $baseDate->diffInMinutes($firstMessageAt);
+    $conversationDurationMinutes = $firstMessageAt->diffInMinutes($lastMessageAt);
+
+    expect($firstDelayMinutes)->toBeGreaterThanOrEqual(3)->toBeLessThanOrEqual(10);
+    expect((int) $conversationDurationMinutes)->toBe(120);
 });

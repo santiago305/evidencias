@@ -8,17 +8,18 @@ use Illuminate\Support\Str;
 
 class EvidenceSeedService
 {
-    public function generateSeedCode(User $user, Conversation $conversation, int $cycle): string
+    public function generateSeedCode(User $user, Conversation $conversation, int $cycle, string $previewSeed): string
     {
         $conversationSegment = sprintf('C%03d', $conversation->id);
         $userSegment = sprintf('U%02d', $user->id);
         $cycleSegment = sprintf('R%02d', $cycle);
+        $previewSeedSegment = strtoupper(substr($previewSeed, 0, 8));
         $nonce = $this->randomSegment();
 
-        $payload = implode('|', ['v2', $conversation->id, $user->id, $cycle, $nonce]);
+        $payload = implode('|', ['v3', $conversation->id, $user->id, $cycle, $previewSeedSegment, $nonce]);
         $signature = $this->signature($payload);
 
-        return "EVC1-{$conversationSegment}-{$userSegment}-{$cycleSegment}-{$nonce}{$signature}";
+        return "EVC2-{$conversationSegment}-{$userSegment}-{$cycleSegment}-{$previewSeedSegment}-{$nonce}{$signature}";
     }
 
     /**
@@ -26,12 +27,38 @@ class EvidenceSeedService
      *   version:int,
      *   conversation_id:int,
      *   user_id:int,
-     *   cycle:int
+     *   cycle:int,
+     *   preview_seed:string|null
      * }|null
      */
     public function decodeSeedCode(string $seedCode): ?array
     {
         $trimmedSeedCode = trim($seedCode);
+
+        if (preg_match('/^EVC2-C(\d{3})-U(\d{2})-R(\d{2,})-([A-Z0-9]{8})-([A-Z0-9]{10})$/', $trimmedSeedCode, $matches) === 1) {
+            $conversationId = (int) $matches[1];
+            $userId = (int) $matches[2];
+            $cycle = (int) $matches[3];
+            $previewSeed = $matches[4];
+            $token = $matches[5];
+            $nonce = substr($token, 0, 5);
+            $signature = substr($token, 5, 5);
+
+            $payload = implode('|', ['v3', $conversationId, $userId, $cycle, $previewSeed, $nonce]);
+            $expected = $this->signature($payload);
+
+            if (! hash_equals($expected, $signature)) {
+                return null;
+            }
+
+            return [
+                'version' => 3,
+                'conversation_id' => $conversationId,
+                'user_id' => $userId,
+                'cycle' => $cycle,
+                'preview_seed' => $previewSeed,
+            ];
+        }
 
         if (preg_match('/^EVC1-C(\d{3})-U(\d{2})-R(\d{2,})-([A-Z0-9]{10})$/', $trimmedSeedCode, $matches) === 1) {
             $conversationId = (int) $matches[1];
@@ -53,6 +80,7 @@ class EvidenceSeedService
                 'conversation_id' => $conversationId,
                 'user_id' => $userId,
                 'cycle' => $cycle,
+                'preview_seed' => null,
             ];
         }
 
@@ -74,6 +102,7 @@ class EvidenceSeedService
                 'conversation_id' => $conversationId,
                 'user_id' => $userId,
                 'cycle' => $cycle,
+                'preview_seed' => null,
             ];
         }
 
@@ -85,6 +114,11 @@ class EvidenceSeedService
         return $this->decodeSeedCode($seedCode) !== null;
     }
 
+    public function generatePreviewSeed(): string
+    {
+        return $this->randomSegment(8);
+    }
+
     private function signature(string $payload): string
     {
         $hash = hash_hmac('sha256', $payload, (string) config('app.key'));
@@ -93,8 +127,8 @@ class EvidenceSeedService
         return Str::padRight(substr($base36, 0, 5), 5, 'X');
     }
 
-    private function randomSegment(): string
+    private function randomSegment(int $length = 5): string
     {
-        return strtoupper(Str::random(5));
+        return strtoupper(Str::random($length));
     }
 }

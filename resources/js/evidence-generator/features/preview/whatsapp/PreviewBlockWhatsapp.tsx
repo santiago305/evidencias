@@ -11,21 +11,21 @@ import { WhatsappRightAside } from './WhatsappRightAside';
 type WinTrayIconProps = {
     glyph: string;
     title?: string;
-    className?: string;
-    iconClassName?: string;
+    className?: string | null;
+    iconClassName?: string | null;
 };
 
 type TrayIconSpec = {
     key: string;
     glyph: string;
     title: string;
-    className?: string;
-    iconClassName?: string;
+    className?: string | null;
+    iconClassName?: string | null;
 };
 
 type TrayLanguageSpec = {
     top: string;
-    bottom?: string;
+    bottom?: string | null;
 };
 
 type WindowsTrayProfile = {
@@ -51,7 +51,6 @@ const HIDDEN_ICONS_SPEC: TrayIconSpec = {
 
 const NETWORK_ICON_OPTIONS: TrayIconSpec[] = [
     { key: 'wifi', glyph: '\uE701', title: 'WiFi', iconClassName: 'text-[14px]' },
-    { key: 'internet', glyph: '\uE774', title: 'Internet', iconClassName: 'text-[14px]' },
 ];
 
 const AUDIO_ICON_OPTIONS: TrayIconSpec[] = [
@@ -247,8 +246,8 @@ function WindowsTrayBar({ profile, trayTime, trayDate }: WindowsTrayBarProps) {
                 <WinTrayIcon
                     glyph={HIDDEN_ICONS_SPEC.glyph}
                     title={HIDDEN_ICONS_SPEC.title}
-                    className={HIDDEN_ICONS_SPEC.className}
-                    iconClassName={HIDDEN_ICONS_SPEC.iconClassName}
+                    className={HIDDEN_ICONS_SPEC.className ?? ''}
+                    iconClassName={HIDDEN_ICONS_SPEC.iconClassName ?? ''}
                 />
 
                 {profile.languagePosition === 'next-to-hidden' ? renderTrayLanguage(profile.language) : null}
@@ -258,8 +257,8 @@ function WindowsTrayBar({ profile, trayTime, trayDate }: WindowsTrayBarProps) {
                         key={icon.key}
                         glyph={icon.glyph}
                         title={icon.title}
-                        className={icon.className}
-                        iconClassName={icon.iconClassName}
+                        className={icon.className ?? ''}
+                        iconClassName={icon.iconClassName ?? ''}
                     />
                 ))}
 
@@ -290,11 +289,19 @@ export function PreviewBlockWhatsapp({ data }: PreviewProps) {
     );
 
     const messageStatus = useMemo<MsgStatus>(() => {
+        if (data?.previewSnapshot) {
+            return data.previewSnapshot.messageStatus;
+        }
+
         const random = createSeededRandom(hashString(`${userSeed}|status`));
         return random() < 0.5 ? 'read' : 'delivered';
-    }, [userSeed]);
+    }, [data?.previewSnapshot, userSeed]);
 
     const temporalBehavior = useMemo(() => {
+        if (data?.previewSnapshot) {
+            return data.previewSnapshot.temporalBehavior;
+        }
+
         const random = createSeededRandom(hashString(`${userSeed}|temporal`));
         const showsTimerIcon = random() < 0.5;
 
@@ -335,7 +342,7 @@ export function PreviewBlockWhatsapp({ data }: PreviewProps) {
             temporalStatusLabel: '90 días' as const,
             inlineTemporalMode: null,
         };
-    }, [userSeed]);
+    }, [data?.previewSnapshot, userSeed]);
 
     const contactIdentityDisplay = useMemo(
         () =>
@@ -351,6 +358,14 @@ export function PreviewBlockWhatsapp({ data }: PreviewProps) {
     );
 
     const windowsTrayData = useMemo(() => {
+        if (data?.previewSnapshot) {
+            return {
+                profile: data.previewSnapshot.trayProfile,
+                trayTime: data.previewSnapshot.trayTime,
+                trayDate: data.previewSnapshot.trayDate,
+            };
+        }
+
         const baseDate = parseLocalDateTime(data?.fechaHora ?? '') ?? new Date();
         const parsedDuration = Number.parseInt((data?.duracion ?? '').trim(), 10);
         const durationMinutes = Number.isFinite(parsedDuration) && parsedDuration > 0 ? parsedDuration : 0;
@@ -368,7 +383,7 @@ export function PreviewBlockWhatsapp({ data }: PreviewProps) {
             trayTime: formatWindowsTime(trayMoment),
             trayDate: formatWindowsDate(trayMoment),
         };
-    }, [data?.fechaHora, data?.duracion, data?.trayProfile, userSeed]);
+    }, [data?.fechaHora, data?.duracion, data?.previewSnapshot, data?.trayProfile, userSeed]);
 
     if (!data) return <EmptyState />;
 
@@ -389,6 +404,7 @@ export function PreviewBlockWhatsapp({ data }: PreviewProps) {
                         messages={data.generatedMessages}
                         showDefaultTemporalMessage={temporalBehavior.showDefaultTemporalMessage}
                         inlineTemporalMode={temporalBehavior.inlineTemporalMode}
+                        inlineTemporalInsertIndex={data.previewSnapshot?.inlineTemporalInsertIndex ?? null}
                     />
                 </div>
 

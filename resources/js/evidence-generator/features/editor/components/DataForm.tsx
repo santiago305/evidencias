@@ -160,7 +160,7 @@ export function DataForm({
         id="seed-input"
         value={seedCodeInput}
         onChange={(e) => onSeedCodeInputChange(e.target.value)}
-        placeholder="Ej: EVC1-C020-U01-R03-K8P2M"
+        placeholder="Ej: EVC2-C020-U01-R03-AB12CD34-Z9Q7K3A1B2"
       />
 
       <button

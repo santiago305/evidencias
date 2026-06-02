@@ -31,6 +31,7 @@ interface GenerateEvidenceResponse {
     conversationId: string;
     seedCode: string;
     messages: GeneratedMessage[];
+    previewSnapshot: SavedData['previewSnapshot'];
     progress: ConversationProgressSummary;
     trayProfile: WindowsTrayProfile;
 }
@@ -113,6 +114,7 @@ export default function App() {
                 conversationId: response.conversationId,
                 seedCode: response.seedCode,
                 generatedMessages: response.messages,
+                previewSnapshot: response.previewSnapshot,
                 progress: response.progress,
                 trayProfile: response.trayProfile,
             });
