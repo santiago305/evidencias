@@ -244,7 +244,7 @@ export function Bubble({
           <div className="box-border p-1 select-text">
             {quote ? <QuotedMessageBox quote={quote} /> : null}
 
-            <div className="relative overflow-hidden whitespace-pre-wrap break-words pb-1.5 ps-1.75 pt-1 ">
+            <div className="relative overflow-hidden whitespace-pre-wrap break-words pb-1.5 ps-1.75 pt-1 pe-1.75">
               <span
                 data-testid="selectable-text"
                 dir="ltr"
@@ -266,7 +266,7 @@ export function Bubble({
             </div>
 
             {(time || (isOut && status)) && (
-              <div className="relative z-10 float-right -mt-2.5 -mb-1.25 ps-1 pe-0">
+              <div className="relative z-10 float-right -mt-3.5 -mb-1.25 ps-1 pe-0">
                 <div
                   className={[
                     "flex items-center h-3.75 whitespace-nowrap text-[0.6875rem] leading-3.75",
@@ -283,7 +283,7 @@ export function Bubble({
                   )}
 
                   {isOut && status && (
-                    <div className="inline-block ps-0.75">
+                    <div className="flex ps-0.75 justify-end">
                       <Ticks status={status} />
                     </div>
                   )}
