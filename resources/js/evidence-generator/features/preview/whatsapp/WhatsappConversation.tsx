@@ -1,4 +1,4 @@
-import { Fragment, useMemo, type ReactNode } from 'react';
+import { Fragment, useEffect, useMemo, useRef, type ReactNode } from 'react';
 import bgWhatsapp from '../../../assets/1.png';
 import { formatWhatsappTimeValue, getDateKeyFromLocalDateTime, getDayChipTextForDate } from '../../../lib/whatsapp/time';
 import type { GeneratedMessage } from '../../../types';
@@ -48,7 +48,10 @@ function resolveMessageDateKey(message: WhatsappConversationMessage, fallbackDat
     return message.dateKey ?? fallbackDateKey;
 }
 
-function normalizeGeneratedMessages(messages: GeneratedMessage[] | undefined, messageStatus: MsgStatus | undefined): WhatsappConversationMessage[] | null {
+function normalizeGeneratedMessages(
+    messages: GeneratedMessage[] | undefined,
+    messageStatus: MsgStatus | undefined,
+): WhatsappConversationMessage[] | null {
     if (!messages) {
         return null;
     }
@@ -56,7 +59,7 @@ function normalizeGeneratedMessages(messages: GeneratedMessage[] | undefined, me
     return messages.map((msg) => ({
         ...msg,
         time: formatWhatsappTimeValue(msg.time),
-        status: msg.side === 'out' ? msg.status ?? messageStatus : msg.status,
+        status: msg.side === 'out' ? (msg.status ?? messageStatus) : msg.status,
     }));
 }
 
@@ -108,6 +111,33 @@ export function WhatsappConversation({
     );
     const dayChipReference = data.fechaHoraRegistro || data.fechaHora;
     const firstDayChipDateKey = conversationMessages[0] ? resolveMessageDateKey(conversationMessages[0], fallbackDateKey) : fallbackDateKey;
+    const scrollContainerRef = useRef<HTMLDivElement | null>(null);
+
+    useEffect(() => {
+        const scrollContainer = scrollContainerRef.current;
+
+        if (!scrollContainer) {
+            return;
+        }
+
+        const frameId = window.requestAnimationFrame(() => {
+            const { scrollHeight, clientHeight } = scrollContainer;
+
+            if (scrollHeight <= clientHeight) {
+                return;
+            }
+
+            const maxScrollTop = scrollHeight - clientHeight;
+            const scrollRatios = [0.18, 0.42, 0.68, 1];
+            const scrollRatio = scrollRatios[Math.floor(Math.random() * scrollRatios.length)] ?? 0.42;
+
+            scrollContainer.scrollTop = Math.round(maxScrollTop * scrollRatio);
+        });
+
+        return () => {
+            window.cancelAnimationFrame(frameId);
+        };
+    }, [conversationMessages, firstDayChipDateKey, inlineTemporalMode, resolvedInlineTemporalInsertIndex, showDefaultTemporalMessage]);
 
     return (
         <div className="h-full w-full overflow-hidden">
@@ -118,7 +148,7 @@ export function WhatsappConversation({
                 <div className="relative flex h-full min-h-0 flex-col overflow-hidden">
                     {/* Mensajes */}
                     <div className="min-h-0 flex-1 overflow-hidden">
-                        <div className="scrollbar-soft h-full w-full overflow-y-auto">
+                        <div ref={scrollContainerRef} className="scrollbar-soft h-full w-full overflow-y-auto">
                             {firstDayChipDateKey !== '' && <DayChip text={getDayChipTextForDate(firstDayChipDateKey, dayChipReference)} />}
                             <EncryptedMessage />
                             {showDefaultTemporalMessage && <TempporalMessage />}

@@ -33,11 +33,11 @@ export function WhatsappRightAside({
     showAddContactAction?: boolean;
     temporalStatusLabel: '90 días' | 'Desactivado';
 }) {
+    const contactActionTitle = profileTitle ?? (data.nombre?.trim() ? data.nombre.trim() : `+51 ${formatTelefonoPE(data.telefono)}`);
+
     const avatarTheme = useMemo(() => {
         const avatarSeed =
-            [data.telefono, data.nombre, data.dni, data.nombreAsesor]
-                .map((value) => value?.trim())
-                .find((value) => !!value) ?? 'contact';
+            [data.telefono, data.nombre, data.dni, data.nombreAsesor].map((value) => value?.trim()).find((value) => !!value) ?? 'contact';
 
         return createWhatsappAvatarTheme(avatarSeed);
     }, [data.telefono, data.nombre, data.dni, data.nombreAsesor]);
@@ -108,7 +108,7 @@ export function WhatsappRightAside({
                             {/* name + phone */}
                             <div className="flex w-full min-w-0 flex-col items-center">
                                 <div className="segoe-ui-semibold truncate p-1 text-[18px] font-normal text-wrap text-slate-900">
-                                    {profileTitle ?? (data.nombre?.trim() ? data.nombre : 'Sin nombre')}
+                                    {profileTitle ?? (data.nombre?.trim() ? data.nombre : '')}
                                 </div>
 
                                 {/* AQUÍ VA EL TELÉFONO FORMATEADO */}
@@ -359,9 +359,7 @@ export function WhatsappRightAside({
                                     />
                                 </svg>
                             </span>
-                            <span className="text-[12px] text-[#e1193e]">
-                                {`Bloquear a ${data.nombre?.trim() ? data.nombre.trim() : 'Sin nombre'}`}
-                            </span>
+                            <span className="text-[12px] text-[#e1193e]">{`Bloquear a ${contactActionTitle}`}</span>
                         </button>
 
                         {/* Reportar */}
@@ -378,9 +376,7 @@ export function WhatsappRightAside({
                                     />
                                 </svg>
                             </span>
-                            <span className="text-[12px] text-[#e1193e]">
-                                {`Reportar a ${data.nombre?.trim() ? data.nombre.trim() : 'Sin nombre'}`}
-                            </span>
+                            <span className="text-[12px] text-[#e1193e]">{`Reportar a ${contactActionTitle}`}</span>
                         </button>
 
                         {/* Eliminar chat */}
