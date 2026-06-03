@@ -1,6 +1,6 @@
 import { Fragment, useMemo, type ReactNode } from 'react';
 import bgWhatsapp from '../../../assets/1.png';
-import { getDateKeyFromLocalDateTime, getDayChipTextForDate } from '../../../lib/whatsapp/time';
+import { formatWhatsappTimeValue, getDateKeyFromLocalDateTime, getDayChipTextForDate } from '../../../lib/whatsapp/time';
 import type { GeneratedMessage } from '../../../types';
 import { WhatsappInputBar } from './WhatsappInputBar';
 import {
@@ -48,6 +48,18 @@ function resolveMessageDateKey(message: WhatsappConversationMessage, fallbackDat
     return message.dateKey ?? fallbackDateKey;
 }
 
+function normalizeGeneratedMessages(messages: GeneratedMessage[] | undefined, messageStatus: MsgStatus | undefined): WhatsappConversationMessage[] | null {
+    if (!messages) {
+        return null;
+    }
+
+    return messages.map((msg) => ({
+        ...msg,
+        time: formatWhatsappTimeValue(msg.time),
+        status: msg.side === 'out' ? msg.status ?? messageStatus : msg.status,
+    }));
+}
+
 export function WhatsappConversation({
     data,
     messageStatus,
@@ -65,10 +77,9 @@ export function WhatsappConversation({
     inlineTemporalInsertIndex?: number | null;
     displayTitle?: string;
 }) {
-    const conversationMessages = useMemo(
-        (): WhatsappConversationMessage[] => messages ?? buildWhatsappConversation(data, messageStatus),
-        [data, messageStatus, messages],
-    );
+    const conversationMessages = useMemo((): WhatsappConversationMessage[] => {
+        return normalizeGeneratedMessages(messages, messageStatus) ?? buildWhatsappConversation(data, messageStatus);
+    }, [data, messageStatus, messages]);
 
     const resolvedInlineTemporalInsertIndex = useMemo(() => {
         if (initialInlineTemporalInsertIndex !== null) {

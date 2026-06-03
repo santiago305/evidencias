@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { getGreetingSlot } from './greetings.ts';
-import { getDayChipTextForDate, getTimeOfDayParts } from './time.ts';
+import { formatWhatsappTimeValue, getDayChipTextForDate, getTimeOfDayParts } from './time.ts';
 
 const morningGreetings = ['Buenos dias', 'Buen dia', 'Buenos días', 'Buen día'];
 
@@ -44,4 +44,10 @@ test('getDayChipTextForDate labels message days relative to registration timesta
     assert.equal(getDayChipTextForDate('2026-06-02', registrationDate), 'Ayer');
     assert.equal(getDayChipTextForDate('2026-06-01', registrationDate), 'Lunes');
     assert.equal(getDayChipTextForDate('2026-05-25', registrationDate), '25/5/2026');
+});
+
+test('formatWhatsappTimeValue converts backend 24-hour times to WhatsApp short times', () => {
+    assert.equal(formatWhatsappTimeValue('14:35'), '2:35 p. m.');
+    assert.equal(formatWhatsappTimeValue('08:01'), '8:01 a. m.');
+    assert.equal(formatWhatsappTimeValue('8:01 a. m.'), '8:01 a. m.');
 });

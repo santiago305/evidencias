@@ -100,6 +100,25 @@ export function formatTimeShort(date: Date) {
     return `${hours12}:${minutes} ${period}`;
 }
 
+export function formatWhatsappTimeValue(value: string) {
+    const trimmedValue = value.trim();
+    if (trimmedValue === '') return '';
+    if (/\b[ap]\.\s*m\./i.test(trimmedValue)) return trimmedValue;
+
+    const match = /^(\d{1,2}):(\d{2})$/.exec(trimmedValue);
+    if (!match) return trimmedValue;
+
+    const [, rawHours, rawMinutes] = match;
+    const hours = Number(rawHours);
+    const minutes = Number(rawMinutes);
+
+    if (hours < 0 || hours > 23 || minutes < 0 || minutes > 59) {
+        return trimmedValue;
+    }
+
+    return formatTimeShort(new Date(2000, 0, 1, hours, minutes));
+}
+
 export function getTimeOfDayParts(date: Date) {
     const hour = date.getHours();
 

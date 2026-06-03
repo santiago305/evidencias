@@ -276,7 +276,7 @@ export function Bubble({
                 >
                   {time && (
                     <span className="inline-block align-top" dir="auto">
-                      <span className="min-w-0 max-w-full inline font-normal text-[10px] leading-4 text-[rgba(0,0,0,0.6)] wrap-break-word break-all whitespace-pre-line select-text">
+                      <span className="min-w-0 max-w-full inline font-normal text-[10px] leading-4 text-[rgba(0,0,0,0.6)] wrap-break-word break-all whitespace-pre-line select-text segoe-ui">
                         {time}
                       </span>
                     </span>

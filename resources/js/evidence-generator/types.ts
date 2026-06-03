@@ -22,6 +22,7 @@ export interface GeneratedMessage {
     time: string;
     dateKey?: string;
     lines: string[];
+    status?: 'sent' | 'delivered' | 'read';
     quote?: {
         side: 'in' | 'out';
         text: string;
