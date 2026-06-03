@@ -1,9 +1,8 @@
 import { Fragment, useMemo, type ReactNode } from 'react';
 import bgWhatsapp from '../../../assets/1.png';
-import { getDayChipText } from '../../../lib/whatsapp/time';
+import { getDateKeyFromLocalDateTime, getDayChipTextForDate } from '../../../lib/whatsapp/time';
 import type { GeneratedMessage } from '../../../types';
 import { WhatsappInputBar } from './WhatsappInputBar';
-import { createWhatsappAvatarTheme } from './avatarTheme';
 import {
     ActiveTemporalMessage,
     Bubble,
@@ -13,6 +12,7 @@ import {
     TempporalMessage,
     type MsgStatus,
 } from './WhatsappPieces';
+import { createWhatsappAvatarTheme } from './avatarTheme';
 import type { WhatsappConversationMessage } from './buildWhatsappConversation';
 import { buildWhatsappConversation } from './buildWhatsappConversation';
 import type { WhatsappData } from './whatsappTypes';
@@ -21,11 +21,7 @@ const ADVISOR_QUOTE_ACCENT_COLOR = '#0063CB';
 const ADVISOR_QUOTE_AUTHOR_COLOR = '#0078D7';
 
 function buildAvatarSeed(data: WhatsappData): string {
-    return (
-        [data.telefono, data.nombre, data.dni, data.nombreAsesor]
-            .map((value) => value?.trim())
-            .find((value) => !!value) ?? 'contact'
-    );
+    return [data.telefono, data.nombre, data.dni, data.nombreAsesor].map((value) => value?.trim()).find((value) => !!value) ?? 'contact';
 }
 
 function lightenHexColor(hexColor: string, ratio = 0.2): string {
@@ -46,6 +42,10 @@ function linesToSpans(lines: ReactNode[]) {
         const key = typeof line === 'string' ? `${idx}-${line.slice(0, 8)}` : `${idx}`;
         return <span key={key}>{line}</span>;
     });
+}
+
+function resolveMessageDateKey(message: WhatsappConversationMessage, fallbackDateKey: string): string {
+    return message.dateKey ?? fallbackDateKey;
 }
 
 export function WhatsappConversation({
@@ -91,6 +91,13 @@ export function WhatsappConversation({
         };
     }, [data]);
 
+    const fallbackDateKey = useMemo(
+        () => getDateKeyFromLocalDateTime(data.fechaHora) ?? getDateKeyFromLocalDateTime(data.fechaHoraRegistro) ?? '',
+        [data.fechaHora, data.fechaHoraRegistro],
+    );
+    const dayChipReference = data.fechaHoraRegistro || data.fechaHora;
+    const firstDayChipDateKey = conversationMessages[0] ? resolveMessageDateKey(conversationMessages[0], fallbackDateKey) : fallbackDateKey;
+
     return (
         <div className="h-full w-full overflow-hidden">
             {/* Fondo WhatsApp */}
@@ -101,13 +108,16 @@ export function WhatsappConversation({
                     {/* Mensajes */}
                     <div className="min-h-0 flex-1 overflow-hidden">
                         <div className="scrollbar-soft h-full w-full overflow-y-auto">
-                            <DayChip text={getDayChipText(data.fechaHora)} />
+                            {firstDayChipDateKey !== '' && <DayChip text={getDayChipTextForDate(firstDayChipDateKey, dayChipReference)} />}
                             <EncryptedMessage />
                             {showDefaultTemporalMessage && <TempporalMessage />}
 
                             {conversationMessages.map((msg, idx) => {
                                 const prev = conversationMessages[idx - 1];
                                 const next = conversationMessages[idx + 1];
+                                const currentDateKey = resolveMessageDateKey(msg, fallbackDateKey);
+                                const previousDateKey = prev ? resolveMessageDateKey(prev, fallbackDateKey) : null;
+                                const showsDayChip = currentDateKey !== '' && idx > 0 && currentDateKey !== previousDateKey;
                                 const markerBeforeCurrent = resolvedInlineTemporalInsertIndex === idx;
                                 const markerAfterCurrent = resolvedInlineTemporalInsertIndex === idx + 1;
                                 const isFirstInGroup = idx === 0 || markerBeforeCurrent || prev.side !== msg.side;
@@ -115,6 +125,8 @@ export function WhatsappConversation({
                                 const wrapperSpacing = staysInSameGroup ? 'mb-0.5' : 'mb-4';
                                 return (
                                     <Fragment key={`message-${idx}-${msg.side}`}>
+                                        {showsDayChip && <DayChip text={getDayChipTextForDate(currentDateKey, dayChipReference)} />}
+
                                         <div className={wrapperSpacing}>
                                             <Bubble
                                                 side={msg.side}
@@ -124,12 +136,16 @@ export function WhatsappConversation({
                                                 quote={
                                                     msg.quote
                                                         ? {
-                                                              author: msg.quote.side === 'out' ? 'Tú' : displayTitle ?? 'Cliente',
+                                                              author: msg.quote.side === 'out' ? 'Tú' : (displayTitle ?? 'Cliente'),
                                                               text: msg.quote.text,
                                                               accentColor:
-                                                                  msg.quote.side === 'out' ? ADVISOR_QUOTE_ACCENT_COLOR : clientQuoteTheme.accentColor,
+                                                                  msg.quote.side === 'out'
+                                                                      ? ADVISOR_QUOTE_ACCENT_COLOR
+                                                                      : clientQuoteTheme.accentColor,
                                                               authorColor:
-                                                                  msg.quote.side === 'out' ? ADVISOR_QUOTE_AUTHOR_COLOR : clientQuoteTheme.authorColor,
+                                                                  msg.quote.side === 'out'
+                                                                      ? ADVISOR_QUOTE_AUTHOR_COLOR
+                                                                      : clientQuoteTheme.authorColor,
                                                           }
                                                         : undefined
                                                 }

@@ -504,6 +504,26 @@ test('generated conversation finishes before registration time and keeps duratio
     expect((int) $conversationDurationMinutes)->toBe(100);
 });
 
+test('generated conversation includes a date key for each rendered message', function () {
+    $user = User::factory()->create();
+
+    createConversationForTest('conv_date_key_001', [
+        ['side' => 'out', 'delay_minutes' => 0, 'lines' => ['Inicio']],
+        ['side' => 'in', 'delay_minutes' => 2, 'lines' => ['Cambio de dia']],
+    ]);
+
+    $response = $this->actingAs($user)->postJson(route('evidences.generate'), [
+        ...evidencePayload(),
+        'fechaHora' => '2026-06-02T23:45',
+        'fechaHoraRegistro' => '2026-06-03T00:20',
+        'duracion' => '25',
+    ]);
+
+    $response->assertOk()
+        ->assertJsonPath('messages.0.dateKey', '2026-06-02')
+        ->assertJsonPath('messages.1.dateKey', '2026-06-03');
+});
+
 test('generated conversation rejects durations that start before the minimum timestamp', function () {
     $user = User::factory()->create();
 

@@ -6,6 +6,10 @@ export interface ConversationVariable {
 export function buildConversationVariables(): ConversationVariable[] {
     return [
         {
+            key: 'saludo',
+            placeholder: '{saludo}',
+        },
+        {
             key: 'nombre_cliente',
             placeholder: '{nombre_cliente}',
         },

@@ -14,7 +14,7 @@ class ConversationRenderService
 
     /**
      * @param  array<string, mixed>  $input
-     * @return list<array{side:string,time:string,lines:list<string>,quote?:array{side:string,text:string}}>
+     * @return list<array{side:string,time:string,dateKey:string,lines:list<string>,quote?:array{side:string,text:string}}>
      */
     public function render(Conversation $conversation, array $input): array
     {
@@ -73,6 +73,7 @@ class ConversationRenderService
             $renderedMessage = [
                 'side' => $message->side,
                 'time' => $clock->format('H:i'),
+                'dateKey' => $clock->format('Y-m-d'),
                 'lines' => $lines,
             ];
 

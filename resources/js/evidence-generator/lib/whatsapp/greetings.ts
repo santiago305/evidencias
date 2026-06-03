@@ -1,4 +1,4 @@
-import { greetingMatchers } from "../../config/whatsapp/greetings";
+import { greetingMatchers } from "../../config/whatsapp/greetings.ts";
 
 export function getGreetingSlot(text: string) {
   for (const item of greetingMatchers) {

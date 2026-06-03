@@ -62,7 +62,7 @@ class EvidenceGeneratorService
      * @return array{
      *   conversationId:string,
      *   seedCode:string,
-     *   messages:list<array{side:string,time:string,lines:list<string>}>,
+     *   messages:list<array{side:string,time:string,dateKey:string,lines:list<string>}>,
      *   previewSnapshot:array{
      *     messageStatus:'read'|'delivered',
      *     temporalBehavior:array{
@@ -377,7 +377,7 @@ class EvidenceGeneratorService
 
     /**
      * @param  array<string, mixed>  $input
-     * @param  list<array{side:string,time:string,lines:list<string>}>  $messages
+     * @param  list<array{side:string,time:string,dateKey:string,lines:list<string>}>  $messages
      * @param  array{taskbarColor:string,icons:list<array{key:string,glyph:string,title:string,className:string|null,iconClassName:string|null}>,language:array{top:string,bottom:string|null},languagePosition:'next-to-hidden'|'next-to-clock'}  $trayProfile
      * @return array{
      *   messageStatus:'read'|'delivered',

@@ -7,6 +7,10 @@ test('buildConversationVariables exposes only canonical placeholders in order', 
 
     assert.deepEqual(variables, [
         {
+            key: 'saludo',
+            placeholder: '{saludo}',
+        },
+        {
             key: 'nombre_cliente',
             placeholder: '{nombre_cliente}',
         },

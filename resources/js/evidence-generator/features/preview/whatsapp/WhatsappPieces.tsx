@@ -151,10 +151,10 @@ function QuotedMessageBox({ quote }: { quote: QuotedMessage }) {
         />
 
         <div className="flex min-w-0 flex-col gap-1.5 px-2 pt-1 pb-2">
-          <p className="truncate text-[11.5px] font-semibold leading-4 text-[#0078D7]" style={quote.authorColor ? { color: quote.authorColor } : undefined}>
+          <p className="truncate text-[10.5px] font-semibold leading-4 text-[#0078D7]" style={quote.authorColor ? { color: quote.authorColor } : undefined}>
             {quote.author}
           </p>
-          <p className="line-clamp-2 text-[12.5px] leading-4 text-black/60">{quote.text}</p>
+          <p className="line-clamp-2 text-[11px] leading-4 text-black/60">{quote.text}</p>
         </div>
       </div>
     </div>
@@ -244,7 +244,7 @@ export function Bubble({
           <div className="box-border p-1 select-text">
             {quote ? <QuotedMessageBox quote={quote} /> : null}
 
-            <div className="relative overflow-hidden whitespace-pre-wrap break-words pb-1.5 ps-1.75 pt-1">
+            <div className="relative overflow-hidden whitespace-pre-wrap break-words pb-1.5 ps-1.75 pt-1 ">
               <span
                 data-testid="selectable-text"
                 dir="ltr"
@@ -266,15 +266,27 @@ export function Bubble({
             </div>
 
             {(time || (isOut && status)) && (
-              <div className="relative z-10 float-right -mb-1.25 -mt-2.5 ps-1 pe-0">
-                <div className="flex h-3.75 items-center whitespace-nowrap text-[0.6875rem] leading-3.75 text-black/60">
-                  {time ? <span className="text-[10.5px] leading-4 text-black/60">{time}</span> : null}
+              <div className="relative z-10 float-right -mt-2.5 -mb-1.25 ps-1 pe-0">
+                <div
+                  className={[
+                    "flex items-center h-3.75 whitespace-nowrap text-[0.6875rem] leading-3.75",
+                    "text-[rgba(0,0,0,0.6)]",
+                    isOut ? "cursor-pointer" : "",
+                  ].join(" ")}
+                >
+                  {time && (
+                    <span className="inline-block align-top" dir="auto">
+                      <span className="min-w-0 max-w-full inline font-normal text-[10px] leading-4 text-[rgba(0,0,0,0.6)] wrap-break-word break-all whitespace-pre-line select-text">
+                        {time}
+                      </span>
+                    </span>
+                  )}
 
-                  {isOut && status ? (
+                  {isOut && status && (
                     <div className="inline-block ps-0.75">
                       <Ticks status={status} />
                     </div>
-                  ) : null}
+                  )}
                 </div>
               </div>
             )}
