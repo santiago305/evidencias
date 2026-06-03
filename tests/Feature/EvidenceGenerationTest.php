@@ -4,6 +4,7 @@ use App\Models\Conversation;
 use App\Models\ConversationMessage;
 use App\Models\User;
 use App\Models\UserConversationProgress;
+use App\Services\Conversation\ConversationRenderService;
 use Carbon\Carbon;
 
 function createConversationForTest(string $code, array $messages): Conversation
@@ -508,8 +509,8 @@ test('generated conversation includes a date key for each rendered message', fun
     $user = User::factory()->create();
 
     createConversationForTest('conv_date_key_001', [
-        ['side' => 'out', 'delay_minutes' => 0, 'lines' => ['Inicio']],
-        ['side' => 'in', 'delay_minutes' => 2, 'lines' => ['Cambio de dia']],
+        ['side' => 'in', 'delay_minutes' => 0, 'lines' => ['Inicio']],
+        ['side' => 'out', 'delay_minutes' => 2, 'lines' => ['Cambio de dia']],
     ]);
 
     $response = $this->actingAs($user)->postJson(route('evidences.generate'), [
@@ -522,6 +523,32 @@ test('generated conversation includes a date key for each rendered message', fun
     $response->assertOk()
         ->assertJsonPath('messages.0.dateKey', '2026-06-02')
         ->assertJsonPath('messages.1.dateKey', '2026-06-03');
+});
+
+test('rendered advisor replies wait until working hours after overnight client messages', function () {
+    $conversation = createConversationForTest('conv_night_hours_001', [
+        ['side' => 'out', 'delay_minutes' => 0, 'lines' => ['Inicio']],
+        ['side' => 'in', 'delay_minutes' => 132, 'lines' => ['Cliente responde de madrugada']],
+        ['side' => 'out', 'delay_minutes' => 14, 'lines' => ['Respuesta asesor']],
+    ]);
+
+    $messages = app(ConversationRenderService::class)->render($conversation, [
+        ...evidencePayload(),
+        'fechaHora' => '2026-06-02T23:15',
+        'fechaHoraRegistro' => '2026-06-03T08:00',
+        'duracion' => '',
+        'previewSeed' => 'night5',
+    ]);
+
+    expect($messages[0]['side'])->toBe('out');
+    expect($messages[0]['time'])->toBe('23:18');
+    expect($messages[0]['dateKey'])->toBe('2026-06-02');
+    expect($messages[1]['side'])->toBe('in');
+    expect($messages[1]['time'])->toBe('01:30');
+    expect($messages[1]['dateKey'])->toBe('2026-06-03');
+    expect($messages[2]['side'])->toBe('out');
+    expect($messages[2]['time'])->toBe('07:00');
+    expect($messages[2]['dateKey'])->toBe('2026-06-03');
 });
 
 test('generated conversation rejects durations that start before the minimum timestamp', function () {

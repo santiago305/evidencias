@@ -8,6 +8,12 @@ use Illuminate\Validation\ValidationException;
 
 class ConversationRenderService
 {
+    private const ADVISOR_SIDE = 'out';
+
+    private const ADVISOR_WORK_START_MINUTES = 420;
+
+    private const ADVISOR_QUIET_START_MINUTES = 1410;
+
     public function __construct(
         private readonly ConversationDelayDistributionService $delayDistributionService,
     ) {}
@@ -65,6 +71,8 @@ class ConversationRenderService
                 $clock->addMinutes((int) ($delays[$index] ?? $message->delay_minutes));
             }
 
+            $this->moveAdvisorReplyToWorkingHours($clock, (string) $message->side);
+
             $lines = [];
             foreach ((array) $message->lines as $line) {
                 $lines[] = $this->interpolate((string) $line, $variables);
@@ -90,6 +98,32 @@ class ConversationRenderService
         }
 
         return $rendered;
+    }
+
+    private function moveAdvisorReplyToWorkingHours(Carbon $clock, string $side): void
+    {
+        if ($side !== self::ADVISOR_SIDE || ! $this->isAdvisorQuietHour($clock)) {
+            return;
+        }
+
+        if ($this->minutesSinceMidnight($clock) >= self::ADVISOR_QUIET_START_MINUTES) {
+            $clock->addDay();
+        }
+
+        $clock->setTime(7, 0);
+    }
+
+    private function isAdvisorQuietHour(Carbon $clock): bool
+    {
+        $minutes = $this->minutesSinceMidnight($clock);
+
+        return $minutes >= self::ADVISOR_QUIET_START_MINUTES
+            || $minutes < self::ADVISOR_WORK_START_MINUTES;
+    }
+
+    private function minutesSinceMidnight(Carbon $clock): int
+    {
+        return ((int) $clock->format('H') * 60) + (int) $clock->format('i');
     }
 
     /**
