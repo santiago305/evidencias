@@ -20,6 +20,7 @@ function createConversationForTest(string $code, array $messages): Conversation
             'side' => $message['side'],
             'delay_minutes' => $message['delay_minutes'],
             'lines' => $message['lines'],
+            'reply_to_position' => $message['reply_to_position'] ?? null,
         ]);
     }
 
@@ -156,6 +157,44 @@ test('authenticated user can update a conversation and replace its messages', fu
     expect($messages[2]['lines'])->toBe(['Nuevo 3']);
 });
 
+test('authenticated user can create a conversation with reply targets', function () {
+    $user = User::factory()->create();
+
+    $response = $this->actingAs($user)->postJson(route('conversations.store'), [
+        'messages' => [
+            ['side' => 'out', 'lines' => ['Mensaje 1']],
+            ['side' => 'in', 'lines' => ['Mensaje 2']],
+            ['side' => 'out', 'lines' => ['Mensaje 3'], 'reply_to_position' => 2],
+        ],
+    ]);
+
+    $response->assertCreated()
+        ->assertJsonPath('data.messages.2.reply_to_position', 2);
+
+    $conversationId = (int) $response->json('data.id');
+    $messages = ConversationMessage::query()
+        ->where('conversation_id', $conversationId)
+        ->orderBy('position')
+        ->get(['position', 'reply_to_position']);
+
+    expect($messages[0]->reply_to_position)->toBeNull();
+    expect($messages[2]->reply_to_position)->toBe(2);
+});
+
+test('conversation reply target must be a previous message', function () {
+    $user = User::factory()->create();
+
+    $response = $this->actingAs($user)->postJson(route('conversations.store'), [
+        'messages' => [
+            ['side' => 'out', 'lines' => ['Mensaje 1'], 'reply_to_position' => 1],
+            ['side' => 'in', 'lines' => ['Mensaje 2']],
+        ],
+    ]);
+
+    $response->assertUnprocessable()
+        ->assertJsonValidationErrors('messages.0.reply_to_position');
+});
+
 test('generate evidence returns seed and rendered messages', function () {
     $user = User::factory()->create();
 
@@ -183,6 +222,31 @@ test('generate evidence returns seed and rendered messages', function () {
         ]);
 
     $this->assertDatabaseCount('generated_evidences', 1);
+});
+
+test('generate evidence returns quote metadata for replied messages', function () {
+    $user = User::factory()->create();
+
+    createConversationForTest('conv_quote_001', [
+        ['side' => 'out', 'delay_minutes' => 0, 'lines' => ['Hola {nombre_cliente}']],
+        ['side' => 'in', 'delay_minutes' => 6, 'lines' => ['Lo reviso'], 'reply_to_position' => 1],
+        ['side' => 'out', 'delay_minutes' => 6, 'lines' => ['Gracias'], 'reply_to_position' => 2],
+    ]);
+
+    $response = $this->actingAs($user)->postJson(route('evidences.generate'), evidencePayload());
+
+    $response->assertOk();
+
+    $messages = $response->json('messages');
+
+    expect($messages[1]['quote'])->toBe([
+        'side' => 'out',
+        'text' => 'Hola Juan Perez',
+    ]);
+    expect($messages[2]['quote'])->toBe([
+        'side' => 'in',
+        'text' => 'Lo reviso',
+    ]);
 });
 
 test('generate evidence renders only canonical client and advisor name variables', function () {

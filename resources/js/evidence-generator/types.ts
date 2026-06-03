@@ -27,6 +27,10 @@ export interface GeneratedMessage {
   side: "in" | "out";
   time: string;
   lines: string[];
+  quote?: {
+    side: "in" | "out";
+    text: string;
+  };
 }
 
 export interface ConversationProgressSummary {

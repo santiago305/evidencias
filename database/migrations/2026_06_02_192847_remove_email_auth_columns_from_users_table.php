@@ -17,7 +17,7 @@ return new class extends Migration
             users: $this->usersWithoutEmailColumns(),
             definition: function (Blueprint $table): void {
                 $table->id();
-                $table->string('dni', 8)->unique();
+                $table->string('dni', 8);
                 $table->string('name');
                 $table->string('windows_tray_color', 7)->nullable();
                 $table->json('windows_tray_config')->nullable();
@@ -41,16 +41,17 @@ return new class extends Migration
             definition: function (Blueprint $table): void {
                 $table->id();
                 $table->string('name');
-                $table->string('dni', 8)->unique();
+                $table->string('dni', 8);
                 $table->string('windows_tray_color', 7)->nullable();
                 $table->json('windows_tray_config')->nullable();
-                $table->string('email')->unique();
+                $table->string('email');
                 $table->timestamp('email_verified_at')->nullable();
                 $table->string('password');
                 $table->rememberToken();
                 $table->timestamps();
             },
             newTable: 'users_rebuilt',
+            restoreEmailIndex: true,
         );
 
         Schema::create('password_reset_tokens', function (Blueprint $table): void {
@@ -73,8 +74,8 @@ return new class extends Migration
                     'id' => $user->id,
                     'dni' => $user->dni,
                     'name' => $user->name,
-                    'windows_tray_color' => $user->windows_tray_color,
-                    'windows_tray_config' => $user->windows_tray_config,
+                    'windows_tray_color' => $this->nullableColumnValue($user, 'windows_tray_color'),
+                    'windows_tray_config' => $this->nullableColumnValue($user, 'windows_tray_config'),
                     'password' => $user->password,
                     'remember_token' => $user->remember_token,
                     'created_at' => $user->created_at,
@@ -96,8 +97,8 @@ return new class extends Migration
                     'id' => $user->id,
                     'name' => $user->name,
                     'dni' => $user->dni,
-                    'windows_tray_color' => $user->windows_tray_color,
-                    'windows_tray_config' => $user->windows_tray_config,
+                    'windows_tray_color' => $this->nullableColumnValue($user, 'windows_tray_color'),
+                    'windows_tray_config' => $this->nullableColumnValue($user, 'windows_tray_config'),
                     'email' => "dni{$user->dni}@example.local",
                     'email_verified_at' => null,
                     'password' => $user->password,
@@ -112,7 +113,7 @@ return new class extends Migration
      * @param  Collection<int, array<string, mixed>>  $users
      * @param  Closure(Blueprint): void  $definition
      */
-    private function rebuildUsersTable(Collection $users, Closure $definition, string $newTable): void
+    private function rebuildUsersTable(Collection $users, Closure $definition, string $newTable, bool $restoreEmailIndex = false): void
     {
         Schema::disableForeignKeyConstraints();
 
@@ -126,8 +127,20 @@ return new class extends Migration
 
             Schema::dropIfExists('users');
             Schema::rename($newTable, 'users');
+            Schema::table('users', function (Blueprint $table) use ($restoreEmailIndex): void {
+                $table->unique('dni', 'users_dni_unique');
+
+                if ($restoreEmailIndex) {
+                    $table->unique('email', 'users_email_unique');
+                }
+            });
         } finally {
             Schema::enableForeignKeyConstraints();
         }
+    }
+
+    private function nullableColumnValue(object $row, string $column): mixed
+    {
+        return property_exists($row, $column) ? $row->{$column} : null;
     }
 };

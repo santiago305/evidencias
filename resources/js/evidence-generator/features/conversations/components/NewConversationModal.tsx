@@ -15,6 +15,7 @@ import { insertTextAtSelection } from '../conversationInsertion';
 interface ConversationDraftMessage {
     id: string;
     side: 'in' | 'out';
+    replyToPosition: number | null;
     linesText: string;
 }
 
@@ -26,12 +27,14 @@ interface SelectionRange {
 export interface NewConversationPayload {
     messages: Array<{
         side: 'in' | 'out';
+        reply_to_position?: number | null;
         lines: string[];
     }>;
 }
 
 export interface ConversationModalMessageDraft {
     side: 'in' | 'out';
+    replyToPosition?: number | null;
     lines: string[];
 }
 
@@ -52,6 +55,7 @@ const createMessageId = () => Math.random().toString(36).slice(2);
 const createEmptyMessage = (): ConversationDraftMessage => ({
     id: createMessageId(),
     side: 'out',
+    replyToPosition: null,
     linesText: '',
 });
 
@@ -79,6 +83,7 @@ export function NewConversationModal({
         return sourceMessages.map((message) => ({
             id: createMessageId(),
             side: message.side,
+            replyToPosition: message.replyToPosition ?? null,
             linesText: message.lines.join('\n'),
         }));
     };
@@ -145,7 +150,26 @@ export function NewConversationModal({
                 return previous;
             }
 
-            return previous.filter((message) => message.id !== id);
+            const removedIndex = previous.findIndex((message) => message.id === id);
+            const removedPosition = removedIndex + 1;
+
+            return previous
+                .filter((message) => message.id !== id)
+                .map((message) => {
+                    if (message.replyToPosition === null) {
+                        return message;
+                    }
+
+                    if (message.replyToPosition === removedPosition) {
+                        return { ...message, replyToPosition: null };
+                    }
+
+                    if (message.replyToPosition > removedPosition) {
+                        return { ...message, replyToPosition: message.replyToPosition - 1 };
+                    }
+
+                    return message;
+                });
         });
 
         setCollapsedMessages((previous) => {
@@ -221,6 +245,7 @@ export function NewConversationModal({
         const payload: NewConversationPayload = {
             messages: messages.map((message) => ({
                 side: message.side,
+                reply_to_position: message.replyToPosition,
                 lines: message.linesText
                     .split('\n')
                     .map((line) => line.trim())
@@ -254,6 +279,14 @@ export function NewConversationModal({
                                     .split('\n')
                                     .map((line) => line.trim())
                                     .find(Boolean) || 'Sin mensaje';
+                            const replyTarget =
+                                message.replyToPosition !== null && message.replyToPosition > 0
+                                    ? messages[message.replyToPosition - 1]
+                                    : null;
+                            const replyTargetLabel = replyTarget
+                                ? `Responde a mensaje ${message.replyToPosition}`
+                                : null;
+                            const previousMessages = messages.slice(0, index);
 
                             return (
                                 <div key={message.id} className="rounded-lg border border-slate-200 bg-white">
@@ -273,6 +306,12 @@ export function NewConversationModal({
                                                 <span className="rounded bg-slate-100 px-2 py-0.5 text-[11px] font-medium text-slate-600">
                                                     {message.side === 'out' ? 'Asesor' : 'Cliente'}
                                                 </span>
+
+                                                {replyTargetLabel ? (
+                                                    <span className="rounded bg-blue-50 px-2 py-0.5 text-[11px] font-medium text-blue-700">
+                                                        {replyTargetLabel}
+                                                    </span>
+                                                ) : null}
                                             </div>
 
                                             {isCollapsed ? <p className="mt-0.5 truncate text-xs text-slate-400">{firstLine}</p> : null}
@@ -303,6 +342,65 @@ export function NewConversationModal({
                                                     <option value="out">Asesor</option>
                                                     <option value="in">Cliente</option>
                                                 </select>
+
+                                                <DropdownMenu>
+                                                    <DropdownMenuTrigger asChild>
+                                                        <Button type="button" variant="outline" size="sm" className="h-8 px-2 text-xs">
+                                                            Responder
+                                                        </Button>
+                                                    </DropdownMenuTrigger>
+
+                                                    <DropdownMenuContent align="start" className="w-80">
+                                                        <DropdownMenuLabel>Responder a</DropdownMenuLabel>
+                                                        <DropdownMenuSeparator />
+
+                                                        <DropdownMenuItem
+                                                            onSelect={() =>
+                                                                updateMessage(message.id, {
+                                                                    replyToPosition: null,
+                                                                })
+                                                            }
+                                                            className="py-2"
+                                                        >
+                                                            <span className="text-xs font-medium text-slate-700">Sin respuesta</span>
+                                                        </DropdownMenuItem>
+
+                                                        {previousMessages.length > 0 ? <DropdownMenuSeparator /> : null}
+
+                                                        {previousMessages.map((targetMessage, targetIndex) => {
+                                                            const targetPosition = targetIndex + 1;
+                                                            const targetFirstLine =
+                                                                targetMessage.linesText
+                                                                    .split('\n')
+                                                                    .map((line) => line.trim())
+                                                                    .find(Boolean) || 'Sin mensaje';
+
+                                                            return (
+                                                                <DropdownMenuItem
+                                                                    key={targetMessage.id}
+                                                                    onSelect={() =>
+                                                                        updateMessage(message.id, {
+                                                                            replyToPosition: targetPosition,
+                                                                        })
+                                                                    }
+                                                                    className="items-start py-2"
+                                                                >
+                                                                    <div className="min-w-0">
+                                                                        <div className="flex items-center gap-2">
+                                                                            <span className="text-xs font-semibold text-slate-900">
+                                                                                Mensaje {targetPosition}
+                                                                            </span>
+                                                                            <span className="rounded bg-slate-100 px-1.5 py-0.5 text-[10px] font-medium text-slate-600">
+                                                                                {targetMessage.side === 'out' ? 'Asesor' : 'Cliente'}
+                                                                            </span>
+                                                                        </div>
+                                                                        <p className="mt-0.5 truncate text-xs text-slate-500">{targetFirstLine}</p>
+                                                                    </div>
+                                                                </DropdownMenuItem>
+                                                            );
+                                                        })}
+                                                    </DropdownMenuContent>
+                                                </DropdownMenu>
 
                                                 <DropdownMenu>
                                                     <DropdownMenuTrigger asChild>

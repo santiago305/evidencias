@@ -395,6 +395,7 @@ export function PreviewBlockWhatsapp({ data }: PreviewProps) {
                         showDefaultTemporalMessage={temporalBehavior.showDefaultTemporalMessage}
                         inlineTemporalMode={temporalBehavior.inlineTemporalMode}
                         inlineTemporalInsertIndex={data.previewSnapshot?.inlineTemporalInsertIndex ?? null}
+                        displayTitle={contactIdentityDisplay.headerTitle}
                     />
                 </div>
 

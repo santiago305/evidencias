@@ -70,7 +70,7 @@ class ConversationController extends Controller
     }
 
     /**
-     * @param  list<array{side:string,lines:list<string>}>  $messages
+     * @param  list<array{side:string,reply_to_position?:int|null,lines:list<string>}>  $messages
      * @param  list<int>  $delays
      */
     private function replaceMessages(Conversation $conversation, array $messages, array $delays): void
@@ -85,6 +85,7 @@ class ConversationController extends Controller
                 'position' => $index + 1,
                 'side' => $message['side'],
                 'delay_minutes' => $delays[$index] ?? 0,
+                'reply_to_position' => $message['reply_to_position'] ?? null,
                 'lines' => $message['lines'],
             ]);
         }

@@ -70,6 +70,14 @@ export function PanelItem({ label, value }: { label: string; value: string }) {
 
 export type MsgStatus = "sent" | "delivered" | "read";
 
+export type QuotedMessage = {
+  author: string;
+  text: string;
+  accentClassName?: string;
+  accentColor?: string;
+  authorColor?: string;
+};
+
 function BubbleTail({
   side,
   colorClass,
@@ -133,6 +141,53 @@ function BubbleTail({
   );
 }
 
+function QuotedMessageBox({ quote }: { quote: QuotedMessage }) {
+  return (
+    <div className="rounded-[7px] bg-black/5">
+      <div className="flex overflow-hidden rounded-[6px]">
+        <div
+          className={["w-1 shrink-0 rounded-s-[6px]", quote.accentColor ? "" : quote.accentClassName ?? "bg-[#0063CB]"].join(" ")}
+          style={quote.accentColor ? { backgroundColor: quote.accentColor } : undefined}
+        />
+
+        <div className="flex min-w-0 flex-col gap-1.5 px-2 pt-1 pb-2">
+          <p className="truncate text-[11.5px] font-semibold leading-4 text-[#0078D7]" style={quote.authorColor ? { color: quote.authorColor } : undefined}>
+            {quote.author}
+          </p>
+          <p className="line-clamp-2 text-[12.5px] leading-4 text-black/60">{quote.text}</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function renderBubbleContent(children: React.ReactNode): React.ReactNode {
+  const nodes = React.Children.toArray(children);
+
+  if (nodes.length <= 1) {
+    return children;
+  }
+
+  return nodes.map((node, idx) => {
+    const isLast = idx === nodes.length - 1;
+
+    if (React.isValidElement<{ className?: string }>(node)) {
+      const currentClassName = node.props.className ?? "";
+      const nextClassName = [currentClassName, !isLast ? "block" : ""].filter(Boolean).join(" ");
+
+      return React.cloneElement(node, {
+        className: nextClassName || undefined,
+      });
+    }
+
+    return (
+      <span key={idx} className={!isLast ? "block" : undefined}>
+        {node}
+      </span>
+    );
+  });
+}
+
 // Placeholder si ya lo tienes, borra esto
 function Ticks({ status }: { status: MsgStatus }) {
   // Solo ejemplo: ajusta a tu implementación real
@@ -155,6 +210,7 @@ export function Bubble({
   time,
   status,
   id,
+  quote,
   children,
 }: {
   side: "in" | "out";
@@ -162,66 +218,19 @@ export function Bubble({
   time?: string;
   status?: MsgStatus;
   id?: string;
+  quote?: QuotedMessage;
   children: React.ReactNode;
 }) {
   const isOut = side === "out";
-
-  // Colores tipo WA
   const bubbleBg = isOut ? "bg-[#D9FDD3]" : "bg-white";
   const tailColor = isOut ? "text-[#D9FDD3]" : "text-white";
-
-  // Cortes de esquina SOLO si es firstInGroup
-  const cornerCut = firstInGroup
-    ? isOut
-      ? "rounded-tr-none"
-      : "rounded-tl-none"
-    : "";
-
-  // Render de contenido:
-  // - Si children trae varios nodos (ej: varios <span>), a todos menos al último les metemos "block"
-  const content = (() => {
-    const arr = React.Children.toArray(children);
-
-    // Si solo hay 1 cosa, no molestamos.
-    if (arr.length <= 1) return children;
-
-    return arr.map((node, idx) => {
-      const isLast = idx === arr.length - 1;
-
-      // Si es un elemento React (ej: <span>), le agregamos className
-      if (React.isValidElement(node)) {
-        const existing = (node.props as any).className ?? "";
-        const add = !isLast ? "block" : "";
-        const merged = [existing, add].filter(Boolean).join(" ");
-
-        return React.cloneElement(node as any, {
-          className: merged || undefined,
-          key: (node as any).key ?? idx,
-        });
-      }
-
-      // Si es texto plano, lo envolvemos para poder aplicar "block"
-      return (
-        <span key={idx} className={!isLast ? "block" : undefined}>
-          {node as any}
-        </span>
-      );
-    });
-  })();
+  const cornerCut = firstInGroup ? (isOut ? "rounded-tr-none" : "rounded-tl-none") : "";
+  const content = renderBubbleContent(children);
 
   return (
-    <div
-      id={id}
-      className={`flex ${isOut ? "justify-end" : "justify-start"} px-15.75`}
-    >
+    <div id={id} className={`flex ${isOut ? "justify-end" : "justify-start"} px-15.75`}>
       <div className="relative max-w-[70%] flex-none text-[14.2px] leading-4.75">
-        {/* Tail SOLO si es primer mensaje del bloque */}
-        {firstInGroup && (
-          <BubbleTail
-            side={isOut ? "right" : "left"}
-            colorClass={tailColor}
-          />
-        )}
+        {firstInGroup && <BubbleTail side={isOut ? "right" : "left"} colorClass={tailColor} />}
 
         <div
           className={[
@@ -232,59 +241,40 @@ export function Bubble({
             "shadow-[0_1px_0.5px_rgba(11,20,26,0.13)]",
           ].join(" ")}
         >
-          <div className="pt-1.5 pb-2 ps-2.25 pe-1.75 box-border select-text">
-            <div className="relative wrap-break-word whitespace-pre-wrap overflow-x-hidden overflow-y-hidden">
-              {/* Contenido */}
+          <div className="box-border p-1 select-text">
+            {quote ? <QuotedMessageBox quote={quote} /> : null}
+
+            <div className="relative overflow-hidden whitespace-pre-wrap break-words pb-1.5 ps-1.75 pt-1">
               <span
                 data-testid="selectable-text"
                 dir="ltr"
-                className="segoe-ui visible select-text font-normal text-[12px] leading-4.5 tracking-[0.01rem]"
+                className="segoe-ui visible select-text text-[12px] font-normal leading-4.5 tracking-[0.01rem]"
                 style={{ minHeight: "0px" }}
               >
                 {content}
               </span>
 
-              {/* Esto imita el “espacio reservado” de WA para que el reloj no pise el texto */}
               <span>
                 <span
                   aria-hidden="true"
-                  className="inline-flex h-0 pt-0 pb-0 align-middle invisible pe-1 ps-1 leading-3.75 text-[0.6875rem]"
+                  className="invisible inline-flex h-0 ps-1 pe-1 align-middle text-[0.6875rem] leading-3.75"
                 >
-                  {
-                    isOut
-                    ? 
-                    <span className="w-4.75 shrink-0 grow-0"></span> 
-                    :
-                    <span></span>
-                  }
+                  {isOut ? <span className="w-4.75 shrink-0 grow-0" /> : null}
                   <span className="shrink-0 grow-0">{time ?? ""}</span>
                 </span>
               </span>
             </div>
 
-            {/* Hora + ticks flotando abajo derecha */}
             {(time || (isOut && status)) && (
-              <div className="relative z-10 float-right -mt-2.5 -mb-1.25 ps-1 pe-0">
-                <div
-                  className={[
-                    "flex items-center h-3.75 whitespace-nowrap text-[0.6875rem] leading-3.75",
-                    "text-[rgba(0,0,0,0.6)]",
-                    isOut ? "cursor-pointer" : "",
-                  ].join(" ")}
-                >
-                  {time && (
-                    <span className="inline-block align-top" dir="auto">
-                      <span className="segoe-ui min-w-0 max-w-full inline font-normal text-[10.5px] leading-4 text-[rgba(0,0,0,0.6)] wrap-break-word break-all whitespace-pre-line select-text">
-                        {time}
-                      </span>
-                    </span>
-                  )}
+              <div className="relative z-10 float-right -mb-1.25 -mt-2.5 ps-1 pe-0">
+                <div className="flex h-3.75 items-center whitespace-nowrap text-[0.6875rem] leading-3.75 text-black/60">
+                  {time ? <span className="text-[10.5px] leading-4 text-black/60">{time}</span> : null}
 
-                  {isOut && status && (
+                  {isOut && status ? (
                     <div className="inline-block ps-0.75">
                       <Ticks status={status} />
                     </div>
-                  )}
+                  ) : null}
                 </div>
               </div>
             )}
@@ -294,7 +284,6 @@ export function Bubble({
     </div>
   );
 }
-
 export function VoiceBubble({
   side,
   firstInGroup,

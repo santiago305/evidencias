@@ -15,10 +15,12 @@ class ConversationMessage extends Model
         'position',
         'side',
         'delay_minutes',
+        'reply_to_position',
         'lines',
     ];
 
     protected $casts = [
+        'reply_to_position' => 'integer',
         'lines' => 'array',
     ];
 

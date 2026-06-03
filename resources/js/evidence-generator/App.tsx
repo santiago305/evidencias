@@ -33,6 +33,7 @@ interface ConversationApiModel {
     code: string;
     messages: Array<{
         side: 'in' | 'out';
+        reply_to_position?: number | null;
         lines: string[];
     }>;
 }
@@ -92,6 +93,7 @@ export default function App({ currentUser }: AppProps) {
                 code: conversation.code,
                 messages: conversation.messages.map((message) => ({
                     side: message.side,
+                    replyToPosition: message.reply_to_position ?? null,
                     lines: message.lines,
                 })),
             }));

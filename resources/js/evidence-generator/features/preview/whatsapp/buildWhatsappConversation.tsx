@@ -32,6 +32,10 @@ export interface WhatsappConversationMessage {
   time: string;
   lines: ReactNode[];
   status?: MsgStatus;
+  quote?: {
+    side: "in" | "out";
+    text: string;
+  };
 }
 
 type ContactadoReplyProfile = "apurado" | "sereno" | "desconfiado";

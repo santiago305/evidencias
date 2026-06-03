@@ -14,7 +14,7 @@ class ConversationRenderService
 
     /**
      * @param  array<string, mixed>  $input
-     * @return list<array{side:string,time:string,lines:list<string>}>
+     * @return list<array{side:string,time:string,lines:list<string>,quote?:array{side:string,text:string}}>
      */
     public function render(Conversation $conversation, array $input): array
     {
@@ -70,11 +70,22 @@ class ConversationRenderService
                 $lines[] = $this->interpolate((string) $line, $variables);
             }
 
-            $rendered[] = [
+            $renderedMessage = [
                 'side' => $message->side,
                 'time' => $clock->format('H:i'),
                 'lines' => $lines,
             ];
+
+            $replyToPosition = $message->reply_to_position;
+            if (is_int($replyToPosition) && $replyToPosition > 0 && isset($rendered[$replyToPosition - 1])) {
+                $quotedMessage = $rendered[$replyToPosition - 1];
+                $renderedMessage['quote'] = [
+                    'side' => (string) $quotedMessage['side'],
+                    'text' => implode("\n", $quotedMessage['lines']),
+                ];
+            }
+
+            $rendered[] = $renderedMessage;
         }
 
         return $rendered;

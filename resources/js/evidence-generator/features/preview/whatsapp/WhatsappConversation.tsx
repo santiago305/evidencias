@@ -3,6 +3,7 @@ import bgWhatsapp from '../../../assets/1.png';
 import { getDayChipText } from '../../../lib/whatsapp/time';
 import type { GeneratedMessage } from '../../../types';
 import { WhatsappInputBar } from './WhatsappInputBar';
+import { createWhatsappAvatarTheme } from './avatarTheme';
 import {
     ActiveTemporalMessage,
     Bubble,
@@ -15,6 +16,30 @@ import {
 import type { WhatsappConversationMessage } from './buildWhatsappConversation';
 import { buildWhatsappConversation } from './buildWhatsappConversation';
 import type { WhatsappData } from './whatsappTypes';
+
+const ADVISOR_QUOTE_ACCENT_COLOR = '#0063CB';
+const ADVISOR_QUOTE_AUTHOR_COLOR = '#0078D7';
+
+function buildAvatarSeed(data: WhatsappData): string {
+    return (
+        [data.telefono, data.nombre, data.dni, data.nombreAsesor]
+            .map((value) => value?.trim())
+            .find((value) => !!value) ?? 'contact'
+    );
+}
+
+function lightenHexColor(hexColor: string, ratio = 0.2): string {
+    const normalized = hexColor.replace('#', '');
+
+    if (!/^[0-9a-fA-F]{6}$/.test(normalized)) {
+        return hexColor;
+    }
+
+    const channels = [0, 2, 4].map((start) => Number.parseInt(normalized.slice(start, start + 2), 16));
+    const nextChannels = channels.map((channel) => Math.round(channel + (255 - channel) * ratio));
+
+    return `#${nextChannels.map((channel) => channel.toString(16).padStart(2, '0')).join('')}`;
+}
 
 function linesToSpans(lines: ReactNode[]) {
     return lines.map((line, idx) => {
@@ -30,6 +55,7 @@ export function WhatsappConversation({
     showDefaultTemporalMessage = true,
     inlineTemporalMode = null,
     inlineTemporalInsertIndex: initialInlineTemporalInsertIndex = null,
+    displayTitle,
 }: {
     data: WhatsappData;
     messageStatus?: MsgStatus;
@@ -37,6 +63,7 @@ export function WhatsappConversation({
     showDefaultTemporalMessage?: boolean;
     inlineTemporalMode?: 'active' | 'deactive' | null;
     inlineTemporalInsertIndex?: number | null;
+    displayTitle?: string;
 }) {
     const conversationMessages = useMemo(
         (): WhatsappConversationMessage[] => messages ?? buildWhatsappConversation(data, messageStatus),
@@ -53,7 +80,16 @@ export function WhatsappConversation({
         }
 
         return Math.floor(Math.random() * (conversationMessages.length - 1)) + 1;
-    }, [conversationMessages, initialInlineTemporalInsertIndex, inlineTemporalMode, data.nombre, data.fechaHora]);
+    }, [conversationMessages, initialInlineTemporalInsertIndex, inlineTemporalMode]);
+
+    const clientQuoteTheme = useMemo(() => {
+        const avatarTheme = createWhatsappAvatarTheme(buildAvatarSeed(data));
+
+        return {
+            accentColor: avatarTheme.icon,
+            authorColor: lightenHexColor(avatarTheme.icon),
+        };
+    }, [data]);
 
     return (
         <div className="h-full w-full overflow-hidden">
@@ -80,7 +116,24 @@ export function WhatsappConversation({
                                 return (
                                     <Fragment key={`message-${idx}-${msg.side}`}>
                                         <div className={wrapperSpacing}>
-                                            <Bubble side={msg.side} firstInGroup={isFirstInGroup} time={msg.time} status={msg.status}>
+                                            <Bubble
+                                                side={msg.side}
+                                                firstInGroup={isFirstInGroup}
+                                                time={msg.time}
+                                                status={msg.status}
+                                                quote={
+                                                    msg.quote
+                                                        ? {
+                                                              author: msg.quote.side === 'out' ? 'Tú' : displayTitle ?? 'Cliente',
+                                                              text: msg.quote.text,
+                                                              accentColor:
+                                                                  msg.quote.side === 'out' ? ADVISOR_QUOTE_ACCENT_COLOR : clientQuoteTheme.accentColor,
+                                                              authorColor:
+                                                                  msg.quote.side === 'out' ? ADVISOR_QUOTE_AUTHOR_COLOR : clientQuoteTheme.authorColor,
+                                                          }
+                                                        : undefined
+                                                }
+                                            >
                                                 {linesToSpans(msg.lines)}
                                             </Bubble>
                                         </div>
