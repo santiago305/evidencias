@@ -296,6 +296,46 @@ test('generate evidence renders client dni variable', function () {
         ->assertJsonPath('messages.0.lines.0', 'DNI cliente 87654321');
 });
 
+test('generate evidence renders gendered advisor variables and capitalizes messages', function () {
+    $user = User::factory()->create([
+        'name' => 'ANA LOPEZ',
+        'sexualidad' => 'F',
+    ]);
+
+    createConversationForTest('conv_gender_001', [
+        ['side' => 'out', 'delay_minutes' => 0, 'lines' => ['hola {saludo}']],
+        ['side' => 'out', 'delay_minutes' => 4, 'lines' => ['{s_asesor(señor)} esto es asi']],
+        ['side' => 'out', 'delay_minutes' => 8, 'lines' => ['{s_asesor(asesor)} asignada']],
+        ['side' => 'out', 'delay_minutes' => 12, 'lines' => ['{s_asesor(estimado)} cliente']],
+    ]);
+
+    $response = $this->actingAs($user)->postJson(route('evidences.generate'), evidencePayload());
+
+    $response->assertOk();
+
+    $messages = $response->json('messages');
+
+    expect($messages[0]['lines'][0])->toBe('Hola buenos dias');
+    expect($messages[1]['lines'][0])->toBe('Señorita esto es asi');
+    expect($messages[2]['lines'][0])->toBe('Asesora asignada');
+    expect($messages[3]['lines'][0])->toBe('Estimada cliente');
+});
+
+test('generate evidence keeps masculine advisor words for masculine users', function () {
+    $user = User::factory()->create([
+        'sexualidad' => 'M',
+    ]);
+
+    createConversationForTest('conv_gender_m_001', [
+        ['side' => 'out', 'delay_minutes' => 0, 'lines' => ['{s_asesor(señor)} {s_asesor(asesor)}']],
+    ]);
+
+    $response = $this->actingAs($user)->postJson(route('evidences.generate'), evidencePayload());
+
+    $response->assertOk()
+        ->assertJsonPath('messages.0.lines.0', 'Señor asesor');
+});
+
 test('generate evidence requires an eight digit client dni', function () {
     $user = User::factory()->create();
 

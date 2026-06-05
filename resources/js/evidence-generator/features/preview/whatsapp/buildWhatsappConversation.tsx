@@ -133,6 +133,7 @@ export function buildWhatsappConversation(data: WhatsappData, messageStatus?: Ms
         saludo,
         tramo,
         montoFormateado: formattedMonto,
+        sexualidadAsesor: data.sexualidadAsesor,
     });
     const extendedTemplateValues = {
         ...templateValues,

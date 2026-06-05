@@ -14,6 +14,28 @@ class ConversationRenderService
 
     private const ADVISOR_QUIET_START_MINUTES = 1410;
 
+    /**
+     * @var array<string, string>
+     */
+    private const FEMININE_ADVISOR_WORDS = [
+        'asesor' => 'asesora',
+        'senor' => 'senorita',
+        'señor' => 'señorita',
+        'sr' => 'srta',
+        'estimado' => 'estimada',
+        'querido' => 'querida',
+        'bienvenido' => 'bienvenida',
+        'interesado' => 'interesada',
+        'aprobado' => 'aprobada',
+        'registrado' => 'registrada',
+        'afiliado' => 'afiliada',
+        'el' => 'ella',
+        'él' => 'ella',
+        'lo' => 'la',
+        'suyo' => 'suya',
+        'mismo' => 'misma',
+    ];
+
     public function __construct(
         private readonly ConversationDelayDistributionService $delayDistributionService,
     ) {}
@@ -75,7 +97,7 @@ class ConversationRenderService
 
             $lines = [];
             foreach ((array) $message->lines as $line) {
-                $lines[] = $this->interpolate((string) $line, $variables);
+                $lines[] = $this->uppercaseFirstLetter($this->interpolate((string) $line, $variables));
             }
 
             $renderedMessage = [
@@ -148,7 +170,7 @@ class ConversationRenderService
     private function buildVariables(array $input, Carbon $baseDate): array
     {
         $hour = (int) $baseDate->format('H');
-        $saludo = $hour < 12 ? 'Buenos dias' : ($hour < 19 ? 'Buenas tardes' : 'Buenas noches');
+        $saludo = $hour < 12 ? 'buenos dias' : ($hour < 19 ? 'buenas tardes' : 'buenas noches');
         $tramo = $hour < 12 ? 'manana' : ($hour < 19 ? 'tarde' : 'noche');
 
         $monto = (string) ($input['monto'] ?? '');
@@ -174,6 +196,7 @@ class ConversationRenderService
             'tasa' => (string) ($input['tasa'] ?? ''),
             'saludo' => $saludo,
             'tramo' => $tramo,
+            'sexualidad_asesor' => in_array($input['sexualidadAsesor'] ?? null, ['M', 'F'], true) ? (string) $input['sexualidadAsesor'] : 'M',
             'duracion' => (string) ($input['duracion'] ?? ''),
             'fecha' => $baseDate->format('Y-m-d'),
             'hora' => $baseDate->format('H:i'),
@@ -209,11 +232,62 @@ class ConversationRenderService
      */
     private function interpolate(string $line, array $variables): string
     {
+        $line = (string) preg_replace_callback('/\{s_asesor\(([^{}()]*)\)\}/u', function ($matches) use ($variables) {
+            $word = trim((string) ($matches[1] ?? ''));
+
+            if ($word === '') {
+                return '';
+            }
+
+            return $this->genderAdvisorWord($word, $variables['sexualidad_asesor'] ?? 'M');
+        }, $line);
+
         return (string) preg_replace_callback('/\{([a-zA-Z0-9_]+)\}/', function ($matches) use ($variables) {
             $key = $matches[1] ?? '';
 
             return $variables[$key] ?? $matches[0];
         }, $line);
+    }
+
+    private function genderAdvisorWord(string $word, string $sexualidad): string
+    {
+        if ($sexualidad !== 'F') {
+            return $word;
+        }
+
+        $lowerWord = mb_strtolower($word, 'UTF-8');
+        $feminineWord = self::FEMININE_ADVISOR_WORDS[$lowerWord] ?? null;
+
+        if ($feminineWord === null && str_ends_with($lowerWord, 'o')) {
+            $feminineWord = mb_substr($lowerWord, 0, -1, 'UTF-8').'a';
+        }
+
+        if ($feminineWord === null) {
+            return $word;
+        }
+
+        return $this->matchWordCase($word, $feminineWord);
+    }
+
+    private function matchWordCase(string $source, string $value): string
+    {
+        if (mb_strtoupper($source, 'UTF-8') === $source) {
+            return mb_strtoupper($value, 'UTF-8');
+        }
+
+        $firstLetter = mb_substr($source, 0, 1, 'UTF-8');
+        if (mb_strtoupper($firstLetter, 'UTF-8') === $firstLetter) {
+            return $this->uppercaseFirstLetter($value);
+        }
+
+        return $value;
+    }
+
+    private function uppercaseFirstLetter(string $value): string
+    {
+        return (string) preg_replace_callback('/\p{L}/u', function ($matches) {
+            return mb_strtoupper((string) $matches[0], 'UTF-8');
+        }, $value, 1);
     }
 
     private function formatMoney(string $value): string

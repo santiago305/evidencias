@@ -23,6 +23,7 @@ class EvidenceController extends Controller
             ...$request->validated(),
             'nombreAsesor' => $user->name,
             'dni' => $user->dni,
+            'sexualidadAsesor' => $user->sexualidad,
         ]);
 
         return response()->json($result);

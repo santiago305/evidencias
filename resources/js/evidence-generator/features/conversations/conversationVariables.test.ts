@@ -27,6 +27,10 @@ test('buildConversationVariables exposes only canonical placeholders in order', 
             placeholder: '{primer_nombre_asesor}',
         },
         {
+            key: 's_asesor',
+            placeholder: '{s_asesor(asesor)}',
+        },
+        {
             key: 'telefono',
             placeholder: '{telefono}',
         },

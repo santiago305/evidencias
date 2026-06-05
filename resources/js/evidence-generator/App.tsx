@@ -18,10 +18,11 @@ import type { ActiveDesign, ConversationProgressSummary, FormState, GeneratedMes
 interface CurrentUser {
     name: string;
     dni: string;
+    sexualidad: 'M' | 'F';
 }
 
 interface AppProps {
-    currentUser: CurrentUser;
+    currentUser?: CurrentUser;
 }
 
 interface ConversationsIndexResponse {
@@ -64,6 +65,11 @@ interface ConversationListItem {
 /* ---------------- App ---------------- */
 // Componente raiz que coordina estado, tabs y vistas.
 export default function App({ currentUser }: AppProps) {
+    const resolvedCurrentUser = currentUser ?? {
+        name: 'Maria Perez',
+        dni: '00000000',
+        sexualidad: 'F' as const,
+    };
     const [activeDesign, setActiveDesign] = useState<ActiveDesign>('whatsapp');
     const [form, setForm] = useState<FormState>(() => createInitialFormState());
 
@@ -123,8 +129,9 @@ export default function App({ currentUser }: AppProps) {
 
             setSaved({
                 ...form,
-                nombreAsesor: currentUser.name,
-                dni: currentUser.dni,
+                nombreAsesor: resolvedCurrentUser.name,
+                dni: resolvedCurrentUser.dni,
+                sexualidadAsesor: resolvedCurrentUser.sexualidad,
                 modoEntrada: pickRandomModoEntrada(),
                 tipoCliente: pickRandomClientProfile(),
                 conversationId: response.conversationId,
@@ -159,10 +166,7 @@ export default function App({ currentUser }: AppProps) {
         try {
             const isEditingConversation = editingConversation !== null;
             const response = isEditingConversation
-                ? await putJson<StoreConversationResponse>(
-                      route('conversations.update', { conversation: editingConversation.id }),
-                      payload,
-                  )
+                ? await putJson<StoreConversationResponse>(route('conversations.update', { conversation: editingConversation.id }), payload)
                 : await postJson<StoreConversationResponse>(route('conversations.store'), payload);
 
             setIsConversationModalOpen(false);

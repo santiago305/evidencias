@@ -12,11 +12,13 @@ test('users can update their profile name and dni', function () {
     $user = User::factory()->create([
         'name' => 'Usuario Original',
         'dni' => '12345678',
+        'sexualidad' => 'M',
     ]);
 
     $response = $this->actingAs($user)->patch('/settings/profile', [
         'name' => 'Ana Lopez',
         'dni' => '87654321',
+        'sexualidad' => 'F',
     ]);
 
     $response->assertRedirect(route('profile.edit', absolute: false));
@@ -25,5 +27,6 @@ test('users can update their profile name and dni', function () {
         'id' => $user->id,
         'name' => 'Ana Lopez',
         'dni' => '87654321',
+        'sexualidad' => 'F',
     ]);
 });

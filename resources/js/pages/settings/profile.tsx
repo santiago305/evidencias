@@ -9,6 +9,7 @@ import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import AppLayout from '@/layouts/app-layout';
 import SettingsLayout from '@/layouts/settings/layout';
 
@@ -22,9 +23,14 @@ const breadcrumbs: BreadcrumbItem[] = [
 export default function Profile() {
     const { auth } = usePage<SharedData>().props;
 
-    const { data, setData, patch, errors, processing, recentlySuccessful } = useForm({
+    const { data, setData, patch, errors, processing, recentlySuccessful } = useForm<{
+        name: string;
+        dni: string;
+        sexualidad: 'M' | 'F';
+    }>({
         name: auth.user.name,
         dni: auth.user.dni,
+        sexualidad: auth.user.sexualidad ?? 'M',
     });
 
     const submit: FormEventHandler = (e) => {
@@ -75,6 +81,22 @@ export default function Profile() {
                             />
 
                             <InputError className="mt-2" message={errors.dni} />
+                        </div>
+
+                        <div className="grid gap-2">
+                            <Label htmlFor="sexualidad">Sexualidad</Label>
+
+                            <Select value={data.sexualidad} onValueChange={(value) => setData('sexualidad', value === 'F' ? 'F' : 'M')}>
+                                <SelectTrigger id="sexualidad" className="mt-1 w-full">
+                                    <SelectValue placeholder="Selecciona una opcion" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="M">Masculino</SelectItem>
+                                    <SelectItem value="F">Femenino</SelectItem>
+                                </SelectContent>
+                            </Select>
+
+                            <InputError className="mt-2" message={errors.sexualidad} />
                         </div>
 
                         <div className="flex items-center gap-4">

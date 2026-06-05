@@ -21,6 +21,7 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
         'dni',
+        'sexualidad',
         'windows_tray_color',
         'windows_tray_config',
         'password',

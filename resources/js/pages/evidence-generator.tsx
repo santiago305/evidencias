@@ -1,7 +1,10 @@
+import { Button } from '@/components/ui/button';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { UserMenuContent } from '@/components/user-menu-content';
 import EvidenceGeneratorApp from '@/evidence-generator/App';
 import { type SharedData } from '@/types';
-import { Head, Link } from '@inertiajs/react';
-import { usePage } from '@inertiajs/react';
+import { Head, usePage } from '@inertiajs/react';
+import { UserRound } from 'lucide-react';
 
 export default function EvidenceGeneratorPage() {
     const { auth } = usePage<SharedData>().props;
@@ -11,14 +14,17 @@ export default function EvidenceGeneratorPage() {
             <Head title="Inicio" />
 
             <div className="absolute top-4 right-4 z-[500]">
-                <Link
-                    href={route('logout')}
-                    method="post"
-                    as="button"
-                    className="rounded-xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-slate-800"
-                >
-                    Cerrar sesion
-                </Link>
+                <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <Button className="h-10 gap-2 rounded-xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-slate-800">
+                            <UserRound className="size-4" />
+                            Usuario
+                        </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent className="w-56" align="end">
+                        <UserMenuContent user={auth.user} />
+                    </DropdownMenuContent>
+                </DropdownMenu>
             </div>
 
             <EvidenceGeneratorApp currentUser={auth.user} />

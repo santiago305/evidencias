@@ -24,6 +24,7 @@ class ProfileUpdateRequest extends FormRequest
                 'digits:8',
                 Rule::unique(User::class)->ignore($this->user()->id),
             ],
+            'sexualidad' => ['required', Rule::in(['M', 'F'])],
         ];
     }
 }

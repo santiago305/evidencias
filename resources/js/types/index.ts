@@ -32,6 +32,7 @@ export interface User {
     id: number;
     name: string;
     dni: string;
+    sexualidad: 'M' | 'F';
     avatar?: string;
     created_at: string;
     updated_at: string;
