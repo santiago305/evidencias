@@ -31,6 +31,10 @@ test('buildConversationVariables exposes only canonical placeholders in order', 
             placeholder: '{telefono}',
         },
         {
+            key: 'dni_cliente',
+            placeholder: '{dni_cliente}',
+        },
+        {
             key: 'monto',
             placeholder: '{monto}',
         },

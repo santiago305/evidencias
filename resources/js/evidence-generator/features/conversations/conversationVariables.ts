@@ -30,6 +30,10 @@ export function buildConversationVariables(): ConversationVariable[] {
             placeholder: '{telefono}',
         },
         {
+            key: 'dni_cliente',
+            placeholder: '{dni_cliente}',
+        },
+        {
             key: 'monto',
             placeholder: '{monto}',
         },

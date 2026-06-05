@@ -164,6 +164,7 @@ class ConversationRenderService
             'nombre_asesor' => $asesorFormatted !== '' ? $asesorFormatted : 'Asesor',
             'primer_nombre_asesor' => $this->getFirstName($asesorFormatted, 'Asesor'),
             'dni' => (string) ($input['dni'] ?? ''),
+            'dni_cliente' => (string) ($input['dniCliente'] ?? ''),
             'telefono' => (string) ($input['telefono'] ?? ''),
             'monto' => $monto,
             'monto_formateado' => $this->formatMoney($monto),

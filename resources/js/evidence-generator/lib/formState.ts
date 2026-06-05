@@ -4,6 +4,7 @@ export function createInitialFormState(): FormState {
     return {
         telefono: '',
         nombre: '',
+        dniCliente: '',
         monto: '',
         tasa: '',
         cuota: '',

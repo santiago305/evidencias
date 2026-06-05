@@ -10,7 +10,9 @@ export function Input({
   placeholder,
   hint,
   readOnly = false,
-  maxLength
+  maxLength,
+  inputMode,
+  pattern
 }: InputProps) {
   return (
     <label className="block">
@@ -28,6 +30,8 @@ export function Input({
           readOnly={readOnly}
           placeholder={placeholder ?? label}
           maxLength={maxLength}
+          inputMode={inputMode}
+          pattern={pattern}
           className={[
             "w-full bg-transparent p-2 text-xs text-slate-900",
             "outline-none placeholder:text-slate-400",

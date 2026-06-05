@@ -7,6 +7,7 @@ export type TipoCliente = 'apurado' | 'sereno' | 'desconfiado' | 'frio' | 'conve
 export interface FormState {
     telefono: string;
     nombre: string;
+    dniCliente: string;
     monto: string;
     tasa: string;
     cuota: string;
@@ -95,6 +96,8 @@ export interface InputProps {
     readOnly?: boolean;
     compact?: boolean;
     maxLength?: number;
+    inputMode?: 'none' | 'text' | 'tel' | 'url' | 'email' | 'numeric' | 'decimal' | 'search';
+    pattern?: string;
 }
 
 export interface PreviewProps {

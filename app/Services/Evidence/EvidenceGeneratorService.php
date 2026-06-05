@@ -418,6 +418,7 @@ class EvidenceGeneratorService
     {
         $values = [
             trim((string) ($input['telefono'] ?? '')),
+            trim((string) ($input['dniCliente'] ?? '')),
             trim((string) ($input['dni'] ?? '')),
             trim((string) ($input['nombre'] ?? '')),
             trim((string) ($input['nombreAsesor'] ?? '')),

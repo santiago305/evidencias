@@ -78,6 +78,17 @@ export function DataForm({
         placeholder="Ej: Juan Pérez"
       />
 
+      <Input
+        label="DNI cliente"
+        id="DNI_CLIENTE"
+        value={form.dniCliente}
+        onChange={onChange("dniCliente")}
+        placeholder="Ej: 12345678"
+        maxLength={8}
+        inputMode="numeric"
+        pattern="[0-9]{8}"
+      />
+
       <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
         <Input
           label="Monto"

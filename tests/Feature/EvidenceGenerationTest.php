@@ -36,6 +36,7 @@ function evidencePayload(): array
     return [
         'telefono' => '999999999',
         'nombre' => 'Juan Perez',
+        'dniCliente' => '12345678',
         'monto' => '1500',
         'tasa' => '2.5',
         'cuota' => '250',
@@ -279,6 +280,38 @@ test('generate evidence renders only canonical client and advisor name variables
     expect($messages[4]['lines'][0])->toBe('Alias viejo {cliente} {asesor} {asesor_nombre}');
 });
 
+test('generate evidence renders client dni variable', function () {
+    $user = User::factory()->create();
+
+    createConversationForTest('conv_dni_cliente_001', [
+        ['side' => 'out', 'delay_minutes' => 0, 'lines' => ['DNI cliente {dni_cliente}']],
+    ]);
+
+    $response = $this->actingAs($user)->postJson(route('evidences.generate'), [
+        ...evidencePayload(),
+        'dniCliente' => '87654321',
+    ]);
+
+    $response->assertOk()
+        ->assertJsonPath('messages.0.lines.0', 'DNI cliente 87654321');
+});
+
+test('generate evidence requires an eight digit client dni', function () {
+    $user = User::factory()->create();
+
+    createConversationForTest('conv_dni_cliente_validation_001', [
+        ['side' => 'out', 'delay_minutes' => 0, 'lines' => ['DNI cliente {dni_cliente}']],
+    ]);
+
+    $response = $this->actingAs($user)->postJson(route('evidences.generate'), [
+        ...evidencePayload(),
+        'dniCliente' => '1234abcd',
+    ]);
+
+    $response->assertUnprocessable()
+        ->assertJsonValidationErrorFor('dniCliente');
+});
+
 test('generate evidence accepts the registration timestamp without advisor identity in the payload', function () {
     $user = User::factory()->create();
 
@@ -289,6 +322,7 @@ test('generate evidence accepts the registration timestamp without advisor ident
     $response = $this->actingAs($user)->postJson(route('evidences.generate'), [
         'telefono' => '999999999',
         'nombre' => 'Juan Perez',
+        'dniCliente' => '12345678',
         'monto' => '1500',
         'tasa' => '2.5',
         'cuota' => '250',

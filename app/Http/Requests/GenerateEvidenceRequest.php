@@ -26,6 +26,7 @@ class GenerateEvidenceRequest extends FormRequest
             'seedCode' => ['nullable', 'string', 'max:100'],
             'telefono' => ['required', 'string', 'max:30'],
             'nombre' => ['required', 'string', 'max:150'],
+            'dniCliente' => ['required', 'string', 'regex:/^\d{8}$/'],
             'monto' => ['required', 'string', 'max:40'],
             'tasa' => ['required', 'string', 'max:40'],
             'cuota' => ['required', 'string', 'max:40'],

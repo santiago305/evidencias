@@ -82,7 +82,9 @@ export default function App({ currentUser }: AppProps) {
     const [editingConversation, setEditingConversation] = useState<ConversationListItem | null>(null);
 
     const handleChange = (key: keyof FormState) => (e: ChangeEvent<HTMLInputElement>) => {
-        setForm((prev) => ({ ...prev, [key]: e.target.value }));
+        const value = key === 'dniCliente' ? e.target.value.replace(/\D/g, '').slice(0, 8) : e.target.value;
+
+        setForm((prev) => ({ ...prev, [key]: value }));
     };
 
     const loadConversations = async () => {
