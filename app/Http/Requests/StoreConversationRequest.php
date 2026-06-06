@@ -17,6 +17,15 @@ class StoreConversationRequest extends FormRequest
         return true;
     }
 
+    protected function prepareForValidation(): void
+    {
+        if (! $this->has('status')) {
+            $this->merge([
+                'status' => 'development',
+            ]);
+        }
+    }
+
     /**
      * Get the validation rules that apply to the request.
      *
@@ -24,8 +33,11 @@ class StoreConversationRequest extends FormRequest
      */
     public function rules(): array
     {
+        $messagesRule = $this->isMethod('post') ? 'required' : 'sometimes';
+
         return [
-            'messages' => ['required', 'array', 'min:1'],
+            'status' => ['required', Rule::in(['production', 'development'])],
+            'messages' => [$messagesRule, 'array', 'min:1'],
             'messages.*.side' => ['required', Rule::in(['in', 'out'])],
             'messages.*.reply_to_position' => ['nullable', 'integer', 'min:1'],
             'messages.*.lines' => ['required', 'array', 'min:1'],

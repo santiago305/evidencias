@@ -37,6 +37,7 @@ class ConversationController extends Controller
             $conversation = Conversation::query()->create([
                 'code' => $conversationCode,
                 'is_active' => true,
+                'status' => $validated['status'],
             ]);
 
             $this->replaceMessages($conversation, $validated['messages'], $delays);
@@ -56,11 +57,17 @@ class ConversationController extends Controller
         ConversationDelayDistributionService $delayDistributionService,
     ): JsonResponse {
         $validated = $request->validated();
-        $delays = $delayDistributionService->distribute($validated['messages']);
+        $messages = $validated['messages'] ?? null;
+        $delays = is_array($messages) ? $delayDistributionService->distribute($messages) : [];
 
-        DB::transaction(function () use ($conversation, $validated, $delays) {
-            $this->replaceMessages($conversation, $validated['messages'], $delays);
-            $conversation->touch();
+        DB::transaction(function () use ($conversation, $validated, $messages, $delays) {
+            $conversation->status = $validated['status'];
+
+            if (is_array($messages)) {
+                $this->replaceMessages($conversation, $messages, $delays);
+            }
+
+            $conversation->save();
         });
 
         return response()->json([

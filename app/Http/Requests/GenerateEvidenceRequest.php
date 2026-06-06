@@ -24,6 +24,7 @@ class GenerateEvidenceRequest extends FormRequest
     {
         return [
             'seedCode' => ['nullable', 'string', 'max:100'],
+            'conversationCode' => ['nullable', 'string', 'max:100'],
             'telefono' => ['required', 'string', 'max:30'],
             'nombre' => ['required', 'string', 'max:150'],
             'dniCliente' => ['required', 'string', 'regex:/^\d{8}$/'],

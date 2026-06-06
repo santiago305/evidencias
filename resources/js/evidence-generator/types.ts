@@ -3,6 +3,7 @@ import type { ChangeEvent } from 'react';
 export type ActiveDesign = 'whatsapp' | 'llamada' | 'sms';
 export type ModoEntrada = 'informativo' | 'contactado';
 export type TipoCliente = 'apurado' | 'sereno' | 'desconfiado' | 'frio' | 'conversador' | 'indeciso';
+export type ConversationStatus = 'production' | 'development';
 
 export interface FormState {
     telefono: string;

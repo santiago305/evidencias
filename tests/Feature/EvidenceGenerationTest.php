@@ -7,11 +7,12 @@ use App\Models\UserConversationProgress;
 use App\Services\Conversation\ConversationRenderService;
 use Carbon\Carbon;
 
-function createConversationForTest(string $code, array $messages): Conversation
+function createConversationForTest(string $code, array $messages, string $status = 'production'): Conversation
 {
     $conversation = Conversation::query()->create([
         'code' => $code,
         'is_active' => true,
+        'status' => $status,
     ]);
 
     foreach ($messages as $index => $message) {
@@ -74,8 +75,9 @@ test('authenticated user can create a conversation manually', function () {
     $response->assertCreated();
     $code = (string) $response->json('data.code');
     expect($code)->toStartWith('conv_');
+    expect($response->json('data.status'))->toBe('development');
 
-    $this->assertDatabaseHas('conversations', ['code' => $code]);
+    $this->assertDatabaseHas('conversations', ['code' => $code, 'status' => 'development']);
     $this->assertDatabaseCount('conversation_messages', 4);
 
     $delays = ConversationMessage::query()
@@ -89,6 +91,28 @@ test('authenticated user can create a conversation manually', function () {
     expect($delays[1])->toBeGreaterThanOrEqual(6)->toBeLessThanOrEqual(720);
     expect($delays[2])->toBeGreaterThanOrEqual(6)->toBeLessThanOrEqual(720);
     expect($delays[3])->toBeGreaterThanOrEqual(6)->toBeLessThanOrEqual(720);
+});
+
+test('authenticated user can create a development conversation manually', function () {
+    $user = User::factory()->create();
+
+    $response = $this->actingAs($user)->postJson(route('conversations.store'), [
+        'status' => 'development',
+        'messages' => [
+            [
+                'side' => 'out',
+                'lines' => ['Hola {nombre_cliente}'],
+            ],
+        ],
+    ]);
+
+    $response->assertCreated()
+        ->assertJsonPath('data.status', 'development');
+
+    $this->assertDatabaseHas('conversations', [
+        'code' => (string) $response->json('data.code'),
+        'status' => 'development',
+    ]);
 });
 
 test('authenticated user can list conversations ordered from newest to oldest', function () {
@@ -126,6 +150,7 @@ test('authenticated user can update a conversation and replace its messages', fu
     ]);
 
     $response = $this->actingAs($user)->putJson(route('conversations.update', ['conversation' => $conversation->id]), [
+        'status' => 'development',
         'messages' => [
             ['side' => 'out', 'lines' => ['Nuevo 1']],
             ['side' => 'in', 'lines' => ['Nuevo 2']],
@@ -140,6 +165,7 @@ test('authenticated user can update a conversation and replace its messages', fu
     $this->assertDatabaseHas('conversations', [
         'id' => $conversation->id,
         'code' => $conversation->code,
+        'status' => 'development',
     ]);
 
     $this->assertDatabaseCount('conversation_messages', 3);
@@ -157,6 +183,38 @@ test('authenticated user can update a conversation and replace its messages', fu
     expect($messages[2]['position'])->toBe(3);
     expect($messages[2]['side'])->toBe('out');
     expect($messages[2]['lines'])->toBe(['Nuevo 3']);
+});
+
+test('authenticated user can update only a conversation status', function () {
+    $user = User::factory()->create();
+
+    $conversation = createConversationForTest('conv_status_001', [
+        ['side' => 'out', 'delay_minutes' => 0, 'lines' => ['Mensaje original']],
+        ['side' => 'in', 'delay_minutes' => 15, 'lines' => ['Respuesta original']],
+    ], 'production');
+
+    $response = $this->actingAs($user)->putJson(route('conversations.update', ['conversation' => $conversation->id]), [
+        'status' => 'development',
+    ]);
+
+    $response->assertOk()
+        ->assertJsonPath('data.id', $conversation->id)
+        ->assertJsonPath('data.status', 'development');
+
+    $this->assertDatabaseHas('conversations', [
+        'id' => $conversation->id,
+        'status' => 'development',
+    ]);
+
+    $messages = ConversationMessage::query()
+        ->where('conversation_id', $conversation->id)
+        ->orderBy('position')
+        ->get(['position', 'side', 'delay_minutes', 'lines'])
+        ->toArray();
+
+    expect($messages)->toHaveCount(2);
+    expect($messages[0]['lines'])->toBe(['Mensaje original']);
+    expect($messages[1]['delay_minutes'])->toBe(15);
 });
 
 test('authenticated user can create a conversation with reply targets', function () {
@@ -224,6 +282,44 @@ test('generate evidence returns seed and rendered messages', function () {
         ]);
 
     $this->assertDatabaseCount('generated_evidences', 1);
+});
+
+test('generate evidence by conversation code can render a development conversation', function () {
+    $user = User::factory()->create();
+
+    createConversationForTest('conv_dev_001', [
+        ['side' => 'out', 'delay_minutes' => 0, 'lines' => ['Prueba {nombre_cliente}']],
+    ], 'development');
+
+    $response = $this->actingAs($user)->postJson(route('evidences.generate'), [
+        ...evidencePayload(),
+        'conversationCode' => 'conv_dev_001',
+    ]);
+
+    $response->assertOk()
+        ->assertJsonPath('conversationId', 'conv_dev_001')
+        ->assertJsonPath('messages.0.lines.0', 'Prueba Juan Perez');
+
+    $this->assertDatabaseMissing('user_conversation_progress', [
+        'user_id' => $user->id,
+    ]);
+});
+
+test('random evidence generation skips development conversations', function () {
+    $user = User::factory()->create();
+
+    createConversationForTest('conv_dev_002', [
+        ['side' => 'out', 'delay_minutes' => 0, 'lines' => ['Desarrollo']],
+    ], 'development');
+    createConversationForTest('conv_prod_001', [
+        ['side' => 'out', 'delay_minutes' => 0, 'lines' => ['Produccion']],
+    ], 'production');
+
+    $response = $this->actingAs($user)->postJson(route('evidences.generate'), evidencePayload());
+
+    $response->assertOk()
+        ->assertJsonPath('conversationId', 'conv_prod_001')
+        ->assertJsonPath('messages.0.lines.0', 'Produccion');
 });
 
 test('generate evidence returns quote metadata for replied messages', function () {

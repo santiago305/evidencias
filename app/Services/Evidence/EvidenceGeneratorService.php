@@ -93,6 +93,7 @@ class EvidenceGeneratorService
     public function generate(User $user, array $input): array
     {
         $seedCode = isset($input['seedCode']) ? trim((string) $input['seedCode']) : '';
+        $conversationCode = isset($input['conversationCode']) ? trim((string) $input['conversationCode']) : '';
 
         $conversation = null;
         $cycle = 1;
@@ -122,6 +123,18 @@ class EvidenceGeneratorService
             $previewSeed = $decoded['preview_seed'] !== null
                 ? (string) $decoded['preview_seed']
                 : strtoupper(substr(hash('sha256', $seedCode), 0, 8));
+        } elseif ($conversationCode !== '') {
+            $conversation = Conversation::query()
+                ->with('messages')
+                ->where('is_active', true)
+                ->where('code', $conversationCode)
+                ->first();
+
+            if (! $conversation) {
+                throw ValidationException::withMessages([
+                    'conversationCode' => 'No se encontró una conversación activa con ese código.',
+                ]);
+            }
         } else {
             $selected = $this->bagService->takeNextForUser($user);
             $conversation = $selected['conversation'];
@@ -139,7 +152,7 @@ class EvidenceGeneratorService
         $seedCode = $this->storeEvidenceWithUniqueSeed($user, $conversation, $cycle, $renderInput, $previewSeed);
 
         $progress = UserConversationProgress::query()->where('user_id', $user->id)->first();
-        $pending = is_array($progress?->pending_ids) ? count($progress->pending_ids) : Conversation::query()->where('is_active', true)->count();
+        $pending = is_array($progress?->pending_ids) ? count($progress->pending_ids) : Conversation::query()->where('is_active', true)->where('status', 'production')->count();
         $used = is_array($progress?->used_ids) ? count($progress->used_ids) : 0;
         $progressCycle = (int) ($progress?->cycle ?? 1);
 
@@ -152,7 +165,7 @@ class EvidenceGeneratorService
                 'cycle' => $progressCycle,
                 'used' => $used,
                 'pending' => $pending,
-                'total' => Conversation::query()->where('is_active', true)->count(),
+                'total' => Conversation::query()->where('is_active', true)->where('status', 'production')->count(),
             ],
             'trayProfile' => $trayProfile,
         ];

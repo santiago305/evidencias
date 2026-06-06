@@ -144,7 +144,7 @@ function BubbleTail({
 function QuotedMessageBox({ quote }: { quote: QuotedMessage }) {
   return (
     <div className="rounded-[7px] bg-black/5">
-      <div className="flex overflow-hidden rounded-[6px]">
+      <div className="flex overflow-hidden rounded-[6px] mb-0.75">
         <div
           className={["w-1 shrink-0 rounded-s-[6px]", quote.accentColor ? "" : quote.accentClassName ?? "bg-[#0063CB]"].join(" ")}
           style={quote.accentColor ? { backgroundColor: quote.accentColor } : undefined}
@@ -244,7 +244,7 @@ export function Bubble({
           <div className="box-border p-1 select-text">
             {quote ? <QuotedMessageBox quote={quote} /> : null}
 
-            <div className="relative overflow-hidden whitespace-pre-wrap break-words pb-1.5 ps-1.75 pt-1 pe-1.75">
+            <div className="relative overflow-hidden whitespace-pre-wrap break-words ps-0.75 pe-0.75">
               <span
                 data-testid="selectable-text"
                 dir="ltr"
@@ -257,9 +257,9 @@ export function Bubble({
               <span>
                 <span
                   aria-hidden="true"
-                  className="invisible inline-flex h-0 ps-1 pe-1 align-middle text-[0.6875rem] leading-3.75"
+                  className="invisible inline-flex h-0 align-middle text-[0.6875rem] leading-3.75 -mr-1"
                 >
-                  {isOut ? <span className="w-4.75 shrink-0 grow-0" /> : null}
+                  {isOut ? <span className="w-4 shrink-0 grow-0" /> : null}
                   <span className="shrink-0 grow-0">{time ?? ""}</span>
                 </span>
               </span>

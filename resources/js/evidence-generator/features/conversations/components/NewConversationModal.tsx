@@ -1,4 +1,5 @@
 import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -7,10 +8,10 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import type { ConversationVariable } from '../conversationVariables';
+import type { ConversationStatus } from '../../../types';
 import { insertTextAtSelection } from '../conversationInsertion';
+import type { ConversationVariable } from '../conversationVariables';
 
 interface ConversationDraftMessage {
     id: string;
@@ -25,6 +26,7 @@ interface SelectionRange {
 }
 
 export interface NewConversationPayload {
+    status: ConversationStatus;
     messages: Array<{
         side: 'in' | 'out';
         reply_to_position?: number | null;
@@ -47,6 +49,7 @@ interface NewConversationModalProps {
     mode?: 'create' | 'edit';
     initialMessages?: ConversationModalMessageDraft[];
     conversationCode?: string | null;
+    initialStatus?: ConversationStatus;
     variables: ConversationVariable[];
 }
 
@@ -68,9 +71,11 @@ export function NewConversationModal({
     mode = 'create',
     initialMessages = [],
     conversationCode = null,
+    initialStatus = 'development',
     variables,
 }: NewConversationModalProps) {
     const [messages, setMessages] = useState<ConversationDraftMessage[]>([createEmptyMessage()]);
+    const [status, setStatus] = useState<ConversationStatus>('development');
     const [collapsedMessages, setCollapsedMessages] = useState<Record<string, boolean>>({});
     const textareaRefs = useRef<Record<string, HTMLTextAreaElement | null>>({});
     const selectionRefs = useRef<Record<string, SelectionRange | null>>({});
@@ -223,6 +228,7 @@ export function NewConversationModal({
 
     const resetForm = () => {
         setMessages(mapDraftMessages(initialMessages));
+        setStatus(initialStatus);
         setCollapsedMessages({});
         selectionRefs.current = {};
     };
@@ -233,9 +239,10 @@ export function NewConversationModal({
         }
 
         setMessages(mapDraftMessages(initialMessages));
+        setStatus(initialStatus);
         setCollapsedMessages({});
         selectionRefs.current = {};
-    }, [initialMessages, open]);
+    }, [initialMessages, initialStatus, open]);
 
     const handleSubmit = async () => {
         if (!canSubmit) {
@@ -243,6 +250,7 @@ export function NewConversationModal({
         }
 
         const payload: NewConversationPayload = {
+            status,
             messages: messages.map((message) => ({
                 side: message.side,
                 reply_to_position: message.replyToPosition,
@@ -264,9 +272,38 @@ export function NewConversationModal({
                     <DialogTitle className="text-base font-semibold text-slate-900">
                         {mode === 'edit' ? 'Editar conversación' : 'Nueva conversación'}
                     </DialogTitle>
-                    {mode === 'edit' && conversationCode ? (
-                        <p className="text-sm text-slate-500">Código: {conversationCode}</p>
-                    ) : null}
+                    {mode === 'edit' && conversationCode ? <p className="text-sm text-slate-500">Código: {conversationCode}</p> : null}
+                    <div className="mt-3 flex items-center gap-2">
+                        <button
+                            type="button"
+                            onClick={() => setStatus('production')}
+                            className={[
+                                'inline-flex h-8 cursor-pointer items-center rounded-md border px-3 text-xs font-bold transition',
+                                status === 'production'
+                                    ? 'border-emerald-600 bg-emerald-600 text-white shadow-sm'
+                                    : 'border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100',
+                            ].join(' ')}
+                        >
+                            P
+                        </button>
+
+                        <button
+                            type="button"
+                            onClick={() => setStatus('development')}
+                            className={[
+                                'inline-flex h-8 cursor-pointer items-center rounded-md border px-3 text-xs font-bold transition',
+                                status === 'development'
+                                    ? 'border-amber-500 bg-amber-500 text-white shadow-sm'
+                                    : 'border-amber-200 bg-amber-50 text-amber-700 hover:bg-amber-100',
+                            ].join(' ')}
+                        >
+                            D
+                        </button>
+
+                        <span className="text-xs text-slate-500">
+                            {status === 'production' ? 'Producción: entra en generación aleatoria' : 'Desarrollo: solo por código'}
+                        </span>
+                    </div>
                 </DialogHeader>
 
                 <div className="max-h-[72vh] overflow-y-auto px-5 py-4">
@@ -280,12 +317,8 @@ export function NewConversationModal({
                                     .map((line) => line.trim())
                                     .find(Boolean) || 'Sin mensaje';
                             const replyTarget =
-                                message.replyToPosition !== null && message.replyToPosition > 0
-                                    ? messages[message.replyToPosition - 1]
-                                    : null;
-                            const replyTargetLabel = replyTarget
-                                ? `Responde a mensaje ${message.replyToPosition}`
-                                : null;
+                                message.replyToPosition !== null && message.replyToPosition > 0 ? messages[message.replyToPosition - 1] : null;
+                            const replyTargetLabel = replyTarget ? `Responde a mensaje ${message.replyToPosition}` : null;
                             const previousMessages = messages.slice(0, index);
 
                             return (
@@ -294,12 +327,16 @@ export function NewConversationModal({
                                         <button
                                             type="button"
                                             onClick={() => toggleCollapsed(message.id)}
-                                            className="flex h-7 w-7 items-center justify-center rounded-md bg-slate-100 text-xs font-medium text-slate-700 hover:bg-slate-200"
+                                            className="flex h-7 w-7 cursor-pointer items-center justify-center rounded-md bg-slate-100 text-xs font-medium text-slate-700 hover:bg-slate-200"
                                         >
                                             {isCollapsed ? '+' : '-'}
                                         </button>
 
-                                        <button type="button" onClick={() => toggleCollapsed(message.id)} className="min-w-0 flex-1 text-left">
+                                        <button
+                                            type="button"
+                                            onClick={() => toggleCollapsed(message.id)}
+                                            className="min-w-0 flex-1 cursor-pointer text-left"
+                                        >
                                             <div className="flex items-center gap-2">
                                                 <span className="text-sm font-medium text-slate-900">Mensaje {index + 1}</span>
 
@@ -321,7 +358,7 @@ export function NewConversationModal({
                                             type="button"
                                             onClick={() => removeMessage(message.id)}
                                             disabled={messages.length === 1}
-                                            className="rounded-md px-2 py-1 text-xs font-medium text-slate-400 hover:bg-slate-100 hover:text-red-600 disabled:cursor-not-allowed disabled:opacity-30"
+                                            className="cursor-pointer rounded-md px-2 py-1 text-xs font-medium text-slate-400 hover:bg-slate-100 hover:text-red-600 disabled:cursor-not-allowed disabled:opacity-30"
                                         >
                                             Eliminar
                                         </button>
@@ -338,7 +375,7 @@ export function NewConversationModal({
                                                         })
                                                     }
                                                     className="h-8 rounded-md border border-slate-200 bg-white px-2 text-xs text-slate-700 outline-none focus:border-slate-400"
-                                                    >
+                                                >
                                                     <option value="out">Asesor</option>
                                                     <option value="in">Cliente</option>
                                                 </select>
@@ -425,7 +462,9 @@ export function NewConversationModal({
                                                                 onSelect={() => insertVariable(message.id, variable.placeholder)}
                                                                 className="py-2"
                                                             >
-                                                                <span className="font-mono text-xs font-medium text-slate-900">{variable.placeholder}</span>
+                                                                <span className="font-mono text-xs font-medium text-slate-900">
+                                                                    {variable.placeholder}
+                                                                </span>
                                                             </DropdownMenuItem>
                                                         ))}
                                                     </DropdownMenuContent>
@@ -461,7 +500,7 @@ export function NewConversationModal({
                     <button
                         type="button"
                         onClick={addMessage}
-                        className="mt-3 w-full rounded-md border border-dashed border-slate-300 py-2 text-sm font-medium text-slate-600 hover:border-slate-400 hover:bg-slate-50"
+                        className="mt-3 w-full cursor-pointer rounded-md border border-dashed border-slate-300 py-2 text-sm font-medium text-slate-600 hover:border-slate-400 hover:bg-slate-50"
                     >
                         + Agregar mensaje
                     </button>
@@ -473,7 +512,7 @@ export function NewConversationModal({
                     <button
                         type="button"
                         onClick={() => onOpenChange(false)}
-                        className="rounded-md px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100"
+                        className="cursor-pointer rounded-md px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100"
                     >
                         Cancelar
                     </button>
@@ -482,7 +521,7 @@ export function NewConversationModal({
                         type="button"
                         onClick={handleSubmit}
                         disabled={!canSubmit || isSubmitting}
-                        className="rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-50"
+                        className="cursor-pointer rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-50"
                     >
                         {isSubmitting ? 'Guardando...' : mode === 'edit' ? 'Guardar cambios' : 'Guardar'}
                     </button>

@@ -13,6 +13,7 @@ class Conversation extends Model
     protected $fillable = [
         'code',
         'is_active',
+        'status',
     ];
 
     protected $casts = [

@@ -13,7 +13,15 @@ import { FormPanel } from './features/editor/components/FormPanel';
 import { PreviewPanel } from './features/preview/components/PreviewPanel';
 import { getJson, postJson, putJson } from './lib/api';
 import { createInitialFormState } from './lib/formState';
-import type { ActiveDesign, ConversationProgressSummary, FormState, GeneratedMessage, SavedData, WindowsTrayProfile } from './types';
+import type {
+    ActiveDesign,
+    ConversationProgressSummary,
+    ConversationStatus,
+    FormState,
+    GeneratedMessage,
+    SavedData,
+    WindowsTrayProfile,
+} from './types';
 
 interface CurrentUser {
     name: string;
@@ -32,6 +40,7 @@ interface ConversationsIndexResponse {
 interface ConversationApiModel {
     id: number;
     code: string;
+    status: ConversationStatus;
     messages: Array<{
         side: 'in' | 'out';
         reply_to_position?: number | null;
@@ -53,12 +62,14 @@ interface StoreConversationResponse {
     data: {
         id: number;
         code: string;
+        status: ConversationStatus;
     };
 }
 
 interface ConversationListItem {
     id: number;
     code: string;
+    status: ConversationStatus;
     messages: ConversationModalMessageDraft[];
 }
 
@@ -77,6 +88,7 @@ export default function App({ currentUser }: AppProps) {
     const [isGenerating, setIsGenerating] = useState(false);
     const [generatedSeedCode, setGeneratedSeedCode] = useState('');
     const [seedCodeInput, setSeedCodeInput] = useState('');
+    const [conversationCodeInput, setConversationCodeInput] = useState('');
     const [progress, setProgress] = useState<ConversationProgressSummary | null>(null);
     const [conversationsCount, setConversationsCount] = useState(0);
     const [feedbackMessage, setFeedbackMessage] = useState<string | null>(null);
@@ -99,6 +111,7 @@ export default function App({ currentUser }: AppProps) {
             const normalizedConversations: ConversationListItem[] = response.data.map((conversation) => ({
                 id: conversation.id,
                 code: conversation.code,
+                status: conversation.status,
                 messages: conversation.messages.map((message) => ({
                     side: message.side,
                     replyToPosition: message.reply_to_position ?? null,
@@ -125,6 +138,7 @@ export default function App({ currentUser }: AppProps) {
             const response = await postJson<GenerateEvidenceResponse>(route('evidences.generate'), {
                 ...form,
                 ...(seedCodeInput.trim() !== '' ? { seedCode: seedCodeInput.trim() } : {}),
+                ...(seedCodeInput.trim() === '' && conversationCodeInput.trim() !== '' ? { conversationCode: conversationCodeInput.trim() } : {}),
             });
 
             setSaved({
@@ -146,6 +160,7 @@ export default function App({ currentUser }: AppProps) {
             setFeedbackMessage(`Conversacion usada: ${response.conversationId}`);
             setForm(createInitialFormState());
             setSeedCodeInput('');
+            setConversationCodeInput('');
         } catch (error) {
             const errorPayload = error as {
                 errors?: Record<string, string[]>;
@@ -190,6 +205,33 @@ export default function App({ currentUser }: AppProps) {
         }
     };
 
+    const handleChangeConversationStatus = async (conversationId: number, status: ConversationStatus) => {
+        const conversation = conversations.find((item) => item.id === conversationId);
+
+        if (!conversation || conversation.status === status) {
+            return;
+        }
+
+        setFeedbackMessage(null);
+
+        try {
+            await putJson<StoreConversationResponse>(route('conversations.update', { conversation: conversation.id }), {
+                status,
+            });
+
+            setConversations((previous) => previous.map((item) => (item.id === conversationId ? { ...item, status } : item)));
+            setFeedbackMessage(`Conversacion ${conversation.code} marcada como ${status === 'production' ? 'produccion' : 'desarrollo'}.`);
+        } catch (error) {
+            const errorPayload = error as {
+                errors?: Record<string, string[]>;
+                message?: string;
+            };
+            const firstError = errorPayload?.errors && Object.values(errorPayload.errors)[0] && Object.values(errorPayload.errors)[0][0];
+
+            setFeedbackMessage(firstError ?? errorPayload?.message ?? 'No se pudo actualizar el estado de la conversacion.');
+        }
+    };
+
     const tabItems = useMemo(
         () =>
             [
@@ -219,6 +261,8 @@ export default function App({ currentUser }: AppProps) {
                         generatedSeedCode={generatedSeedCode}
                         seedCodeInput={seedCodeInput}
                         onSeedCodeInputChange={setSeedCodeInput}
+                        conversationCodeInput={conversationCodeInput}
+                        onConversationCodeInputChange={setConversationCodeInput}
                         progress={progress}
                         conversationsCount={conversationsCount}
                         onOpenConversationModal={() => {
@@ -249,6 +293,7 @@ export default function App({ currentUser }: AppProps) {
                 mode={editingConversation ? 'edit' : 'create'}
                 initialMessages={editingConversation?.messages ?? []}
                 conversationCode={editingConversation?.code ?? null}
+                initialStatus={editingConversation?.status ?? 'development'}
                 variables={conversationVariables}
             />
 
@@ -259,7 +304,9 @@ export default function App({ currentUser }: AppProps) {
                     id: conversation.id,
                     code: conversation.code,
                     messagesCount: conversation.messages.length,
+                    status: conversation.status,
                 }))}
+                onChangeStatus={handleChangeConversationStatus}
                 onSelectConversation={(conversationId) => {
                     const selectedConversation = conversations.find((conversation) => conversation.id === conversationId);
                     if (!selectedConversation) {

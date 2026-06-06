@@ -20,12 +20,13 @@ class ConversationBagService
     {
         $allIds = Conversation::query()
             ->where('is_active', true)
+            ->where('status', 'production')
             ->orderBy('id')
             ->pluck('id')
             ->all();
 
         if ($allIds === []) {
-            abort(422, 'No hay conversaciones activas registradas.');
+            abort(422, 'No hay conversaciones de producción activas registradas.');
         }
 
         $conversationId = null;
