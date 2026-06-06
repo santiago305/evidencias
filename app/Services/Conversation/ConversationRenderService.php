@@ -173,6 +173,9 @@ class ConversationRenderService
         $saludo = $hour < 12 ? 'buenos dias' : ($hour < 19 ? 'buenas tardes' : 'buenas noches');
         $tramo = $hour < 12 ? 'manana' : ($hour < 19 ? 'tarde' : 'noche');
 
+        $previewSeed = isset($input['previewSeed']) && is_string($input['previewSeed']) && trim($input['previewSeed']) !== ''
+            ? trim($input['previewSeed'])
+            : null;
         $monto = (string) ($input['monto'] ?? '');
         $cuota = (string) ($input['cuota'] ?? '');
         $asesor = trim((string) ($input['nombreAsesor'] ?? ''));
@@ -188,7 +191,7 @@ class ConversationRenderService
             'dni' => (string) ($input['dni'] ?? ''),
             'dni_cliente' => (string) ($input['dniCliente'] ?? ''),
             'telefono' => (string) ($input['telefono'] ?? ''),
-            'monto' => $monto,
+            'monto' => $this->formatFlexibleAmount($monto, $previewSeed),
             'monto_formateado' => $this->formatMoney($monto),
             'cuota' => $cuota,
             'cuota_formateada' => $this->formatMoney($cuota),
@@ -300,6 +303,30 @@ class ConversationRenderService
         $number = (float) $normalized;
 
         return number_format($number, 2, '.', ',');
+    }
+
+    private function formatFlexibleAmount(string $value, ?string $previewSeed): string
+    {
+        $digits = preg_replace('/\D/', '', $value);
+        if ($digits === null || $digits === '') {
+            return $value;
+        }
+
+        if (strlen($digits) < 4) {
+            return $digits;
+        }
+
+        $variant = $previewSeed !== null
+            ? $this->seededInt("{$previewSeed}|monto-format|{$digits}", 0, 2)
+            : random_int(0, 2);
+
+        if ($variant === 0) {
+            return $digits;
+        }
+
+        $separator = $variant === 1 ? ',' : ' ';
+
+        return (string) preg_replace('/\B(?=(\d{3})+(?!\d))/', $separator, $digits);
     }
 
     private function seededInt(string $seed, int $min, int $max): int

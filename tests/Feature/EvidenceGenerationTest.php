@@ -392,6 +392,50 @@ test('generate evidence renders client dni variable', function () {
         ->assertJsonPath('messages.0.lines.0', 'DNI cliente 87654321');
 });
 
+test('generate evidence renders amount variable with a flexible thousands separator', function () {
+    $user = User::factory()->create();
+
+    createConversationForTest('conv_monto_variable_001', [
+        ['side' => 'out', 'delay_minutes' => 0, 'lines' => ['Monto S/{monto}']],
+    ]);
+
+    $response = $this->actingAs($user)->postJson(route('evidences.generate'), [
+        ...evidencePayload(),
+        'conversationCode' => 'conv_monto_variable_001',
+        'monto' => '99999',
+    ]);
+
+    $response->assertOk();
+
+    expect($response->json('messages.0.lines.0'))->toBeIn([
+        'Monto S/99999',
+        'Monto S/99,999',
+        'Monto S/99 999',
+    ]);
+});
+
+test('generate evidence can render four digit amount variable with a flexible thousands separator', function () {
+    $user = User::factory()->create();
+
+    createConversationForTest('conv_monto_variable_002', [
+        ['side' => 'out', 'delay_minutes' => 0, 'lines' => ['Monto S/{monto}']],
+    ]);
+
+    $response = $this->actingAs($user)->postJson(route('evidences.generate'), [
+        ...evidencePayload(),
+        'conversationCode' => 'conv_monto_variable_002',
+        'monto' => '3250',
+    ]);
+
+    $response->assertOk();
+
+    expect($response->json('messages.0.lines.0'))->toBeIn([
+        'Monto S/3250',
+        'Monto S/3,250',
+        'Monto S/3 250',
+    ]);
+});
+
 test('generate evidence renders gendered advisor variables and capitalizes messages', function () {
     $user = User::factory()->create([
         'name' => 'ANA LOPEZ',

@@ -13,6 +13,7 @@ import { FormPanel } from './features/editor/components/FormPanel';
 import { PreviewPanel } from './features/preview/components/PreviewPanel';
 import { getJson, postJson, putJson } from './lib/api';
 import { createInitialFormState } from './lib/formState';
+import { applyConversationTestDefaults } from './lib/testingDefaults';
 import type {
     ActiveDesign,
     ConversationProgressSummary,
@@ -130,19 +131,29 @@ export default function App({ currentUser }: AppProps) {
         void loadConversations();
     }, []);
 
+    useEffect(() => {
+        if (conversationCodeInput.trim() === '' || seedCodeInput.trim() !== '') {
+            return;
+        }
+
+        setForm((previous) => applyConversationTestDefaults(previous));
+    }, [conversationCodeInput, seedCodeInput]);
+
     const handleGenerate = async () => {
         setIsGenerating(true);
         setFeedbackMessage(null);
+        const shouldUseConversationDefaults = seedCodeInput.trim() === '' && conversationCodeInput.trim() !== '';
+        const requestForm = shouldUseConversationDefaults ? applyConversationTestDefaults(form) : form;
 
         try {
             const response = await postJson<GenerateEvidenceResponse>(route('evidences.generate'), {
-                ...form,
+                ...requestForm,
                 ...(seedCodeInput.trim() !== '' ? { seedCode: seedCodeInput.trim() } : {}),
                 ...(seedCodeInput.trim() === '' && conversationCodeInput.trim() !== '' ? { conversationCode: conversationCodeInput.trim() } : {}),
             });
 
             setSaved({
-                ...form,
+                ...requestForm,
                 nombreAsesor: resolvedCurrentUser.name,
                 dni: resolvedCurrentUser.dni,
                 sexualidadAsesor: resolvedCurrentUser.sexualidad,
