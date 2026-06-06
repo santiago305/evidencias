@@ -19,6 +19,7 @@ import type { WhatsappData } from './whatsappTypes';
 
 const ADVISOR_QUOTE_ACCENT_COLOR = '#0063CB';
 const ADVISOR_QUOTE_AUTHOR_COLOR = '#0078D7';
+const DOCUMENT_NUMBER_PATTERN = /\d{8,9}/g;
 
 function buildAvatarSeed(data: WhatsappData): string {
     return [data.telefono, data.nombre, data.dni, data.nombreAsesor].map((value) => value?.trim()).find((value) => !!value) ?? 'contact';
@@ -37,10 +38,58 @@ function lightenHexColor(hexColor: string, ratio = 0.2): string {
     return `#${nextChannels.map((channel) => channel.toString(16).padStart(2, '0')).join('')}`;
 }
 
-function linesToSpans(lines: ReactNode[]) {
+function isDigit(value: string | undefined): boolean {
+    return value !== undefined && /\d/.test(value);
+}
+
+function renderDocumentNumberLinks(line: string, lineIndex: number): ReactNode[] {
+    const parts: ReactNode[] = [];
+    let lastIndex = 0;
+
+    for (const match of line.matchAll(DOCUMENT_NUMBER_PATTERN)) {
+        const documentNumber = match[0];
+        const matchIndex = match.index ?? 0;
+        const previousCharacter = line[matchIndex - 1];
+        const nextCharacter = line[matchIndex + documentNumber.length];
+
+        if (isDigit(previousCharacter) || isDigit(nextCharacter)) {
+            continue;
+        }
+
+        if (matchIndex > lastIndex) {
+            parts.push(line.slice(lastIndex, matchIndex));
+        }
+
+        parts.push(
+            <a
+                key={`document-number-${lineIndex}-${matchIndex}`}
+                href="#"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="segoe-ui-negrita cursor-pointer text-[#1B8755] no-underline select-text hover:underline focus-visible:bg-[#1B8755] focus-visible:text-white focus-visible:underline-offset-1 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#00A884]"
+            >
+                {documentNumber}
+            </a>,
+        );
+
+        lastIndex = matchIndex + documentNumber.length;
+    }
+
+    if (parts.length === 0) {
+        return [line];
+    }
+
+    if (lastIndex < line.length) {
+        parts.push(line.slice(lastIndex));
+    }
+
+    return parts;
+}
+
+function linesToSpans(lines: string[]) {
     return lines.map((line, idx) => {
-        const key = typeof line === 'string' ? `${idx}-${line.slice(0, 8)}` : `${idx}`;
-        return <span key={key}>{line}</span>;
+        const key = `${idx}-${line.slice(0, 8)}`;
+        return <span key={key}>{renderDocumentNumberLinks(line, idx)}</span>;
     });
 }
 

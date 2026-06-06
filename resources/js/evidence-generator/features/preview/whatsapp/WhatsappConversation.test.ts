@@ -27,3 +27,14 @@ test('WhatsappConversation randomizes the initial scroll position when the conve
     assert.match(source, /scrollTop = Math\.round/);
     assert.match(source, /Math\.random\(\)/);
 });
+
+test('WhatsappConversation renders eight and nine digit numbers as WhatsApp-style links', () => {
+    const source = readFileSync(new URL('./WhatsappConversation.tsx', import.meta.url), 'utf8');
+
+    assert.match(source, /DOCUMENT_NUMBER_PATTERN = \/\\d\{8,9\}\/g/);
+    assert.match(source, /href="#"/);
+    assert.match(source, /target="_blank"/);
+    assert.match(source, /rel="noopener noreferrer"/);
+    assert.match(source, /text-\[#1B8755\]/);
+    assert.match(source, /segoe-ui-semibold/);
+});

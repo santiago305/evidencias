@@ -132,6 +132,9 @@
 .segoe-ui-semibold{
     font-family: 'segoe_ui_semibold';
 }
+.segoe-ui-negrita{
+    font-family: 'segoe_uibold';
+}
 .scrollbar-soft {
     scrollbar-width: thin;
     overflow: auto;
