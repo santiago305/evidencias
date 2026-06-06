@@ -248,7 +248,7 @@ export function Bubble({
               <span
                 data-testid="selectable-text"
                 dir="ltr"
-                className="segoe-ui visible select-text text-[12px] font-normal leading-4.5 tracking-[0.01rem]"
+                className="segoe-ui visible select-text text-[12px] font-normal leading-4.5 tracking-[0.005rem]"
                 style={{ minHeight: "0px" }}
               >
                 {content}

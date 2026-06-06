@@ -20,6 +20,7 @@ import type { WhatsappData } from './whatsappTypes';
 const ADVISOR_QUOTE_ACCENT_COLOR = '#0063CB';
 const ADVISOR_QUOTE_AUTHOR_COLOR = '#0078D7';
 const DOCUMENT_NUMBER_PATTERN = /\d{8,9}/g;
+const STRONG_TEXT_PATTERN = /\*([^*]+?)\*/g;
 
 function buildAvatarSeed(data: WhatsappData): string {
     return [data.telefono, data.nombre, data.dni, data.nombreAsesor].map((value) => value?.trim()).find((value) => !!value) ?? 'contact';
@@ -42,7 +43,7 @@ function isDigit(value: string | undefined): boolean {
     return value !== undefined && /\d/.test(value);
 }
 
-function renderDocumentNumberLinks(line: string, lineIndex: number): ReactNode[] {
+function renderDocumentNumberLinks(line: string, lineIndex: number, keyPrefix = 'document-number', indexOffset = 0): ReactNode[] {
     const parts: ReactNode[] = [];
     let lastIndex = 0;
 
@@ -62,7 +63,7 @@ function renderDocumentNumberLinks(line: string, lineIndex: number): ReactNode[]
 
         parts.push(
             <a
-                key={`document-number-${lineIndex}-${matchIndex}`}
+                key={`${keyPrefix}-${lineIndex}-${indexOffset + matchIndex}`}
                 href="#"
                 target="_blank"
                 rel="noopener noreferrer"
@@ -86,10 +87,42 @@ function renderDocumentNumberLinks(line: string, lineIndex: number): ReactNode[]
     return parts;
 }
 
+function renderFormattedLine(line: string, lineIndex: number): ReactNode[] {
+    const parts: ReactNode[] = [];
+    let lastIndex = 0;
+
+    for (const match of line.matchAll(STRONG_TEXT_PATTERN)) {
+        const strongText = match[1] ?? '';
+        const matchIndex = match.index ?? 0;
+
+        if (matchIndex > lastIndex) {
+            parts.push(...renderDocumentNumberLinks(line.slice(lastIndex, matchIndex), lineIndex, 'document-number', lastIndex));
+        }
+
+        parts.push(
+            <strong key={`strong-text-${lineIndex}-${matchIndex}`} className="segoe-ui-negrita">
+                {renderDocumentNumberLinks(strongText, lineIndex, 'strong-document-number', matchIndex + 1)}
+            </strong>,
+        );
+
+        lastIndex = matchIndex + match[0].length;
+    }
+
+    if (parts.length === 0) {
+        return renderDocumentNumberLinks(line, lineIndex);
+    }
+
+    if (lastIndex < line.length) {
+        parts.push(...renderDocumentNumberLinks(line.slice(lastIndex), lineIndex, 'document-number', lastIndex));
+    }
+
+    return parts;
+}
+
 function linesToSpans(lines: string[]) {
     return lines.map((line, idx) => {
         const key = `${idx}-${line.slice(0, 8)}`;
-        return <span key={key}>{renderDocumentNumberLinks(line, idx)}</span>;
+        return <span key={key}>{renderFormattedLine(line, idx)}</span>;
     });
 }
 

@@ -36,5 +36,14 @@ test('WhatsappConversation renders eight and nine digit numbers as WhatsApp-styl
     assert.match(source, /target="_blank"/);
     assert.match(source, /rel="noopener noreferrer"/);
     assert.match(source, /text-\[#1B8755\]/);
-    assert.match(source, /segoe-ui-semibold/);
+    assert.match(source, /segoe-ui-negrita/);
+});
+
+test('WhatsappConversation renders text wrapped in single asterisks as strong text', () => {
+    const source = readFileSync(new URL('./WhatsappConversation.tsx', import.meta.url), 'utf8');
+
+    assert.match(source, /STRONG_TEXT_PATTERN = \/\\\*\(\[\^\*\]\+\?\)\\\*\/g/);
+    assert.match(source, /function renderFormattedLine/);
+    assert.match(source, /<strong key=\{`strong-text-\$\{lineIndex\}-\$\{matchIndex\}`\} className="segoe-ui-negrita">/);
+    assert.match(source, /renderFormattedLine\(line, idx\)/);
 });
