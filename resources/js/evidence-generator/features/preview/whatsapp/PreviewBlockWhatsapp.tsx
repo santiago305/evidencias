@@ -5,7 +5,7 @@ import { EmptyState } from '../components/EmptyState';
 import { MobilePreviewFrame } from '../components/MobilePreviewFrame';
 import { buildContactIdentityDisplay } from './contactIdentityDisplay';
 import { WhatsappConversation } from './WhatsappConversation';
-import { WhatsappHeaderUser } from './WhatsappHeaderUser';
+import { WhatsappHeaderUser } from './whatsapp-header';
 import type { MsgStatus } from './WhatsappPieces';
 import { WhatsappRightAside } from './WhatsappRightAside';
 

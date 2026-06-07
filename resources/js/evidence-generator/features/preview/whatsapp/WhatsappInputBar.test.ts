@@ -3,7 +3,7 @@ import { readFileSync } from 'node:fs';
 import test from 'node:test';
 
 test('WhatsappInputBar mobile input uses the local WhatsApp Segoe UI font', () => {
-    const componentSource = readFileSync(new URL('./WhatsappInputBar.tsx', import.meta.url), 'utf8');
+    const componentSource = readFileSync(new URL('./whatsapp-footer/WhatsappMobileInputBar.tsx', import.meta.url), 'utf8');
     const appStyles = readFileSync(new URL('../../../../../css/app.css', import.meta.url), 'utf8');
     const fontStyles = readFileSync(new URL('../../../../../css/fonts/segoe-ui/stylesheet.css', import.meta.url), 'utf8');
 

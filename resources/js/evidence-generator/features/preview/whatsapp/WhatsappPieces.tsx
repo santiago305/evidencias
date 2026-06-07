@@ -1,4 +1,6 @@
 import React from "react";
+import { WhatsappDesktopTextBubble } from "./whatsapp-bubbles/WhatsappDesktopTextBubble";
+import { WhatsappMobileTextBubble } from "./whatsapp-bubbles/WhatsappMobileTextBubble";
 
 export function MessageGroup({
   children,
@@ -223,81 +225,17 @@ export function Bubble({
   deviceMode?: "desktop" | "mobile";
   children: React.ReactNode;
 }) {
-  const isOut = side === "out";
-  const isMobile = deviceMode === "mobile";
-  const bubbleBg = isOut ? "bg-[#D9FDD3]" : "bg-white";
-  const tailColor = isOut ? "text-[#D9FDD3]" : "text-white";
-  const cornerCut = firstInGroup ? (isOut ? "rounded-tr-none" : "rounded-tl-none") : "";
-  const content = renderBubbleContent(children);
+  const bubbleProps = {
+    children,
+    firstInGroup,
+    id,
+    quote,
+    side,
+    status,
+    time,
+  };
 
-  return (
-    <div id={id} className={`flex ${isOut ? "justify-end" : "justify-start"} ${isMobile ? "px-3" : "px-15.75"}`}>
-      <div className={`${isMobile ? "max-w-[90%]" : "max-w-[70%]"} relative flex-none text-[14.2px] leading-4.75`}>
-        {firstInGroup && <BubbleTail side={isOut ? "right" : "left"} colorClass={tailColor} />}
-
-        <div
-          className={[
-            "relative z-10",
-            "rounded-[7.5px]",
-            cornerCut,
-            bubbleBg,
-            "shadow-[0_1px_0.5px_rgba(11,20,26,0.13)]",
-          ].join(" ")}
-        >
-          <div className="box-border p-1 select-text">
-            {quote ? <QuotedMessageBox quote={quote} /> : null}
-
-            <div className="relative overflow-hidden whitespace-pre-wrap break-words ps-0.75 pe-0.75">
-              <span
-                data-testid="selectable-text"
-                dir="ltr"
-                className="segoe-ui visible select-text text-[12px] font-normal leading-4.5 tracking-[0.005rem]"
-                style={{ minHeight: "0px" }}
-              >
-                {content}
-              </span>
-
-              <span>
-                <span
-                  aria-hidden="true"
-                  className="invisible inline-flex h-0 align-middle text-[0.6875rem] leading-4.75"
-                >
-                  {isOut ? <span className="w-4 shrink-0 grow-0" /> : null}
-                  <span className="shrink-0 grow-0">{time ?? ""}</span>
-                </span>
-              </span>
-            </div>
-
-            {(time || (isOut && status)) && (
-              <div className="relative z-10 float-right -mt-3 -mb-1.25 ps-1 pe-0">
-                <div
-                  className={[
-                    "flex items-center h-3.75 whitespace-nowrap text-[0.6875rem] leading-3.75",
-                    "text-[rgba(0,0,0,0.6)]",
-                    isOut ? "cursor-pointer" : "",
-                  ].join(" ")}
-                >
-                  {time && (
-                    <span className="inline-block align-top" dir="auto">
-                      <span className="min-w-0 max-w-full inline font-normal text-[10px] leading-4 text-[rgba(0,0,0,0.6)] wrap-break-word break-all whitespace-pre-line select-text segoe-ui">
-                        {time}
-                      </span>
-                    </span>
-                  )}
-
-                  {isOut && status && (
-                    <div className="flex ps-0.75 justify-end">
-                      <Ticks status={status} />
-                    </div>
-                  )}
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-    </div>
-  );
+  return deviceMode === "mobile" ? <WhatsappMobileTextBubble {...bubbleProps} /> : <WhatsappDesktopTextBubble {...bubbleProps} />;
 }
 export function VoiceBubble({
   side,

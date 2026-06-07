@@ -1,8 +1,8 @@
 import { Fragment, useEffect, useMemo, useRef, type ReactNode } from 'react';
-import bgWhatsapp from '../../../assets/1.png';
 import { formatWhatsappTimeValue, getDateKeyFromLocalDateTime, getDayChipTextForDate } from '../../../lib/whatsapp/time';
 import type { GeneratedMessage, PreviewDeviceMode, PreviewThemeMode } from '../../../types';
-import { WhatsappInputBar } from './WhatsappInputBar';
+import { WhatsappInputBar } from './whatsapp-footer';
+import { WhatsappConversationBackground } from './whatsapp-background/WhatsappConversationBackground';
 import {
     ActiveTemporalMessage,
     Bubble,
@@ -11,7 +11,7 @@ import {
     EncryptedMessage,
     TempporalMessage,
     type MsgStatus,
-} from './WhatsappPieces';
+} from './whatsapp-bubbles';
 import { createWhatsappAvatarTheme } from './avatarTheme';
 import type { WhatsappConversationMessage } from './buildWhatsappConversation';
 import { buildWhatsappConversation } from './buildWhatsappConversation';
@@ -229,7 +229,7 @@ export function WhatsappConversation({
         <div className="h-full w-full overflow-hidden">
             {/* Fondo WhatsApp */}
             <div className="relative h-full min-h-0 overflow-hidden">
-                <div className={['absolute inset-0', themeMode === 'dark' ? 'bg-[#0b141a] opacity-100' : 'opacity-[0.18]'].join(' ')} style={{ backgroundImage: `url(${bgWhatsapp})` }} />
+                <WhatsappConversationBackground themeMode={themeMode} />
 
                 <div className="relative flex h-full min-h-0 flex-col overflow-hidden">
                     {/* Mensajes */}
