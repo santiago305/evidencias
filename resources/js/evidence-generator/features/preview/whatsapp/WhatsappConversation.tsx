@@ -236,7 +236,12 @@ export function WhatsappConversation({
                     <div className="min-h-0 flex-1 overflow-hidden">
                         <div
                             ref={scrollContainerRef}
-                            className={[deviceMode === 'mobile' ? '' : 'scrollbar-soft', 'h-full w-full overflow-y-auto'].filter(Boolean).join(' ')}
+                            className={[
+                                deviceMode === 'mobile' ? 'scrollbar-mobile-soft' : 'scrollbar-soft',
+                                'h-full w-full overflow-y-auto',
+                            ]
+                                .filter(Boolean)
+                                .join(' ')}
                         >
                             {firstDayChipDateKey !== '' && <DayChip text={getDayChipTextForDate(firstDayChipDateKey, dayChipReference)} />}
                             <EncryptedMessage deviceMode={deviceMode} />

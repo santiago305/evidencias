@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Paperclip } from 'lucide-react';
 import type { PreviewThemeMode } from '../../../types';
 
@@ -9,12 +10,14 @@ export function WhatsappInputBar({
   deviceMode?: 'desktop' | 'mobile';
 }) {
   const isDark = themeMode === 'dark';
+  const [messageValue, setMessageValue] = useState('');
+  const hasMessageValue = messageValue.length > 0;
 
   if (deviceMode === 'mobile') {
     return (
-      <div className="p-1.5">
-        <div className="flex items-center gap-1.5">
-          <div className={["flex min-h-10 flex-1 items-center gap-2 rounded-full px-3 py-1.5", isDark ? "bg-[#202c33] text-slate-300" : "bg-white text-[#54656f]"].join(" ")}>
+      <div className="p-1 pb-1.5">
+        <div className="flex items-center gap-1">
+          <div className={["flex min-h-10 flex-1 items-center gap-2 rounded-full p-1.5", isDark ? "bg-[#202c33] text-slate-300" : "bg-white text-[#54656f]"].join(" ")}>
             <button type="button" aria-label="Emojis" className="grid h-7 w-7 shrink-0 place-items-center rounded-full">
               <svg viewBox="0 0 24 24" height="18" width="18" preserveAspectRatio="xMidYMid meet" fill="none" aria-hidden="true">
                 <path d="M8.49893 10.2521C9.32736 10.2521 9.99893 9.5805 9.99893 8.75208C9.99893 7.92365 9.32736 7.25208 8.49893 7.25208C7.6705 7.25208 6.99893 7.92365 6.99893 8.75208C6.99893 9.5805 7.6705 10.2521 8.49893 10.2521Z" fill="currentColor" />
@@ -25,23 +28,43 @@ export function WhatsappInputBar({
 
             <input
               aria-label="Mensaje"
+              autoComplete="off"
               className="segoe-ui min-w-0 flex-1 bg-transparent text-[13px] text-current outline-none placeholder:text-current/70"
+              style={{ fontFamily: "'Whatsapp Segoe UI', 'Segoe UI', system-ui, sans-serif", pointerEvents: 'auto' }}
               placeholder="Mensaje"
-              readOnly
+              spellCheck={false}
               type="text"
+              value={messageValue}
+              onChange={(event) => setMessageValue(event.target.value)}
             />
 
-            <div className="flex shrink-0 items-center gap-2">
+            <div className="flex shrink-0 items-center gap-1.5">
               <button type="button" aria-label="Adjuntar" className="grid h-7 w-7 place-items-center rounded-full">
                 <Paperclip className="h-[18px] w-[18px] rotate-315" aria-hidden="true" />
               </button>
 
-              <button type="button" aria-label="Camara" className="grid h-7 w-7 place-items-center rounded-full">
-                <svg viewBox="0 0 24 24" height="18" width="18" preserveAspectRatio="xMidYMid meet" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" aria-hidden="true">
-                  <path d="M4.5 7.5H8l1.4-2h5.2l1.4 2h3.5a1.8 1.8 0 0 1 1.8 1.8v8.4a1.8 1.8 0 0 1-1.8 1.8h-15a1.8 1.8 0 0 1-1.8-1.8V9.3a1.8 1.8 0 0 1 1.8-1.8Z" />
-                  <circle cx="12" cy="13.5" r="3.6" />
-                </svg>
-              </button>
+              {!hasMessageValue && (
+                <button type="button" aria-label="Camara" className="grid h-7 w-7 place-items-center rounded-full">
+                  <svg viewBox="0 0 36 32" height="16" width="18" fill="none" aria-hidden="true">
+                    <path
+                      d="M34,9.11V26.89c0,1.72-1.39,3.11-3.11,3.11H5.11c-1.72,0-3.11-1.39-3.11-3.11V9.11c0-1.72,1.39-3.11,3.11-3.11h6.18c.57-1.33,1.14-2.67,1.71-4h11c.5,1.34,1,2.67,1.5,4h5.39c1.72,0,3.11,1.39,3.11,3.11Z"
+                      stroke="currentColor"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="4"
+                    />
+                    <circle
+                      cx="18"
+                      cy="16"
+                      r="6"
+                      stroke="currentColor"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="4"
+                    />
+                  </svg>
+                </button>
+              )}
             </div>
           </div>
 

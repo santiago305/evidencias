@@ -1,10 +1,10 @@
+@import './fonts/segoe-ui/stylesheet.css';
+
 @import 'tailwindcss';
 
 @plugin 'tailwindcss-animate';
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
-
-@import './fonts/segoe-ui/stylesheet.css';
 
 @theme {
     --font-sans:
@@ -124,7 +124,7 @@
     }
 }
 .segoe-ui{
-    font-family: 'Segoe UI';
+    font-family: 'Whatsapp Segoe UI', 'Segoe UI', system-ui, sans-serif;
 }
 .segoe-ui-bold{
     font-family: 'segoe_ui_bold';
@@ -159,4 +159,22 @@
 
 .scrollbar-soft::-webkit-scrollbar-thumb:hover {
     background-color: rgba(0, 0, 0, 0.32);
+}
+
+.scrollbar-mobile-soft {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0, 0, 0, 0.12) transparent;
+}
+
+.scrollbar-mobile-soft::-webkit-scrollbar {
+    width: 0.5px;
+}
+
+.scrollbar-mobile-soft::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.scrollbar-mobile-soft::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.12);
+    border-radius: 999px;
 }
