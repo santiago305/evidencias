@@ -1,6 +1,8 @@
 import type { ChangeEvent } from 'react';
 
 export type ActiveDesign = 'whatsapp' | 'llamada' | 'sms';
+export type PreviewDeviceMode = 'desktop' | 'mobile';
+export type PreviewThemeMode = 'light' | 'dark';
 export type ModoEntrada = 'informativo' | 'contactado';
 export type TipoCliente = 'apurado' | 'sereno' | 'desconfiado' | 'frio' | 'conversador' | 'indeciso';
 export type ConversationStatus = 'production' | 'development';
@@ -104,6 +106,7 @@ export interface InputProps {
 
 export interface PreviewProps {
     data: SavedData | null;
+    themeMode: PreviewThemeMode;
 }
 
 export interface PreviewBlockProps extends PreviewProps {
@@ -114,4 +117,5 @@ export interface PreviewBlockProps extends PreviewProps {
 export interface RowProps {
     k: string;
     v: string;
+    themeMode?: PreviewThemeMode;
 }

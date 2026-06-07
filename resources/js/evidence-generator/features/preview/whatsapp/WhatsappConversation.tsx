@@ -1,7 +1,7 @@
 import { Fragment, useEffect, useMemo, useRef, type ReactNode } from 'react';
 import bgWhatsapp from '../../../assets/1.png';
 import { formatWhatsappTimeValue, getDateKeyFromLocalDateTime, getDayChipTextForDate } from '../../../lib/whatsapp/time';
-import type { GeneratedMessage } from '../../../types';
+import type { GeneratedMessage, PreviewDeviceMode, PreviewThemeMode } from '../../../types';
 import { WhatsappInputBar } from './WhatsappInputBar';
 import {
     ActiveTemporalMessage,
@@ -153,6 +153,8 @@ export function WhatsappConversation({
     inlineTemporalMode = null,
     inlineTemporalInsertIndex: initialInlineTemporalInsertIndex = null,
     displayTitle,
+    deviceMode = 'desktop',
+    themeMode = 'light',
 }: {
     data: WhatsappData;
     messageStatus?: MsgStatus;
@@ -161,6 +163,8 @@ export function WhatsappConversation({
     inlineTemporalMode?: 'active' | 'deactive' | null;
     inlineTemporalInsertIndex?: number | null;
     displayTitle?: string;
+    deviceMode?: PreviewDeviceMode;
+    themeMode?: PreviewThemeMode;
 }) {
     const conversationMessages = useMemo((): WhatsappConversationMessage[] => {
         return normalizeGeneratedMessages(messages, messageStatus) ?? buildWhatsappConversation(data, messageStatus);
@@ -225,15 +229,18 @@ export function WhatsappConversation({
         <div className="h-full w-full overflow-hidden">
             {/* Fondo WhatsApp */}
             <div className="relative h-full min-h-0 overflow-hidden">
-                <div className="absolute inset-0 opacity-[0.18]" style={{ backgroundImage: `url(${bgWhatsapp})` }} />
+                <div className={['absolute inset-0', themeMode === 'dark' ? 'bg-[#0b141a] opacity-100' : 'opacity-[0.18]'].join(' ')} style={{ backgroundImage: `url(${bgWhatsapp})` }} />
 
                 <div className="relative flex h-full min-h-0 flex-col overflow-hidden">
                     {/* Mensajes */}
                     <div className="min-h-0 flex-1 overflow-hidden">
-                        <div ref={scrollContainerRef} className="scrollbar-soft h-full w-full overflow-y-auto">
+                        <div
+                            ref={scrollContainerRef}
+                            className={[deviceMode === 'mobile' ? '' : 'scrollbar-soft', 'h-full w-full overflow-y-auto'].filter(Boolean).join(' ')}
+                        >
                             {firstDayChipDateKey !== '' && <DayChip text={getDayChipTextForDate(firstDayChipDateKey, dayChipReference)} />}
-                            <EncryptedMessage />
-                            {showDefaultTemporalMessage && <TempporalMessage />}
+                            <EncryptedMessage deviceMode={deviceMode} />
+                            {showDefaultTemporalMessage && <TempporalMessage deviceMode={deviceMode} />}
 
                             {conversationMessages.map((msg, idx) => {
                                 const prev = conversationMessages[idx - 1];
@@ -272,13 +279,14 @@ export function WhatsappConversation({
                                                           }
                                                         : undefined
                                                 }
+                                                deviceMode={deviceMode}
                                             >
                                                 {linesToSpans(msg.lines)}
                                             </Bubble>
                                         </div>
 
-                                        {markerAfterCurrent && inlineTemporalMode === 'active' && <ActiveTemporalMessage />}
-                                        {markerAfterCurrent && inlineTemporalMode === 'deactive' && <DesactiveTemporalMessage />}
+                                        {markerAfterCurrent && inlineTemporalMode === 'active' && <ActiveTemporalMessage deviceMode={deviceMode} />}
+                                        {markerAfterCurrent && inlineTemporalMode === 'deactive' && <DesactiveTemporalMessage deviceMode={deviceMode} />}
                                     </Fragment>
                                 );
                             })}
@@ -286,7 +294,7 @@ export function WhatsappConversation({
                     </div>
 
                     <div className="shrink-0">
-                        <WhatsappInputBar />
+                        <WhatsappInputBar themeMode={themeMode} deviceMode={deviceMode} />
                     </div>
                 </div>
             </div>

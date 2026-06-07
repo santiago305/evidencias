@@ -211,6 +211,7 @@ export function Bubble({
   status,
   id,
   quote,
+  deviceMode = "desktop",
   children,
 }: {
   side: "in" | "out";
@@ -219,17 +220,19 @@ export function Bubble({
   status?: MsgStatus;
   id?: string;
   quote?: QuotedMessage;
+  deviceMode?: "desktop" | "mobile";
   children: React.ReactNode;
 }) {
   const isOut = side === "out";
+  const isMobile = deviceMode === "mobile";
   const bubbleBg = isOut ? "bg-[#D9FDD3]" : "bg-white";
   const tailColor = isOut ? "text-[#D9FDD3]" : "text-white";
   const cornerCut = firstInGroup ? (isOut ? "rounded-tr-none" : "rounded-tl-none") : "";
   const content = renderBubbleContent(children);
 
   return (
-    <div id={id} className={`flex ${isOut ? "justify-end" : "justify-start"} px-15.75`}>
-      <div className="relative max-w-[70%] flex-none text-[14.2px] leading-4.75">
+    <div id={id} className={`flex ${isOut ? "justify-end" : "justify-start"} ${isMobile ? "px-3" : "px-15.75"}`}>
+      <div className={`${isMobile ? "max-w-[90%]" : "max-w-[70%]"} relative flex-none text-[14.2px] leading-4.75`}>
         {firstInGroup && <BubbleTail side={isOut ? "right" : "left"} colorClass={tailColor} />}
 
         <div
@@ -257,7 +260,7 @@ export function Bubble({
               <span>
                 <span
                   aria-hidden="true"
-                  className="invisible inline-flex h-0 align-middle text-[0.6875rem] leading-3.75 -mr-1"
+                  className="invisible inline-flex h-0 align-middle text-[0.6875rem] leading-4.75"
                 >
                   {isOut ? <span className="w-4 shrink-0 grow-0" /> : null}
                   <span className="shrink-0 grow-0">{time ?? ""}</span>
@@ -344,26 +347,31 @@ export function VoiceBubble({
   );
 }
 
-export function EncryptedMessage() {
+export function EncryptedMessage({ deviceMode = "desktop" }: { deviceMode?: "desktop" | "mobile" }) {
+  const isMobile = deviceMode === "mobile";
+  const horizontalPadding = deviceMode === "mobile" ? "px-8" : "px-15.75";
+  const maxWidth = deviceMode === "mobile" ? "max-w-none" : "max-w-125";
+  const encryptedTextSize = deviceMode === "mobile" ? "text-[10px] leading-[12px]" : "text-[9.8px]";
+
   return (
     <div className="relative">
       <div>
         <div className="relative pb-2">
           <div className="flex justify-center">
             <div>
-              <div className="mx-auto flex max-w-125 flex-col justify-center px-15.75">
+              <div className={`mx-auto flex ${maxWidth} flex-col justify-center ${horizontalPadding}`}>
                 <span></span>
 
-                <div className="relative mb-0 box-border inline-block max-w-full flex-none rounded-[7.35px] bg-[#FFF0D4] px-3 pt-1.25 pb-1.5 text-center text-[10px] leading-4.25 text-black/60 shadow-[0_1px_0.5px_rgba(11,20,26,0.13)]">
+                <div className="relative mb-0 box-border inline-block max-w-full flex-none rounded-[7.35px] bg-[#FFF0D4] px-3 pt-1 pb-1.25 text-center text-[10px] leading-[12px] text-black/60 shadow-[0_1px_0.5px_rgba(11,20,26,0.13)]">
                   <div className="segoe-ui relative z-10 rounded-[7.35px]">
                     <div className="cursorpointer">
                       <span>
-                        <div className="me-1 mt-1 inline-block align-top text-black/60">
+                        <div className="me-0.5 mt-0.5 inline-block align-top text-black/60">
                           <span aria-hidden="true" data-icon="lock-small">
                             <svg
                               viewBox="0 0 10 12"
-                              height="10"
-                              width="8"
+                              height="8"
+                              width="7"
                               preserveAspectRatio="xMidYMid meet"
                               version="1.1"
                             >
@@ -376,11 +384,10 @@ export function EncryptedMessage() {
                           </span>
                         </div>
 
-                        <span className="segoe-ui visible min-h-0 wrap-break-word text-[9.8px]">
+                        <span className={`segoe-ui visible min-h-0 wrap-break-word ${encryptedTextSize}`}>
                           Los mensajes y las llamadas están cifrados de extremo
                           a extremo. Solo las personas en este chat pueden
-                          leerlos, escucharlos o compartirlos. Haz clic para
-                          obtener más información.
+                          leerlos, escucharlos o compartirlos. {isMobile ? <strong className="font-semibold">Más información.</strong> : "Haz clic para obtener más información."}
                         </span>
                       </span>
                     </div>
@@ -399,17 +406,22 @@ export function EncryptedMessage() {
     </div>
   );
 }
-export function TempporalMessage() {
+export function TempporalMessage({ deviceMode = "desktop" }: { deviceMode?: "desktop" | "mobile" }) {
+  const isMobile = deviceMode === "mobile";
+  const horizontalPadding = deviceMode === "mobile" ? "px-8" : "px-15.75";
+  const maxWidth = deviceMode === "mobile" ? "max-w-none" : "max-w-125";
+  const messageTextSize = deviceMode === "mobile" ? "text-[10px] leading-[12px]" : "text-[9.8px]";
+
   return (
     <div className="relative">
       <div>
         <div className="relative pb-2">
           <div className="flex justify-center">
             <div>
-              <div className="mx-auto flex max-w-125 flex-col justify-center px-15.75">
+              <div className={`mx-auto flex ${maxWidth} flex-col justify-center ${horizontalPadding}`}>
                 <span></span>
 
-                <div className="relative mb-0 box-border inline-block max-w-full flex-none rounded-[7.35px] bg-[#fefdfc] px-3 pt-1.25 pb-1.5 text-center text-[10px] leading-4.25 text-[#667781] shadow-[0_1px_0.5px_rgba(11,20,26,0.13)]">
+                <div className="relative mb-0 box-border inline-block max-w-full flex-none rounded-[7.35px] bg-[#fefdfc] px-3 pt-1 pb-1.25 text-center text-[10px] leading-[12px] text-[#667781] shadow-[0_1px_0.5px_rgba(11,20,26,0.13)]">
                   <div className="segoe-ui relative z-10 rounded-[7.35px]">
                     <div className="cursorpointer">
                       <span>
@@ -417,8 +429,8 @@ export function TempporalMessage() {
                           <span aria-hidden="true" data-icon="lock-small">
                             <svg
                               viewBox="0 0 24 24"
-                              height="12"
-                              width="12"
+                              height={isMobile ? 9 : 12}
+                              width={isMobile ? 9 : 12}
                               preserveAspectRatio="xMidYMid meet"
                               fill="currentColor"
                               className="inline-block"
@@ -435,8 +447,8 @@ export function TempporalMessage() {
                           </span>
                         </div>
 
-                        <span className="segoe-ui visible min-h-0 wrap-break-word text-[9.8px]">
-                          Usas una duración predeterminada para los mensajes temporales en chats nuevos. Los mensajes nuevos desaparecerán de este chat después de 90 días de haber sido enviados, a menos que se use la opción para conservarlos. Haz clic para cambiar la duración predeterminada.
+                        <span className={`segoe-ui visible min-h-0 wrap-break-word ${messageTextSize}`}>
+                          Usas una duración predeterminada para los mensajes temporales en chats nuevos. Los mensajes nuevos desaparecerán de este chat después de 90 días de haber sido enviados, a menos que se use la opción para conservarlos. {isMobile ? <strong className="font-semibold">Cambiar Duración</strong> : "Haz clic para cambiar la duración predeterminada."}
                         </span>
                       </span>
                     </div>
@@ -456,17 +468,22 @@ export function TempporalMessage() {
   );
 }
 
-export function ActiveTemporalMessage() {
+export function ActiveTemporalMessage({ deviceMode = "desktop" }: { deviceMode?: "desktop" | "mobile" }) {
+  const isMobile = deviceMode === "mobile";
+  const horizontalPadding = deviceMode === "mobile" ? "px-8" : "px-15.75";
+  const maxWidth = deviceMode === "mobile" ? "max-w-none" : "max-w-125";
+  const messageTextSize = deviceMode === "mobile" ? "text-[10px] leading-[12px]" : "text-[9.8px]";
+
   return (
     <div className="relative">
       <div>
         <div className="relative pb-2">
           <div className="flex justify-center">
             <div>
-              <div className="mx-auto flex max-w-125 flex-col justify-center px-15.75">
+              <div className={`mx-auto flex ${maxWidth} flex-col justify-center ${horizontalPadding}`}>
                 <span></span>
 
-                <div className="relative mb-0 box-border inline-block max-w-full flex-none rounded-[7.35px] bg-[#fefdfc] px-3 pt-1.25 pb-1.5 text-center text-[10px] leading-4.25 text-[#667781] shadow-[0_1px_0.5px_rgba(11,20,26,0.13)]">
+                <div className="relative mb-0 box-border inline-block max-w-full flex-none rounded-[7.35px] bg-[#fefdfc] px-3 pt-1 pb-1.25 text-center text-[10px] leading-[12px] text-[#667781] shadow-[0_1px_0.5px_rgba(11,20,26,0.13)]">
                   <div className="segoe-ui relative z-10 rounded-[7.35px]">
                     <div className="cursorpointer">
                       <span>
@@ -474,8 +491,8 @@ export function ActiveTemporalMessage() {
                           <span aria-hidden="true" data-icon="lock-small">
                             <svg
                               viewBox="0 0 24 24"
-                              height="12"
-                              width="12"
+                              height={isMobile ? 9 : 12}
+                              width={isMobile ? 9 : 12}
                               preserveAspectRatio="xMidYMid meet"
                               fill="currentColor"
                               className="inline-block"
@@ -492,8 +509,8 @@ export function ActiveTemporalMessage() {
                           </span>
                         </div>
 
-                        <span className="segoe-ui visible min-h-0 wrap-break-word text-[9.8px]">
-                          Activaste los mensajes temporales. Los mensajes nuevos desaparecerán de este chat después de 90 días de haber sido enviados, a menos que se use la opción para conservarlos. Haz clic para cambiar esto.
+                        <span className={`segoe-ui visible min-h-0 wrap-break-word ${messageTextSize}`}>
+                          Activaste los mensajes temporales. Los mensajes nuevos desaparecerán de este chat después de 90 días de haber sido enviados, a menos que se use la opción para conservarlos. {isMobile ? <strong className="font-semibold">Cambiar Duración</strong> : "Haz clic para cambiar esto."}
                         </span>
                       </span>
                     </div>
@@ -513,53 +530,62 @@ export function ActiveTemporalMessage() {
   );
 }
 
-export function DesactiveTemporalMessage() {
+export function DesactiveTemporalMessage({
+  deviceMode = "desktop",
+}: {
+  deviceMode?: "desktop" | "mobile";
+}) {
+  const isMobile = deviceMode === "mobile";
+  const messageTextSize = isMobile
+    ? "text-[10px] leading-[12px]"
+    : "text-[9.8px] leading-[12px]";
+
   return (
     <div className="relative">
-      <div>
-        <div className="relative pb-2">
-          <div className="flex justify-center">
-            <div>
-              <div className="mx-auto flex flex-col justify-center px-15.75">
-                <span></span>
+      <div className="relative pb-2">
+        <div className="flex justify-center">
+          <div className="mx-auto flex w-fit max-w-full flex-col items-center justify-center">
+            <div className="relative mb-0 box-border inline-flex w-fit max-w-full flex-none items-center rounded-[7.35px] bg-[#fefdfc] px-3 pt-1 pb-1.25 text-center text-[10px] leading-[12px] text-[#667781] shadow-[0_1px_0.5px_rgba(11,20,26,0.13)]">
+              <div className="segoe-ui relative z-10 rounded-[7.35px]">
+                <div className="cursor-pointer">
+                  <span className="inline-flex items-start justify-center gap-0.5">
+                    <span
+                      className="inline-block text-[#667781]"
+                      aria-hidden="true"
+                      data-icon="lock-small"
+                    >
+                      <svg
+                        viewBox="0 0 24 24"
+                        height={isMobile ? 9 : 12}
+                        width={isMobile ? 9 : 12}
+                        preserveAspectRatio="xMidYMid meet"
+                        fill="currentColor"
+                        className="inline-block"
+                      >
+                        <title>wds-ic-disappearing-messages</title>
+                        <path d="M12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22C12.0547 22 12.1094 21.9996 12.1639 21.9987C12.7775 21.9888 13.2669 21.4834 13.257 20.8698C13.2471 20.2563 12.7417 19.7669 12.1281 19.7767C12.0855 19.7774 12.0428 19.7778 12 19.7778C7.70445 19.7778 4.22222 16.2955 4.22222 12C4.22222 7.70445 7.70445 4.22222 12 4.22222C12.0428 4.22222 12.0855 4.22257 12.1281 4.22325C12.7417 4.23314 13.2471 3.74375 13.257 3.13018C13.2669 2.51661 12.7775 2.0112 12.1639 2.00132C12.1094 2.00044 12.0547 2 12 2Z" />
+                        <path d="M16.8592 3.25814C16.3231 2.95957 15.6465 3.15213 15.3479 3.68825C15.0493 4.22437 15.2419 4.90102 15.778 5.19959C15.8522 5.24089 15.9256 5.28338 15.9983 5.32703C16.5243 5.643 17.2069 5.4727 17.5229 4.94665C17.8389 4.4206 17.6686 3.738 17.1425 3.42203C17.0491 3.36591 16.9546 3.31127 16.8592 3.25814Z" />
+                        <path d="M19.0534 6.47712C19.5794 6.16115 20.262 6.33145 20.578 6.8575C20.6341 6.95093 20.6887 7.04537 20.7419 7.14077C21.0404 7.67689 20.8479 8.35353 20.3118 8.65211C19.7756 8.95068 19.099 8.75811 18.8004 8.22199C18.7591 8.14782 18.7166 8.07439 18.673 8.00173C18.357 7.47568 18.5273 6.79309 19.0534 6.47712Z" />
+                        <path d="M21.9987 11.8361C21.9888 11.2225 21.4834 10.7331 20.8698 10.743C20.2563 10.7529 19.7669 11.2583 19.7767 11.8719C19.7774 11.9145 19.7778 11.9572 19.7778 12C19.7778 12.0428 19.7774 12.0855 19.7767 12.1281C19.7669 12.7417 20.2563 13.2471 20.8698 13.257C21.4834 13.2669 21.9888 12.7775 21.9987 12.1639C21.9996 12.1094 22 12.0547 22 12C22 11.9453 21.9996 11.8906 21.9987 11.8361Z" />
+                        <path d="M20.3118 15.3479C20.8479 15.6465 21.0404 16.3231 20.7419 16.8592C20.6887 16.9546 20.6341 17.0491 20.578 17.1425C20.262 17.6686 19.5794 17.8389 19.0534 17.5229C18.5273 17.2069 18.357 16.5243 18.673 15.9983C18.7166 15.9256 18.7591 15.8522 18.8004 15.778C19.099 15.2419 19.7756 15.0493 20.3118 15.3479Z" />
+                        <path d="M17.1425 20.578C17.6686 20.262 17.8389 19.5794 17.5229 19.0534C17.2069 18.5273 16.5243 18.357 15.9983 18.673C15.9256 18.7166 15.8522 18.7591 15.778 18.8004C15.2419 19.099 15.0493 19.7756 15.3479 20.3118C15.6465 20.8479 16.3231 21.0404 16.8592 20.7419C16.9546 20.6887 17.0491 20.6341 17.1425 20.578Z" />
+                        <path d="M16.7811 7.6229C16.5556 7.39749 16.1988 7.37213 15.9438 7.5634L11.3327 11.0217C10.6836 11.5085 10.6161 12.4574 11.1899 13.0312L11.3728 13.2141C11.9465 13.7878 12.8954 13.7204 13.3823 13.0713L16.8406 8.46018C17.0318 8.20516 17.0065 7.84831 16.7811 7.6229Z" />
+                      </svg>
+                    </span>
 
-                <div className="relative mb-0 box-border inline-block max-w-full flex-none rounded-[7.35px] bg-[#fefdfc] px-3 pt-1.25 pb-1.5 text-center text-[10px] leading-4.25 text-[#667781] shadow-[0_1px_0.5px_rgba(11,20,26,0.13)]">
-                  <div className="segoe-ui relative z-10 rounded-[7.35px]">
-                    <div className="cursorpointer">
-                      <span>
-                        <div className="me-0.5 mb-1 inline-block align-top text-[#667781]">
-                          <span aria-hidden="true" data-icon="lock-small">
-                            <svg
-                              viewBox="0 0 24 24"
-                              height="12"
-                              width="12"
-                              preserveAspectRatio="xMidYMid meet"
-                              fill="currentColor"
-                              className="inline-block"
-                            >
-                              <title>wds-ic-disappearing-messages</title>
-                              <path d="M12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22C12.0547 22 12.1094 21.9996 12.1639 21.9987C12.7775 21.9888 13.2669 21.4834 13.257 20.8698C13.2471 20.2563 12.7417 19.7669 12.1281 19.7767C12.0855 19.7774 12.0428 19.7778 12 19.7778C7.70445 19.7778 4.22222 16.2955 4.22222 12C4.22222 7.70445 7.70445 4.22222 12 4.22222C12.0428 4.22222 12.0855 4.22257 12.1281 4.22325C12.7417 4.23314 13.2471 3.74375 13.257 3.13018C13.2669 2.51661 12.7775 2.0112 12.1639 2.00132C12.1094 2.00044 12.0547 2 12 2Z" />
-                              <path d="M16.8592 3.25814C16.3231 2.95957 15.6465 3.15213 15.3479 3.68825C15.0493 4.22437 15.2419 4.90102 15.778 5.19959C15.8522 5.24089 15.9256 5.28338 15.9983 5.32703C16.5243 5.643 17.2069 5.4727 17.5229 4.94665C17.8389 4.4206 17.6686 3.738 17.1425 3.42203C17.0491 3.36591 16.9546 3.31127 16.8592 3.25814Z" />
-                              <path d="M19.0534 6.47712C19.5794 6.16115 20.262 6.33145 20.578 6.8575C20.6341 6.95093 20.6887 7.04537 20.7419 7.14077C21.0404 7.67689 20.8479 8.35353 20.3118 8.65211C19.7756 8.95068 19.099 8.75811 18.8004 8.22199C18.7591 8.14782 18.7166 8.07439 18.673 8.00173C18.357 7.47568 18.5273 6.79309 19.0534 6.47712Z" />
-                              <path d="M21.9987 11.8361C21.9888 11.2225 21.4834 10.7331 20.8698 10.743C20.2563 10.7529 19.7669 11.2583 19.7767 11.8719C19.7774 11.9145 19.7778 11.9572 19.7778 12C19.7778 12.0428 19.7774 12.0855 19.7767 12.1281C19.7669 12.7417 20.2563 13.2471 20.8698 13.257C21.4834 13.2669 21.9888 12.7775 21.9987 12.1639C21.9996 12.1094 22 12.0547 22 12C22 11.9453 21.9996 11.8906 21.9987 11.8361Z" />
-                              <path d="M20.3118 15.3479C20.8479 15.6465 21.0404 16.3231 20.7419 16.8592C20.6887 16.9546 20.6341 17.0491 20.578 17.1425C20.262 17.6686 19.5794 17.8389 19.0534 17.5229C18.5273 17.2069 18.357 16.5243 18.673 15.9983C18.7166 15.9256 18.7591 15.8522 18.8004 15.778C19.099 15.2419 19.7756 15.0493 20.3118 15.3479Z" />
-                              <path d="M17.1425 20.578C17.6686 20.262 17.8389 19.5794 17.5229 19.0534C17.2069 18.5273 16.5243 18.357 15.9983 18.673C15.9256 18.7166 15.8522 18.7591 15.778 18.8004C15.2419 19.099 15.0493 19.7756 15.3479 20.3118C15.6465 20.8479 16.3231 21.0404 16.8592 20.7419C16.9546 20.6887 17.0491 20.6341 17.1425 20.578Z" />
-                              <path d="M16.7811 7.6229C16.5556 7.39749 16.1988 7.37213 15.9438 7.5634L11.3327 11.0217C10.6836 11.5085 10.6161 12.4574 11.1899 13.0312L11.3728 13.2141C11.9465 13.7878 12.8954 13.7204 13.3823 13.0713L16.8406 8.46018C17.0318 8.20516 17.0065 7.84831 16.7811 7.6229Z" />
-                            </svg>
-                          </span>
-                        </div>
-
-                        <span className="segoe-ui visible min-h-0 wrap-break-word text-[9.8px]">
-                          Desactivaste los mensajes temporales. Haz clic para cambiar esto.
-                        </span>
-                      </span>
-                    </div>
-
-                    <span></span>
-                    <div></div>
-                  </div>
-
-                  <div className="absolute top-1/2 -mt-3.25 flex w-25.25 shrink grow-0 basis-auto flex-row flex-nowrap items-center justify-start self-auto justify-self-auto px-1 order-0 min-w-0 min-h-0"></div>
+                    <span
+                      className={`segoe-ui visible min-h-0 wrap-break-word ${messageTextSize}`}
+                    >
+                      Desactivaste los mensajes temporales.{" "}
+                      {isMobile ? (
+                        <strong className="font-semibold">
+                          Cambiar Duración
+                        </strong>
+                      ) : (
+                        "Haz clic para cambiar esto."
+                      )}
+                    </span>
+                  </span>
                 </div>
               </div>
             </div>

@@ -1,7 +1,9 @@
 import { useMemo } from 'react';
+import { ArrowLeft } from 'lucide-react';
 import { createWhatsappAvatarTheme } from './avatarTheme';
 import type { MsgStatus } from './WhatsappPieces';
 import type { WhatsappData } from './whatsappTypes';
+import type { PreviewThemeMode } from '../../../types';
 
 type Status = { type: 'hidden' } | { type: 'online' };
 
@@ -10,12 +12,17 @@ export function WhatsappHeaderUser({
     status,
     showTemporaryIndicator = true,
     displayTitle,
+    themeMode = 'light',
+    compact = false,
 }: {
     data: WhatsappData;
     status?: MsgStatus;
     showTemporaryIndicator?: boolean;
     displayTitle?: string;
+    themeMode?: PreviewThemeMode;
+    compact?: boolean;
 }) {
+    const isDark = themeMode === 'dark';
     const headerStatus = useMemo<Status>(() => {
         if (status) {
             return status === 'read' ? { type: 'online' } : { type: 'hidden' };
@@ -70,9 +77,26 @@ export function WhatsappHeaderUser({
     }, [data.telefono, data.nombre, data.dni, data.nombreAsesor]);
 
     return (
-        <div className="w-full border-b border-black/10 bg-white px-3 py-2">
+        <div
+            className={[
+                'w-full border-b px-3',
+                compact ? 'py-2.5' : 'py-2',
+                isDark ? 'border-white/10 bg-[#202c33]' : 'border-black/10 bg-white',
+            ].join(' ')}
+        >
             <div className="flex items-center justify-between gap-2">
-                <div className="flex min-w-0 items-center gap-2.5">
+                <div className="flex min-w-0 items-center gap-2">
+                    {compact ? (
+                        <button
+                            type="button"
+                            className={['grid h-8 w-8 shrink-0 place-items-center rounded-full transition', isDark ? 'text-slate-200 active:bg-white/15' : 'text-black active:bg-black/10'].join(' ')}
+                            aria-label="Volver"
+                            title="Volver"
+                        >
+                            <ArrowLeft className="h-5 w-5" aria-hidden="true" strokeWidth={2.4} />
+                        </button>
+                    ) : null}
+
                     {/* Avatar */}
                     <div className="relative h-9 w-9 shrink-0">
                         <div className="h-9 w-9 overflow-hidden rounded-full">
@@ -137,18 +161,20 @@ export function WhatsappHeaderUser({
 
                     {/* Name + status */}
                     <div className="min-w-0 leading-tight">
-                        <div className="segoe-ui-semibold truncate text-[13px] text-[#111b21]">
+                        <div className={['segoe-ui-semibold truncate text-[13px]', isDark ? 'text-white' : 'text-[#111b21]'].join(' ')}>
                             {displayTitle ?? (data.nombre?.trim() ? data.nombre : 'Aracely MD')}
                         </div>
 
-                        {headerStatus.type !== 'hidden' && <div className="truncate text-[9px] font-medium text-[#667781]">en linea</div>}
+                        {headerStatus.type !== 'hidden' && (
+                            <div className={['truncate text-[9px] font-medium', isDark ? 'text-slate-400' : 'text-[#667781]'].join(' ')}>en linea</div>
+                        )}
                     </div>
                 </div>
 
                 {/* Right: actions */}
-                <div className="flex shrink-0 items-center gap-5 text-[#54656f]">
+                <div className={['flex shrink-0 items-center text-[#54656f]', compact ? 'gap-3.5' : 'gap-5'].join(' ')}>
                     {/* Video */}
-                    <span aria-hidden="true" data-icon="video-call-refreshed" className="h-5 w-5 text-black">
+                    <span aria-hidden="true" data-icon="video-call-refreshed" className={['h-5 w-5', isDark ? 'text-slate-200' : 'text-black'].join(' ')}>
                         <svg viewBox="0 0 24 24" height="20" width="20" fill="none">
                             <title>video-call-refreshed</title>
                             <path
@@ -158,7 +184,7 @@ export function WhatsappHeaderUser({
                         </svg>
                     </span>
 
-                    <span aria-hidden="true" data-icon="audio-call-refreshed" className="h-5 w-5 text-black">
+                    <span aria-hidden="true" data-icon="audio-call-refreshed" className={['h-5 w-5', isDark ? 'text-slate-200' : 'text-black'].join(' ')}>
                         <svg viewBox="0 0 24 24" height="20" width="20" preserveAspectRatio="xMidYMid meet" fill="currentColor">
                             <title>ic-call</title>
                             <path
@@ -169,7 +195,7 @@ export function WhatsappHeaderUser({
                     </span>
 
                     {/* Search */}
-                    <span aria-hidden="true" data-icon="search-refreshed" className="h-5 w-5 text-black">
+                    {!compact ? <span aria-hidden="true" data-icon="search-refreshed" className={['h-5 w-5', isDark ? 'text-slate-200' : 'text-black'].join(' ')}>
                         <svg viewBox="0 0 24 24" height="20" width="20" fill="none">
                             <title>search-refreshed</title>
                             <path
@@ -177,12 +203,12 @@ export function WhatsappHeaderUser({
                                 fill="currentColor"
                             />
                         </svg>
-                    </span>
+                    </span> : null}
 
                     {/* Menu */}
                     <button
                         type="button"
-                        className="grid h-5 w-5 place-items-center rounded-full text-black transition hover:bg-black/5 active:bg-black/10"
+                        className={['grid h-5 w-5 place-items-center rounded-full transition', isDark ? 'text-slate-200 hover:bg-white/10 active:bg-white/15' : 'text-black hover:bg-black/5 active:bg-black/10'].join(' ')}
                         aria-label="Menú"
                         title="Menú"
                     >

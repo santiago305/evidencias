@@ -1,7 +1,8 @@
 import { useMemo } from 'react';
 import { parseLocalDateTime } from '../../../lib/whatsapp/time';
-import type { PreviewProps } from '../../../types';
+import type { PreviewDeviceMode, PreviewProps } from '../../../types';
 import { EmptyState } from '../components/EmptyState';
+import { MobilePreviewFrame } from '../components/MobilePreviewFrame';
 import { buildContactIdentityDisplay } from './contactIdentityDisplay';
 import { WhatsappConversation } from './WhatsappConversation';
 import { WhatsappHeaderUser } from './WhatsappHeaderUser';
@@ -274,7 +275,11 @@ function WindowsTrayBar({ profile, trayTime, trayDate }: WindowsTrayBarProps) {
     );
 }
 
-export function PreviewBlockWhatsapp({ data }: PreviewProps) {
+interface PreviewBlockWhatsappProps extends PreviewProps {
+    deviceMode: PreviewDeviceMode;
+}
+
+export function PreviewBlockWhatsapp({ data, deviceMode, themeMode }: PreviewBlockWhatsappProps) {
     const userSeed = useMemo(
         () =>
             [
@@ -377,15 +382,23 @@ export function PreviewBlockWhatsapp({ data }: PreviewProps) {
 
     if (!data) return <EmptyState />;
 
-    return (
-        <div className="flex h-full w-full flex-col bg-[#efeae2]" id="CAPTURA">
-            <div className="flex min-h-0 w-full flex-1">
-                <div className="flex min-w-0 flex-[3.3] flex-col">
+    if (deviceMode === 'mobile') {
+        return (
+            <MobilePreviewFrame
+                title="WhatsApp"
+                subtitle={contactIdentityDisplay.headerTitle}
+                themeMode={themeMode}
+                hideSystemHeader={false}
+                hideSystemFooter={false}
+            >
+                <div className={['flex h-full min-h-0 flex-col', themeMode === 'dark' ? 'bg-[#0b141a]' : 'bg-[#efeae2]'].join(' ')}>
                     <WhatsappHeaderUser
                         data={data}
                         status={messageStatus}
                         showTemporaryIndicator={temporalBehavior.showTemporaryIcon}
                         displayTitle={contactIdentityDisplay.headerTitle}
+                        themeMode={themeMode}
+                        compact
                     />
 
                     <WhatsappConversation
@@ -396,6 +409,36 @@ export function PreviewBlockWhatsapp({ data }: PreviewProps) {
                         inlineTemporalMode={temporalBehavior.inlineTemporalMode}
                         inlineTemporalInsertIndex={data.previewSnapshot?.inlineTemporalInsertIndex ?? null}
                         displayTitle={contactIdentityDisplay.headerTitle}
+                        deviceMode="mobile"
+                        themeMode={themeMode}
+                    />
+                </div>
+            </MobilePreviewFrame>
+        );
+    }
+
+    return (
+        <div className="flex h-full w-full flex-col bg-[#efeae2]" id="CAPTURA">
+            <div className="flex min-h-0 w-full flex-1">
+                <div className="flex min-w-0 flex-[3.3] flex-col">
+                    <WhatsappHeaderUser
+                        data={data}
+                        status={messageStatus}
+                        showTemporaryIndicator={temporalBehavior.showTemporaryIcon}
+                        displayTitle={contactIdentityDisplay.headerTitle}
+                        themeMode={themeMode}
+                    />
+
+                    <WhatsappConversation
+                        data={data}
+                        messageStatus={messageStatus}
+                        messages={data.generatedMessages}
+                        showDefaultTemporalMessage={temporalBehavior.showDefaultTemporalMessage}
+                        inlineTemporalMode={temporalBehavior.inlineTemporalMode}
+                        inlineTemporalInsertIndex={data.previewSnapshot?.inlineTemporalInsertIndex ?? null}
+                        displayTitle={contactIdentityDisplay.headerTitle}
+                        deviceMode="desktop"
+                        themeMode={themeMode}
                     />
                 </div>
 

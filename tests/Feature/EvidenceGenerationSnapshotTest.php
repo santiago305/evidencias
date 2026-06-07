@@ -29,6 +29,7 @@ function snapshotEvidencePayload(): array
     return [
         'telefono' => '999999999',
         'nombre' => 'Juan Perez',
+        'dniCliente' => '12345678',
         'monto' => '1500',
         'tasa' => '2.5',
         'cuota' => '250',

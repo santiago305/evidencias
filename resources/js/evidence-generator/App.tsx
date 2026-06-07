@@ -20,6 +20,8 @@ import type {
     ConversationStatus,
     FormState,
     GeneratedMessage,
+    PreviewDeviceMode,
+    PreviewThemeMode,
     SavedData,
     WindowsTrayProfile,
 } from './types';
@@ -83,6 +85,8 @@ export default function App({ currentUser }: AppProps) {
         sexualidad: 'F' as const,
     };
     const [activeDesign, setActiveDesign] = useState<ActiveDesign>('whatsapp');
+    const [whatsappPreviewMode, setWhatsappPreviewMode] = useState<PreviewDeviceMode>('desktop');
+    const [previewThemeMode, setPreviewThemeMode] = useState<PreviewThemeMode>('light');
     const [form, setForm] = useState<FormState>(() => createInitialFormState());
 
     const [saved, setSaved] = useState<SavedData | null>(null);
@@ -259,13 +263,22 @@ export default function App({ currentUser }: AppProps) {
         <div className="h-screen w-full bg-slate-50">
             <div className="h-full w-full">
                 <div className="grid h-full grid-cols-1 gap-4 lg:grid-cols-8">
-                    <PreviewPanel activeDesign={activeDesign} saved={saved} />
+                    <PreviewPanel
+                        activeDesign={activeDesign}
+                        saved={saved}
+                        whatsappPreviewMode={whatsappPreviewMode}
+                        themeMode={previewThemeMode}
+                    />
                     <FormPanel
                         activeDesign={activeDesign}
+                        whatsappPreviewMode={whatsappPreviewMode}
+                        themeMode={previewThemeMode}
                         form={form}
                         saved={saved}
                         tabItems={tabItems}
                         onSelectDesign={setActiveDesign}
+                        onWhatsappPreviewModeChange={setWhatsappPreviewMode}
+                        onThemeModeChange={setPreviewThemeMode}
                         onChange={handleChange}
                         onGenerate={handleGenerate}
                         isGenerating={isGenerating}
