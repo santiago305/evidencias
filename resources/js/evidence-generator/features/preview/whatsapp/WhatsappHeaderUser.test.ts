@@ -3,13 +3,13 @@ import { readFileSync } from 'node:fs';
 import test from 'node:test';
 
 test('WhatsappHeaderUser keeps mobile and desktop header designs in whatsapp-header', () => {
-    const source = readFileSync(new URL('./WhatsappHeaderUser.tsx', import.meta.url), 'utf8');
+    const source = readFileSync(new URL('./whatsapp-header/index.ts', import.meta.url), 'utf8');
     const mobileSource = readFileSync(new URL('./whatsapp-header/WhatsappMobileHeaderUser.tsx', import.meta.url), 'utf8');
     const desktopSource = readFileSync(new URL('./whatsapp-header/WhatsappDesktopHeaderUser.tsx', import.meta.url), 'utf8');
 
-    assert.match(source, /from '\.\/whatsapp-header\/WhatsappMobileHeaderUser'/);
-    assert.match(source, /from '\.\/whatsapp-header\/WhatsappDesktopHeaderUser'/);
-    assert.match(source, /compact \?\s*<WhatsappMobileHeaderUser \{\.\.\.headerProps\} \/>\s*:\s*<WhatsappDesktopHeaderUser \{\.\.\.headerProps\} \/>/);
+    assert.match(source, /from '\.\/WhatsappMobileHeaderUser'/);
+    assert.match(source, /from '\.\/WhatsappDesktopHeaderUser'/);
+    assert.match(source, /compact \? createElement\(WhatsappMobileHeaderUser, headerProps\) : createElement\(WhatsappDesktopHeaderUser, headerProps\)/);
     assert.doesNotMatch(source, /WhatsappHeaderUserTypes/);
 
     assert.match(mobileSource, /function WhatsappMobileHeaderUser/);

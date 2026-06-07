@@ -4,7 +4,7 @@ import test from 'node:test';
 
 test('WhatsApp preview routes visual surfaces through component folders', () => {
     const conversationSource = readFileSync(new URL('./WhatsappConversation.tsx', import.meta.url), 'utf8');
-    const inputBarSource = readFileSync(new URL('./WhatsappInputBar.tsx', import.meta.url), 'utf8');
+    const inputBarSource = readFileSync(new URL('./whatsapp-footer/index.ts', import.meta.url), 'utf8');
     const backgroundSource = readFileSync(new URL('./whatsapp-background/WhatsappConversationBackground.tsx', import.meta.url), 'utf8');
     const piecesSource = readFileSync(new URL('./WhatsappPieces.tsx', import.meta.url), 'utf8');
     const mobileTextBubbleSource = readFileSync(new URL('./whatsapp-bubbles/WhatsappMobileTextBubble.tsx', import.meta.url), 'utf8');
@@ -16,8 +16,8 @@ test('WhatsApp preview routes visual surfaces through component folders', () => 
     assert.match(conversationSource, /from '\.\/whatsapp-bubbles'/);
     assert.match(conversationSource, /<WhatsappConversationBackground themeMode=\{themeMode\} \/>/);
 
-    assert.match(inputBarSource, /from '\.\/whatsapp-footer\/WhatsappMobileInputBar'/);
-    assert.match(inputBarSource, /from '\.\/whatsapp-footer\/WhatsappDesktopInputBar'/);
+    assert.match(inputBarSource, /from '\.\/WhatsappMobileInputBar'/);
+    assert.match(inputBarSource, /from '\.\/WhatsappDesktopInputBar'/);
     assert.match(inputBarSource, /deviceMode === 'mobile'/);
 
     assert.match(backgroundSource, /from '\.\/WhatsappLightConversationBackground'/);
