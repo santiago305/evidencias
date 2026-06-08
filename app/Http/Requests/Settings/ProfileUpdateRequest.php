@@ -25,6 +25,7 @@ class ProfileUpdateRequest extends FormRequest
                 Rule::unique(User::class)->ignore($this->user()->id),
             ],
             'sexualidad' => ['required', Rule::in(['M', 'F'])],
+            'mobile_design_key' => ['nullable', 'string', Rule::exists('mobile_designs', 'design_key')],
         ];
     }
 }

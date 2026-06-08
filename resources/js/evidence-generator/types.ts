@@ -6,6 +6,13 @@ export type PreviewThemeMode = 'light' | 'dark';
 export type ModoEntrada = 'informativo' | 'contactado';
 export type TipoCliente = 'apurado' | 'sereno' | 'desconfiado' | 'frio' | 'conversador' | 'indeciso';
 export type ConversationStatus = 'production' | 'development';
+export type MobileDesignKey = 'mobile-1';
+
+export interface MobileDesignDefinition {
+    key: MobileDesignKey;
+    label: string;
+    status: 'development' | 'production' | 'registered';
+}
 
 export interface FormState {
     telefono: string;

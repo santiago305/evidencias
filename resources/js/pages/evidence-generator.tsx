@@ -2,12 +2,18 @@ import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { UserMenuContent } from '@/components/user-menu-content';
 import EvidenceGeneratorApp from '@/evidence-generator/App';
+import type { MobileDesignKey } from '@/evidence-generator/types';
 import { type SharedData } from '@/types';
 import { Head, usePage } from '@inertiajs/react';
 import { UserRound } from 'lucide-react';
 
+interface EvidenceGeneratorPageProps extends SharedData {
+    globalMobileDesigns: MobileDesignKey[];
+    registeredMobileDesigns: MobileDesignKey[];
+}
+
 export default function EvidenceGeneratorPage() {
-    const { auth } = usePage<SharedData>().props;
+    const { auth, globalMobileDesigns, registeredMobileDesigns } = usePage<EvidenceGeneratorPageProps>().props;
 
     return (
         <div className="relative min-h-screen">
@@ -27,7 +33,7 @@ export default function EvidenceGeneratorPage() {
                 </DropdownMenu>
             </div>
 
-            <EvidenceGeneratorApp currentUser={auth.user} />
+            <EvidenceGeneratorApp currentUser={auth.user} globalMobileDesigns={globalMobileDesigns} registeredMobileDesigns={registeredMobileDesigns} />
         </div>
     );
 }

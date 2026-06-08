@@ -17,6 +17,7 @@ interface FormPanelProps {
     form: FormState;
     saved: SavedData | null;
     tabItems: readonly TabItem[];
+    canPreviewMobileDesign: boolean;
     onSelectDesign: (design: ActiveDesign) => void;
     onWhatsappPreviewModeChange: (mode: PreviewDeviceMode) => void;
     onThemeModeChange: (mode: PreviewThemeMode) => void;
@@ -43,6 +44,7 @@ export function FormPanel({
     form,
     saved,
     tabItems,
+    canPreviewMobileDesign,
     onSelectDesign,
     onWhatsappPreviewModeChange,
     onThemeModeChange,
@@ -69,10 +71,10 @@ export function FormPanel({
 
                 <div className="grid gap-2 border-b border-slate-200 bg-slate-50 p-3">
                     {activeDesign === 'whatsapp' ? (
-                        <div className="grid grid-cols-2 gap-1 rounded-xl border border-slate-200 bg-white p-1">
+                        <div className={['grid gap-1 rounded-xl border border-slate-200 bg-white p-1', canPreviewMobileDesign ? 'grid-cols-2' : 'grid-cols-1'].join(' ')}>
                             {[
                                 { mode: 'desktop' as const, label: 'PC', icon: Monitor },
-                                { mode: 'mobile' as const, label: 'Celular', icon: Smartphone },
+                                ...(canPreviewMobileDesign ? [{ mode: 'mobile' as const, label: 'Celular', icon: Smartphone }] : []),
                             ].map((item) => {
                                 const Icon = item.icon;
                                 const active = whatsappPreviewMode === item.mode;

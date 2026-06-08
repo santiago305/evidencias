@@ -1,4 +1,5 @@
 import { type BreadcrumbItem, type SharedData } from '@/types';
+import type { MobileDesignDefinition, MobileDesignKey } from '@/evidence-generator/types';
 import { Transition } from '@headlessui/react';
 import { Head, useForm, usePage } from '@inertiajs/react';
 import { FormEventHandler } from 'react';
@@ -20,21 +21,33 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
-export default function Profile() {
-    const { auth } = usePage<SharedData>().props;
+interface ProfilePageProps extends SharedData {
+    availableMobileDesigns: MobileDesignDefinition[];
+    selectedMobileDesignKey: MobileDesignKey | null;
+}
 
-    const { data, setData, patch, errors, processing, recentlySuccessful } = useForm<{
+export default function Profile() {
+    const { auth, availableMobileDesigns, selectedMobileDesignKey } = usePage<ProfilePageProps>().props;
+
+    const { data, setData, patch, transform, errors, processing, recentlySuccessful } = useForm<{
         name: string;
         dni: string;
         sexualidad: 'M' | 'F';
+        mobile_design_key: MobileDesignKey | 'none' | null;
     }>({
         name: auth.user.name,
         dni: auth.user.dni,
         sexualidad: auth.user.sexualidad ?? 'M',
+        mobile_design_key: selectedMobileDesignKey ?? 'none',
     });
 
     const submit: FormEventHandler = (e) => {
         e.preventDefault();
+
+        transform((formData) => ({
+            ...formData,
+            mobile_design_key: formData.mobile_design_key === 'none' ? null : formData.mobile_design_key,
+        }));
 
         patch(route('profile.update'));
     };
@@ -97,6 +110,31 @@ export default function Profile() {
                             </Select>
 
                             <InputError className="mt-2" message={errors.sexualidad} />
+                        </div>
+
+                        <div className="grid gap-2">
+                            <Label htmlFor="mobile_design_key">Diseño móvil</Label>
+
+                            <Select
+                                value={data.mobile_design_key ?? 'none'}
+                                onValueChange={(value) =>
+                                    setData('mobile_design_key', value === 'none' ? 'none' : (value as MobileDesignKey))
+                                }
+                            >
+                                <SelectTrigger id="mobile_design_key" className="mt-1 w-full">
+                                    <SelectValue placeholder="Selecciona un diseño móvil" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="none">Sin diseño móvil</SelectItem>
+                                    {availableMobileDesigns.map((design) => (
+                                        <SelectItem key={design.key} value={design.key}>
+                                            {design.label}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+
+                            <InputError className="mt-2" message={errors.mobile_design_key} />
                         </div>
 
                         <div className="flex items-center gap-4">

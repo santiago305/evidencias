@@ -20,6 +20,7 @@ import type {
     ConversationStatus,
     FormState,
     GeneratedMessage,
+    MobileDesignKey,
     PreviewDeviceMode,
     PreviewThemeMode,
     SavedData,
@@ -34,6 +35,8 @@ interface CurrentUser {
 
 interface AppProps {
     currentUser?: CurrentUser;
+    globalMobileDesigns?: MobileDesignKey[];
+    registeredMobileDesigns?: MobileDesignKey[];
 }
 
 interface ConversationsIndexResponse {
@@ -69,6 +72,14 @@ interface StoreConversationResponse {
     };
 }
 
+interface StoreMobileDesignResponse {
+    message: string;
+    data: {
+        id: number;
+        design_key: MobileDesignKey;
+    };
+}
+
 interface ConversationListItem {
     id: number;
     code: string;
@@ -78,7 +89,7 @@ interface ConversationListItem {
 
 /* ---------------- App ---------------- */
 // Componente raiz que coordina estado, tabs y vistas.
-export default function App({ currentUser }: AppProps) {
+export default function App({ currentUser, globalMobileDesigns = [], registeredMobileDesigns = [] }: AppProps) {
     const resolvedCurrentUser = currentUser ?? {
         name: 'Maria Perez',
         dni: '00000000',
@@ -97,12 +108,22 @@ export default function App({ currentUser }: AppProps) {
     const [progress, setProgress] = useState<ConversationProgressSummary | null>(null);
     const [conversationsCount, setConversationsCount] = useState(0);
     const [feedbackMessage, setFeedbackMessage] = useState<string | null>(null);
+    const [globalMobileDesignKeys, setGlobalMobileDesignKeys] = useState<MobileDesignKey[]>(globalMobileDesigns);
+    const [isRegisteringMobileDesign, setIsRegisteringMobileDesign] = useState(false);
+    const [lastGeneratedFromConversationCode, setLastGeneratedFromConversationCode] = useState(false);
     const [isConversationModalOpen, setIsConversationModalOpen] = useState(false);
     const [isConversationsListModalOpen, setIsConversationsListModalOpen] = useState(false);
     const [isSavingConversation, setIsSavingConversation] = useState(false);
     const [conversationModalError, setConversationModalError] = useState<string | null>(null);
     const [conversations, setConversations] = useState<ConversationListItem[]>([]);
     const [editingConversation, setEditingConversation] = useState<ConversationListItem | null>(null);
+
+    const activeMobileDesignKey: MobileDesignKey = 'mobile-1';
+    const isMobile1GloballyRegistered = globalMobileDesignKeys.includes(activeMobileDesignKey);
+    const isMobile1Registered = registeredMobileDesigns.includes(activeMobileDesignKey);
+    const hasRegisteredMobileDesign = registeredMobileDesigns.length > 0;
+    const isTestingConversation = conversationCodeInput.trim() !== '';
+    const canPreviewMobileDesign = isMobile1Registered || isTestingConversation || lastGeneratedFromConversationCode;
 
     const handleChange = (key: keyof FormState) => (e: ChangeEvent<HTMLInputElement>) => {
         const value = key === 'dniCliente' ? e.target.value.replace(/\D/g, '').slice(0, 8) : e.target.value;
@@ -136,6 +157,18 @@ export default function App({ currentUser }: AppProps) {
     }, []);
 
     useEffect(() => {
+        if (!canPreviewMobileDesign && whatsappPreviewMode === 'mobile') {
+            setWhatsappPreviewMode('desktop');
+        }
+    }, [canPreviewMobileDesign, whatsappPreviewMode]);
+
+    useEffect(() => {
+        if (!hasRegisteredMobileDesign && activeDesign !== 'whatsapp') {
+            setActiveDesign('whatsapp');
+        }
+    }, [activeDesign, hasRegisteredMobileDesign]);
+
+    useEffect(() => {
         if (conversationCodeInput.trim() === '' || seedCodeInput.trim() !== '') {
             return;
         }
@@ -156,6 +189,7 @@ export default function App({ currentUser }: AppProps) {
                 ...(seedCodeInput.trim() === '' && conversationCodeInput.trim() !== '' ? { conversationCode: conversationCodeInput.trim() } : {}),
             });
 
+            setLastGeneratedFromConversationCode(shouldUseConversationDefaults);
             setSaved({
                 ...requestForm,
                 nombreAsesor: resolvedCurrentUser.name,
@@ -186,6 +220,32 @@ export default function App({ currentUser }: AppProps) {
             setFeedbackMessage(firstError ?? errorPayload?.message ?? 'No se pudo generar la evidencia.');
         } finally {
             setIsGenerating(false);
+        }
+    };
+
+    const handleRegisterMobileDesign = async () => {
+        setIsRegisteringMobileDesign(true);
+        setFeedbackMessage(null);
+
+        try {
+            const response = await postJson<StoreMobileDesignResponse>(route('mobile-designs.store'), {
+                design_key: activeMobileDesignKey,
+            });
+
+            setGlobalMobileDesignKeys((previous) =>
+                previous.includes(response.data.design_key) ? previous : [...previous, response.data.design_key],
+            );
+            setFeedbackMessage(`${response.message} Ahora puedes asignarlo desde Perfil.`);
+        } catch (error) {
+            const errorPayload = error as {
+                errors?: Record<string, string[]>;
+                message?: string;
+            };
+            const firstError = errorPayload?.errors && Object.values(errorPayload.errors)[0] && Object.values(errorPayload.errors)[0][0];
+
+            setFeedbackMessage(firstError ?? errorPayload?.message ?? 'No se pudo registrar el diseño móvil.');
+        } finally {
+            setIsRegisteringMobileDesign(false);
         }
     };
 
@@ -251,10 +311,14 @@ export default function App({ currentUser }: AppProps) {
         () =>
             [
                 { key: 'whatsapp' as const, label: 'WhatsApp', accent: 'bg-emerald-600' },
-                { key: 'llamada' as const, label: 'Llamada', accent: 'bg-sky-600' },
-                { key: 'sms' as const, label: 'SMS', accent: 'bg-indigo-600' },
+                ...(hasRegisteredMobileDesign
+                    ? [
+                          { key: 'llamada' as const, label: 'Llamada', accent: 'bg-sky-600' },
+                          { key: 'sms' as const, label: 'SMS', accent: 'bg-indigo-600' },
+                      ]
+                    : []),
             ] as const,
-        [],
+        [hasRegisteredMobileDesign],
     );
 
     const conversationVariables = useMemo(() => buildConversationVariables(), []);
@@ -268,6 +332,15 @@ export default function App({ currentUser }: AppProps) {
                         saved={saved}
                         whatsappPreviewMode={whatsappPreviewMode}
                         themeMode={previewThemeMode}
+                        canRegisterMobileDesign={
+                            activeDesign === 'whatsapp' &&
+                            whatsappPreviewMode === 'mobile' &&
+                            lastGeneratedFromConversationCode &&
+                            !isMobile1GloballyRegistered
+                        }
+                        isRegisteringMobileDesign={isRegisteringMobileDesign}
+                        mobileDesignLabel="Mobile 1"
+                        onRegisterMobileDesign={handleRegisterMobileDesign}
                     />
                     <FormPanel
                         activeDesign={activeDesign}
@@ -278,6 +351,7 @@ export default function App({ currentUser }: AppProps) {
                         tabItems={tabItems}
                         onSelectDesign={setActiveDesign}
                         onWhatsappPreviewModeChange={setWhatsappPreviewMode}
+                        canPreviewMobileDesign={canPreviewMobileDesign}
                         onThemeModeChange={setPreviewThemeMode}
                         onChange={handleChange}
                         onGenerate={handleGenerate}

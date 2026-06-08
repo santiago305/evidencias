@@ -5,6 +5,7 @@ namespace App\Models;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
@@ -48,5 +49,10 @@ class User extends Authenticatable
             'password' => 'hashed',
             'windows_tray_config' => 'array',
         ];
+    }
+
+    public function mobileDesigns(): HasMany
+    {
+        return $this->hasMany(UserMobileDesign::class);
     }
 }
