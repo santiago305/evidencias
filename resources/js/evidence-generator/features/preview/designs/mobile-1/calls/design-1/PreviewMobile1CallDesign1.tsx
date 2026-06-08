@@ -10,8 +10,18 @@ export function PreviewMobile1CallDesign1({ data, themeMode }: PreviewProps) {
     const isDark = themeMode === 'dark';
 
     return (
-        <Mobile1PreviewFrame themeMode={themeMode}>
-            <div className={['flex h-full flex-col items-center justify-between px-8 py-12 text-center', isDark ? 'bg-[#07111f] text-white' : 'bg-[#f8fafc] text-slate-950'].join(' ')}>
+        <Mobile1PreviewFrame
+            themeMode={themeMode}
+            notificationSeed={[data.seedCode, data.conversationId, data.telefono, data.dniCliente]
+                .filter((value) => value !== undefined && value !== null && `${value}`.trim() !== '')
+                .join('|')}
+        >
+            <div
+                className={[
+                    'flex h-full flex-col items-center justify-between px-8 py-12 text-center',
+                    isDark ? 'bg-[#07111f] text-white' : 'bg-[#f8fafc] text-slate-950',
+                ].join(' ')}
+            >
                 <div>
                     <div className={['text-xs', isDark ? 'text-slate-400' : 'text-slate-500'].join(' ')}>Llamada entrante</div>
                     <div className="mt-6 grid h-24 w-24 place-items-center rounded-full bg-emerald-500 text-3xl font-semibold text-white">

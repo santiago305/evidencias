@@ -10,10 +10,17 @@ export function PreviewMobile1CallDesign2({ data, themeMode }: PreviewProps) {
     const isDark = themeMode === 'dark';
 
     return (
-        <Mobile1PreviewFrame themeMode={themeMode}>
+        <Mobile1PreviewFrame
+            themeMode={themeMode}
+            notificationSeed={[data.seedCode, data.conversationId, data.telefono, data.dniCliente]
+                .filter((value) => value !== undefined && value !== null && `${value}`.trim() !== '')
+                .join('|')}
+        >
             <div className={['flex h-full flex-col px-6 py-8', isDark ? 'bg-black text-white' : 'bg-white text-slate-950'].join(' ')}>
                 <div className="flex-1">
-                    <div className={['text-xs font-medium uppercase tracking-wide', isDark ? 'text-slate-400' : 'text-slate-500'].join(' ')}>Llamada perdida</div>
+                    <div className={['text-xs font-medium tracking-wide uppercase', isDark ? 'text-slate-400' : 'text-slate-500'].join(' ')}>
+                        Llamada perdida
+                    </div>
                     <div className="mt-8 text-3xl font-semibold">{data.nombre || 'Cliente'}</div>
                     <div className={['mt-2 text-base', isDark ? 'text-slate-300' : 'text-slate-500'].join(' ')}>{data.telefono}</div>
                     <div className={['mt-8 rounded-2xl p-4 text-left text-sm', isDark ? 'bg-white/10' : 'bg-slate-100'].join(' ')}>

@@ -1,11 +1,11 @@
 import { useMemo } from 'react';
 import type { PreviewProps } from '../../../../../types';
 import { EmptyState } from '../../../components/EmptyState';
-import { buildContactIdentityDisplay } from './contactIdentityDisplay';
-import { WhatsappConversation } from './WhatsappConversation';
-import { WhatsappHeaderUser } from './whatsapp-header';
-import type { MsgStatus } from './WhatsappPieces';
 import { Mobile1PreviewFrame } from '../Mobile1PreviewFrame';
+import { buildContactIdentityDisplay } from './contactIdentityDisplay';
+import { WhatsappHeaderUser } from './whatsapp-header';
+import { WhatsappConversation } from './WhatsappConversation';
+import type { MsgStatus } from './WhatsappPieces';
 
 function hashString(value: string): number {
     let hash = 2166136261;
@@ -33,12 +33,7 @@ function createSeededRandom(seed: number): () => number {
 export function PreviewMobile1Whatsapp({ data, themeMode }: PreviewProps) {
     const userSeed = useMemo(
         () =>
-            [
-                data?.telefono?.trim(),
-                data?.dni?.trim(),
-                data?.nombre?.trim(),
-                data?.nombreAsesor?.trim(),
-            ]
+            [data?.telefono?.trim(), data?.dni?.trim(), data?.nombre?.trim(), data?.nombreAsesor?.trim()]
                 .filter((value) => value && value.length > 0)
                 .join('|') || 'tray-default',
         [data?.telefono, data?.dni, data?.nombre, data?.nombreAsesor],
@@ -118,7 +113,12 @@ export function PreviewMobile1Whatsapp({ data, themeMode }: PreviewProps) {
     }
 
     return (
-        <Mobile1PreviewFrame themeMode={themeMode}>
+        <Mobile1PreviewFrame
+            themeMode={themeMode}
+            notificationSeed={[data.seedCode, data.conversationId, data.telefono, data.dniCliente, data.generatedMessages?.length]
+                .filter((value) => value !== undefined && value !== null && `${value}`.trim() !== '')
+                .join('|')}
+        >
             <div className={['flex h-full min-h-0 flex-col', themeMode === 'dark' ? 'bg-[#0b141a]' : 'bg-[#efeae2]'].join(' ')}>
                 <WhatsappHeaderUser
                     data={data}

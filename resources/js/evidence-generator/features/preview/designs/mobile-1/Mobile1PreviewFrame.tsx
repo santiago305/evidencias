@@ -9,6 +9,7 @@ type Mobile1PreviewFrameProps = {
     contentClassName?: string;
     hideSystemHeader?: boolean;
     hideSystemFooter?: boolean;
+    notificationSeed?: string;
 };
 
 export function Mobile1PreviewFrame({
@@ -17,6 +18,7 @@ export function Mobile1PreviewFrame({
     contentClassName = '',
     hideSystemHeader = false,
     hideSystemFooter = false,
+    notificationSeed,
 }: Mobile1PreviewFrameProps) {
     const isDark = themeMode === 'dark';
 
@@ -29,7 +31,7 @@ export function Mobile1PreviewFrame({
                     isDark ? 'bg-[#101418] shadow-black/45' : 'bg-white shadow-slate-300/60',
                 ].join(' ')}
             >
-                {!hideSystemHeader ? <Mobile1PreviewHeader themeMode={themeMode} /> : null}
+                {!hideSystemHeader ? <Mobile1PreviewHeader themeMode={themeMode} notificationSeed={notificationSeed} /> : null}
                 <div className={['min-h-0 flex-1 overflow-hidden', contentClassName].filter(Boolean).join(' ')}>{children}</div>
                 {!hideSystemFooter ? <Mobile1PreviewFooter themeMode={themeMode} /> : null}
             </div>

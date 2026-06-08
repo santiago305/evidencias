@@ -162,19 +162,12 @@
 }
 
 .scrollbar-mobile-soft {
-    scrollbar-width: thin;
-    scrollbar-color: rgba(0, 0, 0, 0.12) transparent;
+    overflow-y: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
 }
 
 .scrollbar-mobile-soft::-webkit-scrollbar {
-    width: 0.5px;
-}
-
-.scrollbar-mobile-soft::-webkit-scrollbar-track {
-    background: transparent;
-}
-
-.scrollbar-mobile-soft::-webkit-scrollbar-thumb {
-    background-color: rgba(0, 0, 0, 0.12);
-    border-radius: 999px;
+    display: none;
+    width: 0;
 }

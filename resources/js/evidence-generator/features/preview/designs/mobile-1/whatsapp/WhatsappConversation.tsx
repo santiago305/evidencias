@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useMemo, useRef, type ReactNode } from 'react';
+import { Fragment, useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { formatWhatsappTimeValue, getDateKeyFromLocalDateTime, getDayChipTextForDate } from '../../../../../lib/whatsapp/time';
 import type { GeneratedMessage, PreviewThemeMode } from '../../../../../types';
 import { WhatsappInputBar } from './whatsapp-footer';
@@ -29,9 +29,7 @@ function buildAvatarSeed(data: WhatsappData): string {
 function lightenHexColor(hexColor: string, ratio = 0.2): string {
     const normalized = hexColor.replace('#', '');
 
-    if (!/^[0-9a-fA-F]{6}$/.test(normalized)) {
-        return hexColor;
-    }
+    if (!/^[0-9a-fA-F]{6}$/.test(normalized)) return hexColor;
 
     const channels = [0, 2, 4].map((start) => Number.parseInt(normalized.slice(start, start + 2), 16));
     const nextChannels = channels.map((channel) => Math.round(channel + (255 - channel) * ratio));
@@ -53,13 +51,9 @@ function renderDocumentNumberLinks(line: string, lineIndex: number, keyPrefix = 
         const previousCharacter = line[matchIndex - 1];
         const nextCharacter = line[matchIndex + documentNumber.length];
 
-        if (isDigit(previousCharacter) || isDigit(nextCharacter)) {
-            continue;
-        }
+        if (isDigit(previousCharacter) || isDigit(nextCharacter)) continue;
 
-        if (matchIndex > lastIndex) {
-            parts.push(line.slice(lastIndex, matchIndex));
-        }
+        if (matchIndex > lastIndex) parts.push(line.slice(lastIndex, matchIndex));
 
         parts.push(
             <a
@@ -67,7 +61,7 @@ function renderDocumentNumberLinks(line: string, lineIndex: number, keyPrefix = 
                 href="#"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="segoe-ui-negrita cursor-pointer text-[#1B8755] no-underline select-text hover:underline focus-visible:bg-[#1B8755] focus-visible:text-white focus-visible:underline-offset-1 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#00A884]"
+                className="segoe-ui-negrita cursor-pointer text-[#1B8755] no-underline select-text hover:underline"
             >
                 {documentNumber}
             </a>,
@@ -76,13 +70,8 @@ function renderDocumentNumberLinks(line: string, lineIndex: number, keyPrefix = 
         lastIndex = matchIndex + documentNumber.length;
     }
 
-    if (parts.length === 0) {
-        return [line];
-    }
-
-    if (lastIndex < line.length) {
-        parts.push(line.slice(lastIndex));
-    }
+    if (parts.length === 0) return [line];
+    if (lastIndex < line.length) parts.push(line.slice(lastIndex));
 
     return parts;
 }
@@ -108,9 +97,7 @@ function renderFormattedLine(line: string, lineIndex: number): ReactNode[] {
         lastIndex = matchIndex + match[0].length;
     }
 
-    if (parts.length === 0) {
-        return renderDocumentNumberLinks(line, lineIndex);
-    }
+    if (parts.length === 0) return renderDocumentNumberLinks(line, lineIndex);
 
     if (lastIndex < line.length) {
         parts.push(...renderDocumentNumberLinks(line.slice(lastIndex), lineIndex, 'document-number', lastIndex));
@@ -134,9 +121,7 @@ function normalizeGeneratedMessages(
     messages: GeneratedMessage[] | undefined,
     messageStatus: MsgStatus | undefined,
 ): WhatsappConversationMessage[] | null {
-    if (!messages) {
-        return null;
-    }
+    if (!messages) return null;
 
     return messages.map((msg) => ({
         ...msg,
@@ -164,18 +149,46 @@ export function WhatsappConversation({
     displayTitle?: string;
     themeMode?: PreviewThemeMode;
 }) {
+    const scrollContainerRef = useRef<HTMLDivElement | null>(null);
+
+    const [scrollThumb, setScrollThumb] = useState({
+        top: 8,
+        height: 60,
+        visible: false,
+    });
+
+    const updateFakeScrollbar = useCallback(() => {
+        const el = scrollContainerRef.current;
+
+        if (!el) return;
+
+        const { scrollTop, scrollHeight, clientHeight } = el;
+
+        if (scrollHeight <= clientHeight) {
+            setScrollThumb((prev) => ({ ...prev, visible: false }));
+            return;
+        }
+
+        const trackPadding = 8;
+        const trackHeight = clientHeight - trackPadding * 2;
+        const thumbHeight = Math.max((clientHeight / scrollHeight) * trackHeight, 38);
+        const maxThumbTop = trackHeight - thumbHeight;
+        const scrollProgress = scrollTop / (scrollHeight - clientHeight);
+
+        setScrollThumb({
+            top: trackPadding + maxThumbTop * scrollProgress,
+            height: thumbHeight,
+            visible: true,
+        });
+    }, []);
+
     const conversationMessages = useMemo((): WhatsappConversationMessage[] => {
         return normalizeGeneratedMessages(messages, messageStatus) ?? buildWhatsappConversation(data, messageStatus);
     }, [data, messageStatus, messages]);
 
     const resolvedInlineTemporalInsertIndex = useMemo(() => {
-        if (initialInlineTemporalInsertIndex !== null) {
-            return initialInlineTemporalInsertIndex;
-        }
-
-        if (!inlineTemporalMode || conversationMessages.length < 2) {
-            return null;
-        }
+        if (initialInlineTemporalInsertIndex !== null) return initialInlineTemporalInsertIndex;
+        if (!inlineTemporalMode || conversationMessages.length < 2) return null;
 
         return Math.floor(Math.random() * (conversationMessages.length - 1)) + 1;
     }, [conversationMessages, initialInlineTemporalInsertIndex, inlineTemporalMode]);
@@ -193,21 +206,20 @@ export function WhatsappConversation({
         () => getDateKeyFromLocalDateTime(data.fechaHora) ?? getDateKeyFromLocalDateTime(data.fechaHoraRegistro) ?? '',
         [data.fechaHora, data.fechaHoraRegistro],
     );
+
     const dayChipReference = data.fechaHoraRegistro || data.fechaHora;
     const firstDayChipDateKey = conversationMessages[0] ? resolveMessageDateKey(conversationMessages[0], fallbackDateKey) : fallbackDateKey;
-    const scrollContainerRef = useRef<HTMLDivElement | null>(null);
 
     useEffect(() => {
         const scrollContainer = scrollContainerRef.current;
 
-        if (!scrollContainer) {
-            return;
-        }
+        if (!scrollContainer) return;
 
         const frameId = window.requestAnimationFrame(() => {
             const { scrollHeight, clientHeight } = scrollContainer;
 
             if (scrollHeight <= clientHeight) {
+                updateFakeScrollbar();
                 return;
             }
 
@@ -216,25 +228,23 @@ export function WhatsappConversation({
             const scrollRatio = scrollRatios[Math.floor(Math.random() * scrollRatios.length)] ?? 0.42;
 
             scrollContainer.scrollTop = Math.round(maxScrollTop * scrollRatio);
+            updateFakeScrollbar();
         });
 
-        return () => {
-            window.cancelAnimationFrame(frameId);
-        };
-    }, [conversationMessages, firstDayChipDateKey, inlineTemporalMode, resolvedInlineTemporalInsertIndex, showDefaultTemporalMessage]);
+        return () => window.cancelAnimationFrame(frameId);
+    }, [conversationMessages, firstDayChipDateKey, inlineTemporalMode, resolvedInlineTemporalInsertIndex, showDefaultTemporalMessage, updateFakeScrollbar]);
 
     return (
         <div className="h-full w-full overflow-hidden">
-            {/* Fondo WhatsApp */}
             <div className="relative h-full min-h-0 overflow-hidden">
                 <WhatsappConversationBackground themeMode={themeMode} />
 
                 <div className="relative flex h-full min-h-0 flex-col overflow-hidden">
-                    {/* Mensajes */}
-                    <div className="min-h-0 flex-1 overflow-hidden">
+                    <div className="relative min-h-0 flex-1 overflow-hidden">
                         <div
                             ref={scrollContainerRef}
-                            className="scrollbar-mobile-soft h-full w-full overflow-y-auto"
+                            onScroll={updateFakeScrollbar}
+                            className="scrollbar-mobile-soft h-full w-full overflow-y-auto pr-[4px]"
                         >
                             {firstDayChipDateKey !== '' && <DayChip text={getDayChipTextForDate(firstDayChipDateKey, dayChipReference)} />}
                             <EncryptedMessage />
@@ -251,6 +261,7 @@ export function WhatsappConversation({
                                 const isFirstInGroup = idx === 0 || markerBeforeCurrent || prev.side !== msg.side;
                                 const staysInSameGroup = !!next && !markerAfterCurrent && next.side === msg.side;
                                 const wrapperSpacing = staysInSameGroup ? 'mb-0.5' : 'mb-4';
+
                                 return (
                                     <Fragment key={`message-${idx}-${msg.side}`}>
                                         {showsDayChip && <DayChip text={getDayChipTextForDate(currentDateKey, dayChipReference)} />}
@@ -266,14 +277,8 @@ export function WhatsappConversation({
                                                         ? {
                                                               author: msg.quote.side === 'out' ? 'Tú' : (displayTitle ?? 'Cliente'),
                                                               text: msg.quote.text,
-                                                              accentColor:
-                                                                  msg.quote.side === 'out'
-                                                                      ? ADVISOR_QUOTE_ACCENT_COLOR
-                                                                      : clientQuoteTheme.accentColor,
-                                                              authorColor:
-                                                                  msg.quote.side === 'out'
-                                                                      ? ADVISOR_QUOTE_AUTHOR_COLOR
-                                                                      : clientQuoteTheme.authorColor,
+                                                              accentColor: msg.quote.side === 'out' ? ADVISOR_QUOTE_ACCENT_COLOR : clientQuoteTheme.accentColor,
+                                                              authorColor: msg.quote.side === 'out' ? ADVISOR_QUOTE_AUTHOR_COLOR : clientQuoteTheme.authorColor,
                                                           }
                                                         : undefined
                                                 }
@@ -288,6 +293,17 @@ export function WhatsappConversation({
                                 );
                             })}
                         </div>
+
+                        {scrollThumb.visible && (
+                            <div
+                                className="pointer-events-none absolute right-[2px] z-20 rounded-full bg-black/30"
+                                style={{
+                                    top: `${scrollThumb.top}px`,
+                                    height: `${scrollThumb.height}px`,
+                                    width: '2px',
+                                }}
+                            />
+                        )}
                     </div>
 
                     <div className="shrink-0">
