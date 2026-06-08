@@ -15,6 +15,5 @@ export {
     type MsgStatus,
     type QuotedMessage,
 } from '../WhatsappPieces';
-export { WhatsappDesktopTextBubble } from './WhatsappDesktopTextBubble';
 export { WhatsappMobileTextBubble } from './WhatsappMobileTextBubble';
 

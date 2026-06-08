@@ -1,6 +1,6 @@
 import { Fragment, useEffect, useMemo, useRef, type ReactNode } from 'react';
 import { formatWhatsappTimeValue, getDateKeyFromLocalDateTime, getDayChipTextForDate } from '../../../../../lib/whatsapp/time';
-import type { GeneratedMessage, PreviewDeviceMode, PreviewThemeMode } from '../../../../../types';
+import type { GeneratedMessage, PreviewThemeMode } from '../../../../../types';
 import { WhatsappInputBar } from './whatsapp-footer';
 import { WhatsappConversationBackground } from './whatsapp-background/WhatsappConversationBackground';
 import {
@@ -153,7 +153,6 @@ export function WhatsappConversation({
     inlineTemporalMode = null,
     inlineTemporalInsertIndex: initialInlineTemporalInsertIndex = null,
     displayTitle,
-    deviceMode = 'desktop',
     themeMode = 'light',
 }: {
     data: WhatsappData;
@@ -163,7 +162,6 @@ export function WhatsappConversation({
     inlineTemporalMode?: 'active' | 'deactive' | null;
     inlineTemporalInsertIndex?: number | null;
     displayTitle?: string;
-    deviceMode?: PreviewDeviceMode;
     themeMode?: PreviewThemeMode;
 }) {
     const conversationMessages = useMemo((): WhatsappConversationMessage[] => {
@@ -236,16 +234,11 @@ export function WhatsappConversation({
                     <div className="min-h-0 flex-1 overflow-hidden">
                         <div
                             ref={scrollContainerRef}
-                            className={[
-                                deviceMode === 'mobile' ? 'scrollbar-mobile-soft' : 'scrollbar-soft',
-                                'h-full w-full overflow-y-auto',
-                            ]
-                                .filter(Boolean)
-                                .join(' ')}
+                            className="scrollbar-mobile-soft h-full w-full overflow-y-auto"
                         >
                             {firstDayChipDateKey !== '' && <DayChip text={getDayChipTextForDate(firstDayChipDateKey, dayChipReference)} />}
-                            <EncryptedMessage deviceMode={deviceMode} />
-                            {showDefaultTemporalMessage && <TempporalMessage deviceMode={deviceMode} />}
+                            <EncryptedMessage />
+                            {showDefaultTemporalMessage && <TempporalMessage />}
 
                             {conversationMessages.map((msg, idx) => {
                                 const prev = conversationMessages[idx - 1];
@@ -284,14 +277,13 @@ export function WhatsappConversation({
                                                           }
                                                         : undefined
                                                 }
-                                                deviceMode={deviceMode}
                                             >
                                                 {linesToSpans(msg.lines)}
                                             </Bubble>
                                         </div>
 
-                                        {markerAfterCurrent && inlineTemporalMode === 'active' && <ActiveTemporalMessage deviceMode={deviceMode} />}
-                                        {markerAfterCurrent && inlineTemporalMode === 'deactive' && <DesactiveTemporalMessage deviceMode={deviceMode} />}
+                                        {markerAfterCurrent && inlineTemporalMode === 'active' && <ActiveTemporalMessage />}
+                                        {markerAfterCurrent && inlineTemporalMode === 'deactive' && <DesactiveTemporalMessage />}
                                     </Fragment>
                                 );
                             })}
@@ -299,7 +291,7 @@ export function WhatsappConversation({
                     </div>
 
                     <div className="shrink-0">
-                        <WhatsappInputBar themeMode={themeMode} deviceMode={deviceMode} />
+                        <WhatsappInputBar themeMode={themeMode} />
                     </div>
                 </div>
             </div>

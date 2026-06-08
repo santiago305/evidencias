@@ -126,7 +126,6 @@ export function PreviewMobile1Whatsapp({ data, themeMode }: PreviewProps) {
                     showTemporaryIndicator={temporalBehavior.showTemporaryIcon}
                     displayTitle={contactIdentityDisplay.headerTitle}
                     themeMode={themeMode}
-                    compact
                 />
 
                 <WhatsappConversation
@@ -137,7 +136,6 @@ export function PreviewMobile1Whatsapp({ data, themeMode }: PreviewProps) {
                     inlineTemporalMode={temporalBehavior.inlineTemporalMode}
                     inlineTemporalInsertIndex={data.previewSnapshot?.inlineTemporalInsertIndex ?? null}
                     displayTitle={contactIdentityDisplay.headerTitle}
-                    deviceMode="mobile"
                     themeMode={themeMode}
                 />
             </div>

@@ -1,5 +1,4 @@
 import React from "react";
-import { WhatsappDesktopTextBubble } from "./whatsapp-bubbles/WhatsappDesktopTextBubble";
 import { WhatsappMobileTextBubble } from "./whatsapp-bubbles/WhatsappMobileTextBubble";
 
 export function MessageGroup({
@@ -88,7 +87,6 @@ export function Bubble({
   status,
   id,
   quote,
-  deviceMode = "desktop",
   children,
 }: {
   side: "in" | "out";
@@ -97,20 +95,20 @@ export function Bubble({
   status?: MsgStatus;
   id?: string;
   quote?: QuotedMessage;
-  deviceMode?: "desktop" | "mobile";
   children: React.ReactNode;
 }) {
-  const bubbleProps = {
-    children,
-    firstInGroup,
-    id,
-    quote,
-    side,
-    status,
-    time,
-  };
-
-  return deviceMode === "mobile" ? <WhatsappMobileTextBubble {...bubbleProps} /> : <WhatsappDesktopTextBubble {...bubbleProps} />;
+  return (
+    <WhatsappMobileTextBubble
+      firstInGroup={firstInGroup}
+      id={id}
+      quote={quote}
+      side={side}
+      status={status}
+      time={time}
+    >
+      {children}
+    </WhatsappMobileTextBubble>
+  );
 }
 export function VoiceBubble({
   side,
@@ -160,11 +158,10 @@ export function VoiceBubble({
   );
 }
 
-export function EncryptedMessage({ deviceMode = "desktop" }: { deviceMode?: "desktop" | "mobile" }) {
-  const isMobile = deviceMode === "mobile";
-  const horizontalPadding = deviceMode === "mobile" ? "px-8" : "px-15.75";
-  const maxWidth = deviceMode === "mobile" ? "max-w-none" : "max-w-125";
-  const encryptedTextSize = deviceMode === "mobile" ? "text-[10px] leading-[12px]" : "text-[9.8px]";
+export function EncryptedMessage() {
+  const encryptedTextSize = "text-[10px] leading-[12px]";
+  const horizontalPadding = "px-8";
+  const maxWidth = "max-w-none";
 
   return (
     <div className="relative">
@@ -200,7 +197,7 @@ export function EncryptedMessage({ deviceMode = "desktop" }: { deviceMode?: "des
                         <span className={`segoe-ui visible min-h-0 wrap-break-word ${encryptedTextSize}`}>
                           Los mensajes y las llamadas están cifrados de extremo
                           a extremo. Solo las personas en este chat pueden
-                          leerlos, escucharlos o compartirlos. {isMobile ? <strong className="font-semibold">Más información.</strong> : "Haz clic para obtener más información."}
+                          leerlos, escucharlos o compartirlos. <strong className="font-semibold">Más información.</strong>
                         </span>
                       </span>
                     </div>
@@ -219,11 +216,10 @@ export function EncryptedMessage({ deviceMode = "desktop" }: { deviceMode?: "des
     </div>
   );
 }
-export function TempporalMessage({ deviceMode = "desktop" }: { deviceMode?: "desktop" | "mobile" }) {
-  const isMobile = deviceMode === "mobile";
-  const horizontalPadding = deviceMode === "mobile" ? "px-8" : "px-15.75";
-  const maxWidth = deviceMode === "mobile" ? "max-w-none" : "max-w-125";
-  const messageTextSize = deviceMode === "mobile" ? "text-[10px] leading-[12px]" : "text-[9.8px]";
+export function TempporalMessage() {
+  const horizontalPadding = "px-8";
+  const maxWidth = "max-w-none";
+  const messageTextSize = "text-[10px] leading-[12px]";
 
   return (
     <div className="relative">
@@ -242,8 +238,8 @@ export function TempporalMessage({ deviceMode = "desktop" }: { deviceMode?: "des
                           <span aria-hidden="true" data-icon="lock-small">
                             <svg
                               viewBox="0 0 24 24"
-                              height={isMobile ? 9 : 12}
-                              width={isMobile ? 9 : 12}
+                              height={9}
+                              width={9}
                               preserveAspectRatio="xMidYMid meet"
                               fill="currentColor"
                               className="inline-block"
@@ -261,7 +257,7 @@ export function TempporalMessage({ deviceMode = "desktop" }: { deviceMode?: "des
                         </div>
 
                         <span className={`segoe-ui visible min-h-0 wrap-break-word ${messageTextSize}`}>
-                          Usas una duración predeterminada para los mensajes temporales en chats nuevos. Los mensajes nuevos desaparecerán de este chat después de 90 días de haber sido enviados, a menos que se use la opción para conservarlos. {isMobile ? <strong className="font-semibold">Cambiar Duración</strong> : "Haz clic para cambiar la duración predeterminada."}
+                          Usas una duración predeterminada para los mensajes temporales en chats nuevos. Los mensajes nuevos desaparecerán de este chat después de 90 días de haber sido enviados, a menos que se use la opción para conservarlos. <strong className="font-semibold">Cambiar Duración</strong>
                         </span>
                       </span>
                     </div>
@@ -281,11 +277,10 @@ export function TempporalMessage({ deviceMode = "desktop" }: { deviceMode?: "des
   );
 }
 
-export function ActiveTemporalMessage({ deviceMode = "desktop" }: { deviceMode?: "desktop" | "mobile" }) {
-  const isMobile = deviceMode === "mobile";
-  const horizontalPadding = deviceMode === "mobile" ? "px-8" : "px-15.75";
-  const maxWidth = deviceMode === "mobile" ? "max-w-none" : "max-w-125";
-  const messageTextSize = deviceMode === "mobile" ? "text-[10px] leading-[12px]" : "text-[9.8px]";
+export function ActiveTemporalMessage() {
+  const horizontalPadding = "px-8";
+  const maxWidth = "max-w-none";
+  const messageTextSize = "text-[10px] leading-[12px]";
 
   return (
     <div className="relative">
@@ -304,8 +299,8 @@ export function ActiveTemporalMessage({ deviceMode = "desktop" }: { deviceMode?:
                           <span aria-hidden="true" data-icon="lock-small">
                             <svg
                               viewBox="0 0 24 24"
-                              height={isMobile ? 9 : 12}
-                              width={isMobile ? 9 : 12}
+                              height={9}
+                              width={9}
                               preserveAspectRatio="xMidYMid meet"
                               fill="currentColor"
                               className="inline-block"
@@ -323,7 +318,7 @@ export function ActiveTemporalMessage({ deviceMode = "desktop" }: { deviceMode?:
                         </div>
 
                         <span className={`segoe-ui visible min-h-0 wrap-break-word ${messageTextSize}`}>
-                          Activaste los mensajes temporales. Los mensajes nuevos desaparecerán de este chat después de 90 días de haber sido enviados, a menos que se use la opción para conservarlos. {isMobile ? <strong className="font-semibold">Cambiar Duración</strong> : "Haz clic para cambiar esto."}
+                          Activaste los mensajes temporales. Los mensajes nuevos desaparecerán de este chat después de 90 días de haber sido enviados, a menos que se use la opción para conservarlos. <strong className="font-semibold">Cambiar Duración</strong>
                         </span>
                       </span>
                     </div>
@@ -343,15 +338,8 @@ export function ActiveTemporalMessage({ deviceMode = "desktop" }: { deviceMode?:
   );
 }
 
-export function DesactiveTemporalMessage({
-  deviceMode = "desktop",
-}: {
-  deviceMode?: "desktop" | "mobile";
-}) {
-  const isMobile = deviceMode === "mobile";
-  const messageTextSize = isMobile
-    ? "text-[10px] leading-[12px]"
-    : "text-[9.8px] leading-[12px]";
+export function DesactiveTemporalMessage() {
+  const messageTextSize = "text-[10px] leading-[12px]";
 
   return (
     <div className="relative">
@@ -369,8 +357,8 @@ export function DesactiveTemporalMessage({
                     >
                       <svg
                         viewBox="0 0 24 24"
-                        height={isMobile ? 9 : 12}
-                        width={isMobile ? 9 : 12}
+                        height={9}
+                        width={9}
                         preserveAspectRatio="xMidYMid meet"
                         fill="currentColor"
                         className="inline-block"
@@ -390,13 +378,9 @@ export function DesactiveTemporalMessage({
                       className={`segoe-ui visible min-h-0 wrap-break-word ${messageTextSize}`}
                     >
                       Desactivaste los mensajes temporales.{" "}
-                      {isMobile ? (
-                        <strong className="font-semibold">
-                          Cambiar Duración
-                        </strong>
-                      ) : (
-                        "Haz clic para cambiar esto."
-                      )}
+                      <strong className="font-semibold">
+                        Cambiar Duración
+                      </strong>
                     </span>
                   </span>
                 </div>

@@ -1,5 +1,4 @@
 import { createElement } from 'react';
-import { WhatsappDesktopHeaderUser } from './WhatsappDesktopHeaderUser';
 import { WhatsappMobileHeaderUser } from './WhatsappMobileHeaderUser';
 import type { MsgStatus } from '../WhatsappPieces';
 import type { WhatsappData } from '../whatsappTypes';
@@ -11,10 +10,8 @@ type WhatsappHeaderUserProps = {
     showTemporaryIndicator?: boolean;
     displayTitle?: string;
     themeMode?: PreviewThemeMode;
-    compact?: boolean;
 };
 
-export { WhatsappDesktopHeaderUser } from './WhatsappDesktopHeaderUser';
 export { WhatsappMobileHeaderUser } from './WhatsappMobileHeaderUser';
 
 export function WhatsappHeaderUser({
@@ -23,16 +20,13 @@ export function WhatsappHeaderUser({
     showTemporaryIndicator = true,
     displayTitle,
     themeMode = 'light',
-    compact = false,
 }: WhatsappHeaderUserProps) {
-    const headerProps = {
+    return createElement(WhatsappMobileHeaderUser, {
         data,
         displayTitle,
         showTemporaryIndicator,
         status,
         themeMode,
-    };
-
-    return compact ? createElement(WhatsappMobileHeaderUser, headerProps) : createElement(WhatsappDesktopHeaderUser, headerProps);
+    });
 }
 
