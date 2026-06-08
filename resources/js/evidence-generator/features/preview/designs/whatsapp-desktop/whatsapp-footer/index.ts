@@ -1,7 +1,8 @@
 import { createElement } from 'react';
-import { WhatsappDesktopInputBar } from './WhatsappDesktopInputBar';
 import type { PreviewThemeMode } from '../../../../../types';
+import { WhatsappDesktopInputBar } from './WhatsappDesktopInputBar';
 
+export { MoreConversationIndicator } from './MoreConversationIndicator';
 export { WhatsappDesktopInputBar } from './WhatsappDesktopInputBar';
 
 export function WhatsappInputBar({
@@ -15,4 +16,3 @@ export function WhatsappInputBar({
 
     return createElement(WhatsappDesktopInputBar, { themeMode });
 }
-

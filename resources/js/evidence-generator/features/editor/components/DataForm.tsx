@@ -38,7 +38,7 @@ export function DataForm({
     feedbackMessage,
 }: DataFormProps) {
     return (
-        <div className="grid grid-cols-1 gap-2 p-3">
+        <div className="grid min-h-0 flex-1 grid-cols-1 gap-2 overflow-y-auto p-3">
             <div className="grid grid-cols-2 gap-2">
                 <button
                     type="button"

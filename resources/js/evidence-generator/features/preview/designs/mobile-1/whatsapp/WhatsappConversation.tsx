@@ -1,7 +1,10 @@
 import { Fragment, useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { formatWhatsappTimeValue, getDateKeyFromLocalDateTime, getDayChipTextForDate } from '../../../../../lib/whatsapp/time';
 import type { GeneratedMessage, PreviewThemeMode } from '../../../../../types';
-import { WhatsappInputBar } from './whatsapp-footer';
+import { shouldShowConversationMoreIndicator } from '../../whatsappConversationIndicator';
+import { createWhatsappAvatarTheme } from './avatarTheme';
+import type { WhatsappConversationMessage } from './buildWhatsappConversation';
+import { buildWhatsappConversation } from './buildWhatsappConversation';
 import { WhatsappConversationBackground } from './whatsapp-background/WhatsappConversationBackground';
 import {
     ActiveTemporalMessage,
@@ -12,9 +15,7 @@ import {
     TempporalMessage,
     type MsgStatus,
 } from './whatsapp-bubbles';
-import { createWhatsappAvatarTheme } from './avatarTheme';
-import type { WhatsappConversationMessage } from './buildWhatsappConversation';
-import { buildWhatsappConversation } from './buildWhatsappConversation';
+import { MoreConversationIndicator, WhatsappInputBar } from './whatsapp-footer';
 import type { WhatsappData } from './whatsappTypes';
 
 const ADVISOR_QUOTE_ACCENT_COLOR = '#0063CB';
@@ -156,8 +157,9 @@ export function WhatsappConversation({
         height: 60,
         visible: false,
     });
+    const [showMoreConversationIndicator, setShowMoreConversationIndicator] = useState(false);
 
-    const updateFakeScrollbar = useCallback(() => {
+    const updateScrollState = useCallback(() => {
         const el = scrollContainerRef.current;
 
         if (!el) return;
@@ -166,6 +168,7 @@ export function WhatsappConversation({
 
         if (scrollHeight <= clientHeight) {
             setScrollThumb((prev) => ({ ...prev, visible: false }));
+            setShowMoreConversationIndicator(false);
             return;
         }
 
@@ -180,6 +183,7 @@ export function WhatsappConversation({
             height: thumbHeight,
             visible: true,
         });
+        setShowMoreConversationIndicator(shouldShowConversationMoreIndicator(scrollTop, scrollHeight, clientHeight, 'mobile'));
     }, []);
 
     const conversationMessages = useMemo((): WhatsappConversationMessage[] => {
@@ -219,7 +223,7 @@ export function WhatsappConversation({
             const { scrollHeight, clientHeight } = scrollContainer;
 
             if (scrollHeight <= clientHeight) {
-                updateFakeScrollbar();
+                updateScrollState();
                 return;
             }
 
@@ -228,11 +232,18 @@ export function WhatsappConversation({
             const scrollRatio = scrollRatios[Math.floor(Math.random() * scrollRatios.length)] ?? 0.42;
 
             scrollContainer.scrollTop = Math.round(maxScrollTop * scrollRatio);
-            updateFakeScrollbar();
+            updateScrollState();
         });
 
         return () => window.cancelAnimationFrame(frameId);
-    }, [conversationMessages, firstDayChipDateKey, inlineTemporalMode, resolvedInlineTemporalInsertIndex, showDefaultTemporalMessage, updateFakeScrollbar]);
+    }, [
+        conversationMessages,
+        firstDayChipDateKey,
+        inlineTemporalMode,
+        resolvedInlineTemporalInsertIndex,
+        showDefaultTemporalMessage,
+        updateScrollState,
+    ]);
 
     return (
         <div className="h-full w-full overflow-hidden">
@@ -243,7 +254,7 @@ export function WhatsappConversation({
                     <div className="relative min-h-0 flex-1 overflow-hidden">
                         <div
                             ref={scrollContainerRef}
-                            onScroll={updateFakeScrollbar}
+                            onScroll={updateScrollState}
                             className="scrollbar-mobile-soft h-full w-full overflow-y-auto pr-[4px]"
                         >
                             {firstDayChipDateKey !== '' && <DayChip text={getDayChipTextForDate(firstDayChipDateKey, dayChipReference)} />}
@@ -277,8 +288,14 @@ export function WhatsappConversation({
                                                         ? {
                                                               author: msg.quote.side === 'out' ? 'Tú' : (displayTitle ?? 'Cliente'),
                                                               text: msg.quote.text,
-                                                              accentColor: msg.quote.side === 'out' ? ADVISOR_QUOTE_ACCENT_COLOR : clientQuoteTheme.accentColor,
-                                                              authorColor: msg.quote.side === 'out' ? ADVISOR_QUOTE_AUTHOR_COLOR : clientQuoteTheme.authorColor,
+                                                              accentColor:
+                                                                  msg.quote.side === 'out'
+                                                                      ? ADVISOR_QUOTE_ACCENT_COLOR
+                                                                      : clientQuoteTheme.accentColor,
+                                                              authorColor:
+                                                                  msg.quote.side === 'out'
+                                                                      ? ADVISOR_QUOTE_AUTHOR_COLOR
+                                                                      : clientQuoteTheme.authorColor,
                                                           }
                                                         : undefined
                                                 }
@@ -303,6 +320,12 @@ export function WhatsappConversation({
                                     width: '2px',
                                 }}
                             />
+                        )}
+
+                        {showMoreConversationIndicator && (
+                            <div className="pointer-events-none absolute right-2.5 bottom-[10px] z-30">
+                                <MoreConversationIndicator />
+                            </div>
                         )}
                     </div>
 

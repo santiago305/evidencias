@@ -1,7 +1,10 @@
-import { Fragment, useEffect, useMemo, useRef, type ReactNode } from 'react';
+import { Fragment, useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { formatWhatsappTimeValue, getDateKeyFromLocalDateTime, getDayChipTextForDate } from '../../../../lib/whatsapp/time';
 import type { GeneratedMessage, PreviewDeviceMode, PreviewThemeMode } from '../../../../types';
-import { WhatsappInputBar } from './whatsapp-footer';
+import { shouldShowConversationMoreIndicator } from '../whatsappConversationIndicator';
+import { createWhatsappAvatarTheme } from './avatarTheme';
+import type { WhatsappConversationMessage } from './buildWhatsappConversation';
+import { buildWhatsappConversation } from './buildWhatsappConversation';
 import { WhatsappConversationBackground } from './whatsapp-background/WhatsappConversationBackground';
 import {
     ActiveTemporalMessage,
@@ -12,9 +15,7 @@ import {
     TempporalMessage,
     type MsgStatus,
 } from './whatsapp-bubbles';
-import { createWhatsappAvatarTheme } from './avatarTheme';
-import type { WhatsappConversationMessage } from './buildWhatsappConversation';
-import { buildWhatsappConversation } from './buildWhatsappConversation';
+import { MoreConversationIndicator, WhatsappInputBar } from './whatsapp-footer';
 import type { WhatsappData } from './whatsappTypes';
 
 const ADVISOR_QUOTE_ACCENT_COLOR = '#0063CB';
@@ -198,6 +199,19 @@ export function WhatsappConversation({
     const dayChipReference = data.fechaHoraRegistro || data.fechaHora;
     const firstDayChipDateKey = conversationMessages[0] ? resolveMessageDateKey(conversationMessages[0], fallbackDateKey) : fallbackDateKey;
     const scrollContainerRef = useRef<HTMLDivElement | null>(null);
+    const [showMoreConversationIndicator, setShowMoreConversationIndicator] = useState(false);
+
+    const updateScrollState = useCallback(() => {
+        const scrollContainer = scrollContainerRef.current;
+
+        if (!scrollContainer) {
+            return;
+        }
+
+        const { scrollTop, scrollHeight, clientHeight } = scrollContainer;
+
+        setShowMoreConversationIndicator(shouldShowConversationMoreIndicator(scrollTop, scrollHeight, clientHeight, 'desktop'));
+    }, []);
 
     useEffect(() => {
         const scrollContainer = scrollContainerRef.current;
@@ -210,6 +224,7 @@ export function WhatsappConversation({
             const { scrollHeight, clientHeight } = scrollContainer;
 
             if (scrollHeight <= clientHeight) {
+                setShowMoreConversationIndicator(false);
                 return;
             }
 
@@ -218,12 +233,20 @@ export function WhatsappConversation({
             const scrollRatio = scrollRatios[Math.floor(Math.random() * scrollRatios.length)] ?? 0.42;
 
             scrollContainer.scrollTop = Math.round(maxScrollTop * scrollRatio);
+            updateScrollState();
         });
 
         return () => {
             window.cancelAnimationFrame(frameId);
         };
-    }, [conversationMessages, firstDayChipDateKey, inlineTemporalMode, resolvedInlineTemporalInsertIndex, showDefaultTemporalMessage]);
+    }, [
+        conversationMessages,
+        firstDayChipDateKey,
+        inlineTemporalMode,
+        resolvedInlineTemporalInsertIndex,
+        showDefaultTemporalMessage,
+        updateScrollState,
+    ]);
 
     return (
         <div className="h-full w-full overflow-hidden">
@@ -233,13 +256,11 @@ export function WhatsappConversation({
 
                 <div className="relative flex h-full min-h-0 flex-col overflow-hidden">
                     {/* Mensajes */}
-                    <div className="min-h-0 flex-1 overflow-hidden">
+                    <div className="relative min-h-0 flex-1 overflow-hidden">
                         <div
                             ref={scrollContainerRef}
-                            className={[
-                                deviceMode === 'mobile' ? 'scrollbar-mobile-soft' : 'scrollbar-soft',
-                                'h-full w-full overflow-y-auto',
-                            ]
+                            onScroll={updateScrollState}
+                            className={[deviceMode === 'mobile' ? 'scrollbar-mobile-soft' : 'scrollbar-soft', 'h-full w-full overflow-y-auto']
                                 .filter(Boolean)
                                 .join(' ')}
                         >
@@ -291,11 +312,19 @@ export function WhatsappConversation({
                                         </div>
 
                                         {markerAfterCurrent && inlineTemporalMode === 'active' && <ActiveTemporalMessage deviceMode={deviceMode} />}
-                                        {markerAfterCurrent && inlineTemporalMode === 'deactive' && <DesactiveTemporalMessage deviceMode={deviceMode} />}
+                                        {markerAfterCurrent && inlineTemporalMode === 'deactive' && (
+                                            <DesactiveTemporalMessage deviceMode={deviceMode} />
+                                        )}
                                     </Fragment>
                                 );
                             })}
                         </div>
+
+                        {showMoreConversationIndicator && (
+                            <div className="pointer-events-none absolute bottom-3 z-30 right-4">
+                                <MoreConversationIndicator />
+                            </div>
+                        )}
                     </div>
 
                     <div className="shrink-0">

@@ -65,13 +65,13 @@ export function FormPanel({
     const isDark = themeMode === 'dark';
 
     return (
-        <div className="lg:col-span-2">
-            <div className="h-full overflow-hidden border border-slate-200 bg-white shadow-sm">
+        <div className="min-h-0 lg:col-span-2">
+            <div className="flex h-full min-h-0 flex-col overflow-hidden border border-slate-200 bg-white shadow-sm">
                 <DesignTabs activeDesign={activeDesign} tabItems={tabItems} onSelect={onSelectDesign} />
 
-                <div className="grid gap-2 border-b border-slate-200 bg-slate-50 p-3">
+                <div className="grid grid-cols-3 gap-2 border-b border-slate-200 bg-slate-50 p-2">
                     {activeDesign === 'whatsapp' ? (
-                        <div className={['grid gap-1 rounded-xl border border-slate-200 bg-white p-1', canPreviewMobileDesign ? 'grid-cols-2' : 'grid-cols-1'].join(' ')}>
+                        <div className={['col-span-2 grid gap-1 rounded-lg border border-slate-200 bg-white p-0.5', canPreviewMobileDesign ? 'grid-cols-2' : 'grid-cols-1'].join(' ')}>
                             {[
                                 { mode: 'desktop' as const, label: 'PC', icon: Monitor },
                                 ...(canPreviewMobileDesign ? [{ mode: 'mobile' as const, label: 'Celular', icon: Smartphone }] : []),
@@ -85,7 +85,7 @@ export function FormPanel({
                                         type="button"
                                         onClick={() => onWhatsappPreviewModeChange(item.mode)}
                                         className={[
-                                            'inline-flex min-h-11 cursor-pointer items-center justify-center gap-2 rounded-lg px-3 text-xs font-semibold transition',
+                                            'inline-flex min-h-9 cursor-pointer items-center justify-center gap-1.5 rounded-md px-2 text-[11px] font-semibold transition',
                                             active ? 'bg-slate-900 text-white shadow-sm' : 'text-slate-600 hover:bg-slate-100',
                                         ].join(' ')}
                                     >
@@ -100,7 +100,10 @@ export function FormPanel({
                     <button
                         type="button"
                         onClick={() => onThemeModeChange(isDark ? 'light' : 'dark')}
-                        className="inline-flex min-h-11 cursor-pointer items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-3 text-xs font-semibold text-slate-700 shadow-sm transition hover:bg-slate-100"
+                        className={[
+                            'inline-flex min-h-10 cursor-pointer items-center justify-center gap-1.5 rounded-lg border border-slate-200 bg-white px-2 text-[11px] font-semibold text-slate-700 shadow-sm transition hover:bg-slate-100',
+                            activeDesign === 'whatsapp' ? 'col-span-1' : 'col-span-3',
+                        ].join(' ')}
                     >
                         {isDark ? <Sun className="h-4 w-4" aria-hidden="true" /> : <Moon className="h-4 w-4" aria-hidden="true" />}
                         {isDark ? 'Modo claro' : 'Modo oscuro'}
