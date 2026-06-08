@@ -1,16 +1,67 @@
 import { useEffect, useMemo, useState } from 'react';
-import { AlarmClock, Battery, Signal, Wifi } from 'lucide-react';
+import { AlarmClock, Signal, Wifi } from 'lucide-react';
 import { FaLinkedinIn } from 'react-icons/fa6';
 import { SiFacebook, SiGmail, SiInstagram } from 'react-icons/si';
 
+import Icon from '@mdi/react';
+import {
+  mdiBattery10,
+  mdiBattery20,
+  mdiBattery30,
+  mdiBattery40,
+  mdiBattery50,
+  mdiBattery60,
+  mdiBattery70,
+  mdiBattery80,
+  mdiBattery90,
+  mdiBattery,
+} from '@mdi/js';
+
 import type { PreviewThemeMode } from '../../../../types';
+
+const batteryIcons = {
+  10: mdiBattery10,
+  20: mdiBattery20,
+  30: mdiBattery30,
+  40: mdiBattery40,
+  50: mdiBattery50,
+  60: mdiBattery60,
+  70: mdiBattery70,
+  80: mdiBattery80,
+  90: mdiBattery90,
+  100: mdiBattery,
+};
+
+type BatteryLevel = keyof typeof batteryIcons;
+
+function getBatteryLevel(): BatteryLevel {
+  const hour = new Date().getHours();
+
+  const levels: BatteryLevel[] = [100, 90, 80, 70, 60, 50, 40, 30, 20, 10];
+
+  return levels[Math.floor(hour / 2) % levels.length];
+}
+
+function BatteryIcon({ level }: { level: BatteryLevel }) {
+  return (
+    <Icon
+      path={batteryIcons[level]}
+      size={0.72}
+      color="currentColor"
+      style={{
+        transform: 'rotate()',
+      }}
+    />
+  );
+}
 
 export function Mobile1PreviewHeader({ themeMode }: { themeMode: PreviewThemeMode }) {
   const isDark = themeMode === 'dark';
   const [time, setTime] = useState('');
+  const [batteryLevel, setBatteryLevel] = useState<BatteryLevel>(getBatteryLevel());
 
   useEffect(() => {
-    const updateTime = () => {
+    const updateStatus = () => {
       const now = new Date();
 
       setTime(
@@ -20,11 +71,13 @@ export function Mobile1PreviewHeader({ themeMode }: { themeMode: PreviewThemeMod
           hour12: false,
         })
       );
+
+      setBatteryLevel(getBatteryLevel());
     };
 
-    updateTime();
+    updateStatus();
 
-    const interval = window.setInterval(updateTime, 30_000);
+    const interval = window.setInterval(updateStatus, 30_000);
 
     return () => window.clearInterval(interval);
   }, []);
@@ -60,7 +113,7 @@ export function Mobile1PreviewHeader({ themeMode }: { themeMode: PreviewThemeMod
         <div className="flex items-center gap-3">
           <span
             className={[
-              'text-[15px] font-normal leading-none tracking-[-0.01em]',
+              'text-[12px] font-normal leading-none tracking-[-0.01em]',
               isDark ? 'text-white' : 'text-[#5f6368]',
             ].join(' ')}
           >
@@ -68,18 +121,19 @@ export function Mobile1PreviewHeader({ themeMode }: { themeMode: PreviewThemeMod
           </span>
 
           <div className="flex items-center gap-2">
-            {notifications.map(({ id, Icon }) => (
-              <Icon
+            {notifications.map(({ id, Icon: NotificationIcon }) => (
+              <NotificationIcon
                 key={id}
-                className="h-[12px] w-[12px] text-current"
+                className="h-[10px] w-[10px] text-current"
                 aria-hidden="true"
               />
             ))}
           </div>
         </div>
 
-        <div className="flex items-center gap-1.5 text-current">
+        <div className="flex items-center gap-1 text-current">
           <AlarmClock className="h-[13px] w-[13px]" strokeWidth={2.1} />
+          <Wifi className="h-[14px] w-[14px]" strokeWidth={2.2} />
 
           <span className="text-[7px] font-bold leading-[0.75] tracking-[-0.04em]">
             Vo
@@ -87,10 +141,9 @@ export function Mobile1PreviewHeader({ themeMode }: { themeMode: PreviewThemeMod
             LTE
           </span>
 
-          <Wifi className="h-[14px] w-[14px]" strokeWidth={2.2} />
           <Signal className="h-[14px] w-[14px]" strokeWidth={2.2} />
 
-          <Battery className="h-[15px] w-[15px]" strokeWidth={2.3} />
+          <BatteryIcon level={batteryLevel}  />
         </div>
       </div>
     </div>

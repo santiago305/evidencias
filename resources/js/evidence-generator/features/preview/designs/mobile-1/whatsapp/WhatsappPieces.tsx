@@ -13,7 +13,7 @@ export function MessageGroup({
 
 export function DayChip({ text }: { text: string }) {
   return (
-    <div className="sticky top-2 z-20 flex justify-center my-4">
+    <div className="sticky top-0.5 z-20 flex justify-center my-1">
       <span className="rounded-md bg-[#fefdfc] px-2 py-0.5 text-[10px] text-[#667781] shadow font-medium">
         {text}
       </span>
