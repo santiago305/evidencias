@@ -29,7 +29,7 @@ export function WhatsappMobileHeaderUser({
         }
 
         return Math.random() < 0.5 ? { type: 'online' } : { type: 'hidden' };
-    }, [data, status]);
+    }, [status]);
 
     const avatarTheme = useMemo(() => {
         const avatarSeed =
@@ -40,6 +40,18 @@ export function WhatsappMobileHeaderUser({
         return createWhatsappAvatarTheme(avatarSeed, themeMode);
     }, [data.telefono, data.nombre, data.dni, data.nombreAsesor, themeMode]);
 
+    const resolvedAvatarTheme = useMemo(() => {
+        if (!isDark) {
+            return avatarTheme;
+        }
+
+        return {
+            ...avatarTheme,
+            bg: avatarTheme.icon,
+            icon: avatarTheme.bg,
+        };
+    }, [avatarTheme, isDark]);
+
     const headerTitle = displayTitle ?? (data.nombre?.trim() ? data.nombre : 'Aracely MD');
     const mobileAvatarInitial = useMemo(() => {
         const firstCharacter = Array.from(headerTitle.trim())[0] ?? '';
@@ -48,7 +60,7 @@ export function WhatsappMobileHeaderUser({
     }, [headerTitle]);
 
     return (
-        <div className={['w-full border-b px-1 py-2.5', isDark ? 'border-white/10 bg-[#202c33]' : 'border-black/10 bg-white'].join(' ')}>
+        <div className={['w-full border-b px-1 py-2.5', isDark ? 'border-white/5 bg-[#0B1014]' : 'border-black/10 bg-white'].join(' ')}>
             <div className="flex items-center justify-between gap-2">
                 <div className="flex min-w-0 flex-1 items-center gap-2">
                     <button
@@ -64,16 +76,16 @@ export function WhatsappMobileHeaderUser({
                         <div className="h-9 w-9 overflow-hidden rounded-full">
                             {mobileAvatarInitial ? (
                                 <span
-                                    aria-hidden="true"
-                                    className="segoe-ui-semibold grid h-full w-full place-items-center rounded-full border text-[18px] leading-none"
-                                    data-avatar-initial="true"
-                                    style={{
-                                        backgroundColor: avatarTheme.bg,
-                                        borderColor: avatarTheme.border,
-                                        color: avatarTheme.icon,
-                                    }}
-                                >
-                                    {mobileAvatarInitial}
+                                        aria-hidden="true"
+                                        className="segoe-ui-semibold grid h-full w-full place-items-center rounded-full border text-[18px] leading-none"
+                                        data-avatar-initial="true"
+                                        style={{
+                                        backgroundColor: resolvedAvatarTheme.bg,
+                                        borderColor: resolvedAvatarTheme.border,
+                                        color: resolvedAvatarTheme.icon,
+                                        }}
+                                    >
+                                        {mobileAvatarInitial}
                                 </span>
                             ) : (
                                 <span aria-hidden="true" data-icon="default-contact-refreshed" className="block h-full w-full">
@@ -84,15 +96,15 @@ export function WhatsappMobileHeaderUser({
                                         preserveAspectRatio="xMidYMid meet"
                                         className="h-full w-full rounded-full border"
                                         style={{
-                                            backgroundColor: avatarTheme.bg,
-                                            borderColor: avatarTheme.border,
+                                            backgroundColor: resolvedAvatarTheme.bg,
+                                            borderColor: resolvedAvatarTheme.border,
                                         }}
                                         fill="none"
                                     >
                                         <title>default-contact-refreshed</title>
                                         <path
                                             d="M24 23q-1.857 0-3.178-1.322Q19.5 20.357 19.5 18.5t1.322-3.178T24 14t3.178 1.322Q28.5 16.643 28.5 18.5t-1.322 3.178T24 23m-6.75 10q-.928 0-1.59-.66-.66-.662-.66-1.59v-.9q0-.956.492-1.758A3.3 3.3 0 0 1 16.8 26.87a16.7 16.7 0 0 1 3.544-1.308q1.8-.435 3.656-.436 1.856 0 3.656.436T31.2 26.87q.816.422 1.308 1.223T33 29.85v.9q0 .928-.66 1.59-.662.66-1.59.66z"
-                                            fill={avatarTheme.icon}
+                                            fill={resolvedAvatarTheme.icon}
                                         />
                                     </svg>
                                 </span>
@@ -104,14 +116,14 @@ export function WhatsappMobileHeaderUser({
                                 aria-hidden="true"
                                 className="absolute -right-[2px] -bottom-[2px] grid h-[18px] w-[18px] place-items-center rounded-full"
                                 style={{
-                                    backgroundColor: avatarTheme.badgeRing,
+                                    backgroundColor: resolvedAvatarTheme.badgeRing,
                                 }}
                             >
                                 <span
                                     className="grid h-[16px] w-[16px] place-items-center overflow-hidden rounded-full"
                                     style={{
-                                        backgroundColor: avatarTheme.badgeBg,
-                                        color: avatarTheme.badgeIcon,
+                                        backgroundColor: resolvedAvatarTheme.badgeBg,
+                                        color: resolvedAvatarTheme.badgeIcon,
                                     }}
                                 >
                                     <svg viewBox="0 0 24 24" height="16" width="16" preserveAspectRatio="xMidYMid meet" fill="currentColor" className="block">
@@ -176,4 +188,3 @@ export function WhatsappMobileHeaderUser({
         </div>
     );
 }
-

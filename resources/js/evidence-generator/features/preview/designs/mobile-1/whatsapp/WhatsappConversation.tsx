@@ -2,7 +2,6 @@ import { Fragment, useCallback, useEffect, useMemo, useRef, useState, type React
 import { formatWhatsappTimeValue, getDateKeyFromLocalDateTime, getDayChipTextForDate } from '../../../../../lib/whatsapp/time';
 import type { GeneratedMessage, PreviewThemeMode } from '../../../../../types';
 import { shouldShowConversationMoreIndicator } from '../../whatsappConversationIndicator';
-import { createWhatsappAvatarTheme } from './avatarTheme';
 import type { WhatsappConversationMessage } from './buildWhatsappConversation';
 import { buildWhatsappConversation } from './buildWhatsappConversation';
 import { WhatsappConversationBackground } from './whatsapp-background/WhatsappConversationBackground';
@@ -18,24 +17,19 @@ import {
 import { MoreConversationIndicator, WhatsappInputBar } from './whatsapp-footer';
 import type { WhatsappData } from './whatsappTypes';
 
-const ADVISOR_QUOTE_ACCENT_COLOR = '#0063CB';
-const ADVISOR_QUOTE_AUTHOR_COLOR = '#0078D7';
 const DOCUMENT_NUMBER_PATTERN = /\d{8,9}/g;
 const STRONG_TEXT_PATTERN = /\*([^*]+?)\*/g;
 
-function buildAvatarSeed(data: WhatsappData): string {
-    return [data.telefono, data.nombre, data.dni, data.nombreAsesor].map((value) => value?.trim()).find((value) => !!value) ?? 'contact';
-}
+function getMobileQuoteColors(quoteSide: 'in' | 'out', themeMode: PreviewThemeMode): { accentColor: string; authorColor: string } {
+    if (themeMode === 'dark') {
+        return quoteSide === 'out'
+            ? { accentColor: '#22C262', authorColor: '#B9DECC' }
+            : { accentColor: '#A08FF5', authorColor: '#D3DEF2' };
+    }
 
-function lightenHexColor(hexColor: string, ratio = 0.2): string {
-    const normalized = hexColor.replace('#', '');
-
-    if (!/^[0-9a-fA-F]{6}$/.test(normalized)) return hexColor;
-
-    const channels = [0, 2, 4].map((start) => Number.parseInt(normalized.slice(start, start + 2), 16));
-    const nextChannels = channels.map((channel) => Math.round(channel + (255 - channel) * ratio));
-
-    return `#${nextChannels.map((channel) => channel.toString(16).padStart(2, '0')).join('')}`;
+    return quoteSide === 'out'
+        ? { accentColor: '#1AAD5F', authorColor: '#439972' }
+        : { accentColor: '#5E48D9', authorColor: '#1C2D34' };
 }
 
 function isDigit(value: string | undefined): boolean {
@@ -197,15 +191,6 @@ export function WhatsappConversation({
         return Math.floor(Math.random() * (conversationMessages.length - 1)) + 1;
     }, [conversationMessages, initialInlineTemporalInsertIndex, inlineTemporalMode]);
 
-    const clientQuoteTheme = useMemo(() => {
-        const avatarTheme = createWhatsappAvatarTheme(buildAvatarSeed(data));
-
-        return {
-            accentColor: avatarTheme.icon,
-            authorColor: lightenHexColor(avatarTheme.icon),
-        };
-    }, [data]);
-
     const fallbackDateKey = useMemo(
         () => getDateKeyFromLocalDateTime(data.fechaHora) ?? getDateKeyFromLocalDateTime(data.fechaHoraRegistro) ?? '',
         [data.fechaHora, data.fechaHoraRegistro],
@@ -257,9 +242,14 @@ export function WhatsappConversation({
                             onScroll={updateScrollState}
                             className="scrollbar-mobile-soft h-full w-full overflow-y-auto pr-[4px]"
                         >
-                            {firstDayChipDateKey !== '' && <DayChip text={getDayChipTextForDate(firstDayChipDateKey, dayChipReference)} />}
-                            <EncryptedMessage />
-                            {showDefaultTemporalMessage && <TempporalMessage />}
+                            {firstDayChipDateKey !== '' && (
+                                <DayChip
+                                    text={getDayChipTextForDate(firstDayChipDateKey, dayChipReference)}
+                                    themeMode={themeMode}
+                                />
+                            )}
+                            <EncryptedMessage themeMode={themeMode} />
+                            {showDefaultTemporalMessage && <TempporalMessage themeMode={themeMode} />}
 
                             {conversationMessages.map((msg, idx) => {
                                 const prev = conversationMessages[idx - 1];
@@ -272,10 +262,16 @@ export function WhatsappConversation({
                                 const isFirstInGroup = idx === 0 || markerBeforeCurrent || prev.side !== msg.side;
                                 const staysInSameGroup = !!next && !markerAfterCurrent && next.side === msg.side;
                                 const wrapperSpacing = staysInSameGroup ? 'mb-0.5' : 'mb-4';
+                                const quoteColors = msg.quote ? getMobileQuoteColors(msg.quote.side, themeMode) : null;
 
                                 return (
                                     <Fragment key={`message-${idx}-${msg.side}`}>
-                                        {showsDayChip && <DayChip text={getDayChipTextForDate(currentDateKey, dayChipReference)} />}
+                                        {showsDayChip && (
+                                            <DayChip
+                                                text={getDayChipTextForDate(currentDateKey, dayChipReference)}
+                                                themeMode={themeMode}
+                                            />
+                                        )}
 
                                         <div className={wrapperSpacing}>
                                             <Bubble
@@ -283,19 +279,14 @@ export function WhatsappConversation({
                                                 firstInGroup={isFirstInGroup}
                                                 time={msg.time}
                                                 status={msg.status}
+                                                themeMode={themeMode}
                                                 quote={
-                                                    msg.quote
+                                                    msg.quote && quoteColors
                                                         ? {
                                                               author: msg.quote.side === 'out' ? 'Tú' : (displayTitle ?? 'Cliente'),
                                                               text: msg.quote.text,
-                                                              accentColor:
-                                                                  msg.quote.side === 'out'
-                                                                      ? ADVISOR_QUOTE_ACCENT_COLOR
-                                                                      : clientQuoteTheme.accentColor,
-                                                              authorColor:
-                                                                  msg.quote.side === 'out'
-                                                                      ? ADVISOR_QUOTE_AUTHOR_COLOR
-                                                                      : clientQuoteTheme.authorColor,
+                                                              accentColor: quoteColors.accentColor,
+                                                              authorColor: quoteColors.authorColor,
                                                           }
                                                         : undefined
                                                 }
@@ -304,8 +295,8 @@ export function WhatsappConversation({
                                             </Bubble>
                                         </div>
 
-                                        {markerAfterCurrent && inlineTemporalMode === 'active' && <ActiveTemporalMessage />}
-                                        {markerAfterCurrent && inlineTemporalMode === 'deactive' && <DesactiveTemporalMessage />}
+                                        {markerAfterCurrent && inlineTemporalMode === 'active' && <ActiveTemporalMessage themeMode={themeMode} />}
+                                        {markerAfterCurrent && inlineTemporalMode === 'deactive' && <DesactiveTemporalMessage themeMode={themeMode} />}
                                     </Fragment>
                                 );
                             })}

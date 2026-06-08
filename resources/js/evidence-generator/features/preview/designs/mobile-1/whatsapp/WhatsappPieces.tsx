@@ -1,4 +1,5 @@
 import React from "react";
+import type { PreviewThemeMode } from "../../../../../types";
 import { WhatsappMobileTextBubble } from "./whatsapp-bubbles/WhatsappMobileTextBubble";
 
 export function MessageGroup({
@@ -11,10 +12,17 @@ export function MessageGroup({
   return <div className={`space-y-0.5 mb-4 ${className}`}>{children}</div>;
 }
 
-export function DayChip({ text }: { text: string }) {
+export function DayChip({ text, themeMode = "light" }: { text: string; themeMode?: PreviewThemeMode }) {
+  const isDark = themeMode === "dark";
+
   return (
     <div className="sticky top-0.5 z-20 flex justify-center my-1">
-      <span className="rounded-md bg-[#fefdfc] px-2 py-0.5 text-[10px] text-[#667781] shadow font-medium">
+      <span
+        className={[
+          "rounded-md px-2 py-0.5 text-[10px] shadow font-medium",
+          isDark ? "bg-[#12181C] text-[#767C80]" : "bg-[#fefdfc] text-[#667781]",
+        ].join(" ")}
+      >
         {text}
       </span>
     </div>
@@ -87,6 +95,7 @@ export function Bubble({
   status,
   id,
   quote,
+  themeMode = "light",
   children,
 }: {
   side: "in" | "out";
@@ -95,6 +104,7 @@ export function Bubble({
   status?: MsgStatus;
   id?: string;
   quote?: QuotedMessage;
+  themeMode?: PreviewThemeMode;
   children: React.ReactNode;
 }) {
   return (
@@ -104,6 +114,7 @@ export function Bubble({
       quote={quote}
       side={side}
       status={status}
+      themeMode={themeMode}
       time={time}
     >
       {children}
@@ -117,6 +128,7 @@ export function VoiceBubble({
   status,
   duration = "0:23",
   showAvatar = false,
+  themeMode = "light",
 }: {
   side: "in" | "out";
   firstInGroup?: boolean;
@@ -124,11 +136,12 @@ export function VoiceBubble({
   status?: MsgStatus;
   duration?: string;
   showAvatar?: boolean;
+  themeMode?: PreviewThemeMode;
 }) {
   const isOut = side === "out";
 
   return (
-    <Bubble side={side} firstInGroup={firstInGroup} time={time} status={status}>
+    <Bubble side={side} firstInGroup={firstInGroup} time={time} status={status} themeMode={themeMode}>
       <div className="flex items-center gap-2">
         {/* Play */}
         <button
@@ -158,7 +171,8 @@ export function VoiceBubble({
   );
 }
 
-export function EncryptedMessage() {
+export function EncryptedMessage({ themeMode = "light" }: { themeMode?: PreviewThemeMode }) {
+  const isDark = themeMode === "dark";
   const encryptedTextSize = "text-[10px] leading-[12px]";
   const horizontalPadding = "px-8";
   const maxWidth = "max-w-none";
@@ -172,11 +186,16 @@ export function EncryptedMessage() {
               <div className={`mx-auto flex ${maxWidth} flex-col justify-center ${horizontalPadding}`}>
                 <span></span>
 
-                <div className="relative mb-0 box-border inline-block max-w-full flex-none rounded-[7.35px] bg-[#FFF0D4] px-3 pt-1 pb-1.25 text-center text-[10px] leading-[12px] text-black/60 shadow-[0_1px_0.5px_rgba(11,20,26,0.13)]">
+                <div
+                  className={[
+                    "relative mb-0 box-border inline-block max-w-full flex-none rounded-[7.35px] px-3 pt-1 pb-1.25 text-center text-[10px] leading-[12px] shadow-[0_1px_0.5px_rgba(11,20,26,0.13)]",
+                    isDark ? "bg-[#12181C] text-[#EECC84]" : "bg-[#FFF0D4] text-black/60",
+                  ].join(" ")}
+                >
                   <div className="segoe-ui relative z-10 rounded-[7.35px]">
                     <div className="cursorpointer">
                       <span>
-                        <div className="me-0.5 mt-0.5 inline-block align-top text-black/60">
+                        <div className={['me-0.5 mt-0.5 inline-block align-top', isDark ? 'text-[#EECC84]' : 'text-black/60'].join(' ')}>
                           <span aria-hidden="true" data-icon="lock-small">
                             <svg
                               viewBox="0 0 10 12"
@@ -216,7 +235,8 @@ export function EncryptedMessage() {
     </div>
   );
 }
-export function TempporalMessage() {
+export function TempporalMessage({ themeMode = "light" }: { themeMode?: PreviewThemeMode }) {
+  const isDark = themeMode === "dark";
   const horizontalPadding = "px-8";
   const maxWidth = "max-w-none";
   const messageTextSize = "text-[10px] leading-[12px]";
@@ -230,11 +250,16 @@ export function TempporalMessage() {
               <div className={`mx-auto flex ${maxWidth} flex-col justify-center ${horizontalPadding}`}>
                 <span></span>
 
-                <div className="relative mb-0 box-border inline-block max-w-full flex-none rounded-[7.35px] bg-[#fefdfc] px-3 pt-1 pb-1.25 text-center text-[10px] leading-[12px] text-[#667781] shadow-[0_1px_0.5px_rgba(11,20,26,0.13)]">
+                <div
+                  className={[
+                    "relative mb-0 box-border inline-block max-w-full flex-none rounded-[7.35px] px-3 pt-1 pb-1.25 text-center text-[10px] leading-[12px] shadow-[0_1px_0.5px_rgba(11,20,26,0.13)]",
+                    isDark ? "bg-[#12181C] text-[#767C80]" : "bg-[#fefdfc] text-[#667781]",
+                  ].join(" ")}
+                >
                   <div className="segoe-ui relative z-10 rounded-[7.35px]">
                     <div className="cursorpointer">
                       <span>
-                        <div className="me-0.5 inline-block align-top text-[#667781]">
+                        <div className="me-0.5 inline-block align-top">
                           <span aria-hidden="true" data-icon="lock-small">
                             <svg
                               viewBox="0 0 24 24"
@@ -277,7 +302,8 @@ export function TempporalMessage() {
   );
 }
 
-export function ActiveTemporalMessage() {
+export function ActiveTemporalMessage({ themeMode = "light" }: { themeMode?: PreviewThemeMode }) {
+  const isDark = themeMode === "dark";
   const horizontalPadding = "px-8";
   const maxWidth = "max-w-none";
   const messageTextSize = "text-[10px] leading-[12px]";
@@ -291,11 +317,16 @@ export function ActiveTemporalMessage() {
               <div className={`mx-auto flex ${maxWidth} flex-col justify-center ${horizontalPadding}`}>
                 <span></span>
 
-                <div className="relative mb-0 box-border inline-block max-w-full flex-none rounded-[7.35px] bg-[#fefdfc] px-3 pt-1 pb-1.25 text-center text-[10px] leading-[12px] text-[#667781] shadow-[0_1px_0.5px_rgba(11,20,26,0.13)]">
+                <div
+                  className={[
+                    "relative mb-0 box-border inline-block max-w-full flex-none rounded-[7.35px] px-3 pt-1 pb-1.25 text-center text-[10px] leading-[12px] shadow-[0_1px_0.5px_rgba(11,20,26,0.13)]",
+                    isDark ? "bg-[#12181C] text-[#767C80]" : "bg-[#fefdfc] text-[#667781]",
+                  ].join(" ")}
+                >
                   <div className="segoe-ui relative z-10 rounded-[7.35px]">
                     <div className="cursorpointer">
                       <span>
-                        <div className="me-0.5 inline-block align-top text-[#667781]">
+                        <div className="me-0.5 inline-block align-top">
                           <span aria-hidden="true" data-icon="lock-small">
                             <svg
                               viewBox="0 0 24 24"
@@ -338,7 +369,8 @@ export function ActiveTemporalMessage() {
   );
 }
 
-export function DesactiveTemporalMessage() {
+export function DesactiveTemporalMessage({ themeMode = "light" }: { themeMode?: PreviewThemeMode }) {
+  const isDark = themeMode === "dark";
   const messageTextSize = "text-[10px] leading-[12px]";
 
   return (
@@ -346,12 +378,17 @@ export function DesactiveTemporalMessage() {
       <div className="relative pb-2">
         <div className="flex justify-center">
           <div className="mx-auto flex w-fit max-w-full flex-col items-center justify-center">
-            <div className="relative mb-0 box-border inline-flex w-fit max-w-full flex-none items-center rounded-[7.35px] bg-[#fefdfc] px-3 pt-1 pb-1.25 text-center text-[10px] leading-[12px] text-[#667781] shadow-[0_1px_0.5px_rgba(11,20,26,0.13)]">
+            <div
+              className={[
+                "relative mb-0 box-border inline-flex w-fit max-w-full flex-none items-center rounded-[7.35px] px-3 pt-1 pb-1.25 text-center text-[10px] leading-[12px] shadow-[0_1px_0.5px_rgba(11,20,26,0.13)]",
+                isDark ? "bg-[#12181C] text-[#767C80]" : "bg-[#fefdfc] text-[#667781]",
+              ].join(" ")}
+            >
               <div className="segoe-ui relative z-10 rounded-[7.35px]">
                 <div className="cursor-pointer">
                   <span className="inline-flex items-start justify-center gap-0.5">
                     <span
-                      className="inline-block text-[#667781]"
+                      className="inline-block"
                       aria-hidden="true"
                       data-icon="lock-small"
                     >

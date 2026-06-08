@@ -175,8 +175,15 @@ function BatteryIcon({ level }: { level: BatteryLevel }) {
     );
 }
 
-export function Mobile1PreviewHeader({ themeMode, notificationSeed }: { themeMode: PreviewThemeMode; notificationSeed?: string }) {
+type Mobile1PreviewHeaderProps = {
+    themeMode: PreviewThemeMode;
+    notificationSeed?: string;
+    variant?: 'default' | 'whatsapp';
+};
+
+export function Mobile1PreviewHeader({ themeMode, notificationSeed, variant = 'default' }: Mobile1PreviewHeaderProps) {
     const isDark = themeMode === 'dark';
+    const isWhatsappVariant = variant === 'whatsapp' && isDark;
     const [time, setTime] = useState('');
     const [batteryLevel, setBatteryLevel] = useState<BatteryLevel>(getBatteryLevel());
 
@@ -209,7 +216,7 @@ export function Mobile1PreviewHeader({ themeMode, notificationSeed }: { themeMod
     }, [notificationSeed]);
 
     return (
-        <div className={['shrink-0 px-5 py-1', isDark ? 'bg-[#070c0f] text-white' : 'bg-white text-[#5f6368]'].join(' ')}>
+        <div className={['shrink-0 px-5 py-1', isWhatsappVariant ? 'bg-[#0B1014] text-white' : isDark ? 'bg-[#070c0f] text-white' : 'bg-white text-[#5f6368]'].join(' ')}>
             <div
                 className="flex h-5 items-center justify-between"
                 style={{
@@ -217,7 +224,7 @@ export function Mobile1PreviewHeader({ themeMode, notificationSeed }: { themeMod
                 }}
             >
                 <div className="flex items-center gap-1.5">
-                    <span className={['text-[12px] leading-none font-normal tracking-[-0.01em]', isDark ? 'text-white' : 'text-[#5f6368]'].join(' ')}>
+                    <span className={['text-[12px] leading-none font-normal tracking-[-0.01em]', isWhatsappVariant ? 'text-white' : isDark ? 'text-white' : 'text-[#5f6368]'].join(' ')}>
                         {time}
                     </span>
 

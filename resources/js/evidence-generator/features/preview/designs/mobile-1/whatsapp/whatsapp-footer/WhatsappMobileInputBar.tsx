@@ -10,7 +10,7 @@ export function WhatsappMobileInputBar({ themeMode = 'light' }: { themeMode?: Pr
     return (
         <div className="p-1 pb-1.5">
             <div className="flex items-center gap-1">
-                <div className={['flex min-h-10 flex-1 items-center gap-2 rounded-full p-1.5', isDark ? 'bg-[#202c33] text-slate-300' : 'bg-white text-[#54656f]'].join(' ')}>
+                <div className={['flex min-h-10 flex-1 items-center gap-2 rounded-full p-1.5', isDark ? 'bg-[#202c33] text-[#8E9699]' : 'bg-white text-[#54656f]'].join(' ')}>
                     <button type="button" aria-label="Emojis" className="grid h-7 w-7 shrink-0 place-items-center rounded-full">
                         <svg viewBox="0 0 24 24" height="18" width="18" preserveAspectRatio="xMidYMid meet" fill="none" aria-hidden="true">
                             <path d="M8.49893 10.2521C9.32736 10.2521 9.99893 9.5805 9.99893 8.75208C9.99893 7.92365 9.32736 7.25208 8.49893 7.25208C7.6705 7.25208 6.99893 7.92365 6.99893 8.75208C6.99893 9.5805 7.6705 10.2521 8.49893 10.2521Z" fill="currentColor" />
@@ -47,7 +47,14 @@ export function WhatsappMobileInputBar({ themeMode = 'light' }: { themeMode?: Pr
                     </div>
                 </div>
 
-                <button type="button" aria-label="Grabar audio" className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-[#1EAA61] text-white">
+                <button
+                    type="button"
+                    aria-label="Grabar audio"
+                    className={[
+                        'grid h-10 w-10 shrink-0 place-items-center rounded-full transition-colors',
+                        isDark ? 'bg-[#21C161] text-[#091219]' : 'bg-[#1DAB61] text-white',
+                    ].join(' ')}
+                >
                     <svg viewBox="0 0 24 24" height="20" width="20" preserveAspectRatio="xMidYMid meet" fill="currentColor" aria-hidden="true">
                         <path d="M12 14.5C11.05 14.5 10.24 14.16 9.57 13.49C8.9 12.82 8.56 12.01 8.56 11.06V5.44C8.56 4.49 8.9 3.68 9.57 3.01C10.24 2.34 11.05 2 12 2C12.95 2 13.76 2.34 14.43 3.01C15.1 3.68 15.44 4.49 15.44 5.44V11.06C15.44 12.01 15.1 12.82 14.43 13.49C13.76 14.16 12.95 14.5 12 14.5Z" />
                         <path d="M12 22C11.45 22 11 21.55 11 21V18.92C9.23 18.7 7.75 17.93 6.58 16.61C5.6 15.5 5.02 14.22 4.84 12.77C4.78 12.22 5.23 11.75 5.79 11.75C6.29 11.75 6.72 12.12 6.82 12.61C7.02 13.58 7.5 14.42 8.25 15.13C9.27 16.09 10.52 16.56 12 16.56C13.48 16.56 14.73 16.09 15.75 15.13C16.5 14.42 16.98 13.58 17.18 12.61C17.28 12.12 17.71 11.75 18.21 11.75C18.77 11.75 19.22 12.22 19.16 12.77C18.98 14.22 18.4 15.5 17.42 16.61C16.25 17.93 14.77 18.7 13 18.92V21C13 21.55 12.55 22 12 22Z" />
@@ -57,4 +64,3 @@ export function WhatsappMobileInputBar({ themeMode = 'light' }: { themeMode?: Pr
         </div>
     );
 }
-
