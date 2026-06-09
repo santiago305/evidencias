@@ -48,24 +48,16 @@ const WHATSAPP_AVATAR_THEMES: WhatsappAvatarTheme[] = [
 
     // 4. Rosado WhatsApp
     {
-        bg: '#fbd8dc',
-        icon: '#b80531',
+        bg: '#fad9e6',
+        icon: '#db2867',
         border: '#edbdc5',
-        ...DEFAULT_BADGE_THEME,
-    },
-
-    // 5. Marrón / beige
-    {
-        bg: '#f4ded1',
-        icon: '#855538',
-        border: '#dec2b2',
         ...DEFAULT_BADGE_THEME,
     },
 
     // 6. Amarillo crema
     {
-        bg: '#fff0d4',
-        icon: '#9d6c2c',
+        bg: '#fff0d3',
+        icon: '#9f6928',
         border: '#ead3a3',
         ...DEFAULT_BADGE_THEME,
     },
@@ -77,12 +69,19 @@ const WHATSAPP_AVATAR_THEMES: WhatsappAvatarTheme[] = [
         border: '#acd9eb',
         ...DEFAULT_BADGE_THEME,
     },
-
-    // 8. Naranja WhatsApp
+    // 8. rosa 2
     {
-        bg: '#fee2d8',
-        icon: '#c4532d',
+        bg: '#fad8dc',
+        icon: '#8c1536',
         border: '#edc7ba',
+        ...DEFAULT_BADGE_THEME,
+    },
+
+    // 5. Marrón / beige
+    {
+        bg: '#f4ded1',
+        icon: '#855538',
+        border: '#dec2b2',
         ...DEFAULT_BADGE_THEME,
     },
 
@@ -91,6 +90,13 @@ const WHATSAPP_AVATAR_THEMES: WhatsappAvatarTheme[] = [
         bg: '#d9fdd3',
         icon: '#1b8755',
         border: '#bcecad',
+        ...DEFAULT_BADGE_THEME,
+    },
+    // 10. Morado suave
+    {
+        bg: '#e6def0',
+        icon: '#4e4f9d',
+        border: '#d5cee0',
         ...DEFAULT_BADGE_THEME,
     },
 ];
