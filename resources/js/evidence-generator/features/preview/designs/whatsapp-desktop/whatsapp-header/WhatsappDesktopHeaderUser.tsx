@@ -1,8 +1,8 @@
 import { useMemo } from 'react';
+import type { PreviewThemeMode } from '../../../../../types';
 import { createWhatsappAvatarTheme } from '../avatarTheme';
 import type { MsgStatus } from '../WhatsappPieces';
 import type { WhatsappData } from '../whatsappTypes';
-import type { PreviewThemeMode } from '../../../../../types';
 
 type Status = { type: 'hidden' } | { type: 'online' };
 
@@ -32,12 +32,13 @@ export function WhatsappDesktopHeaderUser({
 
     const avatarTheme = useMemo(() => {
         const avatarSeed =
-            [data.telefono, data.nombre, data.dni, data.nombreAsesor]
+            [data.telefono, data.dniCliente, data.nombre, data.seedCode, data.conversationId, data.nombreAsesor]
                 .map((value) => value?.trim())
-                .find((value) => !!value) ?? 'contact';
+                .filter((value) => value && value.length > 0)
+                .join('|') || 'contact';
 
         return createWhatsappAvatarTheme(avatarSeed, themeMode);
-    }, [data.telefono, data.nombre, data.dni, data.nombreAsesor, themeMode]);
+    }, [data.telefono, data.dniCliente, data.nombre, data.seedCode, data.conversationId, data.nombreAsesor, themeMode]);
 
     const headerTitle = displayTitle ?? (data.nombre?.trim() ? data.nombre : 'Aracely MD');
 
@@ -84,7 +85,14 @@ export function WhatsappDesktopHeaderUser({
                                         color: avatarTheme.badgeIcon,
                                     }}
                                 >
-                                    <svg viewBox="0 0 24 24" height="16" width="16" preserveAspectRatio="xMidYMid meet" fill="currentColor" className="block">
+                                    <svg
+                                        viewBox="0 0 24 24"
+                                        height="16"
+                                        width="16"
+                                        preserveAspectRatio="xMidYMid meet"
+                                        fill="currentColor"
+                                        className="block"
+                                    >
                                         <title>wds-ic-disappearing-messages</title>
                                         <path d="M12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22C12.0547 22 12.1094 21.9996 12.1639 21.9987C12.7775 21.9888 13.2669 21.4834 13.257 20.8698C13.2471 20.2563 12.7417 19.7669 12.1281 19.7767C12.0855 19.7774 12.0428 19.7778 12 19.7778C7.70445 19.7778 4.22222 16.2955 4.22222 12C4.22222 7.70445 7.70445 4.22222 12 4.22222C12.0428 4.22222 12.0855 4.22257 12.1281 4.22325C12.7417 4.23314 13.2471 3.74375 13.257 3.13018C13.2669 2.51661 12.7775 2.0112 12.1639 2.00132C12.1094 2.00044 12.0547 2 12 2Z" />
                                         <path d="M16.8592 3.25814C16.3231 2.95957 15.6465 3.15213 15.3479 3.68825C15.0493 4.22437 15.2419 4.90102 15.778 5.19959C15.8522 5.24089 15.9256 5.28338 15.9983 5.32703C16.5243 5.643 17.2069 5.4727 17.5229 4.94665C17.8389 4.4206 17.6686 3.738 17.1425 3.42203C17.0491 3.36591 16.9546 3.31127 16.8592 3.25814Z" />
@@ -100,16 +108,26 @@ export function WhatsappDesktopHeaderUser({
                     </div>
 
                     <div className="min-w-0 leading-tight">
-                        <div className={['segoe-ui-semibold truncate text-[13px] tracking-tight', isDark ? 'text-white' : 'text-[#111b21]'].join(' ')}>
+                        <div
+                            className={['segoe-ui-semibold truncate text-[13px] tracking-tight', isDark ? 'text-white' : 'text-[#111b21]'].join(' ')}
+                        >
                             {headerTitle}
                         </div>
 
-                        {headerStatus.type !== 'hidden' && <div className={['truncate text-[9px] font-medium', isDark ? 'text-slate-400' : 'text-[#667781]'].join(' ')}>en linea</div>}
+                        {headerStatus.type !== 'hidden' && (
+                            <div className={['truncate text-[9px] font-medium', isDark ? 'text-slate-400' : 'text-[#667781]'].join(' ')}>
+                                en linea
+                            </div>
+                        )}
                     </div>
                 </div>
 
                 <div className="flex shrink-0 items-center gap-5 text-[#54656f]">
-                    <span aria-hidden="true" data-icon="video-call-refreshed" className={['h-5 w-5', isDark ? 'text-slate-200' : 'text-black'].join(' ')}>
+                    <span
+                        aria-hidden="true"
+                        data-icon="video-call-refreshed"
+                        className={['h-5 w-5', isDark ? 'text-slate-200' : 'text-black'].join(' ')}
+                    >
                         <svg viewBox="0 0 24 24" height="20" width="20" fill="none">
                             <title>video-call-refreshed</title>
                             <path
@@ -119,7 +137,11 @@ export function WhatsappDesktopHeaderUser({
                         </svg>
                     </span>
 
-                    <span aria-hidden="true" data-icon="audio-call-refreshed" className={['h-5 w-5', isDark ? 'text-slate-200' : 'text-black'].join(' ')}>
+                    <span
+                        aria-hidden="true"
+                        data-icon="audio-call-refreshed"
+                        className={['h-5 w-5', isDark ? 'text-slate-200' : 'text-black'].join(' ')}
+                    >
                         <svg viewBox="0 0 24 24" height="20" width="20" preserveAspectRatio="xMidYMid meet" fill="currentColor">
                             <title>ic-call</title>
                             <path
@@ -141,7 +163,10 @@ export function WhatsappDesktopHeaderUser({
 
                     <button
                         type="button"
-                        className={['grid h-5 w-5 place-items-center rounded-full transition', isDark ? 'text-slate-200 hover:bg-white/10 active:bg-white/15' : 'text-black hover:bg-black/5 active:bg-black/10'].join(' ')}
+                        className={[
+                            'grid h-5 w-5 place-items-center rounded-full transition',
+                            isDark ? 'text-slate-200 hover:bg-white/10 active:bg-white/15' : 'text-black hover:bg-black/5 active:bg-black/10',
+                        ].join(' ')}
                         aria-label="Menu"
                         title="Menu"
                     >
@@ -156,4 +181,3 @@ export function WhatsappDesktopHeaderUser({
         </div>
     );
 }
-

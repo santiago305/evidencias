@@ -1,9 +1,9 @@
-import { useMemo } from 'react';
 import { ArrowLeft } from 'lucide-react';
+import { useMemo } from 'react';
+import type { PreviewThemeMode } from '../../../../../../types';
 import { createWhatsappAvatarTheme } from '../avatarTheme';
 import type { MsgStatus } from '../WhatsappPieces';
 import type { WhatsappData } from '../whatsappTypes';
-import type { PreviewThemeMode } from '../../../../../../types';
 
 type Status = { type: 'hidden' } | { type: 'online' };
 
@@ -33,24 +33,13 @@ export function WhatsappMobileHeaderUser({
 
     const avatarTheme = useMemo(() => {
         const avatarSeed =
-            [data.telefono, data.nombre, data.dni, data.nombreAsesor]
+            [data.telefono, data.dniCliente, data.nombre, data.seedCode, data.conversationId, data.nombreAsesor]
                 .map((value) => value?.trim())
-                .find((value) => !!value) ?? 'contact';
+                .filter((value) => value && value.length > 0)
+                .join('|') || 'contact';
 
         return createWhatsappAvatarTheme(avatarSeed, themeMode);
-    }, [data.telefono, data.nombre, data.dni, data.nombreAsesor, themeMode]);
-
-    const resolvedAvatarTheme = useMemo(() => {
-        if (!isDark) {
-            return avatarTheme;
-        }
-
-        return {
-            ...avatarTheme,
-            bg: avatarTheme.icon,
-            icon: avatarTheme.bg,
-        };
-    }, [avatarTheme, isDark]);
+    }, [data.telefono, data.dniCliente, data.nombre, data.seedCode, data.conversationId, data.nombreAsesor, themeMode]);
 
     const headerTitle = displayTitle ?? (data.nombre?.trim() ? data.nombre : 'Aracely MD');
     const mobileAvatarInitial = useMemo(() => {
@@ -65,7 +54,10 @@ export function WhatsappMobileHeaderUser({
                 <div className="flex min-w-0 flex-1 items-center gap-2">
                     <button
                         type="button"
-                        className={['grid h-8 w-8 shrink-0 place-items-center rounded-full transition', isDark ? 'text-slate-200 active:bg-white/15' : 'text-black active:bg-black/10'].join(' ')}
+                        className={[
+                            'grid h-8 w-8 shrink-0 place-items-center rounded-full transition',
+                            isDark ? 'text-slate-200 active:bg-white/15' : 'text-black active:bg-black/10',
+                        ].join(' ')}
                         aria-label="Volver"
                         title="Volver"
                     >
@@ -76,16 +68,16 @@ export function WhatsappMobileHeaderUser({
                         <div className="h-9 w-9 overflow-hidden rounded-full">
                             {mobileAvatarInitial ? (
                                 <span
-                                        aria-hidden="true"
-                                        className="segoe-ui-semibold grid h-full w-full place-items-center rounded-full border text-[18px] leading-none"
-                                        data-avatar-initial="true"
-                                        style={{
-                                        backgroundColor: resolvedAvatarTheme.bg,
-                                        borderColor: resolvedAvatarTheme.border,
-                                        color: resolvedAvatarTheme.icon,
-                                        }}
-                                    >
-                                        {mobileAvatarInitial}
+                                    aria-hidden="true"
+                                    className="segoe-ui-semibold grid h-full w-full place-items-center rounded-full border text-[18px] leading-none"
+                                    data-avatar-initial="true"
+                                    style={{
+                                        backgroundColor: avatarTheme.bg,
+                                        borderColor: avatarTheme.border,
+                                        color: avatarTheme.icon,
+                                    }}
+                                >
+                                    {mobileAvatarInitial}
                                 </span>
                             ) : (
                                 <span aria-hidden="true" data-icon="default-contact-refreshed" className="block h-full w-full">
@@ -96,15 +88,15 @@ export function WhatsappMobileHeaderUser({
                                         preserveAspectRatio="xMidYMid meet"
                                         className="h-full w-full rounded-full border"
                                         style={{
-                                            backgroundColor: resolvedAvatarTheme.bg,
-                                            borderColor: resolvedAvatarTheme.border,
+                                            backgroundColor: avatarTheme.bg,
+                                            borderColor: avatarTheme.border,
                                         }}
                                         fill="none"
                                     >
                                         <title>default-contact-refreshed</title>
                                         <path
                                             d="M24 23q-1.857 0-3.178-1.322Q19.5 20.357 19.5 18.5t1.322-3.178T24 14t3.178 1.322Q28.5 16.643 28.5 18.5t-1.322 3.178T24 23m-6.75 10q-.928 0-1.59-.66-.66-.662-.66-1.59v-.9q0-.956.492-1.758A3.3 3.3 0 0 1 16.8 26.87a16.7 16.7 0 0 1 3.544-1.308q1.8-.435 3.656-.436 1.856 0 3.656.436T31.2 26.87q.816.422 1.308 1.223T33 29.85v.9q0 .928-.66 1.59-.662.66-1.59.66z"
-                                            fill={resolvedAvatarTheme.icon}
+                                            fill={avatarTheme.icon}
                                         />
                                     </svg>
                                 </span>
@@ -116,17 +108,24 @@ export function WhatsappMobileHeaderUser({
                                 aria-hidden="true"
                                 className="absolute -right-[2px] -bottom-[2px] grid h-[18px] w-[18px] place-items-center rounded-full"
                                 style={{
-                                    backgroundColor: resolvedAvatarTheme.badgeRing,
+                                    backgroundColor: avatarTheme.badgeRing,
                                 }}
                             >
                                 <span
                                     className="grid h-[16px] w-[16px] place-items-center overflow-hidden rounded-full"
                                     style={{
-                                        backgroundColor: resolvedAvatarTheme.badgeBg,
-                                        color: resolvedAvatarTheme.badgeIcon,
+                                        backgroundColor: avatarTheme.badgeBg,
+                                        color: avatarTheme.badgeIcon,
                                     }}
                                 >
-                                    <svg viewBox="0 0 24 24" height="16" width="16" preserveAspectRatio="xMidYMid meet" fill="currentColor" className="block">
+                                    <svg
+                                        viewBox="0 0 24 24"
+                                        height="16"
+                                        width="16"
+                                        preserveAspectRatio="xMidYMid meet"
+                                        fill="currentColor"
+                                        className="block"
+                                    >
                                         <title>wds-ic-disappearing-messages</title>
                                         <path d="M12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22C12.0547 22 12.1094 21.9996 12.1639 21.9987C12.7775 21.9888 13.2669 21.4834 13.257 20.8698C13.2471 20.2563 12.7417 19.7669 12.1281 19.7767C12.0855 19.7774 12.0428 19.7778 12 19.7778C7.70445 19.7778 4.22222 16.2955 4.22222 12C4.22222 7.70445 7.70445 4.22222 12 4.22222C12.0428 4.22222 12.0855 4.22257 12.1281 4.22325C12.7417 4.23314 13.2471 3.74375 13.257 3.13018C13.2669 2.51661 12.7775 2.0112 12.1639 2.00132C12.1094 2.00044 12.0547 2 12 2Z" />
                                         <path d="M16.8592 3.25814C16.3231 2.95957 15.6465 3.15213 15.3479 3.68825C15.0493 4.22437 15.2419 4.90102 15.778 5.19959C15.8522 5.24089 15.9256 5.28338 15.9983 5.32703C16.5243 5.643 17.2069 5.4727 17.5229 4.94665C17.8389 4.4206 17.6686 3.738 17.1425 3.42203C17.0491 3.36591 16.9546 3.31127 16.8592 3.25814Z" />
@@ -142,16 +141,29 @@ export function WhatsappMobileHeaderUser({
                     </div>
 
                     <div className="min-w-0 flex-1 leading-tight">
-                        <div className={['segoe-ui truncate pb-px text-[13px] leading-[17px] tracking-tight', isDark ? 'text-white' : 'text-[#111b21]'].join(' ')}>
+                        <div
+                            className={[
+                                'segoe-ui truncate pb-px text-[13px] leading-[17px] tracking-tight',
+                                isDark ? 'text-white' : 'text-[#111b21]',
+                            ].join(' ')}
+                        >
                             {headerTitle}
                         </div>
 
-                        {headerStatus.type !== 'hidden' && <div className={['truncate text-[11px] font-medium', isDark ? 'text-slate-400' : 'text-[#667781]'].join(' ')}>en linea</div>}
+                        {headerStatus.type !== 'hidden' && (
+                            <div className={['truncate text-[11px] font-medium', isDark ? 'text-slate-400' : 'text-[#667781]'].join(' ')}>
+                                en linea
+                            </div>
+                        )}
                     </div>
                 </div>
 
                 <div className="flex shrink-0 items-center gap-3.5 text-[#54656f]">
-                    <span aria-hidden="true" data-icon="video-call-refreshed" className={['h-[25px] w-[25px]', isDark ? 'text-slate-200' : 'text-black'].join(' ')}>
+                    <span
+                        aria-hidden="true"
+                        data-icon="video-call-refreshed"
+                        className={['h-[25px] w-[25px]', isDark ? 'text-slate-200' : 'text-black'].join(' ')}
+                    >
                         <svg viewBox="0 0 22 22" height="20" width="20" fill="none">
                             <title>video-call-refreshed</title>
                             <path
@@ -161,7 +173,11 @@ export function WhatsappMobileHeaderUser({
                         </svg>
                     </span>
 
-                    <span aria-hidden="true" data-icon="audio-call-refreshed" className={['h-[25px] w-[25px]', isDark ? 'text-slate-200' : 'text-black'].join(' ')}>
+                    <span
+                        aria-hidden="true"
+                        data-icon="audio-call-refreshed"
+                        className={['h-[25px] w-[25px]', isDark ? 'text-slate-200' : 'text-black'].join(' ')}
+                    >
                         <svg viewBox="0 0 22 22" height="20" width="20" preserveAspectRatio="xMidYMid meet" fill="currentColor">
                             <title>ic-call</title>
                             <path
@@ -173,7 +189,10 @@ export function WhatsappMobileHeaderUser({
 
                     <button
                         type="button"
-                        className={['grid h-5 w-5 place-items-center rounded-full transition', isDark ? 'text-slate-200 hover:bg-white/10 active:bg-white/15' : 'text-black hover:bg-black/5 active:bg-black/10'].join(' ')}
+                        className={[
+                            'grid h-5 w-5 place-items-center rounded-full transition',
+                            isDark ? 'text-slate-200 hover:bg-white/10 active:bg-white/15' : 'text-black hover:bg-black/5 active:bg-black/10',
+                        ].join(' ')}
                         aria-label="Menu"
                         title="Menu"
                     >

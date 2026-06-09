@@ -33,10 +33,17 @@ function createSeededRandom(seed: number): () => number {
 export function PreviewMobile1Whatsapp({ data, themeMode }: PreviewProps) {
     const userSeed = useMemo(
         () =>
-            [data?.telefono?.trim(), data?.dni?.trim(), data?.nombre?.trim(), data?.nombreAsesor?.trim()]
+            [
+                data?.telefono?.trim(),
+                data?.dniCliente?.trim(),
+                data?.nombre?.trim(),
+                data?.seedCode?.trim(),
+                data?.conversationId?.trim(),
+                data?.nombreAsesor?.trim(),
+            ]
                 .filter((value) => value && value.length > 0)
                 .join('|') || 'tray-default',
-        [data?.telefono, data?.dni, data?.nombre, data?.nombreAsesor],
+        [data?.telefono, data?.dniCliente, data?.nombre, data?.seedCode, data?.conversationId, data?.nombreAsesor],
     );
 
     const messageStatus = useMemo<MsgStatus>(() => {

@@ -37,10 +37,13 @@ export function WhatsappRightAside({
 
     const avatarTheme = useMemo(() => {
         const avatarSeed =
-            [data.telefono, data.nombre, data.dni, data.nombreAsesor].map((value) => value?.trim()).find((value) => !!value) ?? 'contact';
+            [data.telefono, data.dniCliente, data.nombre, data.seedCode, data.conversationId, data.nombreAsesor]
+                .map((value) => value?.trim())
+                .filter((value) => value && value.length > 0)
+                .join('|') || 'contact';
 
         return createWhatsappAvatarTheme(avatarSeed);
-    }, [data.telefono, data.nombre, data.dni, data.nombreAsesor]);
+    }, [data.telefono, data.dniCliente, data.nombre, data.seedCode, data.conversationId, data.nombreAsesor]);
 
     return (
         <aside className="flex min-h-0 w-45 flex-2 flex-col border-l border-black/5 bg-white/95">

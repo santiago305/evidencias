@@ -24,7 +24,12 @@ const DOCUMENT_NUMBER_PATTERN = /\d{8,9}/g;
 const STRONG_TEXT_PATTERN = /\*([^*]+?)\*/g;
 
 function buildAvatarSeed(data: WhatsappData): string {
-    return [data.telefono, data.nombre, data.dni, data.nombreAsesor].map((value) => value?.trim()).find((value) => !!value) ?? 'contact';
+    const seed = [data.telefono, data.dniCliente, data.nombre, data.seedCode, data.conversationId, data.nombreAsesor]
+        .map((value) => value?.trim())
+        .filter((value) => value && value.length > 0)
+        .join('|');
+
+    return seed || 'contact';
 }
 
 function lightenHexColor(hexColor: string, ratio = 0.2): string {
@@ -321,7 +326,7 @@ export function WhatsappConversation({
                         </div>
 
                         {showMoreConversationIndicator && (
-                            <div className="pointer-events-none absolute bottom-3 z-30 right-4">
+                            <div className="pointer-events-none absolute right-4 bottom-3 z-30">
                                 <MoreConversationIndicator />
                             </div>
                         )}

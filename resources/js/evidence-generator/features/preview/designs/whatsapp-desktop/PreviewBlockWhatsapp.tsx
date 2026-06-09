@@ -3,8 +3,8 @@ import { parseLocalDateTime } from '../../../../lib/whatsapp/time';
 import type { PreviewProps } from '../../../../types';
 import { EmptyState } from '../../components/EmptyState';
 import { buildContactIdentityDisplay } from './contactIdentityDisplay';
-import { WhatsappConversation } from './WhatsappConversation';
 import { WhatsappHeaderUser } from './whatsapp-header';
+import { WhatsappConversation } from './WhatsappConversation';
 import type { MsgStatus } from './WhatsappPieces';
 import { WhatsappRightAside } from './WhatsappRightAside';
 
@@ -49,9 +49,7 @@ const HIDDEN_ICONS_SPEC: TrayIconSpec = {
     iconClassName: 'text-[10px]',
 };
 
-const NETWORK_ICON_OPTIONS: TrayIconSpec[] = [
-    { key: 'wifi', glyph: '\uE701', title: 'WiFi', iconClassName: 'text-[14px]' },
-];
+const NETWORK_ICON_OPTIONS: TrayIconSpec[] = [{ key: 'wifi', glyph: '\uE701', title: 'WiFi', iconClassName: 'text-[14px]' }];
 
 const AUDIO_ICON_OPTIONS: TrayIconSpec[] = [
     { key: 'volume', glyph: '\uE995', title: 'Volumen', className: 'min-w-5.5', iconClassName: 'text-[13px]' },
@@ -281,13 +279,15 @@ export function PreviewBlockWhatsapp({ data, themeMode }: PreviewBlockWhatsappPr
         () =>
             [
                 data?.telefono?.trim(),
-                data?.dni?.trim(),
+                data?.dniCliente?.trim(),
                 data?.nombre?.trim(),
+                data?.seedCode?.trim(),
+                data?.conversationId?.trim(),
                 data?.nombreAsesor?.trim(),
             ]
                 .filter((value) => value && value.length > 0)
                 .join('|') || 'tray-default',
-        [data?.telefono, data?.dni, data?.nombre, data?.nombreAsesor],
+        [data?.telefono, data?.dniCliente, data?.nombre, data?.seedCode, data?.conversationId, data?.nombreAsesor],
     );
 
     const messageStatus = useMemo<MsgStatus>(() => {
