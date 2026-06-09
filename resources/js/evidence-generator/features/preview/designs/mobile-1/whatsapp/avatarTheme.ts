@@ -111,9 +111,13 @@ export function createWhatsappAvatarTheme(seedInput?: string, themeMode: Whatsap
     const seed = hashString(normalizedSeed);
     const themeIndex = seed % WHATSAPP_AVATAR_THEMES.length;
     const theme = WHATSAPP_AVATAR_THEMES[themeIndex];
+    const isDark = themeMode === 'dark';
 
     return {
         ...theme,
-        ...(themeMode === 'dark' ? DEFAULT_DARK_BADGE_THEME : DEFAULT_BADGE_THEME),
+        bg: isDark ? theme.icon : theme.bg,
+        icon: isDark ? theme.bg : theme.icon,
+        border: isDark ? 'transparent' : theme.border,
+        ...(isDark ? DEFAULT_DARK_BADGE_THEME : DEFAULT_BADGE_THEME),
     };
 }

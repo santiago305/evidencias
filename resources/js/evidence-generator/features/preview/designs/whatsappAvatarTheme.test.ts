@@ -8,14 +8,14 @@ import { createWhatsappAvatarTheme as createDesktopWhatsappAvatarTheme } from '.
 
 const designsDir = dirname(fileURLToPath(import.meta.url));
 
-test('WhatsApp avatar dark mode keeps light user colors and only changes timer badge colors', () => {
+test('WhatsApp avatar dark mode swaps user avatar colors and keeps timer badge dark colors', () => {
     for (const createWhatsappAvatarTheme of [createDesktopWhatsappAvatarTheme, createMobileWhatsappAvatarTheme]) {
         const lightTheme = createWhatsappAvatarTheme('51987654321', 'light');
         const darkTheme = createWhatsappAvatarTheme('51987654321', 'dark');
 
-        assert.equal(darkTheme.bg, lightTheme.bg);
-        assert.equal(darkTheme.icon, lightTheme.icon);
-        assert.equal(darkTheme.border, lightTheme.border);
+        assert.equal(darkTheme.bg, lightTheme.icon);
+        assert.equal(darkTheme.icon, lightTheme.bg);
+        assert.equal(darkTheme.border, 'transparent');
 
         assert.notEqual(darkTheme.badgeBg, lightTheme.badgeBg);
         assert.notEqual(darkTheme.badgeIcon, lightTheme.badgeIcon);
