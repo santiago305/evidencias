@@ -3,6 +3,11 @@
 use App\Models\Conversation;
 use App\Models\ConversationMessage;
 use App\Models\User;
+use Carbon\Carbon;
+
+afterEach(function () {
+    Carbon::setTestNow();
+});
 
 function createSnapshotConversation(string $code, array $messages): Conversation
 {
@@ -41,6 +46,8 @@ function snapshotEvidencePayload(): array
 }
 
 test('generate evidence includes a preview snapshot and reproduces it from the seed', function () {
+    Carbon::setTestNow(Carbon::parse('2026-06-09T12:34:00', 'America/Lima'));
+
     $user = User::factory()->create();
 
     createSnapshotConversation('conv_snapshot_001', [

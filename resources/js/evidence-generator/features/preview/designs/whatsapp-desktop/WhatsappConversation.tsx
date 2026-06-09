@@ -172,7 +172,6 @@ export function WhatsappConversation({
         () => getDateKeyFromLocalDateTime(data.fechaHora) ?? getDateKeyFromLocalDateTime(data.fechaHoraRegistro) ?? '',
         [data.fechaHora, data.fechaHoraRegistro],
     );
-    const dayChipReference = data.fechaHoraRegistro || data.fechaHora;
     const firstDayChipDateKey = conversationMessages[0] ? resolveMessageDateKey(conversationMessages[0], fallbackDateKey) : fallbackDateKey;
     const scrollContainerRef = useRef<HTMLDivElement | null>(null);
     const [showMoreConversationIndicator, setShowMoreConversationIndicator] = useState(false);
@@ -240,9 +239,7 @@ export function WhatsappConversation({
                                 .filter(Boolean)
                                 .join(' ')}
                         >
-                            {firstDayChipDateKey !== '' && (
-                                <DayChip text={getDayChipTextForDate(firstDayChipDateKey, dayChipReference)} themeMode={themeMode} />
-                            )}
+                            {firstDayChipDateKey !== '' && <DayChip text={getDayChipTextForDate(firstDayChipDateKey)} themeMode={themeMode} />}
                             <EncryptedMessage deviceMode={deviceMode} themeMode={themeMode} />
                             {showDefaultTemporalMessage && <TempporalMessage deviceMode={deviceMode} themeMode={themeMode} />}
 
@@ -259,9 +256,7 @@ export function WhatsappConversation({
                                 const wrapperSpacing = staysInSameGroup ? 'mb-0.5' : 'mb-4';
                                 return (
                                     <Fragment key={`message-${idx}-${msg.side}`}>
-                                        {showsDayChip && (
-                                            <DayChip text={getDayChipTextForDate(currentDateKey, dayChipReference)} themeMode={themeMode} />
-                                        )}
+                                        {showsDayChip && <DayChip text={getDayChipTextForDate(currentDateKey)} themeMode={themeMode} />}
 
                                         <div className={wrapperSpacing}>
                                             <Bubble

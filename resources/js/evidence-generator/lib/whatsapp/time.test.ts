@@ -37,13 +37,22 @@ test('getGreetingSlot recognizes morning greetings with and without accents', ()
     }
 });
 
-test('getDayChipTextForDate labels message days relative to registration timestamp', () => {
+test('getDayChipTextForDate labels message days relative to a supplied reference timestamp', () => {
     const registrationDate = '2026-06-03T08:10';
 
     assert.equal(getDayChipTextForDate('2026-06-03', registrationDate), 'Hoy');
     assert.equal(getDayChipTextForDate('2026-06-02', registrationDate), 'Ayer');
     assert.equal(getDayChipTextForDate('2026-06-01', registrationDate), 'Lunes');
     assert.equal(getDayChipTextForDate('2026-05-25', registrationDate), '25/5/2026');
+});
+
+test('getDayChipTextForDate labels generated message days relative to the current Peru date by default', () => {
+    const currentPeruDate = new Date('2026-06-09T17:00:00.000Z');
+
+    assert.equal(getDayChipTextForDate('2026-06-09', undefined, currentPeruDate), 'Hoy');
+    assert.equal(getDayChipTextForDate('2026-06-08', undefined, currentPeruDate), 'Ayer');
+    assert.equal(getDayChipTextForDate('2026-06-06', undefined, currentPeruDate), 'Sabado');
+    assert.equal(getDayChipTextForDate('2026-06-05', undefined, currentPeruDate), 'Viernes');
 });
 
 test('formatWhatsappTimeValue converts backend 24-hour times to WhatsApp short times', () => {

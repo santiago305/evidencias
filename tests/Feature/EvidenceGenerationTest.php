@@ -7,6 +7,10 @@ use App\Models\UserConversationProgress;
 use App\Services\Conversation\ConversationRenderService;
 use Carbon\Carbon;
 
+afterEach(function () {
+    Carbon::setTestNow();
+});
+
 function createConversationForTest(string $code, array $messages, string $status = 'production'): Conversation
 {
     $conversation = Conversation::query()->create([
@@ -670,6 +674,8 @@ test('user keeps same start conversation when a new cycle begins', function () {
 });
 
 test('generated conversation finishes before registration time and keeps duration backwards', function () {
+    Carbon::setTestNow(Carbon::parse('2026-06-09T12:34:00', 'America/Lima'));
+
     $user = User::factory()->create();
 
     createConversationForTest('conv_time_001', [
@@ -685,8 +691,8 @@ test('generated conversation finishes before registration time and keeps duratio
     ]);
 
     $response->assertOk();
-    $response->assertJsonPath('previewSnapshot.trayTime', '17:00');
-    $response->assertJsonPath('previewSnapshot.trayDate', '02/06/2026');
+    $response->assertJsonPath('previewSnapshot.trayTime', '12:34');
+    $response->assertJsonPath('previewSnapshot.trayDate', '09/06/2026');
 
     $messages = $response->json('messages');
 

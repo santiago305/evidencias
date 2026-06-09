@@ -1,5 +1,4 @@
-import { useMemo } from 'react';
-import { parseLocalDateTime } from '../../../../lib/whatsapp/time';
+import { useEffect, useMemo, useState } from 'react';
 import type { PreviewProps } from '../../../../types';
 import { EmptyState } from '../../components/EmptyState';
 import { buildContactIdentityDisplay } from './contactIdentityDisplay';
@@ -38,8 +37,6 @@ type WindowsTrayProfile = {
 
 type WindowsTrayBarProps = {
     profile: WindowsTrayProfile;
-    trayTime: string;
-    trayDate: string;
 };
 
 const HIDDEN_ICONS_SPEC: TrayIconSpec = {
@@ -69,6 +66,16 @@ const OPTIONAL_TRAY_ICON_POOL: TrayIconSpec[] = [
 ];
 
 const LANGUAGE_OPTIONS: TrayLanguageSpec[] = [{ top: 'ESP', bottom: 'LAA' }, { top: 'ESP' }];
+const PERU_TIME_ZONE = 'America/Lima';
+const PERU_WINDOWS_CLOCK_FORMATTER = new Intl.DateTimeFormat('es-PE', {
+    timeZone: PERU_TIME_ZONE,
+    hour: '2-digit',
+    minute: '2-digit',
+    hourCycle: 'h23',
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+});
 
 function WinTrayIcon({ glyph, title, className = '', iconClassName = '' }: WinTrayIconProps) {
     return (
@@ -217,22 +224,56 @@ function renderTrayLanguage(language: TrayLanguageSpec) {
     );
 }
 
-function formatWindowsTime(date: Date): string {
-    const hours = String(date.getHours()).padStart(2, '0');
-    const minutes = String(date.getMinutes()).padStart(2, '0');
-
-    return `${hours}:${minutes}`;
+function getDateTimePart(parts: Intl.DateTimeFormatPart[], type: Intl.DateTimeFormatPartTypes): string {
+    return parts.find((part) => part.type === type)?.value ?? '';
 }
 
-function formatWindowsDate(date: Date): string {
-    const day = String(date.getDate()).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const year = String(date.getFullYear());
+function getCurrentPeruWindowsDateTime(date = new Date()): { trayTime: string; trayDate: string } {
+    const parts = PERU_WINDOWS_CLOCK_FORMATTER.formatToParts(date);
+    const day = getDateTimePart(parts, 'day');
+    const month = getDateTimePart(parts, 'month');
+    const year = getDateTimePart(parts, 'year');
+    const hour = getDateTimePart(parts, 'hour');
+    const minute = getDateTimePart(parts, 'minute');
 
-    return `${day}/${month}/${year}`;
+    return {
+        trayTime: `${hour}:${minute}`,
+        trayDate: `${day}/${month}/${year}`,
+    };
 }
 
-function WindowsTrayBar({ profile, trayTime, trayDate }: WindowsTrayBarProps) {
+function useCurrentPeruWindowsDateTime(): { trayTime: string; trayDate: string } {
+    const [dateTime, setDateTime] = useState(() => getCurrentPeruWindowsDateTime());
+
+    useEffect(() => {
+        let timeoutId: ReturnType<typeof setTimeout> | null = null;
+
+        const scheduleNextMinute = () => {
+            const now = new Date();
+            const nextMinuteDelay = (60 - now.getSeconds()) * 1000 - now.getMilliseconds() + 50;
+
+            timeoutId = setTimeout(() => {
+                setDateTime(getCurrentPeruWindowsDateTime());
+                scheduleNextMinute();
+            }, nextMinuteDelay);
+        };
+
+        setDateTime(getCurrentPeruWindowsDateTime());
+        scheduleNextMinute();
+
+        return () => {
+            if (timeoutId !== null) {
+                clearTimeout(timeoutId);
+            }
+        };
+    }, []);
+
+    return dateTime;
+}
+
+function WindowsTrayBar({ profile }: WindowsTrayBarProps) {
+    const { trayTime, trayDate } = useCurrentPeruWindowsDateTime();
+
     return (
         <div
             className="flex h-10 w-full shrink-0 items-center justify-end border-t border-white/10 pr-5 pl-3 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]"
@@ -351,19 +392,13 @@ export function PreviewBlockWhatsapp({ data, themeMode }: PreviewBlockWhatsappPr
         if (data?.previewSnapshot) {
             return {
                 profile: data.previewSnapshot.trayProfile,
-                trayTime: data.previewSnapshot.trayTime,
-                trayDate: data.previewSnapshot.trayDate,
             };
         }
 
-        const trayMoment = parseLocalDateTime(data?.fechaHoraRegistro ?? '') ?? parseLocalDateTime(data?.fechaHora ?? '') ?? new Date();
-
         return {
             profile: data?.trayProfile ?? createWindowsTrayProfile(userSeed),
-            trayTime: formatWindowsTime(trayMoment),
-            trayDate: formatWindowsDate(trayMoment),
         };
-    }, [data?.fechaHora, data?.fechaHoraRegistro, data?.previewSnapshot, data?.trayProfile, userSeed]);
+    }, [data?.previewSnapshot, data?.trayProfile, userSeed]);
 
     if (!data) return <EmptyState />;
 
@@ -402,7 +437,7 @@ export function PreviewBlockWhatsapp({ data, themeMode }: PreviewBlockWhatsappPr
                 />
             </div>
 
-            <WindowsTrayBar profile={windowsTrayData.profile} trayTime={windowsTrayData.trayTime} trayDate={windowsTrayData.trayDate} />
+            <WindowsTrayBar profile={windowsTrayData.profile} />
         </div>
     );
 }

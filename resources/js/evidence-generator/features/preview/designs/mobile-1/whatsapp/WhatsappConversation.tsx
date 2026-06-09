@@ -185,7 +185,6 @@ export function WhatsappConversation({
         [data.fechaHora, data.fechaHoraRegistro],
     );
 
-    const dayChipReference = data.fechaHoraRegistro || data.fechaHora;
     const firstDayChipDateKey = conversationMessages[0] ? resolveMessageDateKey(conversationMessages[0], fallbackDateKey) : fallbackDateKey;
     const clientQuoteTheme = useMemo(() => {
         return buildMobileClientQuoteTheme(data);
@@ -234,9 +233,7 @@ export function WhatsappConversation({
                             onScroll={updateScrollState}
                             className="scrollbar-mobile-soft h-full w-full overflow-y-auto pr-[4px]"
                         >
-                            {firstDayChipDateKey !== '' && (
-                                <DayChip text={getDayChipTextForDate(firstDayChipDateKey, dayChipReference)} themeMode={themeMode} />
-                            )}
+                            {firstDayChipDateKey !== '' && <DayChip text={getDayChipTextForDate(firstDayChipDateKey)} themeMode={themeMode} />}
                             <EncryptedMessage themeMode={themeMode} />
                             {showDefaultTemporalMessage && <TempporalMessage themeMode={themeMode} />}
 
@@ -260,9 +257,7 @@ export function WhatsappConversation({
 
                                 return (
                                     <Fragment key={`message-${idx}-${msg.side}`}>
-                                        {showsDayChip && (
-                                            <DayChip text={getDayChipTextForDate(currentDateKey, dayChipReference)} themeMode={themeMode} />
-                                        )}
+                                        {showsDayChip && <DayChip text={getDayChipTextForDate(currentDateKey)} themeMode={themeMode} />}
 
                                         <div className={wrapperSpacing}>
                                             <Bubble

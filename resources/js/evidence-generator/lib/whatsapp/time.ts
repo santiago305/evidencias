@@ -1,4 +1,4 @@
-import { peruDayNames, timeOfDayConfig } from '../../config/whatsapp/greetings';
+import { peruDayNames, timeOfDayConfig } from '../../config/whatsapp/greetings.ts';
 
 type DateParts = {
     year: number;
@@ -79,8 +79,8 @@ export function getDayChipText(fechaHora: string) {
     return getDayChipTextFromParts(parsePeruDateOnly(fechaHora), getPeruDateParts(new Date()));
 }
 
-export function getDayChipTextForDate(dateKey: string, referenceFechaHora: string) {
-    const reference = parsePeruDateOnly(referenceFechaHora) ?? getPeruDateParts(new Date());
+export function getDayChipTextForDate(dateKey: string, referenceFechaHora?: string | null, currentDate = new Date()) {
+    const reference = referenceFechaHora ? (parsePeruDateOnly(referenceFechaHora) ?? getPeruDateParts(currentDate)) : getPeruDateParts(currentDate);
 
     return getDayChipTextFromParts(parseDateKey(dateKey), reference);
 }

@@ -1,8 +1,8 @@
+import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
-import { fileURLToPath } from 'node:url';
-import assert from 'node:assert/strict';
 import test from 'node:test';
+import { fileURLToPath } from 'node:url';
 
 const designsDir = dirname(fileURLToPath(import.meta.url));
 const previewDir = resolve(designsDir, '..');
@@ -34,4 +34,14 @@ test('preview channel entry points use design folders directly', () => {
     assert.doesNotMatch(previewChannelsSource, /preview\/whatsapp|\.\.\/whatsapp/);
     assert.doesNotMatch(desktopSource, /preview\/whatsapp|\.\.\/\.\.\/whatsapp|deviceMode=/);
     assert.doesNotMatch(mobileSource, /preview\/whatsapp|\.\.\/\.\.\/\.\.\/whatsapp/);
+});
+
+test('desktop WhatsApp tray clock uses current Peru time instead of snapshot time', () => {
+    const desktopPreviewBlock = readFileSync(resolve(designsDir, 'whatsapp-desktop', 'PreviewBlockWhatsapp.tsx'), 'utf8');
+
+    assert.match(desktopPreviewBlock, /PERU_TIME_ZONE = ['"]America\/Lima['"]/);
+    assert.match(desktopPreviewBlock, /function WindowsTrayBar\(\{ profile \}: WindowsTrayBarProps\)/);
+    assert.match(desktopPreviewBlock, /useCurrentPeruWindowsDateTime/);
+    assert.doesNotMatch(desktopPreviewBlock, /parseLocalDateTime/);
+    assert.doesNotMatch(desktopPreviewBlock, /<WindowsTrayBar[^>]*(trayTime|trayDate)=/);
 });

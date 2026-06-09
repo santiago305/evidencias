@@ -8,7 +8,6 @@ use App\Models\User;
 use App\Models\UserConversationProgress;
 use App\Services\Conversation\ConversationBagService;
 use App\Services\Conversation\ConversationRenderService;
-use Carbon\Carbon;
 use Illuminate\Database\QueryException;
 use Illuminate\Validation\ValidationException;
 
@@ -412,7 +411,7 @@ class EvidenceGeneratorService
         $messageStatus = $this->buildMessageStatus($stateSeed);
         $temporalBehavior = $this->buildTemporalBehavior($stateSeed);
         $inlineTemporalInsertIndex = $this->buildInlineTemporalInsertIndex($stateSeed, count($messages), $temporalBehavior['inlineTemporalMode']);
-        ['trayTime' => $trayTime, 'trayDate' => $trayDate] = $this->buildTrayClock($input);
+        ['trayTime' => $trayTime, 'trayDate' => $trayDate] = $this->buildTrayClock();
 
         return [
             'messageStatus' => $messageStatus,
@@ -511,14 +510,11 @@ class EvidenceGeneratorService
     }
 
     /**
-     * @param  array<string, mixed>  $input
      * @return array{trayTime:string, trayDate:string}
      */
-    private function buildTrayClock(array $input): array
+    private function buildTrayClock(): array
     {
-        $trayMoment = isset($input['fechaHoraRegistro']) && is_string($input['fechaHoraRegistro']) && trim($input['fechaHoraRegistro']) !== ''
-            ? Carbon::parse($input['fechaHoraRegistro'])
-            : now();
+        $trayMoment = now('America/Lima');
 
         return [
             'trayTime' => $trayMoment->format('H:i'),
