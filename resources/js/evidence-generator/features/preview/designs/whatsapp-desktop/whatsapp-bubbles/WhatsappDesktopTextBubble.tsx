@@ -1,4 +1,5 @@
 import React from 'react';
+import type { PreviewThemeMode } from '../../../../../../types';
 
 type MsgStatus = 'sent' | 'delivered' | 'read';
 
@@ -17,6 +18,7 @@ type WhatsappTextBubbleProps = {
     status?: MsgStatus;
     id?: string;
     quote?: QuotedMessage;
+    themeMode?: PreviewThemeMode;
     children: React.ReactNode;
 };
 
@@ -44,9 +46,11 @@ function BubbleTail({ side, colorClass }: { side: 'left' | 'right'; colorClass: 
     );
 }
 
-function QuotedMessageBox({ quote }: { quote: QuotedMessage }) {
+function QuotedMessageBox({ quote, themeMode }: { quote: QuotedMessage; themeMode: PreviewThemeMode }) {
+    const isDark = themeMode === 'dark';
+
     return (
-        <div className="rounded-[7px] bg-black/5">
+        <div className={['rounded-[7px]', isDark ? 'bg-black/20' : 'bg-black/5'].join(' ')}>
             <div className="mb-0.75 flex overflow-hidden rounded-[6px]">
                 <div
                     className={['w-1 shrink-0 rounded-s-[6px]', quote.accentColor ? '' : (quote.accentClassName ?? 'bg-[#0063CB]')].join(' ')}
@@ -56,7 +60,7 @@ function QuotedMessageBox({ quote }: { quote: QuotedMessage }) {
                     <p className="truncate text-[10.5px] leading-4 font-semibold text-[#0078D7]" style={quote.authorColor ? { color: quote.authorColor } : undefined}>
                         {quote.author}
                     </p>
-                    <p className="line-clamp-2 text-[11px] leading-4 text-black/60">{quote.text}</p>
+                    <p className={['line-clamp-2 text-[11px] leading-4', isDark ? 'text-[#878F92]' : 'text-black/60'].join(' ')}>{quote.text}</p>
                 </div>
             </div>
         </div>
@@ -90,8 +94,8 @@ function renderBubbleContent(children: React.ReactNode): React.ReactNode {
     });
 }
 
-function Ticks({ status }: { status: MsgStatus }) {
-    const color = status === 'read' ? 'text-[#007BFC]' : 'text-[rgba(0,0,0,0.6)]';
+function Ticks({ status, themeMode }: { status: MsgStatus; themeMode: PreviewThemeMode }) {
+    const color = status === 'read' ? (themeMode === 'dark' ? 'text-[#53BDEB]' : 'text-[#007BFC]') : themeMode === 'dark' ? 'text-[#878F92]' : 'text-[rgba(0,0,0,0.6)]';
 
     return (
         <span className={`${color} inline-block`}>
@@ -103,10 +107,13 @@ function Ticks({ status }: { status: MsgStatus }) {
     );
 }
 
-export function WhatsappDesktopTextBubble({ side, firstInGroup, time, status, id, quote, children }: WhatsappTextBubbleProps) {
+export function WhatsappDesktopTextBubble({ side, firstInGroup, time, status, id, quote, themeMode = 'light', children }: WhatsappTextBubbleProps) {
     const isOut = side === 'out';
-    const bubbleBg = isOut ? 'bg-[#D9FDD3]' : 'bg-white';
-    const tailColor = isOut ? 'text-[#D9FDD3]' : 'text-white';
+    const isDark = themeMode === 'dark';
+    const bubbleBg = isDark ? (isOut ? 'bg-[#134D37]' : 'bg-[#242626]') : isOut ? 'bg-[#D9FDD3]' : 'bg-white';
+    const bubbleText = isDark ? 'text-[#FBFEFF]' : 'text-[#111B21]';
+    const tailColor = isDark ? (isOut ? 'text-[#134D37]' : 'text-[#242626]') : isOut ? 'text-[#D9FDD3]' : 'text-white';
+    const metaText = isDark ? 'text-[#878F92]' : 'text-[rgba(0,0,0,0.6)]';
     const cornerCut = firstInGroup ? (isOut ? 'rounded-tr-none' : 'rounded-tl-none') : '';
     const content = renderBubbleContent(children);
 
@@ -115,11 +122,11 @@ export function WhatsappDesktopTextBubble({ side, firstInGroup, time, status, id
             <div className="relative max-w-[70%] flex-none text-[14.2px] leading-4.75">
                 {firstInGroup && <BubbleTail side={isOut ? 'right' : 'left'} colorClass={tailColor} />}
 
-                <div className={['relative z-10 rounded-[7.5px]', cornerCut, bubbleBg, 'shadow-[0_1px_0.5px_rgba(11,20,26,0.13)]'].join(' ')}>
-                    <div className="box-border p-1 select-text">
-                        {quote ? <QuotedMessageBox quote={quote} /> : null}
+                <div className={['relative z-10 rounded-[7.5px]', cornerCut, bubbleBg, bubbleText, 'shadow-[0_1px_0.5px_rgba(11,20,26,0.13)]'].join(' ')}>
+                    <div className="box-border py-1 px-0.5 select-text">
+                        {quote ? <QuotedMessageBox quote={quote} themeMode={themeMode} /> : null}
 
-                        <div className="relative overflow-hidden ps-0.75 pe-0.75 break-words whitespace-pre-wrap">
+                        <div className="relative overflow-hidden ps-1.25 pe-1.25 break-words whitespace-pre-wrap">
                             <span data-testid="selectable-text" dir="ltr" className="segoe-ui visible text-[12px] leading-4.5 font-normal tracking-[0.005rem] select-text" style={{ minHeight: '0px' }}>
                                 {content}
                             </span>
@@ -132,18 +139,18 @@ export function WhatsappDesktopTextBubble({ side, firstInGroup, time, status, id
                         </div>
 
                         {(time || (isOut && status)) && (
-                            <div className="relative z-10 float-right -mt-3 -mb-1.25 ps-1 pe-0">
-                                <div className={['flex h-3.75 items-center text-[0.6875rem] leading-3.75 whitespace-nowrap text-[rgba(0,0,0,0.6)]', isOut ? 'cursor-pointer' : ''].join(' ')}>
+                            <div className="relative z-10 float-right -mt-3 -mb-1.25 ps-0 pe-1">
+                                <div className={['flex h-3.75 items-center text-[0.6875rem] leading-3.75 whitespace-nowrap', metaText, isOut ? 'cursor-pointer' : ''].join(' ')}>
                                     {time && (
                                         <span className="inline-block align-top" dir="auto">
-                                            <span className="segoe-ui inline min-w-0 max-w-full wrap-break-word text-[10px] leading-4 font-normal break-all whitespace-pre-line text-[rgba(0,0,0,0.6)] select-text">
+                                            <span className={['segoe-ui inline min-w-0 max-w-full wrap-break-word text-[10px] leading-4 font-normal break-all whitespace-pre-line select-text', metaText].join(' ')}>
                                                 {time}
                                             </span>
                                         </span>
                                     )}
                                     {isOut && status && (
                                         <div className="flex justify-end ps-0.75">
-                                            <Ticks status={status} />
+                                            <Ticks status={status} themeMode={themeMode} />
                                         </div>
                                     )}
                                 </div>
@@ -155,4 +162,3 @@ export function WhatsappDesktopTextBubble({ side, firstInGroup, time, status, id
         </div>
     );
 }
-

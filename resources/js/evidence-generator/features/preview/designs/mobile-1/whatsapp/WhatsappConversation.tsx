@@ -308,7 +308,7 @@ export function WhatsappConversation({
 
                         {showMoreConversationIndicator && (
                             <div className="pointer-events-none absolute right-2.5 bottom-[10px] z-30">
-                                <MoreConversationIndicator />
+                                <MoreConversationIndicator themeMode={themeMode} />
                             </div>
                         )}
                     </div>

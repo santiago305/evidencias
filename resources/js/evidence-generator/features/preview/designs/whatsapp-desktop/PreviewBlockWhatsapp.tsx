@@ -368,7 +368,7 @@ export function PreviewBlockWhatsapp({ data, themeMode }: PreviewBlockWhatsappPr
     if (!data) return <EmptyState />;
 
     return (
-        <div className="flex h-full w-full flex-col bg-[#efeae2]" id="CAPTURA">
+        <div className={['flex h-full w-full flex-col', themeMode === 'dark' ? 'bg-[#0b141a]' : 'bg-[#efeae2]'].join(' ')} id="CAPTURA">
             <div className="flex min-h-0 w-full flex-1">
                 <div className="flex min-w-0 flex-[3.3] flex-col">
                     <WhatsappHeaderUser
@@ -398,6 +398,7 @@ export function PreviewBlockWhatsapp({ data, themeMode }: PreviewBlockWhatsappPr
                     profileTitle={contactIdentityDisplay.profileTitle}
                     profileSubtitle={contactIdentityDisplay.profileSubtitle}
                     showAddContactAction={contactIdentityDisplay.showAddContactAction}
+                    themeMode={themeMode}
                 />
             </div>
 

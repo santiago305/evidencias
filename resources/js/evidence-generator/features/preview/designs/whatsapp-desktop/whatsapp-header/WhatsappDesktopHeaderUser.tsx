@@ -36,7 +36,7 @@ export function WhatsappDesktopHeaderUser({
     const headerTitle = displayTitle ?? (data.nombre?.trim() ? data.nombre : 'Aracely MD');
 
     return (
-        <div className={['w-full border-b px-3 py-2', isDark ? 'border-white/10 bg-[#202c33]' : 'border-black/10 bg-white'].join(' ')}>
+        <div className={['w-full border-b px-3 py-2', isDark ? 'border-white/5 bg-[#161717]' : 'border-black/10 bg-white'].join(' ')}>
             <div className="flex items-center justify-between gap-2">
                 <div className="flex min-w-0 items-center gap-2">
                     <div className="relative h-9 w-9 shrink-0">

@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import type { PreviewThemeMode } from '../../../../types';
 import { createWhatsappAvatarTheme } from './avatarTheme';
 import { ContactActionButtons } from './ContactActionButtons';
 import { buildWhatsappAvatarSeed } from './whatsappAppearance';
@@ -27,28 +28,40 @@ export function WhatsappRightAside({
     profileTitle,
     profileSubtitle,
     showAddContactAction,
+    themeMode = 'light',
 }: {
     data: WhatsappData;
     profileTitle?: string;
     profileSubtitle?: string;
     showAddContactAction?: boolean;
     temporalStatusLabel: '90 días' | 'Desactivado';
+    themeMode?: PreviewThemeMode;
 }) {
     const contactActionTitle = profileTitle ?? (data.nombre?.trim() ? data.nombre.trim() : `+51 ${formatTelefonoPE(data.telefono)}`);
+    const isDark = themeMode === 'dark';
+    const panelBg = isDark ? 'bg-[#161717]' : 'bg-white/95';
+    const sectionBg = isDark ? 'bg-[#161717]' : 'bg-white';
+    const cardBg = isDark ? 'bg-[#161717]' : 'bg-white';
+    const borderColor = isDark ? 'border-white/10' : 'border-black/10';
+    const softBorderColor = isDark ? 'border-white/5' : 'border-black/5';
+    const primaryText = isDark ? 'text-[#FBFEFF]' : 'text-[#161717]';
+    const secondaryText = isDark ? 'text-[#878F92]' : 'text-[#667781]';
+    const iconText = isDark ? 'text-[#8E9699]' : 'text-[#54656f]';
+    const hoverBg = isDark ? 'hover:bg-white/10 active:bg-white/15' : 'hover:bg-black/5 active:bg-black/10';
 
-    const avatarTheme = useMemo(() => createWhatsappAvatarTheme(buildWhatsappAvatarSeed(data)), [data]);
+    const avatarTheme = useMemo(() => createWhatsappAvatarTheme(buildWhatsappAvatarSeed(data), themeMode), [data, themeMode]);
 
     return (
-        <aside className="flex min-h-0 w-45 flex-2 flex-col border-l border-black/5 bg-white/95">
+        <aside className={['flex min-h-0 w-45 flex-2 flex-col border-l', softBorderColor, panelBg].join(' ')}>
             {/* ---------- HEADER ---------- */}
-            <div className="w-full shrink-0 bg-white px-3 py-2">
+            <div className={['w-full shrink-0 px-3 py-2', sectionBg].join(' ')}>
                 <div className="flex items-center justify-between">
                     {/* Left: X + title */}
                     <div className="flex items-center gap-2">
                         <button
                             type="button"
                             aria-label="Cerrar"
-                            className="grid h-9 w-9 place-items-center rounded-full text-[#111b21] transition hover:bg-black/5 active:bg-black/10"
+                            className={['grid h-9 w-9 place-items-center rounded-full transition', primaryText, hoverBg].join(' ')}
                         >
                             {/* X icon */}
                             <svg viewBox="0 0 24 24" height="20" width="20" fill="none">
@@ -59,14 +72,14 @@ export function WhatsappRightAside({
                             </svg>
                         </button>
 
-                        <div className="text-[12px] font-medium text-[#111b21]">Info. del contacto</div>
+                        <div className={['text-[12px] font-medium', primaryText].join(' ')}>Info. del contacto</div>
                     </div>
 
                     {/* Right: pencil */}
                     <button
                         type="button"
                         aria-label="Editar"
-                        className="grid h-9 w-9 place-items-center rounded-full text-[#111b21] transition hover:bg-black/5 active:bg-black/10"
+                        className={['grid h-9 w-9 place-items-center rounded-full transition', primaryText, hoverBg].join(' ')}
                     >
                         <svg viewBox="0 0 24 24" height="20" width="20" fill="none">
                             <path
@@ -81,7 +94,7 @@ export function WhatsappRightAside({
             <div className="scrollbar-soft min-h-0 flex-1 overflow-y-auto">
                 <div className="w-full px-4">
                     {/* ---------- USER CARD ---------- */}
-                    <div className="border-b-[1.5px] border-black/5 bg-white py-3">
+                    <div className={['border-b-[1.5px] py-3', softBorderColor, sectionBg].join(' ')}>
                         <div className="flex flex-col items-center gap-2">
                             {/* avatar */}
                             <div className="h-26 w-26 overflow-hidden rounded-full">
@@ -103,27 +116,27 @@ export function WhatsappRightAside({
 
                             {/* name + phone */}
                             <div className="flex w-full min-w-0 flex-col items-center">
-                                <div className="segoe-ui-semibold truncate p-1 text-[18px] font-normal text-wrap text-slate-900">
+                                <div className={['segoe-ui-semibold truncate p-1 text-[18px] font-normal text-wrap', primaryText].join(' ')}>
                                     {profileTitle ?? (data.nombre?.trim() ? data.nombre : '')}
                                 </div>
 
                                 {/* AQUÍ VA EL TELÉFONO FORMATEADO */}
-                                <div className="segoe-ui truncate text-[13px] text-slate-500">
+                                <div className={['segoe-ui truncate text-[13px]', secondaryText].join(' ')}>
                                     {profileSubtitle ?? `+51 ${formatTelefonoPE(data.telefono)}`}
                                 </div>
 
-                                <ContactActionButtons showAddAction={showAddContactAction} />
+                                <ContactActionButtons showAddAction={showAddContactAction} themeMode={themeMode} />
                             </div>
-                            <div className="segoe-ui my-2 block w-full text-[11px]">Info.</div>
+                            <div className={['segoe-ui my-2 block w-full text-[11px]', primaryText].join(' ')}>Info.</div>
                         </div>
                     </div>
 
                     {/* ---------- DATA PANEL ---------- */}
-                    <div className="border-b border-black/10 bg-white px-4 py-6">
+                    <div className={['border-b px-4 py-6', borderColor, cardBg].join(' ')}>
                         <button type="button" className="flex w-full items-center justify-between gap-3 text-left">
                             {/* Left: icon + label */}
                             <div className="flex min-w-0 items-center gap-3">
-                                <span className="shrink-0 text-[#54656f]">
+                                <span className={['shrink-0', iconText].join(' ')}>
                                     <svg viewBox="0 0 24 24" height="18" width="18" preserveAspectRatio="xMidYMid meet" fill="none">
                                         <path
                                             d="M3 21C2.45 21 1.97917 20.8042 1.5875 20.4125C1.19583 20.0208 1 19.55 1 19V7C1 6.71667 1.09583 6.47917 1.2875 6.2875C1.47917 6.09583 1.71667 6 2 6C2.28333 6 2.52083 6.09583 2.7125 6.2875C2.90417 6.47917 3 6.71667 3 7V19H19C19.2833 19 19.5208 19.0958 19.7125 19.2875C19.9042 19.4792 20 19.7167 20 20C20 20.2833 19.9042 20.5208 19.7125 20.7125C19.5208 20.9042 19.2833 21 19 21H3ZM7 17C6.45 17 5.97917 16.8042 5.5875 16.4125C5.19583 16.0208 5 15.55 5 15V4C5 3.45 5.19583 2.97917 5.5875 2.5875C5.97917 2.19583 6.45 2 7 2H11.175C11.4417 2 11.6958 2.05 11.9375 2.15C12.1792 2.25 12.3917 2.39167 12.575 2.575L14 4H21C21.55 4 22.0208 4.19583 22.4125 4.5875C22.8042 4.97917 23 5.45 23 6V15C23 15.55 22.8042 16.0208 22.4125 16.4125C22.0208 16.8042 21.55 17 21 17H7ZM7 15H21V6H13.175L11.175 4H7V15ZM13.25 11.5L12.1 10C12 9.86667 11.8667 9.8 11.7 9.8C11.5333 9.8 11.4 9.86667 11.3 10L9.625 12.2C9.49167 12.3667 9.47083 12.5417 9.5625 12.725C9.65417 12.9083 9.80833 13 10.025 13H17.975C18.1917 13 18.3458 12.9083 18.4375 12.725C18.5292 12.5417 18.5083 12.3667 18.375 12.2L15.95 9.025C15.85 8.89167 15.7167 8.825 15.55 8.825C15.3833 8.825 15.25 8.89167 15.15 9.025L13.25 11.5Z"
@@ -132,23 +145,23 @@ export function WhatsappRightAside({
                                     </svg>
                                 </span>
 
-                                <span className="segoe-ui truncate text-[12px] text-[#111b21]">Archivos, enlaces y documentos</span>
+                                <span className={['segoe-ui truncate text-[12px]', primaryText].join(' ')}>Archivos, enlaces y documentos</span>
                             </div>
 
                             {/* Right: count */}
-                            <span className="segoe-ui text-[11px] text-[#667781]">0</span>
+                            <span className={['segoe-ui text-[11px]', secondaryText].join(' ')}>0</span>
                         </button>
                     </div>
 
                     {/* */}
-                    <div className="border-b border-black/10 bg-white">
+                    <div className={['border-b', borderColor, cardBg].join(' ')}>
                         {/* Mensajes destacados */}
                         <button
                             type="button"
-                            className="flex w-full items-center justify-between gap-3 px-4 py-3 text-left transition hover:bg-black/5 active:bg-black/10"
+                            className={['flex w-full items-center justify-between gap-3 px-4 py-2.5 text-left transition', hoverBg].join(' ')}
                         >
                             <div className="flex min-w-0 items-center gap-3">
-                                <span className="shrink-0 text-[#54656f]">
+                                <span className={['shrink-0', iconText].join(' ')}>
                                     {/* star-refreshed */}
                                     <svg viewBox="0 0 24 24" height="18" width="18" fill="none">
                                         <path
@@ -160,17 +173,17 @@ export function WhatsappRightAside({
                                     </svg>
                                 </span>
 
-                                <span className="segoe-ui truncate text-[12px] text-[#111b21]">Mensajes destacados</span>
+                                <span className={['segoe-ui truncate text-[12px]', primaryText].join(' ')}>Mensajes destacados</span>
                             </div>
 
                             {/* En WhatsApp suele ir vacío (o un número si quieres) */}
-                            <span className="text-[11px] text-[#667781]"> </span>
+                            <span className={['text-[11px]', secondaryText].join(' ')}> </span>
                         </button>
 
                         {/* Silenciar notificaciones (con switch) */}
-                        <div className="flex w-full items-center justify-between gap-3 px-4 py-3">
+                        <div className="flex w-full items-center justify-between gap-3 px-4 py-2.5">
                             <div className="flex min-w-0 items-center gap-3">
-                                <span className="shrink-0 text-[#54656f]">
+                                <span className={['shrink-0', iconText].join(' ')}>
                                     {/* unmute-notifications-refreshed */}
                                     <svg viewBox="0 0 24 24" height="18" width="18" fill="none">
                                         <path
@@ -180,14 +193,14 @@ export function WhatsappRightAside({
                                     </svg>
                                 </span>
 
-                                <span className="segoe-ui truncate text-[12px] text-[#111b21]">Silenciar notificaciones</span>
+                                <span className={['segoe-ui truncate text-[12px]', primaryText].join(' ')}>Silenciar notificaciones</span>
                             </div>
 
                             {/* Switch (fake, solo UI) */}
                             <button
                                 type="button"
                                 aria-label="Silenciar notificaciones"
-                                className="relative inline-flex h-5 w-9 items-center rounded-full bg-black/15 transition"
+                                className={['relative inline-flex h-5 w-9 items-center rounded-full transition', isDark ? 'bg-white/15' : 'bg-black/15'].join(' ')}
                             >
                                 <span className="inline-block h-4 w-4 translate-x-0.5 rounded-full bg-white shadow-sm" />
                             </button>
@@ -196,10 +209,10 @@ export function WhatsappRightAside({
                         {/* Mensajes temporales (con subtexto) */}
                         <button
                             type="button"
-                            className="flex w-full items-start justify-between gap-3 px-4 py-3 text-left transition hover:bg-black/5 active:bg-black/10"
+                            className={['flex w-full items-start justify-between gap-3 px-4 py-2.5 text-left transition', hoverBg].join(' ')}
                         >
                             <div className="segoe-ui flex min-w-0 items-start gap-3">
-                                <span className="mt-0.5 shrink-0 text-[#54656f]">
+                                <span className={['mt-0.5 shrink-0', iconText].join(' ')}>
                                     {/* disappearing-messages-refreshed */}
                                     <svg viewBox="0 0 24 24" height="18" width="18" fill="none">
                                         <path
@@ -234,8 +247,8 @@ export function WhatsappRightAside({
                                 </span>
 
                                 <div className="min-w-0">
-                                    <div className="truncate text-[12px] text-[#111b21]">Mensajes temporales</div>
-                                    <div className="truncate text-[11px] text-[#667781]">{temporalStatusLabel}</div>
+                                    <div className={['truncate text-[12px]', primaryText].join(' ')}>Mensajes temporales</div>
+                                    <div className={['truncate text-[11px]', secondaryText].join(' ')}>{temporalStatusLabel}</div>
                                 </div>
                             </div>
                         </button>
@@ -243,10 +256,10 @@ export function WhatsappRightAside({
                         {/* Privacidad avanzada del chat (con subtexto) */}
                         <button
                             type="button"
-                            className="segoe-ui flex w-full items-start justify-between gap-3 px-4 py-3 text-left transition hover:bg-black/5 active:bg-black/10"
+                            className={['segoe-ui flex w-full items-start justify-between gap-3 px-4 py-2.5 text-left transition', hoverBg].join(' ')}
                         >
                             <div className="flex min-w-0 items-start gap-3">
-                                <span className="mt-0.5 shrink-0 text-[#54656f]">
+                                <span className={['mt-0.5 shrink-0', iconText].join(' ')}>
                                     {/* shield */}
                                     <svg viewBox="0 0 24 24" height="18" width="18" fill="none">
                                         <path
@@ -258,15 +271,15 @@ export function WhatsappRightAside({
                                 </span>
 
                                 <div className="min-w-0">
-                                    <div className="truncate text-[12px] text-[#111b21]">Privacidad avanzada del chat</div>
-                                    <div className="truncate text-[11px] text-[#667781]">Desactivado</div>
+                                    <div className={['truncate text-[12px]', primaryText].join(' ')}>Privacidad avanzada del chat</div>
+                                    <div className={['truncate text-[11px]', secondaryText].join(' ')}>Desactivado</div>
                                 </div>
                             </div>
                         </button>
 
                         {/* Cifrado (con descripción) */}
-                        <div className="segoe-ui flex w-full items-start gap-3 px-4 py-3">
-                            <span className="mt-0.5 shrink-0 text-[#54656f]">
+                        <div className="segoe-ui flex w-full items-start gap-3 px-4 py-2.5">
+                            <span className={['mt-0.5 shrink-0', iconText].join(' ')}>
                                 {/* lock-refreshed */}
                                 <svg viewBox="0 0 24 24" height="18" width="18" fill="none">
                                     <path
@@ -277,8 +290,8 @@ export function WhatsappRightAside({
                             </span>
 
                             <div className="segoe-ui min-w-0">
-                                <div className="segoe-ui text-[12px] text-[#111b21]">Cifrado</div>
-                                <div className="segoe-ui text-[11px] leading-snug text-[#667781]">
+                                <div className={['segoe-ui text-[12px]', primaryText].join(' ')}>Cifrado</div>
+                                <div className={['segoe-ui text-[11px] leading-snug', secondaryText].join(' ')}>
                                     Los mensajes están cifrados de extremo a extremo. Haz clic para verificarlo.
                                 </div>
                             </div>
@@ -286,13 +299,13 @@ export function WhatsappRightAside({
                     </div>
 
                     {/*foteer */}
-                    <div className="mt-4 flex flex-col border-t border-black/10 bg-white">
+                    <div className={['mt-4 flex flex-col border-t', borderColor, cardBg].join(' ')}>
                         {/* Añadir a Favoritos */}
                         <button
                             type="button"
-                            className="flex w-full items-center gap-3 px-4 py-3 text-left transition hover:bg-black/5 active:bg-black/10"
+                            className={['flex w-full items-center gap-3 px-4 py-3 text-left transition', hoverBg].join(' ')}
                         >
-                            <span className="shrink-0 text-[#54656f]">
+                            <span className={['shrink-0', iconText].join(' ')}>
                                 {/* favorite-refreshed */}
                                 <svg viewBox="0 0 24 24" height="18" width="18" fill="none">
                                     <path
@@ -303,14 +316,14 @@ export function WhatsappRightAside({
                                     />
                                 </svg>
                             </span>
-                            <span className="text-[12px] text-[#111b21]">Añadir a Favoritos</span>
+                            <span className={['text-[12px]', primaryText].join(' ')}>Añadir a Favoritos</span>
                         </button>
                         {/* añadir lista */}
                         <button
                             type="button"
-                            className="segoe-ui flex w-full items-center gap-3 px-4 py-3 text-left transition hover:bg-black/5 active:bg-black/10"
+                            className={['segoe-ui flex w-full items-center gap-3 px-4 py-3 text-left transition', hoverBg].join(' ')}
                         >
-                            <span className="shrink-0 text-[#54656f]">
+                            <span className={['shrink-0', iconText].join(' ')}>
                                 {/* favorite-refreshed */}
                                 <svg viewBox="0 0 24 24" height="18" width="18" fill="none">
                                     <path
@@ -321,15 +334,15 @@ export function WhatsappRightAside({
                                     />
                                 </svg>
                             </span>
-                            <span className="text-[12px] text-[#111b21]">Añadir a la lista</span>
+                            <span className={['text-[12px]', primaryText].join(' ')}>Añadir a la lista</span>
                         </button>
 
                         {/* vaciar */}
                         <button
                             type="button"
-                            className="segoe-ui flex w-full items-center gap-3 px-4 py-3 text-left transition hover:bg-black/5 active:bg-black/10"
+                            className={['segoe-ui flex w-full items-center gap-3 px-4 py-3 text-left transition', hoverBg].join(' ')}
                         >
-                            <span className="shrink-0 text-[#e1193e]">
+                            <span className={["shrink-0 ", isDark ? "text-[#f296a0]" : "text-[#e1193e]"].join(' ')}>
                                 {/* delete-refreshed */}
                                 <svg viewBox="0 0 24 24" height="18" width="18" fill="none">
                                     <path
@@ -338,15 +351,17 @@ export function WhatsappRightAside({
                                     />
                                 </svg>
                             </span>
-                            <span className="text-[12px] text-[#e1193e]">Vaciar chat</span>
+                            <span className={["text-[12px]", isDark ? "text-[#f296a0]" : "text-[#e1193e]"].join(' ')}>
+                                {`Vaciar chat`}
+                            </span>
                         </button>
 
                         {/* Bloquear */}
                         <button
                             type="button"
-                            className="segoe-ui flex w-full items-center gap-3 px-4 py-3 text-left transition hover:bg-black/5 active:bg-black/10"
+                            className={['segoe-ui flex w-full items-center gap-3 px-4 py-3 text-left transition', hoverBg].join(' ')}
                         >
-                            <span className="shrink-0 text-[#e1193e]">
+                            <span className={["shrink-0 ", isDark ? "text-[#f296a0]" : "text-[#e1193e]"].join(' ')}>
                                 {/* block-refreshed */}
                                 <svg viewBox="0 0 24 24" height="18" width="18" fill="none">
                                     <path
@@ -355,15 +370,17 @@ export function WhatsappRightAside({
                                     />
                                 </svg>
                             </span>
-                            <span className="text-[12px] text-[#e1193e]">{`Bloquear a ${contactActionTitle}`}</span>
+                            <span className={["text-[12px]", isDark ? "text-[#f296a0]" : "text-[#e1193e]"].join(' ')}>
+                                {`Bloquear a ${contactActionTitle}`}
+                            </span>
                         </button>
 
                         {/* Reportar */}
                         <button
                             type="button"
-                            className="segoe-ui flex w-full items-center gap-3 px-4 py-3 text-left transition hover:bg-black/5 active:bg-black/10"
+                            className={['segoe-ui flex w-full items-center gap-3 px-4 py-3 text-left transition', hoverBg].join(' ')}
                         >
-                            <span className="shrink-0 text-[#e1193e]">
+                            <span className={["shrink-0 ", isDark ? "text-[#f296a0]" : "text-[#e1193e]"].join(' ')}>
                                 {/* report-refreshed */}
                                 <svg viewBox="0 0 24 24" height="18" width="18" fill="none">
                                     <path
@@ -372,15 +389,17 @@ export function WhatsappRightAside({
                                     />
                                 </svg>
                             </span>
-                            <span className="text-[12px] text-[#e1193e]">{`Reportar a ${contactActionTitle}`}</span>
+                            <span className={["text-[12px]", isDark ? "text-[#f296a0]" : "text-[#e1193e]"].join(' ')}>
+                                {`Reportar a ${contactActionTitle}`}
+                            </span>
                         </button>
 
                         {/* Eliminar chat */}
                         <button
                             type="button"
-                            className="segoe-ui flex w-full items-center gap-3 px-4 py-3 text-left transition hover:bg-black/5 active:bg-black/10"
+                            className={['segoe-ui flex w-full items-center gap-3 px-4 py-3 text-left transition', hoverBg].join(' ')}
                         >
-                            <span className="shrink-0 text-[#e1193e]">
+                            <span className={["shrink-0 ", isDark ? "text-[#f296a0]" : "text-[#e1193e]"].join(' ')} >
                                 {/* delete-refreshed */}
                                 <svg viewBox="0 0 24 24" height="18" width="18" fill="none">
                                     <path
@@ -389,7 +408,9 @@ export function WhatsappRightAside({
                                     />
                                 </svg>
                             </span>
-                            <span className="text-[12px] text-[#e1193e]">Eliminar chat</span>
+                            <span className={["text-[12px]", isDark ? "text-[#f296a0]" : "text-[#e1193e]"].join(' ')}>
+                                {`Eliminar chat`}
+                            </span>
                         </button>
                     </div>
                 </div>

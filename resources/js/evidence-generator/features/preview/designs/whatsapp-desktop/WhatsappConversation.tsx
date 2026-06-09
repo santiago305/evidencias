@@ -240,9 +240,11 @@ export function WhatsappConversation({
                                 .filter(Boolean)
                                 .join(' ')}
                         >
-                            {firstDayChipDateKey !== '' && <DayChip text={getDayChipTextForDate(firstDayChipDateKey, dayChipReference)} />}
-                            <EncryptedMessage deviceMode={deviceMode} />
-                            {showDefaultTemporalMessage && <TempporalMessage deviceMode={deviceMode} />}
+                            {firstDayChipDateKey !== '' && (
+                                <DayChip text={getDayChipTextForDate(firstDayChipDateKey, dayChipReference)} themeMode={themeMode} />
+                            )}
+                            <EncryptedMessage deviceMode={deviceMode} themeMode={themeMode} />
+                            {showDefaultTemporalMessage && <TempporalMessage deviceMode={deviceMode} themeMode={themeMode} />}
 
                             {conversationMessages.map((msg, idx) => {
                                 const prev = conversationMessages[idx - 1];
@@ -257,7 +259,9 @@ export function WhatsappConversation({
                                 const wrapperSpacing = staysInSameGroup ? 'mb-0.5' : 'mb-4';
                                 return (
                                     <Fragment key={`message-${idx}-${msg.side}`}>
-                                        {showsDayChip && <DayChip text={getDayChipTextForDate(currentDateKey, dayChipReference)} />}
+                                        {showsDayChip && (
+                                            <DayChip text={getDayChipTextForDate(currentDateKey, dayChipReference)} themeMode={themeMode} />
+                                        )}
 
                                         <div className={wrapperSpacing}>
                                             <Bubble
@@ -282,14 +286,17 @@ export function WhatsappConversation({
                                                         : undefined
                                                 }
                                                 deviceMode={deviceMode}
+                                                themeMode={themeMode}
                                             >
                                                 {linesToSpans(msg.lines)}
                                             </Bubble>
                                         </div>
 
-                                        {markerAfterCurrent && inlineTemporalMode === 'active' && <ActiveTemporalMessage deviceMode={deviceMode} />}
+                                        {markerAfterCurrent && inlineTemporalMode === 'active' && (
+                                            <ActiveTemporalMessage deviceMode={deviceMode} themeMode={themeMode} />
+                                        )}
                                         {markerAfterCurrent && inlineTemporalMode === 'deactive' && (
-                                            <DesactiveTemporalMessage deviceMode={deviceMode} />
+                                            <DesactiveTemporalMessage deviceMode={deviceMode} themeMode={themeMode} />
                                         )}
                                     </Fragment>
                                 );
@@ -298,7 +305,7 @@ export function WhatsappConversation({
 
                         {showMoreConversationIndicator && (
                             <div className="pointer-events-none absolute right-4 bottom-3 z-30">
-                                <MoreConversationIndicator />
+                                <MoreConversationIndicator themeMode={themeMode} />
                             </div>
                         )}
                     </div>

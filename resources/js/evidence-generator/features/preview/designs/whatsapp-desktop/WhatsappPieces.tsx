@@ -1,4 +1,5 @@
 import React from "react";
+import type { PreviewThemeMode } from "../../../../types";
 import { WhatsappDesktopTextBubble } from "./whatsapp-bubbles/WhatsappDesktopTextBubble";
 
 export function MessageGroup({
@@ -11,10 +12,17 @@ export function MessageGroup({
   return <div className={`space-y-0.5 mb-4 ${className}`}>{children}</div>;
 }
 
-export function DayChip({ text }: { text: string }) {
+export function DayChip({ text, themeMode = "light" }: { text: string; themeMode?: PreviewThemeMode }) {
+  const isDark = themeMode === "dark";
+
   return (
     <div className="sticky top-2 z-20 flex justify-center my-4">
-      <span className="rounded-md bg-[#fefdfc] px-2 py-0.5 text-[10px] text-[#667781] shadow font-medium">
+      <span
+        className={[
+          "rounded-md px-2 py-0.5 text-[10px] shadow font-medium",
+          isDark ? "bg-[#1d201f] text-[#a4a4a4]" : "bg-[#fefdfc] text-[#667781]",
+        ].join(" ")}
+      >
         {text}
       </span>
     </div>
@@ -88,6 +96,7 @@ export function Bubble({
   id,
   quote,
   deviceMode = "desktop",
+  themeMode = "light",
   children,
 }: {
   side: "in" | "out";
@@ -97,6 +106,7 @@ export function Bubble({
   id?: string;
   quote?: QuotedMessage;
   deviceMode?: "desktop" | "mobile";
+  themeMode?: PreviewThemeMode;
   children: React.ReactNode;
 }) {
   const bubbleProps = {
@@ -106,6 +116,7 @@ export function Bubble({
     quote,
     side,
     status,
+    themeMode,
     time,
   };
 
@@ -161,8 +172,9 @@ export function VoiceBubble({
   );
 }
 
-export function EncryptedMessage({ deviceMode = "desktop" }: { deviceMode?: "desktop" | "mobile" }) {
+export function EncryptedMessage({ deviceMode = "desktop", themeMode = "light" }: { deviceMode?: "desktop" | "mobile"; themeMode?: PreviewThemeMode }) {
   const isMobile = deviceMode === "mobile";
+  const isDark = themeMode === "dark";
   const horizontalPadding = deviceMode === "mobile" ? "px-8" : "px-15.75";
   const maxWidth = deviceMode === "mobile" ? "max-w-none" : "max-w-125";
   const encryptedTextSize = deviceMode === "mobile" ? "text-[10px] leading-[12px]" : "text-[9.8px]";
@@ -176,11 +188,16 @@ export function EncryptedMessage({ deviceMode = "desktop" }: { deviceMode?: "des
               <div className={`mx-auto flex ${maxWidth} flex-col justify-center ${horizontalPadding}`}>
                 <span></span>
 
-                <div className="relative mb-0 box-border inline-block max-w-full flex-none rounded-[7.35px] bg-[#FFF0D4] px-3 pt-1 pb-1.25 text-center text-[10px] leading-[12px] text-black/60 shadow-[0_1px_0.5px_rgba(11,20,26,0.13)]">
+                <div
+                  className={[
+                    "relative mb-0 box-border inline-block max-w-full flex-none rounded-[7.35px] px-3 pt-1 pb-1.25 text-center text-[10px] leading-[12px] shadow-[0_1px_0.5px_rgba(11,20,26,0.13)]",
+                    isDark ? "bg-[#1d201f] text-[#EECC84]" : "bg-[#FFF0D4] text-black/60",
+                  ].join(" ")}
+                >
                   <div className="segoe-ui relative z-10 rounded-[7.35px]">
                     <div className="cursorpointer">
                       <span>
-                        <div className="me-0.5 mt-0.5 inline-block align-top text-black/60">
+                        <div className={['me-0.5 mt-0.5 inline-block align-top', isDark ? 'text-[#a4a4a4]' : 'text-black/60'].join(' ')}>
                           <span aria-hidden="true" data-icon="lock-small">
                             <svg
                               viewBox="0 0 10 12"
@@ -220,8 +237,9 @@ export function EncryptedMessage({ deviceMode = "desktop" }: { deviceMode?: "des
     </div>
   );
 }
-export function TempporalMessage({ deviceMode = "desktop" }: { deviceMode?: "desktop" | "mobile" }) {
+export function TempporalMessage({ deviceMode = "desktop", themeMode = "light" }: { deviceMode?: "desktop" | "mobile"; themeMode?: PreviewThemeMode }) {
   const isMobile = deviceMode === "mobile";
+  const isDark = themeMode === "dark";
   const horizontalPadding = deviceMode === "mobile" ? "px-8" : "px-15.75";
   const maxWidth = deviceMode === "mobile" ? "max-w-none" : "max-w-125";
   const messageTextSize = deviceMode === "mobile" ? "text-[10px] leading-[12px]" : "text-[9.8px]";
@@ -235,11 +253,16 @@ export function TempporalMessage({ deviceMode = "desktop" }: { deviceMode?: "des
               <div className={`mx-auto flex ${maxWidth} flex-col justify-center ${horizontalPadding}`}>
                 <span></span>
 
-                <div className="relative mb-0 box-border inline-block max-w-full flex-none rounded-[7.35px] bg-[#fefdfc] px-3 pt-1 pb-1.25 text-center text-[10px] leading-[12px] text-[#667781] shadow-[0_1px_0.5px_rgba(11,20,26,0.13)]">
+                <div
+                  className={[
+                    "relative mb-0 box-border inline-block max-w-full flex-none rounded-[7.35px] px-3 pt-1 pb-1.25 text-center text-[10px] leading-[12px] shadow-[0_1px_0.5px_rgba(11,20,26,0.13)]",
+                    isDark ? "bg-[#1d201f] text-[#a4a4a4]" : "bg-[#fefdfc] text-[#667781]",
+                  ].join(" ")}
+                >
                   <div className="segoe-ui relative z-10 rounded-[7.35px]">
                     <div className="cursorpointer">
                       <span>
-                        <div className="me-0.5 inline-block align-top text-[#667781]">
+                        <div className={['me-0.5 inline-block align-top', isDark ? 'text-[#a4a4a4]' : 'text-[#667781]'].join(' ')}>
                           <span aria-hidden="true" data-icon="lock-small">
                             <svg
                               viewBox="0 0 24 24"
@@ -282,8 +305,9 @@ export function TempporalMessage({ deviceMode = "desktop" }: { deviceMode?: "des
   );
 }
 
-export function ActiveTemporalMessage({ deviceMode = "desktop" }: { deviceMode?: "desktop" | "mobile" }) {
+export function ActiveTemporalMessage({ deviceMode = "desktop", themeMode = "light" }: { deviceMode?: "desktop" | "mobile"; themeMode?: PreviewThemeMode }) {
   const isMobile = deviceMode === "mobile";
+  const isDark = themeMode === "dark";
   const horizontalPadding = deviceMode === "mobile" ? "px-8" : "px-15.75";
   const maxWidth = deviceMode === "mobile" ? "max-w-none" : "max-w-125";
   const messageTextSize = deviceMode === "mobile" ? "text-[10px] leading-[12px]" : "text-[9.8px]";
@@ -297,11 +321,16 @@ export function ActiveTemporalMessage({ deviceMode = "desktop" }: { deviceMode?:
               <div className={`mx-auto flex ${maxWidth} flex-col justify-center ${horizontalPadding}`}>
                 <span></span>
 
-                <div className="relative mb-0 box-border inline-block max-w-full flex-none rounded-[7.35px] bg-[#fefdfc] px-3 pt-1 pb-1.25 text-center text-[10px] leading-[12px] text-[#667781] shadow-[0_1px_0.5px_rgba(11,20,26,0.13)]">
+                <div
+                  className={[
+                    "relative mb-0 box-border inline-block max-w-full flex-none rounded-[7.35px] px-3 pt-1 pb-1.25 text-center text-[10px] leading-[12px] shadow-[0_1px_0.5px_rgba(11,20,26,0.13)]",
+                    isDark ? "bg-[#1d201f] text-[#a4a4a4]" : "bg-[#fefdfc] text-[#667781]",
+                  ].join(" ")}
+                >
                   <div className="segoe-ui relative z-10 rounded-[7.35px]">
                     <div className="cursorpointer">
                       <span>
-                        <div className="me-0.5 inline-block align-top text-[#667781]">
+                        <div className={['me-0.5 inline-block align-top', isDark ? 'text-[#a4a4a4]' : 'text-[#667781]'].join(' ')}>
                           <span aria-hidden="true" data-icon="lock-small">
                             <svg
                               viewBox="0 0 24 24"
@@ -346,10 +375,13 @@ export function ActiveTemporalMessage({ deviceMode = "desktop" }: { deviceMode?:
 
 export function DesactiveTemporalMessage({
   deviceMode = "desktop",
+  themeMode = "light",
 }: {
   deviceMode?: "desktop" | "mobile";
+  themeMode?: PreviewThemeMode;
 }) {
   const isMobile = deviceMode === "mobile";
+  const isDark = themeMode === "dark";
   const messageTextSize = isMobile
     ? "text-[10px] leading-[12px]"
     : "text-[9.8px] leading-[12px]";
@@ -359,12 +391,17 @@ export function DesactiveTemporalMessage({
       <div className="relative pb-2">
         <div className="flex justify-center">
           <div className="mx-auto flex w-fit max-w-full flex-col items-center justify-center">
-            <div className="relative mb-0 box-border inline-flex w-fit max-w-full flex-none items-center rounded-[7.35px] bg-[#fefdfc] px-3 pt-1 pb-1.25 text-center text-[10px] leading-[12px] text-[#667781] shadow-[0_1px_0.5px_rgba(11,20,26,0.13)]">
+            <div
+              className={[
+                "relative mb-0 box-border inline-flex w-fit max-w-full flex-none items-center rounded-[7.35px] px-3 pt-1 pb-1.25 text-center text-[10px] leading-[12px] shadow-[0_1px_0.5px_rgba(11,20,26,0.13)]",
+                isDark ? "bg-[#1d201f] text-[#a4a4a4]" : "bg-[#fefdfc] text-[#667781]",
+              ].join(" ")}
+            >
               <div className="segoe-ui relative z-10 rounded-[7.35px]">
                 <div className="cursor-pointer">
                   <span className="inline-flex items-start justify-center gap-0.5">
                     <span
-                      className="inline-block text-[#667781]"
+                      className={['inline-block', isDark ? 'text-[#a4a4a4]' : 'text-[#667781]'].join(' ')}
                       aria-hidden="true"
                       data-icon="lock-small"
                     >

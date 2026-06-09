@@ -5,7 +5,7 @@ export function WhatsappDarkConversationBackground() {
         <div className="absolute inset-0 overflow-hidden bg-[#161717]">
             <div
                 aria-hidden="true"
-                className="pointer-events-none absolute inset-0 bg-[#252626]"
+                className="pointer-events-none absolute inset-0 bg-[#222424]"
                 style={{
                     maskImage: `url(${fondoWhatsapp})`,
                     maskPosition: 'left top',

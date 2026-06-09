@@ -1,18 +1,23 @@
 import { cn } from '@/lib/utils';
 import { ChevronDown } from 'lucide-react';
 import type { HTMLAttributes } from 'react';
+import type { PreviewThemeMode } from '../../../../../types';
 
 interface MoreConversationIndicatorProps extends HTMLAttributes<HTMLDivElement> {
     iconClassName?: string;
+    themeMode?: PreviewThemeMode;
 }
 
-export function MoreConversationIndicator({ className, iconClassName, ...props }: MoreConversationIndicatorProps) {
+export function MoreConversationIndicator({ className, iconClassName, themeMode = 'light', ...props }: MoreConversationIndicatorProps) {
+    const isDark = themeMode === 'dark';
+
     return (
         <div
             aria-label="Hay más conversación abajo"
             role="status"
             className={cn(
-                'flex h-8 w-8 items-center justify-center rounded-full border border-black/10 bg-white/95 text-[#54656f] shadow-lg shadow-black/10 backdrop-blur-sm',
+                'flex h-8 w-8 items-center justify-center rounded-full shadow-lg shadow-black/10 backdrop-blur-sm',
+                isDark ? 'border-0 bg-[#242626] text-[#a7a7a7]' : 'border border-black/10 bg-white/95 text-[#54656f]',
                 className,
             )}
             {...props}

@@ -4,19 +4,14 @@ interface ContactAction {
     icon: JSX.Element;
 }
 
-const actionButtonClassName = `
+const baseActionButtonClassName = `
   mt-1
   flex min-w-0 max-w-[115px] flex-[1_1_115px] flex-col items-center justify-center gap-1
   rounded-2xl
-  border border-[#e0dfde]
-  bg-white
   px-4 py-2
   text-[12px]
   font-medium
-  text-[#111b21]
   transition
-  hover:bg-black/5
-  active:bg-black/10
   segoe-ui
 `;
 
@@ -71,8 +66,13 @@ const actions: ContactAction[] = [
     },
 ];
 
-export function ContactActionButtons({ showAddAction = true }: { showAddAction?: boolean }) {
+export function ContactActionButtons({ showAddAction = true, themeMode = 'light' }: { showAddAction?: boolean; themeMode?: 'light' | 'dark' }) {
     const visibleActions = showAddAction ? actions : actions.filter((action) => action.key !== 'add');
+    const isDark = themeMode === 'dark';
+    const actionButtonClassName = [
+        baseActionButtonClassName,
+        isDark ? 'border border-white/10 bg-[#1F272A] text-[#FBFEFF] hover:bg-white/10 active:bg-white/15' : 'border border-[#e0dfde] bg-white text-[#111b21] hover:bg-black/5 active:bg-black/10',
+    ].join(' ');
 
     return (
       <div className="mt-1 flex w-full flex-nowrap items-center justify-center gap-2 self-stretch">
