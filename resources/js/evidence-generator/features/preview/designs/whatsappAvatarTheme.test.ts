@@ -23,20 +23,24 @@ test('WhatsApp avatar dark mode keeps light user colors and only changes timer b
     }
 });
 
-test('WhatsApp avatar seeds use client identity and generated conversation identifiers', () => {
-    const seededSources = [
-        resolve(designsDir, 'whatsapp-desktop', 'WhatsappConversation.tsx'),
-        resolve(designsDir, 'whatsapp-desktop', 'WhatsappRightAside.tsx'),
-        resolve(designsDir, 'whatsapp-desktop', 'whatsapp-header', 'WhatsappDesktopHeaderUser.tsx'),
-        resolve(designsDir, 'mobile-1', 'whatsapp', 'WhatsappConversation.tsx'),
-        resolve(designsDir, 'mobile-1', 'whatsapp', 'whatsapp-header', 'WhatsappMobileHeaderUser.tsx'),
+test('WhatsApp avatar seeds use client identity and keep desktop/mobile color logic isolated', () => {
+    const seedSources = [
+        resolve(designsDir, 'whatsapp-desktop', 'whatsappAppearance.ts'),
+        resolve(designsDir, 'mobile-1', 'whatsapp', 'whatsappAppearance.ts'),
     ];
 
-    for (const sourcePath of seededSources) {
+    for (const sourcePath of seedSources) {
         const source = readFileSync(sourcePath, 'utf8');
 
         assert.match(source, /dniCliente/);
         assert.match(source, /seedCode/);
         assert.match(source, /conversationId/);
     }
+
+    const desktopConversation = readFileSync(resolve(designsDir, 'whatsapp-desktop', 'WhatsappConversation.tsx'), 'utf8');
+    const mobileConversation = readFileSync(resolve(designsDir, 'mobile-1', 'whatsapp', 'WhatsappConversation.tsx'), 'utf8');
+
+    assert.match(desktopConversation, /buildWhatsappClientQuoteTheme/);
+    assert.match(mobileConversation, /buildMobileClientQuoteTheme/);
+    assert.match(mobileConversation, /buildMobileAdvisorQuoteColors/);
 });

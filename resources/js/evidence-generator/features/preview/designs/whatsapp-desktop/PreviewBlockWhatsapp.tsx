@@ -4,6 +4,7 @@ import type { PreviewProps } from '../../../../types';
 import { EmptyState } from '../../components/EmptyState';
 import { buildContactIdentityDisplay } from './contactIdentityDisplay';
 import { WhatsappHeaderUser } from './whatsapp-header';
+import { buildWhatsappAvatarSeed } from './whatsappAppearance';
 import { WhatsappConversation } from './WhatsappConversation';
 import type { MsgStatus } from './WhatsappPieces';
 import { WhatsappRightAside } from './WhatsappRightAside';
@@ -275,20 +276,7 @@ function WindowsTrayBar({ profile, trayTime, trayDate }: WindowsTrayBarProps) {
 type PreviewBlockWhatsappProps = PreviewProps;
 
 export function PreviewBlockWhatsapp({ data, themeMode }: PreviewBlockWhatsappProps) {
-    const userSeed = useMemo(
-        () =>
-            [
-                data?.telefono?.trim(),
-                data?.dniCliente?.trim(),
-                data?.nombre?.trim(),
-                data?.seedCode?.trim(),
-                data?.conversationId?.trim(),
-                data?.nombreAsesor?.trim(),
-            ]
-                .filter((value) => value && value.length > 0)
-                .join('|') || 'tray-default',
-        [data?.telefono, data?.dniCliente, data?.nombre, data?.seedCode, data?.conversationId, data?.nombreAsesor],
-    );
+    const userSeed = useMemo(() => buildWhatsappAvatarSeed(data ?? undefined), [data]);
 
     const messageStatus = useMemo<MsgStatus>(() => {
         if (data?.previewSnapshot) {

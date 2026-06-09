@@ -2,7 +2,6 @@ import { Fragment, useCallback, useEffect, useMemo, useRef, useState, type React
 import { formatWhatsappTimeValue, getDateKeyFromLocalDateTime, getDayChipTextForDate } from '../../../../lib/whatsapp/time';
 import type { GeneratedMessage, PreviewDeviceMode, PreviewThemeMode } from '../../../../types';
 import { shouldShowConversationMoreIndicator } from '../whatsappConversationIndicator';
-import { createWhatsappAvatarTheme } from './avatarTheme';
 import type { WhatsappConversationMessage } from './buildWhatsappConversation';
 import { buildWhatsappConversation } from './buildWhatsappConversation';
 import { WhatsappConversationBackground } from './whatsapp-background/WhatsappConversationBackground';
@@ -16,34 +15,13 @@ import {
     type MsgStatus,
 } from './whatsapp-bubbles';
 import { MoreConversationIndicator, WhatsappInputBar } from './whatsapp-footer';
+import { buildWhatsappClientQuoteTheme } from './whatsappAppearance';
 import type { WhatsappData } from './whatsappTypes';
 
 const ADVISOR_QUOTE_ACCENT_COLOR = '#0063CB';
 const ADVISOR_QUOTE_AUTHOR_COLOR = '#0078D7';
 const DOCUMENT_NUMBER_PATTERN = /\d{8,9}/g;
 const STRONG_TEXT_PATTERN = /\*([^*]+?)\*/g;
-
-function buildAvatarSeed(data: WhatsappData): string {
-    const seed = [data.telefono, data.dniCliente, data.nombre, data.seedCode, data.conversationId, data.nombreAsesor]
-        .map((value) => value?.trim())
-        .filter((value) => value && value.length > 0)
-        .join('|');
-
-    return seed || 'contact';
-}
-
-function lightenHexColor(hexColor: string, ratio = 0.2): string {
-    const normalized = hexColor.replace('#', '');
-
-    if (!/^[0-9a-fA-F]{6}$/.test(normalized)) {
-        return hexColor;
-    }
-
-    const channels = [0, 2, 4].map((start) => Number.parseInt(normalized.slice(start, start + 2), 16));
-    const nextChannels = channels.map((channel) => Math.round(channel + (255 - channel) * ratio));
-
-    return `#${nextChannels.map((channel) => channel.toString(16).padStart(2, '0')).join('')}`;
-}
 
 function isDigit(value: string | undefined): boolean {
     return value !== undefined && /\d/.test(value);
@@ -188,14 +166,7 @@ export function WhatsappConversation({
         return Math.floor(Math.random() * (conversationMessages.length - 1)) + 1;
     }, [conversationMessages, initialInlineTemporalInsertIndex, inlineTemporalMode]);
 
-    const clientQuoteTheme = useMemo(() => {
-        const avatarTheme = createWhatsappAvatarTheme(buildAvatarSeed(data));
-
-        return {
-            accentColor: avatarTheme.icon,
-            authorColor: lightenHexColor(avatarTheme.icon),
-        };
-    }, [data]);
+    const clientQuoteTheme = useMemo(() => buildWhatsappClientQuoteTheme(data), [data]);
 
     const fallbackDateKey = useMemo(
         () => getDateKeyFromLocalDateTime(data.fechaHora) ?? getDateKeyFromLocalDateTime(data.fechaHoraRegistro) ?? '',

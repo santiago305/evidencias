@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
-import { ContactActionButtons } from './ContactActionButtons';
 import { createWhatsappAvatarTheme } from './avatarTheme';
+import { ContactActionButtons } from './ContactActionButtons';
+import { buildWhatsappAvatarSeed } from './whatsappAppearance';
 import type { WhatsappData } from './whatsappTypes';
 
 /* --------- util para formatear teléfono Perú --------- */
@@ -35,15 +36,7 @@ export function WhatsappRightAside({
 }) {
     const contactActionTitle = profileTitle ?? (data.nombre?.trim() ? data.nombre.trim() : `+51 ${formatTelefonoPE(data.telefono)}`);
 
-    const avatarTheme = useMemo(() => {
-        const avatarSeed =
-            [data.telefono, data.dniCliente, data.nombre, data.seedCode, data.conversationId, data.nombreAsesor]
-                .map((value) => value?.trim())
-                .filter((value) => value && value.length > 0)
-                .join('|') || 'contact';
-
-        return createWhatsappAvatarTheme(avatarSeed);
-    }, [data.telefono, data.dniCliente, data.nombre, data.seedCode, data.conversationId, data.nombreAsesor]);
+    const avatarTheme = useMemo(() => createWhatsappAvatarTheme(buildWhatsappAvatarSeed(data)), [data]);
 
     return (
         <aside className="flex min-h-0 w-45 flex-2 flex-col border-l border-black/5 bg-white/95">

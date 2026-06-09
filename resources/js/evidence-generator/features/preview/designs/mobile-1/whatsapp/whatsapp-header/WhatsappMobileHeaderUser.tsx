@@ -2,6 +2,7 @@ import { ArrowLeft } from 'lucide-react';
 import { useMemo } from 'react';
 import type { PreviewThemeMode } from '../../../../../../types';
 import { createWhatsappAvatarTheme } from '../avatarTheme';
+import { buildWhatsappAvatarSeed } from '../whatsappAppearance';
 import type { MsgStatus } from '../WhatsappPieces';
 import type { WhatsappData } from '../whatsappTypes';
 
@@ -31,15 +32,7 @@ export function WhatsappMobileHeaderUser({
         return Math.random() < 0.5 ? { type: 'online' } : { type: 'hidden' };
     }, [status]);
 
-    const avatarTheme = useMemo(() => {
-        const avatarSeed =
-            [data.telefono, data.dniCliente, data.nombre, data.seedCode, data.conversationId, data.nombreAsesor]
-                .map((value) => value?.trim())
-                .filter((value) => value && value.length > 0)
-                .join('|') || 'contact';
-
-        return createWhatsappAvatarTheme(avatarSeed, themeMode);
-    }, [data.telefono, data.dniCliente, data.nombre, data.seedCode, data.conversationId, data.nombreAsesor, themeMode]);
+    const avatarTheme = useMemo(() => createWhatsappAvatarTheme(buildWhatsappAvatarSeed(data), themeMode), [data, themeMode]);
 
     const headerTitle = displayTitle ?? (data.nombre?.trim() ? data.nombre : 'Aracely MD');
     const mobileAvatarInitial = useMemo(() => {
