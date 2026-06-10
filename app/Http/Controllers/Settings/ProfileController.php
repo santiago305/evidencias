@@ -45,6 +45,10 @@ class ProfileController extends Controller
         $mobileDesignKey = $validated['mobile_design_key'] ?? null;
         unset($validated['mobile_design_key']);
 
+        if ($mobileDesignKey === null) {
+            $validated['evidence_device_mode'] = 'desktop';
+        }
+
         $request->user()->fill($validated);
 
         $request->user()->save();

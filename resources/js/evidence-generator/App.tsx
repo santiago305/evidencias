@@ -41,6 +41,8 @@ interface AppProps {
     globalMobileDesigns?: MobileDesignKey[];
     registeredMobileDesigns?: MobileDesignKey[];
     whatsappDesktopScale?: WhatsappDesktopScale;
+    evidenceThemeMode?: PreviewThemeMode;
+    evidenceDeviceMode?: PreviewDeviceMode;
 }
 
 interface ConversationsIndexResponse {
@@ -99,6 +101,8 @@ export default function App({
     globalMobileDesigns = [],
     registeredMobileDesigns = [],
     whatsappDesktopScale = 80,
+    evidenceThemeMode = 'light',
+    evidenceDeviceMode = 'desktop',
 }: AppProps) {
     const resolvedCurrentUser = currentUser ?? {
         name: 'Maria Perez',
@@ -106,8 +110,7 @@ export default function App({
         sexualidad: 'F' as const,
     };
     const [activeDesign, setActiveDesign] = useState<ActiveDesign>('whatsapp');
-    const [whatsappPreviewMode, setWhatsappPreviewMode] = useState<PreviewDeviceMode>('desktop');
-    const [previewThemeMode, setPreviewThemeMode] = useState<PreviewThemeMode>('light');
+    const previewThemeMode = evidenceThemeMode;
     const [form, setForm] = useState<FormState>(() => createInitialFormState());
 
     const [saved, setSaved] = useState<SavedData | null>(null);
@@ -128,6 +131,8 @@ export default function App({
     const [conversations, setConversations] = useState<ConversationListItem[]>([]);
     const [editingConversation, setEditingConversation] = useState<ConversationListItem | null>(null);
 
+    const hasRegisteredMobileDesign = registeredMobileDesigns.length > 0;
+    const whatsappPreviewMode: PreviewDeviceMode = hasRegisteredMobileDesign ? evidenceDeviceMode : 'desktop';
     const testMobileDesignKey = resolveActiveMobileDesignKey({
         availableMobileDesigns,
         globalMobileDesigns: globalMobileDesignKeys,
@@ -139,12 +144,10 @@ export default function App({
         registeredMobileDesigns,
         preferPendingDevelopmentDesign: false,
     });
-    const hasRegisteredMobileDesign = registeredMobileDesigns.length > 0;
     const isTestingConversation = conversationCodeInput.trim() !== '';
     const shouldUseTestMobileDesign = isTestingConversation || lastGeneratedFromConversationCode;
     const activeMobileDesignKey = shouldUseTestMobileDesign ? testMobileDesignKey : userMobileDesignKey;
     const isTestMobileDesignGloballyRegistered = globalMobileDesignKeys.includes(testMobileDesignKey);
-    const canPreviewMobileDesign = hasRegisteredMobileDesign || isTestingConversation || lastGeneratedFromConversationCode;
 
     const handleChange = (key: keyof FormState) => (e: ChangeEvent<HTMLInputElement>) => {
         const value = key === 'dniCliente' ? e.target.value.replace(/\D/g, '').slice(0, 8) : e.target.value;
@@ -176,12 +179,6 @@ export default function App({
     useEffect(() => {
         void loadConversations();
     }, []);
-
-    useEffect(() => {
-        if (!canPreviewMobileDesign && whatsappPreviewMode === 'mobile') {
-            setWhatsappPreviewMode('desktop');
-        }
-    }, [canPreviewMobileDesign, whatsappPreviewMode]);
 
     useEffect(() => {
         if (!hasRegisteredMobileDesign && activeDesign !== 'whatsapp') {
@@ -367,15 +364,10 @@ export default function App({
                     />
                     <FormPanel
                         activeDesign={activeDesign}
-                        whatsappPreviewMode={whatsappPreviewMode}
-                        themeMode={previewThemeMode}
                         form={form}
                         saved={saved}
                         tabItems={tabItems}
                         onSelectDesign={setActiveDesign}
-                        onWhatsappPreviewModeChange={setWhatsappPreviewMode}
-                        canPreviewMobileDesign={canPreviewMobileDesign}
-                        onThemeModeChange={setPreviewThemeMode}
                         onChange={handleChange}
                         onGenerate={handleGenerate}
                         isGenerating={isGenerating}

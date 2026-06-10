@@ -12,7 +12,7 @@ class ConversationRenderService
 
     private const ADVISOR_WORK_START_MINUTES = 420;
 
-    private const ADVISOR_QUIET_START_MINUTES = 1410;
+    private const ADVISOR_QUIET_START_MINUTES = 1380;
 
     /**
      * @var array<string, string>
@@ -65,8 +65,14 @@ class ConversationRenderService
         $durationMinutes = $this->parseDurationMinutes($input);
         $lastMessageDate = $registrationDate->copy()->subMinutes($registrationGap);
         $startDate = $durationMinutes !== null
-            ? $lastMessageDate->copy()->subMinutes($durationMinutes)
+            ? $this->subtractWorkingMinutes($lastMessageDate, $durationMinutes)
             : $minimumDate->copy()->addMinutes($registrationGap);
+
+        if ($durationMinutes !== null && $registrationGap > 3 && $startDate->lessThan($minimumDate)) {
+            $registrationGap = 3;
+            $lastMessageDate = $registrationDate->copy()->subMinutes($registrationGap);
+            $startDate = $this->subtractWorkingMinutes($lastMessageDate, $durationMinutes);
+        }
 
         if ($startDate->lessThan($minimumDate)) {
             throw ValidationException::withMessages([
@@ -90,10 +96,18 @@ class ConversationRenderService
 
         foreach ($conversationMessages as $index => $message) {
             if ($index > 0) {
-                $clock->addMinutes((int) ($delays[$index] ?? $message->delay_minutes));
+                $delayMinutes = (int) ($delays[$index] ?? $message->delay_minutes);
+
+                if ($durationMinutes !== null) {
+                    $this->addWorkingMinutes($clock, $delayMinutes);
+                } else {
+                    $clock->addMinutes($delayMinutes);
+                }
             }
 
-            $this->moveAdvisorReplyToWorkingHours($clock, (string) $message->side);
+            if ($durationMinutes === null) {
+                $this->moveAdvisorReplyToWorkingHours($clock, (string) $message->side);
+            }
 
             $lines = [];
             foreach ((array) $message->lines as $line) {
@@ -133,6 +147,75 @@ class ConversationRenderService
         }
 
         $clock->setTime(7, 0);
+    }
+
+    private function subtractWorkingMinutes(Carbon $date, int $minutes): Carbon
+    {
+        $clock = $date->copy();
+        $remainingMinutes = $minutes;
+
+        while ($remainingMinutes > 0) {
+            $this->moveBackwardIntoWorkingHours($clock);
+            $availableToday = $this->minutesSinceMidnight($clock) - self::ADVISOR_WORK_START_MINUTES;
+
+            if ($remainingMinutes <= $availableToday) {
+                return $clock->subMinutes($remainingMinutes);
+            }
+
+            $remainingMinutes -= $availableToday;
+            $clock->subDay()->setTime(23, 0);
+        }
+
+        return $clock;
+    }
+
+    private function addWorkingMinutes(Carbon $clock, int $minutes): void
+    {
+        $remainingMinutes = $minutes;
+
+        while ($remainingMinutes > 0) {
+            $this->moveForwardIntoWorkingHours($clock);
+            $availableToday = self::ADVISOR_QUIET_START_MINUTES - $this->minutesSinceMidnight($clock);
+
+            if ($remainingMinutes <= $availableToday) {
+                $clock->addMinutes($remainingMinutes);
+
+                return;
+            }
+
+            $remainingMinutes -= $availableToday;
+            $clock->addDay()->setTime(7, 0);
+        }
+    }
+
+    private function moveBackwardIntoWorkingHours(Carbon $clock): void
+    {
+        $minutes = $this->minutesSinceMidnight($clock);
+
+        if ($minutes > self::ADVISOR_QUIET_START_MINUTES) {
+            $clock->setTime(23, 0);
+
+            return;
+        }
+
+        if ($minutes <= self::ADVISOR_WORK_START_MINUTES) {
+            $clock->subDay()->setTime(23, 0);
+        }
+    }
+
+    private function moveForwardIntoWorkingHours(Carbon $clock): void
+    {
+        $minutes = $this->minutesSinceMidnight($clock);
+
+        if ($minutes >= self::ADVISOR_QUIET_START_MINUTES) {
+            $clock->addDay()->setTime(7, 0);
+
+            return;
+        }
+
+        if ($minutes < self::ADVISOR_WORK_START_MINUTES) {
+            $clock->setTime(7, 0);
+        }
     }
 
     private function isAdvisorQuietHour(Carbon $clock): bool

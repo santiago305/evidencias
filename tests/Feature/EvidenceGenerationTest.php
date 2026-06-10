@@ -52,6 +52,24 @@ function evidencePayload(): array
     ];
 }
 
+function workingMinutesBetween(Carbon $startDate, Carbon $endDate): int
+{
+    $clock = $startDate->copy();
+    $minutes = 0;
+
+    while ($clock->lessThan($endDate)) {
+        $minutesSinceMidnight = ((int) $clock->format('H') * 60) + (int) $clock->format('i');
+
+        if ($minutesSinceMidnight >= 420 && $minutesSinceMidnight < 1380) {
+            $minutes++;
+        }
+
+        $clock->addMinute();
+    }
+
+    return $minutes;
+}
+
 test('authenticated user can create a conversation manually', function () {
     $user = User::factory()->create();
 
@@ -725,6 +743,67 @@ test('generated conversation finishes before registration time and keeps duratio
     expect((int) $conversationDurationMinutes)->toBe(100);
 });
 
+test('generated conversation consumes long duration backwards without using advisor quiet hours', function () {
+    $user = User::factory()->create();
+
+    createConversationForTest('conv_long_duration_001', [
+        ['side' => 'out', 'delay_minutes' => 0, 'lines' => ['Inicio']],
+        ['side' => 'in', 'delay_minutes' => 1, 'lines' => ['Cliente responde']],
+        ['side' => 'out', 'delay_minutes' => 1, 'lines' => ['Asesor responde']],
+        ['side' => 'in', 'delay_minutes' => 1, 'lines' => ['Fin']],
+    ]);
+
+    $response = $this->actingAs($user)->postJson(route('evidences.generate'), [
+        ...evidencePayload(),
+        'fechaHora' => '2026-06-09T08:21',
+        'fechaHoraRegistro' => '2026-06-10T09:35',
+        'duracion' => '530',
+    ]);
+
+    $response->assertOk();
+
+    $messages = $response->json('messages');
+    expect($messages)->toBeArray()->toHaveCount(4);
+
+    $firstMessageAt = Carbon::parse($messages[0]['dateKey'].' '.$messages[0]['time']);
+    $lastMessageAt = Carbon::parse($messages[3]['dateKey'].' '.$messages[3]['time']);
+    $registrationDate = Carbon::parse('2026-06-10T09:35');
+
+    expect($lastMessageAt->lessThan($registrationDate))->toBeTrue();
+    expect((int) $lastMessageAt->diffInMinutes($registrationDate))->toBeGreaterThanOrEqual(3)->toBeLessThanOrEqual(10);
+    expect($firstMessageAt->format('Y-m-d'))->toBe('2026-06-09');
+    expect(((int) $firstMessageAt->format('H') * 60) + (int) $firstMessageAt->format('i'))->toBeBetween(995, 1002);
+    expect(workingMinutesBetween($firstMessageAt, $lastMessageAt))->toBe(530);
+
+    foreach ($messages as $message) {
+        $messageAt = Carbon::parse($message['dateKey'].' '.$message['time']);
+        $minutesSinceMidnight = ((int) $messageAt->format('H') * 60) + (int) $messageAt->format('i');
+
+        expect($minutesSinceMidnight)->toBeGreaterThanOrEqual(420)->toBeLessThan(1380);
+    }
+});
+
+test('generated conversation uses the minimum registration gap when duration barely fits', function () {
+    $conversation = createConversationForTest('conv_tight_registration_gap_001', [
+        ['side' => 'out', 'delay_minutes' => 0, 'lines' => ['Inicio']],
+        ['side' => 'in', 'delay_minutes' => 1, 'lines' => ['Fin']],
+    ]);
+
+    $messages = app(ConversationRenderService::class)->render($conversation, [
+        ...evidencePayload(),
+        'fechaHora' => '2026-06-10T08:52',
+        'fechaHoraRegistro' => '2026-06-10T09:43',
+        'duracion' => '48',
+        'previewSeed' => 'tight',
+    ]);
+
+    expect($messages)->toHaveCount(2);
+    expect($messages[0]['dateKey'])->toBe('2026-06-10');
+    expect($messages[0]['time'])->toBe('08:52');
+    expect($messages[1]['dateKey'])->toBe('2026-06-10');
+    expect($messages[1]['time'])->toBe('09:40');
+});
+
 test('generated conversation includes a date key for each rendered message', function () {
     $user = User::factory()->create();
 
@@ -761,13 +840,13 @@ test('rendered advisor replies wait until working hours after overnight client m
     ]);
 
     expect($messages[0]['side'])->toBe('out');
-    expect($messages[0]['time'])->toBe('23:18');
-    expect($messages[0]['dateKey'])->toBe('2026-06-02');
+    expect($messages[0]['time'])->toBe('07:00');
+    expect($messages[0]['dateKey'])->toBe('2026-06-03');
     expect($messages[1]['side'])->toBe('in');
-    expect($messages[1]['time'])->toBe('01:30');
+    expect($messages[1]['time'])->toBe('09:12');
     expect($messages[1]['dateKey'])->toBe('2026-06-03');
     expect($messages[2]['side'])->toBe('out');
-    expect($messages[2]['time'])->toBe('07:00');
+    expect($messages[2]['time'])->toBe('09:26');
     expect($messages[2]['dateKey'])->toBe('2026-06-03');
 });
 

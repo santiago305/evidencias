@@ -1,5 +1,5 @@
 import { type BreadcrumbItem, type SharedData } from '@/types';
-import type { MobileDesignDefinition, MobileDesignKey, WhatsappDesktopScale } from '@/evidence-generator/types';
+import type { MobileDesignDefinition, MobileDesignKey, PreviewDeviceMode, PreviewThemeMode, WhatsappDesktopScale } from '@/evidence-generator/types';
 import { Transition } from '@headlessui/react';
 import { Head, useForm, usePage } from '@inertiajs/react';
 import { FormEventHandler } from 'react';
@@ -37,12 +37,16 @@ export default function Profile() {
         sexualidad: 'M' | 'F';
         mobile_design_key: MobileDesignKey | 'none' | null;
         whatsapp_desktop_scale: WhatsappDesktopScale;
+        evidence_theme_mode: PreviewThemeMode;
+        evidence_device_mode: PreviewDeviceMode;
     }>({
         name: auth.user.name,
         dni: auth.user.dni,
         sexualidad: auth.user.sexualidad ?? 'M',
         mobile_design_key: selectedMobileDesignKey ?? 'none',
         whatsapp_desktop_scale: auth.user.whatsapp_desktop_scale ?? 80,
+        evidence_theme_mode: auth.user.evidence_theme_mode ?? 'light',
+        evidence_device_mode: selectedMobileDesignKey ? (auth.user.evidence_device_mode ?? 'desktop') : 'desktop',
     });
 
     const submit: FormEventHandler = (e) => {
@@ -51,6 +55,7 @@ export default function Profile() {
         transform((formData) => ({
             ...formData,
             mobile_design_key: formData.mobile_design_key === 'none' ? null : formData.mobile_design_key,
+            evidence_device_mode: formData.mobile_design_key === 'none' ? 'desktop' : formData.evidence_device_mode,
         }));
 
         patch(route('profile.update'));
@@ -121,9 +126,13 @@ export default function Profile() {
 
                             <Select
                                 value={data.mobile_design_key ?? 'none'}
-                                onValueChange={(value) =>
-                                    setData('mobile_design_key', value === 'none' ? 'none' : (value as MobileDesignKey))
-                                }
+                                onValueChange={(value) => {
+                                    setData('mobile_design_key', value === 'none' ? 'none' : (value as MobileDesignKey));
+
+                                    if (value === 'none') {
+                                        setData('evidence_device_mode', 'desktop');
+                                    }
+                                }}
                             >
                                 <SelectTrigger id="mobile_design_key" className="mt-1 w-full">
                                     <SelectValue placeholder="Selecciona un diseño móvil" />
@@ -140,6 +149,46 @@ export default function Profile() {
 
                             <InputError className="mt-2" message={errors.mobile_design_key} />
                         </div>
+
+                        <div className="grid gap-2">
+                            <Label htmlFor="evidence_theme_mode">Tema de evidencia</Label>
+
+                            <Select
+                                value={data.evidence_theme_mode}
+                                onValueChange={(value) => setData('evidence_theme_mode', value === 'dark' ? 'dark' : 'light')}
+                            >
+                                <SelectTrigger id="evidence_theme_mode" className="mt-1 w-full">
+                                    <SelectValue placeholder="Selecciona un tema" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="light">Modo claro</SelectItem>
+                                    <SelectItem value="dark">Modo oscuro</SelectItem>
+                                </SelectContent>
+                            </Select>
+
+                            <InputError className="mt-2" message={errors.evidence_theme_mode} />
+                        </div>
+
+                        {data.mobile_design_key !== 'none' ? (
+                            <div className="grid gap-2">
+                                <Label htmlFor="evidence_device_mode">Vista para evidencias</Label>
+
+                                <Select
+                                    value={data.evidence_device_mode}
+                                    onValueChange={(value) => setData('evidence_device_mode', value === 'mobile' ? 'mobile' : 'desktop')}
+                                >
+                                    <SelectTrigger id="evidence_device_mode" className="mt-1 w-full">
+                                        <SelectValue placeholder="Selecciona una vista" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="desktop">PC</SelectItem>
+                                        <SelectItem value="mobile">Celular</SelectItem>
+                                    </SelectContent>
+                                </Select>
+
+                                <InputError className="mt-2" message={errors.evidence_device_mode} />
+                            </div>
+                        ) : null}
 
                         <div className="grid gap-2">
                             <Label htmlFor="whatsapp_desktop_scale">Tamaño WhatsApp desktop</Label>
