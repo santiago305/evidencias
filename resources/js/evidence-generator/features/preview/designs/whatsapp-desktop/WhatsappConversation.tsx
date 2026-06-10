@@ -1,6 +1,6 @@
 import { Fragment, useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { formatWhatsappTimeValue, getDateKeyFromLocalDateTime, getDayChipTextForDate } from '../../../../lib/whatsapp/time';
-import type { GeneratedMessage, PreviewDeviceMode, PreviewThemeMode } from '../../../../types';
+import type { GeneratedMessage, PreviewThemeMode } from '../../../../types';
 import { shouldShowConversationMoreIndicator } from '../whatsappConversationIndicator';
 import type { WhatsappConversationMessage } from './buildWhatsappConversation';
 import { buildWhatsappConversation } from './buildWhatsappConversation';
@@ -137,7 +137,6 @@ export function WhatsappConversation({
     inlineTemporalMode = null,
     inlineTemporalInsertIndex: initialInlineTemporalInsertIndex = null,
     displayTitle,
-    deviceMode = 'desktop',
     themeMode = 'light',
 }: {
     data: WhatsappData;
@@ -147,7 +146,6 @@ export function WhatsappConversation({
     inlineTemporalMode?: 'active' | 'deactive' | null;
     inlineTemporalInsertIndex?: number | null;
     displayTitle?: string;
-    deviceMode?: PreviewDeviceMode;
     themeMode?: PreviewThemeMode;
 }) {
     const conversationMessages = useMemo((): WhatsappConversationMessage[] => {
@@ -235,13 +233,11 @@ export function WhatsappConversation({
                         <div
                             ref={scrollContainerRef}
                             onScroll={updateScrollState}
-                            className={[deviceMode === 'mobile' ? 'scrollbar-mobile-soft' : 'scrollbar-soft', 'h-full w-full overflow-y-auto']
-                                .filter(Boolean)
-                                .join(' ')}
+                            className="scrollbar-soft h-full w-full overflow-y-auto"
                         >
                             {firstDayChipDateKey !== '' && <DayChip text={getDayChipTextForDate(firstDayChipDateKey)} themeMode={themeMode} />}
-                            <EncryptedMessage deviceMode={deviceMode} themeMode={themeMode} />
-                            {showDefaultTemporalMessage && <TempporalMessage deviceMode={deviceMode} themeMode={themeMode} />}
+                            <EncryptedMessage themeMode={themeMode} />
+                            {showDefaultTemporalMessage && <TempporalMessage themeMode={themeMode} />}
 
                             {conversationMessages.map((msg, idx) => {
                                 const prev = conversationMessages[idx - 1];
@@ -280,7 +276,6 @@ export function WhatsappConversation({
                                                           }
                                                         : undefined
                                                 }
-                                                deviceMode={deviceMode}
                                                 themeMode={themeMode}
                                             >
                                                 {linesToSpans(msg.lines)}
@@ -288,10 +283,10 @@ export function WhatsappConversation({
                                         </div>
 
                                         {markerAfterCurrent && inlineTemporalMode === 'active' && (
-                                            <ActiveTemporalMessage deviceMode={deviceMode} themeMode={themeMode} />
+                                            <ActiveTemporalMessage themeMode={themeMode} />
                                         )}
                                         {markerAfterCurrent && inlineTemporalMode === 'deactive' && (
-                                            <DesactiveTemporalMessage deviceMode={deviceMode} themeMode={themeMode} />
+                                            <DesactiveTemporalMessage themeMode={themeMode} />
                                         )}
                                     </Fragment>
                                 );
@@ -306,7 +301,7 @@ export function WhatsappConversation({
                     </div>
 
                     <div className="shrink-0">
-                        <WhatsappInputBar themeMode={themeMode} deviceMode={deviceMode} />
+                        <WhatsappInputBar themeMode={themeMode} />
                     </div>
                 </div>
             </div>

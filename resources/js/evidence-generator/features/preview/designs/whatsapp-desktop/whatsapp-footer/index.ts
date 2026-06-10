@@ -7,12 +7,8 @@ export { WhatsappDesktopInputBar } from './WhatsappDesktopInputBar';
 
 export function WhatsappInputBar({
     themeMode = 'light',
-    deviceMode = 'desktop',
 }: {
     themeMode?: PreviewThemeMode;
-    deviceMode?: 'desktop' | 'mobile';
 }) {
-    void deviceMode;
-
     return createElement(WhatsappDesktopInputBar, { themeMode });
 }

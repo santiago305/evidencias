@@ -450,7 +450,6 @@ export function PreviewBlockWhatsapp({ data, whatsappDesktopScale, themeMode }: 
                             inlineTemporalMode={temporalBehavior.inlineTemporalMode}
                             inlineTemporalInsertIndex={data.previewSnapshot?.inlineTemporalInsertIndex ?? null}
                             displayTitle={contactIdentityDisplay.headerTitle}
-                            deviceMode="desktop"
                             themeMode={themeMode}
                         />
                     </div>
