@@ -28,12 +28,14 @@ export function WhatsappRightAside({
     profileTitle,
     profileSubtitle,
     showAddContactAction,
+    widthPx = 360,
     themeMode = 'light',
 }: {
     data: WhatsappData;
     profileTitle?: string;
     profileSubtitle?: string;
     showAddContactAction?: boolean;
+    widthPx?: number;
     temporalStatusLabel: '90 días' | 'Desactivado';
     themeMode?: PreviewThemeMode;
 }) {
@@ -52,7 +54,10 @@ export function WhatsappRightAside({
     const avatarTheme = useMemo(() => createWhatsappAvatarTheme(buildWhatsappAvatarSeed(data), themeMode), [data, themeMode]);
 
     return (
-        <aside className={['flex min-h-0 w-45 flex-2 flex-col border-l', softBorderColor, panelBg].join(' ')}>
+        <aside
+            className={['flex min-h-0 shrink-0 flex-col border-l', softBorderColor, panelBg].join(' ')}
+            style={{ width: widthPx }}
+        >
             {/* ---------- HEADER ---------- */}
             <div className={['w-full shrink-0 px-3 py-2', sectionBg].join(' ')}>
                 <div className="flex items-center justify-between">

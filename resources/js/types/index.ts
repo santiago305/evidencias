@@ -1,4 +1,5 @@
 import { LucideIcon } from 'lucide-react';
+import type { WhatsappDesktopScale } from '@/evidence-generator/types';
 
 export interface Auth {
     user: User;
@@ -33,6 +34,7 @@ export interface User {
     name: string;
     dni: string;
     sexualidad: 'M' | 'F';
+    whatsapp_desktop_scale?: WhatsappDesktopScale | null;
     avatar?: string;
     created_at: string;
     updated_at: string;

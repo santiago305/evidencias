@@ -1,6 +1,8 @@
-import type { PreviewProps } from '../../../../types';
+import type { PreviewProps, WhatsappDesktopScaleProps } from '../../../../types';
 import { PreviewBlockWhatsapp } from './PreviewBlockWhatsapp';
 
-export function PreviewWhatsappDesktop({ data, themeMode }: PreviewProps) {
-    return <PreviewBlockWhatsapp data={data} themeMode={themeMode} />;
+type PreviewWhatsappDesktopProps = PreviewProps & WhatsappDesktopScaleProps;
+
+export function PreviewWhatsappDesktop({ data, whatsappDesktopScale, themeMode }: PreviewWhatsappDesktopProps) {
+    return <PreviewBlockWhatsapp data={data} whatsappDesktopScale={whatsappDesktopScale} themeMode={themeMode} />;
 }

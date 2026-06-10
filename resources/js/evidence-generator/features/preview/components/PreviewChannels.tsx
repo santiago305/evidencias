@@ -1,4 +1,4 @@
-import type { PreviewDeviceMode, PreviewProps } from "../../../types";
+import type { PreviewDeviceMode, PreviewProps, WhatsappDesktopScale } from "../../../types";
 import { PreviewMobile1CallDesign1 } from "../designs/mobile-1";
 import { PreviewMobile1Sms } from "../designs/mobile-1";
 import { PreviewMobile1Whatsapp } from "../designs/mobile-1";
@@ -6,14 +6,15 @@ import { PreviewWhatsappDesktop } from "../designs/whatsapp-desktop";
 
 interface PreviewWhatsappProps extends PreviewProps {
   deviceMode: PreviewDeviceMode;
+  whatsappDesktopScale: WhatsappDesktopScale;
 }
 
 // Componente que muestra el preview estilo WhatsApp.
-export function PreviewWhatsApp({ data, deviceMode, themeMode }: PreviewWhatsappProps) {
+export function PreviewWhatsApp({ data, deviceMode, whatsappDesktopScale, themeMode }: PreviewWhatsappProps) {
   return deviceMode === "mobile" ? (
     <PreviewMobile1Whatsapp data={data} themeMode={themeMode} />
   ) : (
-    <PreviewWhatsappDesktop data={data} themeMode={themeMode} />
+    <PreviewWhatsappDesktop data={data} whatsappDesktopScale={whatsappDesktopScale} themeMode={themeMode} />
   );
 }
 

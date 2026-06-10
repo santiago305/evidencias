@@ -45,3 +45,21 @@ test('desktop WhatsApp tray clock uses current Peru time instead of snapshot tim
     assert.doesNotMatch(desktopPreviewBlock, /parseLocalDateTime/);
     assert.doesNotMatch(desktopPreviewBlock, /<WindowsTrayBar[^>]*(trayTime|trayDate)=/);
 });
+
+test('desktop WhatsApp scale applies to content without scaling the Windows tray bar', () => {
+    const desktopPreviewBlock = readFileSync(resolve(designsDir, 'whatsapp-desktop', 'PreviewBlockWhatsapp.tsx'), 'utf8');
+    const desktopSource = readFileSync(resolve(designsDir, 'whatsapp-desktop', 'PreviewWhatsappDesktop.tsx'), 'utf8');
+
+    assert.match(desktopSource, /whatsappDesktopScale/);
+    assert.match(desktopPreviewBlock, /WHATSAPP_DESKTOP_SCALE_FACTORS/);
+    assert.match(desktopPreviewBlock, /WHATSAPP_RIGHT_ASIDE_WIDTHS/);
+    assert.match(desktopPreviewBlock, /80:\s*1/);
+    assert.match(desktopPreviewBlock, /100:\s*1\.2/);
+    assert.match(desktopPreviewBlock, /desktopScaledLayoutSize/);
+    assert.match(desktopPreviewBlock, /width:\s*desktopScaledLayoutSize/);
+    assert.match(desktopPreviewBlock, /WHATSAPP_RIGHT_ASIDE_WIDTHS\[whatsappDesktopScale\]\s*\/\s*desktopScaleFactor/);
+    assert.match(desktopPreviewBlock, /widthPx=\{rightAsideWidthPx\}/);
+    assert.match(desktopPreviewBlock, /overflow-hidden/);
+    assert.match(desktopPreviewBlock, /transformOrigin:\s*['"]top left['"]/);
+    assert.ok(desktopPreviewBlock.indexOf('transform: `scale(${desktopScaleFactor})`') < desktopPreviewBlock.indexOf('<WindowsTrayBar'));
+});

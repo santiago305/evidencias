@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import type { PreviewProps } from '../../../../types';
+import type { PreviewProps, WhatsappDesktopScale, WhatsappDesktopScaleProps } from '../../../../types';
 import { EmptyState } from '../../components/EmptyState';
 import { buildContactIdentityDisplay } from './contactIdentityDisplay';
 import { WhatsappHeaderUser } from './whatsapp-header';
@@ -314,10 +314,29 @@ function WindowsTrayBar({ profile }: WindowsTrayBarProps) {
     );
 }
 
-type PreviewBlockWhatsappProps = PreviewProps;
+type PreviewBlockWhatsappProps = PreviewProps & WhatsappDesktopScaleProps;
 
-export function PreviewBlockWhatsapp({ data, themeMode }: PreviewBlockWhatsappProps) {
+const WHATSAPP_DESKTOP_SCALE_FACTORS: Record<WhatsappDesktopScale, number> = {
+    80: 1,
+    85: 1.05,
+    90: 1.1,
+    95: 1.15,
+    100: 1.2,
+};
+
+const WHATSAPP_RIGHT_ASIDE_WIDTHS: Record<WhatsappDesktopScale, number> = {
+    80: 550,
+    85: 550,
+    90: 550,
+    95: 550,
+    100: 550,
+};
+
+export function PreviewBlockWhatsapp({ data, whatsappDesktopScale, themeMode }: PreviewBlockWhatsappProps) {
     const userSeed = useMemo(() => buildWhatsappAvatarSeed(data ?? undefined), [data]);
+    const desktopScaleFactor = WHATSAPP_DESKTOP_SCALE_FACTORS[whatsappDesktopScale];
+    const desktopScaledLayoutSize = `${100 / desktopScaleFactor}%`;
+    const rightAsideWidthPx = WHATSAPP_RIGHT_ASIDE_WIDTHS[whatsappDesktopScale] / desktopScaleFactor;
 
     const messageStatus = useMemo<MsgStatus>(() => {
         if (data?.previewSnapshot) {
@@ -404,37 +423,48 @@ export function PreviewBlockWhatsapp({ data, themeMode }: PreviewBlockWhatsappPr
 
     return (
         <div className={['flex h-full w-full flex-col', themeMode === 'dark' ? 'bg-[#0b141a]' : 'bg-[#efeae2]'].join(' ')} id="CAPTURA">
-            <div className="flex min-h-0 w-full flex-1">
-                <div className="flex min-w-0 flex-[3.3] flex-col">
-                    <WhatsappHeaderUser
-                        data={data}
-                        status={messageStatus}
-                        showTemporaryIndicator={temporalBehavior.showTemporaryIcon}
-                        displayTitle={contactIdentityDisplay.headerTitle}
-                        themeMode={themeMode}
-                    />
+            <div className="min-h-0 w-full flex-1 overflow-hidden">
+                <div
+                    className="flex h-full min-h-0 w-full"
+                    style={{
+                        width: desktopScaledLayoutSize,
+                        height: desktopScaledLayoutSize,
+                        transform: `scale(${desktopScaleFactor})`,
+                        transformOrigin: 'top left',
+                    }}
+                >
+                    <div className="flex min-w-0 flex-1 flex-col">
+                        <WhatsappHeaderUser
+                            data={data}
+                            status={messageStatus}
+                            showTemporaryIndicator={temporalBehavior.showTemporaryIcon}
+                            displayTitle={contactIdentityDisplay.headerTitle}
+                            themeMode={themeMode}
+                        />
 
-                    <WhatsappConversation
+                        <WhatsappConversation
+                            data={data}
+                            messageStatus={messageStatus}
+                            messages={data.generatedMessages}
+                            showDefaultTemporalMessage={temporalBehavior.showDefaultTemporalMessage}
+                            inlineTemporalMode={temporalBehavior.inlineTemporalMode}
+                            inlineTemporalInsertIndex={data.previewSnapshot?.inlineTemporalInsertIndex ?? null}
+                            displayTitle={contactIdentityDisplay.headerTitle}
+                            deviceMode="desktop"
+                            themeMode={themeMode}
+                        />
+                    </div>
+
+                    <WhatsappRightAside
                         data={data}
-                        messageStatus={messageStatus}
-                        messages={data.generatedMessages}
-                        showDefaultTemporalMessage={temporalBehavior.showDefaultTemporalMessage}
-                        inlineTemporalMode={temporalBehavior.inlineTemporalMode}
-                        inlineTemporalInsertIndex={data.previewSnapshot?.inlineTemporalInsertIndex ?? null}
-                        displayTitle={contactIdentityDisplay.headerTitle}
-                        deviceMode="desktop"
+                        temporalStatusLabel={temporalBehavior.temporalStatusLabel}
+                        profileTitle={contactIdentityDisplay.profileTitle}
+                        profileSubtitle={contactIdentityDisplay.profileSubtitle}
+                        showAddContactAction={contactIdentityDisplay.showAddContactAction}
+                        widthPx={rightAsideWidthPx}
                         themeMode={themeMode}
                     />
                 </div>
-
-                <WhatsappRightAside
-                    data={data}
-                    temporalStatusLabel={temporalBehavior.temporalStatusLabel}
-                    profileTitle={contactIdentityDisplay.profileTitle}
-                    profileSubtitle={contactIdentityDisplay.profileSubtitle}
-                    showAddContactAction={contactIdentityDisplay.showAddContactAction}
-                    themeMode={themeMode}
-                />
             </div>
 
             <WindowsTrayBar profile={windowsTrayData.profile} />

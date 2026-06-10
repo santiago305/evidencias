@@ -25,6 +25,7 @@ class User extends Authenticatable
         'sexualidad',
         'windows_tray_color',
         'windows_tray_config',
+        'whatsapp_desktop_scale',
         'password',
     ];
 

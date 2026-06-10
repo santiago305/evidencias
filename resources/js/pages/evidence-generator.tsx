@@ -2,7 +2,7 @@ import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { UserMenuContent } from '@/components/user-menu-content';
 import EvidenceGeneratorApp from '@/evidence-generator/App';
-import type { MobileDesignKey } from '@/evidence-generator/types';
+import type { MobileDesignKey, WhatsappDesktopScale } from '@/evidence-generator/types';
 import { type SharedData } from '@/types';
 import { Head, usePage } from '@inertiajs/react';
 import { UserRound } from 'lucide-react';
@@ -14,6 +14,7 @@ interface EvidenceGeneratorPageProps extends SharedData {
 
 export default function EvidenceGeneratorPage() {
     const { auth, globalMobileDesigns, registeredMobileDesigns } = usePage<EvidenceGeneratorPageProps>().props;
+    const whatsappDesktopScale: WhatsappDesktopScale = auth.user.whatsapp_desktop_scale ?? 80;
 
     return (
         <div className="relative min-h-screen">
@@ -33,7 +34,12 @@ export default function EvidenceGeneratorPage() {
                 </DropdownMenu>
             </div>
 
-            <EvidenceGeneratorApp currentUser={auth.user} globalMobileDesigns={globalMobileDesigns} registeredMobileDesigns={registeredMobileDesigns} />
+            <EvidenceGeneratorApp
+                currentUser={auth.user}
+                globalMobileDesigns={globalMobileDesigns}
+                registeredMobileDesigns={registeredMobileDesigns}
+                whatsappDesktopScale={whatsappDesktopScale}
+            />
         </div>
     );
 }

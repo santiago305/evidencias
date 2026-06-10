@@ -1,4 +1,4 @@
-import type { ActiveDesign, PreviewDeviceMode, PreviewThemeMode, SavedData } from "../../../types";
+import type { ActiveDesign, PreviewDeviceMode, PreviewThemeMode, SavedData, WhatsappDesktopScale } from "../../../types";
 import {
   PreviewLlamada,
   PreviewSMS,
@@ -9,6 +9,7 @@ interface PreviewPanelProps {
   activeDesign: ActiveDesign;
   saved: SavedData | null;
   whatsappPreviewMode: PreviewDeviceMode;
+  whatsappDesktopScale: WhatsappDesktopScale;
   themeMode: PreviewThemeMode;
   canRegisterMobileDesign: boolean;
   isRegisteringMobileDesign: boolean;
@@ -21,6 +22,7 @@ export function PreviewPanel({
   activeDesign,
   saved,
   whatsappPreviewMode,
+  whatsappDesktopScale,
   themeMode,
   canRegisterMobileDesign,
   isRegisteringMobileDesign,
@@ -31,7 +33,14 @@ export function PreviewPanel({
     <div className="lg:col-span-6 flex h-screen">
       <div className="h-full overflow-hidden w-full flex flex-col">
         <div className="min-h-0 flex-1">
-          {activeDesign === "whatsapp" && <PreviewWhatsApp data={saved} deviceMode={whatsappPreviewMode} themeMode={themeMode} />}
+          {activeDesign === "whatsapp" && (
+            <PreviewWhatsApp
+              data={saved}
+              deviceMode={whatsappPreviewMode}
+              whatsappDesktopScale={whatsappDesktopScale}
+              themeMode={themeMode}
+            />
+          )}
           {activeDesign === "llamada" && <PreviewLlamada data={saved} themeMode={themeMode} />}
           {activeDesign === "sms" && <PreviewSMS data={saved} themeMode={themeMode} />}
         </div>

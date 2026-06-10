@@ -1,5 +1,5 @@
 import { type BreadcrumbItem, type SharedData } from '@/types';
-import type { MobileDesignDefinition, MobileDesignKey } from '@/evidence-generator/types';
+import type { MobileDesignDefinition, MobileDesignKey, WhatsappDesktopScale } from '@/evidence-generator/types';
 import { Transition } from '@headlessui/react';
 import { Head, useForm, usePage } from '@inertiajs/react';
 import { FormEventHandler } from 'react';
@@ -21,6 +21,8 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
+const whatsappDesktopScaleOptions: WhatsappDesktopScale[] = [80, 85, 90, 95, 100];
+
 interface ProfilePageProps extends SharedData {
     availableMobileDesigns: MobileDesignDefinition[];
     selectedMobileDesignKey: MobileDesignKey | null;
@@ -34,11 +36,13 @@ export default function Profile() {
         dni: string;
         sexualidad: 'M' | 'F';
         mobile_design_key: MobileDesignKey | 'none' | null;
+        whatsapp_desktop_scale: WhatsappDesktopScale;
     }>({
         name: auth.user.name,
         dni: auth.user.dni,
         sexualidad: auth.user.sexualidad ?? 'M',
         mobile_design_key: selectedMobileDesignKey ?? 'none',
+        whatsapp_desktop_scale: auth.user.whatsapp_desktop_scale ?? 80,
     });
 
     const submit: FormEventHandler = (e) => {
@@ -135,6 +139,28 @@ export default function Profile() {
                             </Select>
 
                             <InputError className="mt-2" message={errors.mobile_design_key} />
+                        </div>
+
+                        <div className="grid gap-2">
+                            <Label htmlFor="whatsapp_desktop_scale">Tamaño WhatsApp desktop</Label>
+
+                            <Select
+                                value={String(data.whatsapp_desktop_scale)}
+                                onValueChange={(value) => setData('whatsapp_desktop_scale', Number(value) as WhatsappDesktopScale)}
+                            >
+                                <SelectTrigger id="whatsapp_desktop_scale" className="mt-1 w-full">
+                                    <SelectValue placeholder="Selecciona un tamaño" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {whatsappDesktopScaleOptions.map((scale) => (
+                                        <SelectItem key={scale} value={String(scale)}>
+                                            {scale}%
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+
+                            <InputError className="mt-2" message={errors.whatsapp_desktop_scale} />
                         </div>
 
                         <div className="flex items-center gap-4">

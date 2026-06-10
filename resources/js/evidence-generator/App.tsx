@@ -24,6 +24,7 @@ import type {
     PreviewDeviceMode,
     PreviewThemeMode,
     SavedData,
+    WhatsappDesktopScale,
     WindowsTrayProfile,
 } from './types';
 
@@ -37,6 +38,7 @@ interface AppProps {
     currentUser?: CurrentUser;
     globalMobileDesigns?: MobileDesignKey[];
     registeredMobileDesigns?: MobileDesignKey[];
+    whatsappDesktopScale?: WhatsappDesktopScale;
 }
 
 interface ConversationsIndexResponse {
@@ -89,7 +91,7 @@ interface ConversationListItem {
 
 /* ---------------- App ---------------- */
 // Componente raiz que coordina estado, tabs y vistas.
-export default function App({ currentUser, globalMobileDesigns = [], registeredMobileDesigns = [] }: AppProps) {
+export default function App({ currentUser, globalMobileDesigns = [], registeredMobileDesigns = [], whatsappDesktopScale = 80 }: AppProps) {
     const resolvedCurrentUser = currentUser ?? {
         name: 'Maria Perez',
         dni: '00000000',
@@ -331,6 +333,7 @@ export default function App({ currentUser, globalMobileDesigns = [], registeredM
                         activeDesign={activeDesign}
                         saved={saved}
                         whatsappPreviewMode={whatsappPreviewMode}
+                        whatsappDesktopScale={whatsappDesktopScale}
                         themeMode={previewThemeMode}
                         canRegisterMobileDesign={
                             activeDesign === 'whatsapp' &&

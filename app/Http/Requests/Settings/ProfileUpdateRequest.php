@@ -26,6 +26,7 @@ class ProfileUpdateRequest extends FormRequest
             ],
             'sexualidad' => ['required', Rule::in(['M', 'F'])],
             'mobile_design_key' => ['nullable', 'string', Rule::exists('mobile_designs', 'design_key')],
+            'whatsapp_desktop_scale' => ['required', 'integer', Rule::in([80, 85, 90, 95, 100])],
         ];
     }
 }

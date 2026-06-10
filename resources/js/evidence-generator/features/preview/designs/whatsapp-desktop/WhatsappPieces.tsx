@@ -173,11 +173,9 @@ export function VoiceBubble({
 }
 
 export function EncryptedMessage({ deviceMode = "desktop", themeMode = "light" }: { deviceMode?: "desktop" | "mobile"; themeMode?: PreviewThemeMode }) {
-  const isMobile = deviceMode === "mobile";
   const isDark = themeMode === "dark";
   const horizontalPadding = deviceMode === "mobile" ? "px-8" : "px-15.75";
   const maxWidth = deviceMode === "mobile" ? "max-w-none" : "max-w-125";
-  const encryptedTextSize = deviceMode === "mobile" ? "text-[10px] leading-[12px]" : "text-[9.8px]";
 
   return (
     <div className="relative">
@@ -215,10 +213,10 @@ export function EncryptedMessage({ deviceMode = "desktop", themeMode = "light" }
                           </span>
                         </div>
 
-                        <span className={`segoe-ui visible min-h-0 wrap-break-word ${encryptedTextSize}`}>
+                        <span className={`segoe-ui visible min-h-0 wrap-break-word text-[9.8px] leading-[16px]`}>
                           Los mensajes y las llamadas están cifrados de extremo
                           a extremo. Solo las personas en este chat pueden
-                          leerlos, escucharlos o compartirlos. {isMobile ? <strong className="font-semibold">Más información.</strong> : "Haz clic para obtener más información."}
+                          leerlos, escucharlos o compartirlos. Haz clic para obtener más información."
                         </span>
                       </span>
                     </div>
@@ -242,7 +240,7 @@ export function TempporalMessage({ deviceMode = "desktop", themeMode = "light" }
   const isDark = themeMode === "dark";
   const horizontalPadding = deviceMode === "mobile" ? "px-8" : "px-15.75";
   const maxWidth = deviceMode === "mobile" ? "max-w-none" : "max-w-125";
-  const messageTextSize = deviceMode === "mobile" ? "text-[10px] leading-[12px]" : "text-[9.8px]";
+  const messageTextSize = deviceMode === "mobile" ? "text-[10px] leading-[12px]" : "text-[9.8px] leading-[16px]";
 
   return (
     <div className="relative">
@@ -310,7 +308,7 @@ export function ActiveTemporalMessage({ deviceMode = "desktop", themeMode = "lig
   const isDark = themeMode === "dark";
   const horizontalPadding = deviceMode === "mobile" ? "px-8" : "px-15.75";
   const maxWidth = deviceMode === "mobile" ? "max-w-none" : "max-w-125";
-  const messageTextSize = deviceMode === "mobile" ? "text-[10px] leading-[12px]" : "text-[9.8px]";
+  const messageTextSize = deviceMode === "mobile" ? "text-[10px] leading-[12px]" : "text-[9.8px] leading-[16px]";
 
   return (
     <div className="relative">
