@@ -1,4 +1,4 @@
-import type { ActiveDesign, PreviewDeviceMode, PreviewThemeMode, SavedData, WhatsappDesktopScale } from "../../../types";
+import type { ActiveDesign, MobileDesignKey, PreviewDeviceMode, PreviewThemeMode, SavedData, WhatsappDesktopScale } from "../../../types";
 import {
   PreviewLlamada,
   PreviewSMS,
@@ -9,6 +9,7 @@ interface PreviewPanelProps {
   activeDesign: ActiveDesign;
   saved: SavedData | null;
   whatsappPreviewMode: PreviewDeviceMode;
+  mobileDesignKey: MobileDesignKey;
   whatsappDesktopScale: WhatsappDesktopScale;
   themeMode: PreviewThemeMode;
   canRegisterMobileDesign: boolean;
@@ -22,6 +23,7 @@ export function PreviewPanel({
   activeDesign,
   saved,
   whatsappPreviewMode,
+  mobileDesignKey,
   whatsappDesktopScale,
   themeMode,
   canRegisterMobileDesign,
@@ -37,12 +39,13 @@ export function PreviewPanel({
             <PreviewWhatsApp
               data={saved}
               deviceMode={whatsappPreviewMode}
+              mobileDesignKey={mobileDesignKey}
               whatsappDesktopScale={whatsappDesktopScale}
               themeMode={themeMode}
             />
           )}
-          {activeDesign === "llamada" && <PreviewLlamada data={saved} themeMode={themeMode} />}
-          {activeDesign === "sms" && <PreviewSMS data={saved} themeMode={themeMode} />}
+          {activeDesign === "llamada" && <PreviewLlamada data={saved} themeMode={themeMode} mobileDesignKey={mobileDesignKey} />}
+          {activeDesign === "sms" && <PreviewSMS data={saved} themeMode={themeMode} mobileDesignKey={mobileDesignKey} />}
         </div>
 
         {canRegisterMobileDesign ? (

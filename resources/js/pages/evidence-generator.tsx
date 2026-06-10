@@ -8,12 +8,13 @@ import { Head, usePage } from '@inertiajs/react';
 import { UserRound } from 'lucide-react';
 
 interface EvidenceGeneratorPageProps extends SharedData {
+    availableMobileDesigns: MobileDesignKey[];
     globalMobileDesigns: MobileDesignKey[];
     registeredMobileDesigns: MobileDesignKey[];
 }
 
 export default function EvidenceGeneratorPage() {
-    const { auth, globalMobileDesigns, registeredMobileDesigns } = usePage<EvidenceGeneratorPageProps>().props;
+    const { auth, availableMobileDesigns, globalMobileDesigns, registeredMobileDesigns } = usePage<EvidenceGeneratorPageProps>().props;
     const whatsappDesktopScale: WhatsappDesktopScale = auth.user.whatsapp_desktop_scale ?? 80;
 
     return (
@@ -36,6 +37,7 @@ export default function EvidenceGeneratorPage() {
 
             <EvidenceGeneratorApp
                 currentUser={auth.user}
+                availableMobileDesigns={availableMobileDesigns}
                 globalMobileDesigns={globalMobileDesigns}
                 registeredMobileDesigns={registeredMobileDesigns}
                 whatsappDesktopScale={whatsappDesktopScale}

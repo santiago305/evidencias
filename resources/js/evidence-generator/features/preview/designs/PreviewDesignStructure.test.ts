@@ -22,15 +22,20 @@ test('preview designs are isolated by target design folder', () => {
     assert.equal(existsSync(resolve(designsDir, 'mobile-1', 'sms', 'PreviewMobile1Sms.tsx')), true);
     assert.equal(existsSync(resolve(designsDir, 'mobile-1', 'calls', 'design-1', 'PreviewMobile1CallDesign1.tsx')), true);
     assert.equal(existsSync(resolve(designsDir, 'mobile-1', 'calls', 'design-2', 'PreviewMobile1CallDesign2.tsx')), true);
+    assert.equal(existsSync(resolve(designsDir, 'mobile-2', 'Mobile2PreviewFrame.tsx')), true);
+    assert.equal(existsSync(resolve(designsDir, 'mobile-2', 'whatsapp', 'PreviewMobile2Whatsapp.tsx')), true);
+    assert.equal(existsSync(resolve(designsDir, 'mobile-2', 'sms', 'PreviewMobile2Sms.tsx')), true);
+    assert.equal(existsSync(resolve(designsDir, 'mobile-2', 'calls', 'design-1', 'PreviewMobile2CallDesign1.tsx')), true);
+    assert.equal(existsSync(resolve(designsDir, 'mobile-2', 'calls', 'design-2', 'PreviewMobile2CallDesign2.tsx')), true);
 });
 
 test('preview channel entry points use design folders directly', () => {
     const previewChannelsSource = readFileSync(resolve(previewDir, 'components', 'PreviewChannels.tsx'), 'utf8');
     const desktopSource = readFileSync(resolve(designsDir, 'whatsapp-desktop', 'PreviewWhatsappDesktop.tsx'), 'utf8');
-    const mobileSource = readFileSync(resolve(designsDir, 'mobile-1', 'whatsapp', 'PreviewMobile1Whatsapp.tsx'), 'utf8');
+    const mobileSource = readFileSync(resolve(designsDir, 'mobile-2', 'whatsapp', 'PreviewMobile2Whatsapp.tsx'), 'utf8');
 
     assert.match(previewChannelsSource, /from ["']\.\.\/designs\/whatsapp-desktop["']/);
-    assert.match(previewChannelsSource, /from ["']\.\.\/designs\/mobile-1["']/);
+    assert.match(previewChannelsSource, /from ["']\.\.\/designs\/mobile-2["']/);
     assert.doesNotMatch(previewChannelsSource, /preview\/whatsapp|\.\.\/whatsapp/);
     assert.doesNotMatch(desktopSource, /preview\/whatsapp|\.\.\/\.\.\/whatsapp|deviceMode=/);
     assert.doesNotMatch(mobileSource, /preview\/whatsapp|\.\.\/\.\.\/\.\.\/whatsapp/);

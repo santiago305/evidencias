@@ -13,6 +13,7 @@ import { FormPanel } from './features/editor/components/FormPanel';
 import { PreviewPanel } from './features/preview/components/PreviewPanel';
 import { getJson, postJson, putJson } from './lib/api';
 import { createInitialFormState } from './lib/formState';
+import { resolveActiveMobileDesignKey } from './lib/mobileDesignSelection';
 import { applyConversationTestDefaults } from './lib/testingDefaults';
 import type {
     ActiveDesign,
@@ -36,6 +37,7 @@ interface CurrentUser {
 
 interface AppProps {
     currentUser?: CurrentUser;
+    availableMobileDesigns?: MobileDesignKey[];
     globalMobileDesigns?: MobileDesignKey[];
     registeredMobileDesigns?: MobileDesignKey[];
     whatsappDesktopScale?: WhatsappDesktopScale;
@@ -91,7 +93,13 @@ interface ConversationListItem {
 
 /* ---------------- App ---------------- */
 // Componente raiz que coordina estado, tabs y vistas.
-export default function App({ currentUser, globalMobileDesigns = [], registeredMobileDesigns = [], whatsappDesktopScale = 80 }: AppProps) {
+export default function App({
+    currentUser,
+    availableMobileDesigns = ['mobile-1'],
+    globalMobileDesigns = [],
+    registeredMobileDesigns = [],
+    whatsappDesktopScale = 80,
+}: AppProps) {
     const resolvedCurrentUser = currentUser ?? {
         name: 'Maria Perez',
         dni: '00000000',
@@ -120,12 +128,23 @@ export default function App({ currentUser, globalMobileDesigns = [], registeredM
     const [conversations, setConversations] = useState<ConversationListItem[]>([]);
     const [editingConversation, setEditingConversation] = useState<ConversationListItem | null>(null);
 
-    const activeMobileDesignKey: MobileDesignKey = 'mobile-1';
-    const isMobile1GloballyRegistered = globalMobileDesignKeys.includes(activeMobileDesignKey);
-    const isMobile1Registered = registeredMobileDesigns.includes(activeMobileDesignKey);
+    const testMobileDesignKey = resolveActiveMobileDesignKey({
+        availableMobileDesigns,
+        globalMobileDesigns: globalMobileDesignKeys,
+        registeredMobileDesigns,
+    });
+    const userMobileDesignKey = resolveActiveMobileDesignKey({
+        availableMobileDesigns,
+        globalMobileDesigns: globalMobileDesignKeys,
+        registeredMobileDesigns,
+        preferPendingDevelopmentDesign: false,
+    });
     const hasRegisteredMobileDesign = registeredMobileDesigns.length > 0;
     const isTestingConversation = conversationCodeInput.trim() !== '';
-    const canPreviewMobileDesign = isMobile1Registered || isTestingConversation || lastGeneratedFromConversationCode;
+    const shouldUseTestMobileDesign = isTestingConversation || lastGeneratedFromConversationCode;
+    const activeMobileDesignKey = shouldUseTestMobileDesign ? testMobileDesignKey : userMobileDesignKey;
+    const isTestMobileDesignGloballyRegistered = globalMobileDesignKeys.includes(testMobileDesignKey);
+    const canPreviewMobileDesign = hasRegisteredMobileDesign || isTestingConversation || lastGeneratedFromConversationCode;
 
     const handleChange = (key: keyof FormState) => (e: ChangeEvent<HTMLInputElement>) => {
         const value = key === 'dniCliente' ? e.target.value.replace(/\D/g, '').slice(0, 8) : e.target.value;
@@ -333,16 +352,17 @@ export default function App({ currentUser, globalMobileDesigns = [], registeredM
                         activeDesign={activeDesign}
                         saved={saved}
                         whatsappPreviewMode={whatsappPreviewMode}
+                        mobileDesignKey={activeMobileDesignKey}
                         whatsappDesktopScale={whatsappDesktopScale}
                         themeMode={previewThemeMode}
                         canRegisterMobileDesign={
                             activeDesign === 'whatsapp' &&
                             whatsappPreviewMode === 'mobile' &&
                             lastGeneratedFromConversationCode &&
-                            !isMobile1GloballyRegistered
+                            !isTestMobileDesignGloballyRegistered
                         }
                         isRegisteringMobileDesign={isRegisteringMobileDesign}
-                        mobileDesignLabel="Mobile 1"
+                        mobileDesignLabel={activeMobileDesignKey.replace('-', ' ').replace(/\b\w/g, (letter) => letter.toUpperCase())}
                         onRegisterMobileDesign={handleRegisterMobileDesign}
                     />
                     <FormPanel

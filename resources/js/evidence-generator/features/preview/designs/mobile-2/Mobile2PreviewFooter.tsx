@@ -1,6 +1,6 @@
 import type { PreviewThemeMode } from '../../../../types';
 
-export function Mobile1PreviewFooter({ themeMode }: { themeMode: PreviewThemeMode }) {
+export function Mobile2PreviewFooter({ themeMode }: { themeMode: PreviewThemeMode }) {
     const isDark = themeMode === 'dark';
 
     return (

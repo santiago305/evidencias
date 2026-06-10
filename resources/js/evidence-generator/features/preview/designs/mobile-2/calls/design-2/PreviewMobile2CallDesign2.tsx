@@ -1,8 +1,8 @@
 import type { PreviewProps } from '../../../../../../types';
 import { EmptyState } from '../../../../components/EmptyState';
-import { Mobile1PreviewFrame } from '../../Mobile1PreviewFrame';
+import { Mobile2PreviewFrame } from '../../Mobile2PreviewFrame';
 
-export function PreviewMobile1CallDesign2({ data, themeMode }: PreviewProps) {
+export function PreviewMobile2CallDesign2({ data, themeMode }: PreviewProps) {
     if (!data) {
         return <EmptyState />;
     }
@@ -10,7 +10,7 @@ export function PreviewMobile1CallDesign2({ data, themeMode }: PreviewProps) {
     const isDark = themeMode === 'dark';
 
     return (
-        <Mobile1PreviewFrame
+        <Mobile2PreviewFrame
             themeMode={themeMode}
             notificationSeed={[data.seedCode, data.conversationId, data.telefono, data.dniCliente]
                 .filter((value) => value !== undefined && value !== null && `${value}`.trim() !== '')
@@ -32,6 +32,6 @@ export function PreviewMobile1CallDesign2({ data, themeMode }: PreviewProps) {
                     Devolver llamada
                 </button>
             </div>
-        </Mobile1PreviewFrame>
+        </Mobile2PreviewFrame>
     );
 }

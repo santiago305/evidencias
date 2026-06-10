@@ -4,6 +4,7 @@ use App\Http\Controllers\ConversationController;
 use App\Http\Controllers\EvidenceController;
 use App\Http\Controllers\MobileDesignController;
 use App\Models\MobileDesign;
+use App\Support\MobileDesignCatalog;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -18,6 +19,7 @@ Route::middleware(['auth'])->group(function () {
         $user = auth()->user();
 
         return Inertia::render('evidence-generator', [
+            'availableMobileDesigns' => MobileDesignCatalog::keys(),
             'globalMobileDesigns' => MobileDesign::query()
                 ->orderBy('design_key')
                 ->pluck('design_key')

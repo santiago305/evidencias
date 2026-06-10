@@ -175,13 +175,13 @@ function BatteryIcon({ level }: { level: BatteryLevel }) {
     );
 }
 
-type Mobile1PreviewHeaderProps = {
+type Mobile2PreviewHeaderProps = {
     themeMode: PreviewThemeMode;
     notificationSeed?: string;
     variant?: 'default' | 'whatsapp';
 };
 
-export function Mobile1PreviewHeader({ themeMode, notificationSeed, variant = 'default' }: Mobile1PreviewHeaderProps) {
+export function Mobile2PreviewHeader({ themeMode, notificationSeed, variant = 'default' }: Mobile2PreviewHeaderProps) {
     const isDark = themeMode === 'dark';
     const isWhatsappVariant = variant === 'whatsapp' && isDark;
     const [time, setTime] = useState('');

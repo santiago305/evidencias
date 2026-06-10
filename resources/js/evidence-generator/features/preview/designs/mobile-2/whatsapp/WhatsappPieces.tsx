@@ -216,7 +216,7 @@ export function EncryptedMessage({ themeMode = "light" }: { themeMode?: PreviewT
                         <span className={`segoe-ui visible min-h-0 wrap-break-word ${encryptedTextSize}`}>
                           Los mensajes y las llamadas están cifrados de extremo
                           a extremo. Solo las personas en este chat pueden
-                          leerlos, escucharlos o compartirlos. <strong className="font-semibold">Más información.</strong>
+                          leerlos, escucharlos o compartirlos. domos 2 xd <strong className="font-semibold">Más información.</strong>
                         </span>
                       </span>
                     </div>

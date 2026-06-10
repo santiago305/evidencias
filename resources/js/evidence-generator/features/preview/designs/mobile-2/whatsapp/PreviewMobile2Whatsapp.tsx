@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import type { PreviewProps } from '../../../../../types';
 import { EmptyState } from '../../../components/EmptyState';
-import { Mobile1PreviewFrame } from '../Mobile1PreviewFrame';
+import { Mobile2PreviewFrame } from '../Mobile2PreviewFrame';
 import { buildContactIdentityDisplay } from './contactIdentityDisplay';
 import { WhatsappHeaderUser } from './whatsapp-header';
 import { buildWhatsappAvatarSeed } from './whatsappAppearance';
@@ -31,7 +31,7 @@ function createSeededRandom(seed: number): () => number {
     };
 }
 
-export function PreviewMobile1Whatsapp({ data, themeMode }: PreviewProps) {
+export function PreviewMobile2Whatsapp({ data, themeMode }: PreviewProps) {
     const userSeed = useMemo(() => buildWhatsappAvatarSeed(data ?? undefined), [data]);
 
     const messageStatus = useMemo<MsgStatus>(() => {
@@ -108,7 +108,7 @@ export function PreviewMobile1Whatsapp({ data, themeMode }: PreviewProps) {
     }
 
     return (
-        <Mobile1PreviewFrame
+        <Mobile2PreviewFrame
             themeMode={themeMode}
             notificationSeed={[data.seedCode, data.conversationId, data.telefono, data.dniCliente, data.generatedMessages?.length]
                 .filter((value) => value !== undefined && value !== null && `${value}`.trim() !== '')
@@ -135,6 +135,6 @@ export function PreviewMobile1Whatsapp({ data, themeMode }: PreviewProps) {
                     themeMode={themeMode}
                 />
             </div>
-        </Mobile1PreviewFrame>
+        </Mobile2PreviewFrame>
     );
 }

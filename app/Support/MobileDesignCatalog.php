@@ -15,6 +15,11 @@ class MobileDesignCatalog
                 'label' => 'Mobile 1',
                 'status' => 'development',
             ],
+            [
+                'key' => 'mobile-2',
+                'label' => 'Mobile 2',
+                'status' => 'development',
+            ],
         ];
     }
 

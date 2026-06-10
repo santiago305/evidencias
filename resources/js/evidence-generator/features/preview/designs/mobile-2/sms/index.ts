@@ -1,1 +1,1 @@
-export { PreviewMobile1Sms } from './PreviewMobile1Sms';
+export { PreviewMobile2Sms } from './PreviewMobile2Sms';

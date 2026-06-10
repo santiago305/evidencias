@@ -1,9 +1,9 @@
 import type { ReactNode } from 'react';
 import type { PreviewThemeMode } from '../../../../types';
-import { Mobile1PreviewFooter } from './Mobile1PreviewFooter';
-import { Mobile1PreviewHeader } from './Mobile1PreviewHeader';
+import { Mobile2PreviewFooter } from './Mobile2PreviewFooter';
+import { Mobile2PreviewHeader } from './Mobile2PreviewHeader';
 
-type Mobile1PreviewFrameProps = {
+type Mobile2PreviewFrameProps = {
     children: ReactNode;
     themeMode: PreviewThemeMode;
     contentClassName?: string;
@@ -13,7 +13,7 @@ type Mobile1PreviewFrameProps = {
     headerVariant?: 'default' | 'whatsapp';
 };
 
-export function Mobile1PreviewFrame({
+export function Mobile2PreviewFrame({
     children,
     themeMode,
     contentClassName = '',
@@ -21,7 +21,7 @@ export function Mobile1PreviewFrame({
     hideSystemFooter = false,
     notificationSeed,
     headerVariant = 'default',
-}: Mobile1PreviewFrameProps) {
+}: Mobile2PreviewFrameProps) {
     const isDark = themeMode === 'dark';
 
     return (
@@ -34,10 +34,10 @@ export function Mobile1PreviewFrame({
                 ].join(' ')}
             >
                 {!hideSystemHeader ? (
-                    <Mobile1PreviewHeader themeMode={themeMode} notificationSeed={notificationSeed} variant={headerVariant} />
+                    <Mobile2PreviewHeader themeMode={themeMode} notificationSeed={notificationSeed} variant={headerVariant} />
                 ) : null}
                 <div className={['min-h-0 flex-1 overflow-hidden', contentClassName].filter(Boolean).join(' ')}>{children}</div>
-                {!hideSystemFooter ? <Mobile1PreviewFooter themeMode={themeMode} /> : null}
+                {!hideSystemFooter ? <Mobile2PreviewFooter themeMode={themeMode} /> : null}
             </div>
         </div>
     );
