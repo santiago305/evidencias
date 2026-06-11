@@ -27,9 +27,16 @@ function isDigit(value: string | undefined): boolean {
     return value !== undefined && /\d/.test(value);
 }
 
-function renderDocumentNumberLinks(line: string, lineIndex: number, keyPrefix = 'document-number', indexOffset = 0): ReactNode[] {
+function renderDocumentNumberLinks(
+    line: string,
+    lineIndex: number,
+    themeMode: PreviewThemeMode,
+    keyPrefix = 'document-number',
+    indexOffset = 0,
+): ReactNode[] {
     const parts: ReactNode[] = [];
     let lastIndex = 0;
+    const documentNumberColor = themeMode === 'dark' ? 'text-[#21b74e]' : 'text-[#1B8755]';
 
     for (const match of line.matchAll(DOCUMENT_NUMBER_PATTERN)) {
         const documentNumber = match[0];
@@ -51,7 +58,11 @@ function renderDocumentNumberLinks(line: string, lineIndex: number, keyPrefix = 
                 href="#"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="font-bold cursor-pointer text-[#1B8755] no-underline select-text hover:underline focus-visible:bg-[#1B8755] focus-visible:text-white focus-visible:underline-offset-1 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#00A884]"
+                className={[
+                    'font-bold cursor-pointer no-underline select-text hover:underline',
+                    'focus-visible:bg-[#1B8755] focus-visible:text-white focus-visible:underline-offset-1 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#00A884]',
+                    documentNumberColor,
+                ].join(' ')}
             >
                 {documentNumber}
             </a>,
@@ -71,7 +82,7 @@ function renderDocumentNumberLinks(line: string, lineIndex: number, keyPrefix = 
     return parts;
 }
 
-function renderFormattedLine(line: string, lineIndex: number): ReactNode[] {
+function renderFormattedLine(line: string, lineIndex: number, themeMode: PreviewThemeMode): ReactNode[] {
     const parts: ReactNode[] = [];
     let lastIndex = 0;
 
@@ -80,12 +91,12 @@ function renderFormattedLine(line: string, lineIndex: number): ReactNode[] {
         const matchIndex = match.index ?? 0;
 
         if (matchIndex > lastIndex) {
-            parts.push(...renderDocumentNumberLinks(line.slice(lastIndex, matchIndex), lineIndex, 'document-number', lastIndex));
+            parts.push(...renderDocumentNumberLinks(line.slice(lastIndex, matchIndex), lineIndex, themeMode, 'document-number', lastIndex));
         }
 
         parts.push(
             <strong key={`strong-text-${lineIndex}-${matchIndex}`} className="font-bold">
-                {renderDocumentNumberLinks(strongText, lineIndex, 'strong-document-number', matchIndex + 1)}
+                {renderDocumentNumberLinks(strongText, lineIndex, themeMode, 'strong-document-number', matchIndex + 1)}
             </strong>,
         );
 
@@ -93,20 +104,20 @@ function renderFormattedLine(line: string, lineIndex: number): ReactNode[] {
     }
 
     if (parts.length === 0) {
-        return renderDocumentNumberLinks(line, lineIndex);
+        return renderDocumentNumberLinks(line, lineIndex, themeMode);
     }
 
     if (lastIndex < line.length) {
-        parts.push(...renderDocumentNumberLinks(line.slice(lastIndex), lineIndex, 'document-number', lastIndex));
+        parts.push(...renderDocumentNumberLinks(line.slice(lastIndex), lineIndex, themeMode, 'document-number', lastIndex));
     }
 
     return parts;
 }
 
-function linesToSpans(lines: string[]) {
+function linesToSpans(lines: string[], themeMode: PreviewThemeMode) {
     return lines.map((line, idx) => {
         const key = `${idx}-${line.slice(0, 8)}`;
-        return <span key={key}>{renderFormattedLine(line, idx)}</span>;
+        return <span key={key}>{renderFormattedLine(line, idx, themeMode)}</span>;
     });
 }
 
@@ -278,7 +289,7 @@ export function WhatsappConversation({
                                                 }
                                                 themeMode={themeMode}
                                             >
-                                                {linesToSpans(msg.lines)}
+                                                {linesToSpans(msg.lines, themeMode)}
                                             </Bubble>
                                         </div>
 
