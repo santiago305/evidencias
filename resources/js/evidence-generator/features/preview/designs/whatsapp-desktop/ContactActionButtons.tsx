@@ -78,7 +78,7 @@ function ContactActionButton({ action, isDark }: ContactActionButtonProps) {
 
       <span
         className={[
-          'segoe-ui max-w-full truncate text-center',
+          'max-w-full truncate text-center',
           'text-[10px] leading-[12px]',
           isDark ? 'text-[#e9edef]' : 'text-[#111b21]',
         ].join(' ')}

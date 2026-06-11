@@ -60,7 +60,7 @@ function QuotedMessageBox({ quote, themeMode }: { quote: QuotedMessage; themeMod
                     <p className="truncate text-[10.5px] leading-4 font-semibold text-[#0078D7]" style={quote.authorColor ? { color: quote.authorColor } : undefined}>
                         {quote.author}
                     </p>
-                    <p className={['segoe-ui line-clamp-2 text-[12px] leading-4', isDark ? 'text-[#878F92]' : 'text-black/60'].join(' ')}>{quote.text}</p>
+                    <p className={['line-clamp-2 text-[12px] leading-4', isDark ? 'text-[#878F92]' : 'text-black/60'].join(' ')}>{quote.text}</p>
                 </div>
             </div>
         </div>
@@ -127,7 +127,7 @@ export function WhatsappMobileTextBubble({ side, firstInGroup, time, status, id,
                         {quote ? <QuotedMessageBox quote={quote} themeMode={themeMode} /> : null}
 
                         <div className="relative overflow-hidden ps-0.75 pe-0.75 break-words whitespace-pre-wrap">
-                            <span data-testid="selectable-text" dir="ltr" className="segoe-ui visible text-[12px] leading-4.5 font-normal tracking-[0.005rem] select-text" style={{ minHeight: '0px' }}>
+                            <span data-testid="selectable-text" dir="ltr" className="visible text-[12px] leading-4.5 font-normal tracking-[0.005rem] select-text" style={{ minHeight: '0px' }}>
                                 {content}
                             </span>
                             <span>
@@ -143,7 +143,7 @@ export function WhatsappMobileTextBubble({ side, firstInGroup, time, status, id,
                                 <div className={['flex h-3.75 items-center text-[0.6875rem] leading-3.75 whitespace-nowrap', metaText, isOut ? 'cursor-pointer' : ''].join(' ')}>
                                     {time && (
                                         <span className="inline-block align-top" dir="auto">
-                                            <span className={['segoe-ui inline min-w-0 max-w-full wrap-break-word text-[10px] leading-4 font-normal break-all whitespace-pre-line select-text', metaText].join(' ')}>
+                                            <span className={['inline min-w-0 max-w-full wrap-break-word text-[10px] leading-4 font-normal break-all whitespace-pre-line select-text', metaText].join(' ')}>
                                                 {time}
                                             </span>
                                         </span>

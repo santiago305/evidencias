@@ -7,6 +7,7 @@ import { WhatsappHeaderUser } from './whatsapp-header';
 import { buildWhatsappAvatarSeed } from './whatsappAppearance';
 import { WhatsappConversation } from './WhatsappConversation';
 import type { MsgStatus } from './WhatsappPieces';
+import type { WhatsappTypographyPlatform } from '../../whatsappTypography';
 
 function hashString(value: string): number {
     let hash = 2166136261;
@@ -32,6 +33,7 @@ function createSeededRandom(seed: number): () => number {
 }
 
 export function PreviewMobile2Whatsapp({ data, themeMode }: PreviewProps) {
+    const whatsappTypographyPlatform: WhatsappTypographyPlatform = 'android';
     const userSeed = useMemo(() => buildWhatsappAvatarSeed(data ?? undefined), [data]);
 
     const messageStatus = useMemo<MsgStatus>(() => {
@@ -115,7 +117,10 @@ export function PreviewMobile2Whatsapp({ data, themeMode }: PreviewProps) {
                 .join('|')}
             headerVariant="whatsapp"
         >
-            <div className={['flex h-full min-h-0 flex-col', themeMode === 'dark' ? 'bg-[#0b141a]' : 'bg-[#efeae2]'].join(' ')}>
+            <div
+                data-whatsapp-platform={whatsappTypographyPlatform}
+                className={['flex h-full min-h-0 flex-col', themeMode === 'dark' ? 'bg-[#0b141a]' : 'bg-[#efeae2]'].join(' ')}
+            >
                 <WhatsappHeaderUser
                     data={data}
                     status={messageStatus}

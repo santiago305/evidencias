@@ -110,7 +110,8 @@ export default function App({
         sexualidad: 'F' as const,
     };
     const [activeDesign, setActiveDesign] = useState<ActiveDesign>('whatsapp');
-    const previewThemeMode = evidenceThemeMode;
+    const [testWhatsappPreviewMode, setTestWhatsappPreviewMode] = useState<PreviewDeviceMode>('desktop');
+    const [testPreviewThemeMode, setTestPreviewThemeMode] = useState<PreviewThemeMode>('light');
     const [form, setForm] = useState<FormState>(() => createInitialFormState());
 
     const [saved, setSaved] = useState<SavedData | null>(null);
@@ -132,7 +133,6 @@ export default function App({
     const [editingConversation, setEditingConversation] = useState<ConversationListItem | null>(null);
 
     const hasRegisteredMobileDesign = registeredMobileDesigns.length > 0;
-    const whatsappPreviewMode: PreviewDeviceMode = hasRegisteredMobileDesign ? evidenceDeviceMode : 'desktop';
     const testMobileDesignKey = resolveActiveMobileDesignKey({
         availableMobileDesigns,
         globalMobileDesigns: globalMobileDesignKeys,
@@ -146,6 +146,13 @@ export default function App({
     });
     const isTestingConversation = conversationCodeInput.trim() !== '';
     const shouldUseTestMobileDesign = isTestingConversation || lastGeneratedFromConversationCode;
+    const isTestingPreview = isTestingConversation || lastGeneratedFromConversationCode;
+    const whatsappPreviewMode: PreviewDeviceMode = isTestingPreview
+        ? testWhatsappPreviewMode
+        : hasRegisteredMobileDesign
+          ? evidenceDeviceMode
+          : 'desktop';
+    const previewThemeMode = isTestingPreview ? testPreviewThemeMode : evidenceThemeMode;
     const activeMobileDesignKey = shouldUseTestMobileDesign ? testMobileDesignKey : userMobileDesignKey;
     const isTestMobileDesignGloballyRegistered = globalMobileDesignKeys.includes(testMobileDesignKey);
 
@@ -368,6 +375,11 @@ export default function App({
                         saved={saved}
                         tabItems={tabItems}
                         onSelectDesign={setActiveDesign}
+                        showTestingPreviewControls={isTestingPreview}
+                        whatsappPreviewMode={testWhatsappPreviewMode}
+                        themeMode={testPreviewThemeMode}
+                        onWhatsappPreviewModeChange={setTestWhatsappPreviewMode}
+                        onThemeModeChange={setTestPreviewThemeMode}
                         onChange={handleChange}
                         onGenerate={handleGenerate}
                         isGenerating={isGenerating}

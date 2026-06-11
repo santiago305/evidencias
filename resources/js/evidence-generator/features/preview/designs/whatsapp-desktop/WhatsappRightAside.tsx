@@ -121,18 +121,18 @@ export function WhatsappRightAside({
 
                             {/* name + phone */}
                             <div className="flex w-full min-w-0 flex-col items-center">
-                                <div className={['segoe-ui-semibold truncate p-1 text-[18px] font-normal text-wrap', primaryText].join(' ')}>
+                                <div className={['font-medium truncate p-1 text-[18px] text-wrap', primaryText].join(' ')}>
                                     {profileTitle ?? (data.nombre?.trim() ? data.nombre : '')}
                                 </div>
 
                                 {/* AQUÍ VA EL TELÉFONO FORMATEADO */}
-                                <div className={['segoe-ui truncate text-[13px]', secondaryText].join(' ')}>
+                                <div className={['truncate text-[13px]', secondaryText].join(' ')}>
                                     {profileSubtitle ?? `+51 ${formatTelefonoPE(data.telefono)}`}
                                 </div>
 
                                 <ContactActionButtons showAddAction={showAddContactAction} themeMode={themeMode} />
                             </div>
-                            <div className={['segoe-ui my-2 block w-full text-[11px]', primaryText].join(' ')}>Info.</div>
+                            <div className={['my-2 block w-full text-[11px]', primaryText].join(' ')}>Info.</div>
                         </div>
                     </div>
 
@@ -150,11 +150,11 @@ export function WhatsappRightAside({
                                     </svg>
                                 </span>
 
-                                <span className={['segoe-ui truncate text-[12px]', primaryText].join(' ')}>Archivos, enlaces y documentos</span>
+                                <span className={['truncate text-[12px]', primaryText].join(' ')}>Archivos, enlaces y documentos</span>
                             </div>
 
                             {/* Right: count */}
-                            <span className={['segoe-ui text-[11px]', secondaryText].join(' ')}>0</span>
+                            <span className={['text-[11px]', secondaryText].join(' ')}>0</span>
                         </button>
                     </div>
 
@@ -178,7 +178,7 @@ export function WhatsappRightAside({
                                     </svg>
                                 </span>
 
-                                <span className={['segoe-ui truncate text-[12px]', primaryText].join(' ')}>Mensajes destacados</span>
+                                <span className={['truncate text-[12px]', primaryText].join(' ')}>Mensajes destacados</span>
                             </div>
 
                             {/* En WhatsApp suele ir vacío (o un número si quieres) */}
@@ -198,7 +198,7 @@ export function WhatsappRightAside({
                                     </svg>
                                 </span>
 
-                                <span className={['segoe-ui truncate text-[12px]', primaryText].join(' ')}>Silenciar notificaciones</span>
+                                <span className={['truncate text-[12px]', primaryText].join(' ')}>Silenciar notificaciones</span>
                             </div>
 
                             {/* Switch (fake, solo UI) */}
@@ -216,7 +216,7 @@ export function WhatsappRightAside({
                             type="button"
                             className={['flex w-full items-start justify-between gap-3 px-4 py-2.5 text-left transition', hoverBg].join(' ')}
                         >
-                            <div className="segoe-ui flex min-w-0 items-start gap-3">
+                            <div className="flex min-w-0 items-start gap-3">
                                 <span className={['mt-0.5 shrink-0', iconText].join(' ')}>
                                     {/* disappearing-messages-refreshed */}
                                     <svg viewBox="0 0 24 24" height="18" width="18" fill="none">
@@ -261,7 +261,7 @@ export function WhatsappRightAside({
                         {/* Privacidad avanzada del chat (con subtexto) */}
                         <button
                             type="button"
-                            className={['segoe-ui flex w-full items-start justify-between gap-3 px-4 py-2.5 text-left transition', hoverBg].join(' ')}
+                            className={['flex w-full items-start justify-between gap-3 px-4 py-2.5 text-left transition', hoverBg].join(' ')}
                         >
                             <div className="flex min-w-0 items-start gap-3">
                                 <span className={['mt-0.5 shrink-0', iconText].join(' ')}>
@@ -283,7 +283,7 @@ export function WhatsappRightAside({
                         </button>
 
                         {/* Cifrado (con descripción) */}
-                        <div className="segoe-ui flex w-full items-start gap-3 px-4 py-2.5">
+                        <div className="flex w-full items-start gap-3 px-4 py-2.5">
                             <span className={['mt-0.5 shrink-0', iconText].join(' ')}>
                                 {/* lock-refreshed */}
                                 <svg viewBox="0 0 24 24" height="18" width="18" fill="none">
@@ -294,9 +294,9 @@ export function WhatsappRightAside({
                                 </svg>
                             </span>
 
-                            <div className="segoe-ui min-w-0">
-                                <div className={['segoe-ui text-[12px]', primaryText].join(' ')}>Cifrado</div>
-                                <div className={['segoe-ui text-[11px] leading-snug', secondaryText].join(' ')}>
+                            <div className="min-w-0">
+                                <div className={['text-[12px]', primaryText].join(' ')}>Cifrado</div>
+                                <div className={['text-[11px] leading-snug', secondaryText].join(' ')}>
                                     Los mensajes están cifrados de extremo a extremo. Haz clic para verificarlo.
                                 </div>
                             </div>
@@ -326,7 +326,7 @@ export function WhatsappRightAside({
                         {/* añadir lista */}
                         <button
                             type="button"
-                            className={['segoe-ui flex w-full items-center gap-3 px-4 py-3 text-left transition', hoverBg].join(' ')}
+                            className={['flex w-full items-center gap-3 px-4 py-3 text-left transition', hoverBg].join(' ')}
                         >
                             <span className={['shrink-0', iconText].join(' ')}>
                                 {/* favorite-refreshed */}
@@ -345,7 +345,7 @@ export function WhatsappRightAside({
                         {/* vaciar */}
                         <button
                             type="button"
-                            className={['segoe-ui flex w-full items-center gap-3 px-4 py-3 text-left transition', hoverBg].join(' ')}
+                            className={['flex w-full items-center gap-3 px-4 py-3 text-left transition', hoverBg].join(' ')}
                         >
                             <span className={["shrink-0 ", isDark ? "text-[#f296a0]" : "text-[#e1193e]"].join(' ')}>
                                 {/* delete-refreshed */}
@@ -364,7 +364,7 @@ export function WhatsappRightAside({
                         {/* Bloquear */}
                         <button
                             type="button"
-                            className={['segoe-ui flex w-full items-center gap-3 px-4 py-3 text-left transition', hoverBg].join(' ')}
+                            className={['flex w-full items-center gap-3 px-4 py-3 text-left transition', hoverBg].join(' ')}
                         >
                             <span className={["shrink-0 ", isDark ? "text-[#f296a0]" : "text-[#e1193e]"].join(' ')}>
                                 {/* block-refreshed */}
@@ -383,7 +383,7 @@ export function WhatsappRightAside({
                         {/* Reportar */}
                         <button
                             type="button"
-                            className={['segoe-ui flex w-full items-center gap-3 px-4 py-3 text-left transition', hoverBg].join(' ')}
+                            className={['flex w-full items-center gap-3 px-4 py-3 text-left transition', hoverBg].join(' ')}
                         >
                             <span className={["shrink-0 ", isDark ? "text-[#f296a0]" : "text-[#e1193e]"].join(' ')}>
                                 {/* report-refreshed */}
@@ -402,7 +402,7 @@ export function WhatsappRightAside({
                         {/* Eliminar chat */}
                         <button
                             type="button"
-                            className={['segoe-ui flex w-full items-center gap-3 px-4 py-3 text-left transition', hoverBg].join(' ')}
+                            className={['flex w-full items-center gap-3 px-4 py-3 text-left transition', hoverBg].join(' ')}
                         >
                             <span className={["shrink-0 ", isDark ? "text-[#f296a0]" : "text-[#e1193e]"].join(' ')} >
                                 {/* delete-refreshed */}

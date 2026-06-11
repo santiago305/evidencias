@@ -3,9 +3,51 @@ import type { PreviewThemeMode } from '../../../../types';
 export function Mobile2PreviewFooter({ themeMode }: { themeMode: PreviewThemeMode }) {
     const isDark = themeMode === 'dark';
 
+    const bg = isDark ? '#05090C' : '#F7F8FA';
+    const color = isDark ? '#B8BABC' : '#777777';
+
     return (
-        <div className={['shrink-0 px-3 py-2', isDark ? 'bg-[#000000]' : 'bg-white'].join(' ')}>
-            <div className={['mx-auto h-[5px] w-24 rounded-full', isDark ? 'bg-[#EFEFEF]' : 'bg-[#6B6C6E]'].join(' ')} />
+        <div
+            className="shrink-0 flex h-[40px] items-center justify-center gap-[76px]"
+            style={{ backgroundColor: bg }}
+        >
+            {/* Triángulo Android */}
+            <svg width="24" height="24" viewBox="0 0 34 34">
+                <polygon
+                    points="25,6 5,17 25,28"
+                    fill="none"
+                    stroke={color}
+                    strokeWidth="2"
+                    strokeLinejoin="round"
+                    strokeLinecap="round"
+                />
+            </svg>
+
+            {/* Círculo Android */}
+            <svg width="24" height="24" viewBox="0 0 34 34">
+                <circle
+                    cx="17"
+                    cy="17"
+                    r="10.8"
+                    fill="none"
+                    stroke={color}
+                    strokeWidth="2"
+                />
+            </svg>
+
+            {/* Cuadrado Android */}
+            <svg width="24" height="24" viewBox="0 0 34 34">
+                <rect
+                    x="7.5"
+                    y="7.5"
+                    width="19"
+                    height="19"
+                    rx="0.8"
+                    fill="none"
+                    stroke={color}
+                    strokeWidth="2"
+                />
+            </svg>
         </div>
     );
 }

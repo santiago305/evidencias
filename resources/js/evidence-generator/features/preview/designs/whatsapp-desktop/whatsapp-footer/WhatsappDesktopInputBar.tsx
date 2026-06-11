@@ -29,7 +29,7 @@ export function WhatsappDesktopInputBar({ themeMode = 'light' }: { themeMode?: P
                         </button>
                     </div>
 
-                    <div className="flex h-full flex-1 items-center"><strong>Escribe un mensaje...</strong></div>
+                    <div className="flex h-full flex-1 items-center">Escribe un mensaje...</div>
 
                     <span aria-hidden="true" data-icon="mic-outlined" className="h-full w-auto">
                         <svg viewBox="0 0 24 24" height="18" width="18" preserveAspectRatio="xMidYMid meet" className={isDark ? 'text-[#ffffff]' : 'text-black'}>

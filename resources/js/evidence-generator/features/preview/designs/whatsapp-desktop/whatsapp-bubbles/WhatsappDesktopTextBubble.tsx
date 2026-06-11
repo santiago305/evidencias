@@ -127,7 +127,7 @@ export function WhatsappDesktopTextBubble({ side, firstInGroup, time, status, id
                         {quote ? <QuotedMessageBox quote={quote} themeMode={themeMode} /> : null}
 
                         <div className="relative overflow-hidden ps-1.25 pe-1.25 break-words whitespace-pre-wrap">
-                            <span data-testid="selectable-text" dir="ltr" className="segoe-ui visible text-[12px] leading-4.5 font-normal tracking-[0.005rem] select-text" style={{ minHeight: '0px' }}>
+                            <span data-testid="selectable-text" dir="ltr" className="visible text-[12px] leading-4.5 font-normal tracking-[0.005rem] select-text" style={{ minHeight: '0px' }}>
                                 {content}
                             </span>
                             <span>
@@ -143,7 +143,7 @@ export function WhatsappDesktopTextBubble({ side, firstInGroup, time, status, id
                                 <div className={['flex h-3.75 items-center text-[0.6875rem] leading-3.75 whitespace-nowrap', metaText, isOut ? 'cursor-pointer' : ''].join(' ')}>
                                     {time && (
                                         <span className="inline-block align-top" dir="auto">
-                                            <span className={['segoe-ui inline min-w-0 max-w-full wrap-break-word text-[10px] leading-4 font-normal break-all whitespace-pre-line select-text', metaText].join(' ')}>
+                                            <span className={['inline min-w-0 max-w-full wrap-break-word text-[10px] leading-4 font-normal break-all whitespace-pre-line select-text', metaText].join(' ')}>
                                                 {time}
                                             </span>
                                         </span>

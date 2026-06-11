@@ -68,3 +68,26 @@ test('desktop WhatsApp scale applies to content without scaling the Windows tray
     assert.match(desktopPreviewBlock, /transformOrigin:\s*['"]top left['"]/);
     assert.ok(desktopPreviewBlock.indexOf('transform: `scale(${desktopScaleFactor})`') < desktopPreviewBlock.indexOf('<WindowsTrayBar'));
 });
+
+test('whatsapp typography platform is configured at the preview entry point', () => {
+    const typographySource = readFileSync(resolve(designsDir, 'whatsappTypography.ts'), 'utf8');
+    const mobile1Source = readFileSync(resolve(designsDir, 'mobile-1', 'whatsapp', 'PreviewMobile1Whatsapp.tsx'), 'utf8');
+    const mobile2Source = readFileSync(resolve(designsDir, 'mobile-2', 'whatsapp', 'PreviewMobile2Whatsapp.tsx'), 'utf8');
+    const mobile3Source = readFileSync(resolve(designsDir, 'mobile-3', 'whatsapp', 'PreviewMobile1Whatsapp.tsx'), 'utf8');
+    const desktopSource = readFileSync(resolve(designsDir, 'whatsapp-desktop', 'PreviewWhatsappDesktop.tsx'), 'utf8');
+    const appCssSource = readFileSync(resolve(designsDir, '..', '..', '..', '..', '..', 'css', 'app.css'), 'utf8');
+
+    assert.match(typographySource, /type WhatsappTypographyPlatform = 'android' \| 'ios' \| 'windows';/);
+    assert.match(mobile1Source, /const whatsappTypographyPlatform: WhatsappTypographyPlatform = 'android';/);
+    assert.match(mobile1Source, /data-whatsapp-platform={whatsappTypographyPlatform}/);
+    assert.match(mobile2Source, /const whatsappTypographyPlatform: WhatsappTypographyPlatform = 'android';/);
+    assert.match(mobile2Source, /data-whatsapp-platform={whatsappTypographyPlatform}/);
+    assert.match(mobile3Source, /const whatsappTypographyPlatform: WhatsappTypographyPlatform = 'android';/);
+    assert.match(mobile3Source, /data-whatsapp-platform={whatsappTypographyPlatform}/);
+    assert.match(desktopSource, /const whatsappTypographyPlatform: WhatsappTypographyPlatform = 'windows';/);
+    assert.match(desktopSource, /data-whatsapp-platform={whatsappTypographyPlatform}/);
+    assert.match(appCssSource, /\[data-whatsapp-platform='android'\]/);
+    assert.match(appCssSource, /\[data-whatsapp-platform='ios'\]/);
+    assert.match(appCssSource, /\[data-whatsapp-platform='windows'\]/);
+    assert.match(appCssSource, /--whatsapp-font-family/);
+});

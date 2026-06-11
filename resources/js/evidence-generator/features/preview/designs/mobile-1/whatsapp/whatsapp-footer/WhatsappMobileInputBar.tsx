@@ -22,8 +22,7 @@ export function WhatsappMobileInputBar({ themeMode = 'light' }: { themeMode?: Pr
                     <input
                         aria-label="Mensaje"
                         autoComplete="off"
-                        className="segoe-ui min-w-0 flex-1 bg-transparent text-[13px] text-current outline-none placeholder:text-current/70"
-                        style={{ fontFamily: "'Whatsapp Segoe UI', 'Segoe UI', system-ui, sans-serif", pointerEvents: 'auto' }}
+                        className="min-w-0 flex-1 bg-transparent text-[13px] text-current outline-none placeholder:text-current/70"
                         placeholder="Mensaje"
                         spellCheck={false}
                         type="text"

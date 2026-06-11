@@ -45,7 +45,7 @@ function renderDocumentNumberLinks(line: string, lineIndex: number, keyPrefix = 
                 href="#"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="segoe-ui-negrita cursor-pointer text-[#1B8755] no-underline select-text hover:underline"
+                className="font-bold cursor-pointer text-[#1B8755] no-underline select-text hover:underline"
             >
                 {documentNumber}
             </a>,
@@ -73,7 +73,7 @@ function renderFormattedLine(line: string, lineIndex: number): ReactNode[] {
         }
 
         parts.push(
-            <strong key={`strong-text-${lineIndex}-${matchIndex}`} className="segoe-ui-negrita">
+            <strong key={`strong-text-${lineIndex}-${matchIndex}`} className="font-bold">
                 {renderDocumentNumberLinks(strongText, lineIndex, 'strong-document-number', matchIndex + 1)}
             </strong>,
         );

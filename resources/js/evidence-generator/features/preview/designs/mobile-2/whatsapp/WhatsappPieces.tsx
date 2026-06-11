@@ -32,7 +32,7 @@ export function DayChip({ text, themeMode = "light" }: { text: string; themeMode
 export function IncomingBubble({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex justify-start">
-      <div className="segoe-ui max-w-[85%] rounded-2xl rounded-tl-md bg-white border border-black/5 px-3 py-2 text-[12px] text-slate-900 shadow-[0_1px_0_rgba(0,0,0,0.04)]">
+      <div className="max-w-[85%] rounded-2xl rounded-tl-md bg-white border border-black/5 px-3 py-2 text-[12px] text-slate-900 shadow-[0_1px_0_rgba(0,0,0,0.04)]">
         {children}
       </div>
     </div>
@@ -42,7 +42,7 @@ export function IncomingBubble({ children }: { children: React.ReactNode }) {
 export function OutgoingBubble({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex justify-end">
-      <div className="segoe-ui max-w-[85%] rounded-2xl rounded-tr-md bg-[#d9fdd3] border border-black/5 px-3 py-2 text-[12px] text-slate-900 shadow-[0_1px_0_rgba(0,0,0,0.04)]">
+      <div className="max-w-[85%] rounded-2xl rounded-tr-md bg-[#d9fdd3] border border-black/5 px-3 py-2 text-[12px] text-slate-900 shadow-[0_1px_0_rgba(0,0,0,0.04)]">
         {children}
       </div>
     </div>
@@ -50,7 +50,7 @@ export function OutgoingBubble({ children }: { children: React.ReactNode }) {
 }
 
 export function BubbleTitle({ children }: { children: React.ReactNode }) {
-  return <div className="segoe-ui text-[12px] font-semibold mb-1">{children}</div>;
+  return <div className="text-[12px] font-semibold mb-1">{children}</div>;
 }
 
 export function BubbleRow({ k, v }: { k: string; v: string }) {
@@ -192,7 +192,7 @@ export function EncryptedMessage({ themeMode = "light" }: { themeMode?: PreviewT
                     isDark ? "bg-[#12181C] text-[#EECC84]" : "bg-[#FFF0D4] text-black/60",
                   ].join(" ")}
                 >
-                  <div className="segoe-ui relative z-10 rounded-[7.35px]">
+                  <div className="relative z-10 rounded-[7.35px]">
                     <div className="cursorpointer">
                       <span>
                         <div className={['me-0.5 mt-0.5 inline-block align-top', isDark ? 'text-[#EECC84]' : 'text-black/60'].join(' ')}>
@@ -213,7 +213,7 @@ export function EncryptedMessage({ themeMode = "light" }: { themeMode?: PreviewT
                           </span>
                         </div>
 
-                        <span className={`segoe-ui visible min-h-0 wrap-break-word ${encryptedTextSize}`}>
+                        <span className={`visible min-h-0 wrap-break-word ${encryptedTextSize}`}>
                           Los mensajes y las llamadas están cifrados de extremo
                           a extremo. Solo las personas en este chat pueden
                           leerlos, escucharlos o compartirlos. domos 2 xd <strong className="font-semibold">Más información.</strong>
@@ -256,7 +256,7 @@ export function TempporalMessage({ themeMode = "light" }: { themeMode?: PreviewT
                     isDark ? "bg-[#12181C] text-[#767C80]" : "bg-[#fefdfc] text-[#667781]",
                   ].join(" ")}
                 >
-                  <div className="segoe-ui relative z-10 rounded-[7.35px]">
+                  <div className="relative z-10 rounded-[7.35px]">
                     <div className="cursorpointer">
                       <span>
                         <div className="me-0.5 inline-block align-top">
@@ -281,7 +281,7 @@ export function TempporalMessage({ themeMode = "light" }: { themeMode?: PreviewT
                           </span>
                         </div>
 
-                        <span className={`segoe-ui visible min-h-0 wrap-break-word ${messageTextSize}`}>
+                        <span className={`visible min-h-0 wrap-break-word ${messageTextSize}`}>
                           Usas una duración predeterminada para los mensajes temporales en chats nuevos. Los mensajes nuevos desaparecerán de este chat después de 90 días de haber sido enviados, a menos que se use la opción para conservarlos. <strong className="font-semibold">Cambiar Duración</strong>
                         </span>
                       </span>
@@ -323,7 +323,7 @@ export function ActiveTemporalMessage({ themeMode = "light" }: { themeMode?: Pre
                     isDark ? "bg-[#12181C] text-[#767C80]" : "bg-[#fefdfc] text-[#667781]",
                   ].join(" ")}
                 >
-                  <div className="segoe-ui relative z-10 rounded-[7.35px]">
+                  <div className="relative z-10 rounded-[7.35px]">
                     <div className="cursorpointer">
                       <span>
                         <div className="me-0.5 inline-block align-top">
@@ -348,7 +348,7 @@ export function ActiveTemporalMessage({ themeMode = "light" }: { themeMode?: Pre
                           </span>
                         </div>
 
-                        <span className={`segoe-ui visible min-h-0 wrap-break-word ${messageTextSize}`}>
+                        <span className={`visible min-h-0 wrap-break-word ${messageTextSize}`}>
                           Activaste los mensajes temporales. Los mensajes nuevos desaparecerán de este chat después de 90 días de haber sido enviados, a menos que se use la opción para conservarlos. <strong className="font-semibold">Cambiar Duración</strong>
                         </span>
                       </span>
@@ -384,7 +384,7 @@ export function DesactiveTemporalMessage({ themeMode = "light" }: { themeMode?: 
                 isDark ? "bg-[#12181C] text-[#767C80]" : "bg-[#fefdfc] text-[#667781]",
               ].join(" ")}
             >
-              <div className="segoe-ui relative z-10 rounded-[7.35px]">
+              <div className="relative z-10 rounded-[7.35px]">
                 <div className="cursor-pointer">
                   <span className="inline-flex items-start justify-center gap-0.5">
                     <span
@@ -412,7 +412,7 @@ export function DesactiveTemporalMessage({ themeMode = "light" }: { themeMode?: 
                     </span>
 
                     <span
-                      className={`segoe-ui visible min-h-0 wrap-break-word ${messageTextSize}`}
+                      className={`visible min-h-0 wrap-break-word ${messageTextSize}`}
                     >
                       Desactivaste los mensajes temporales.{" "}
                       <strong className="font-semibold">

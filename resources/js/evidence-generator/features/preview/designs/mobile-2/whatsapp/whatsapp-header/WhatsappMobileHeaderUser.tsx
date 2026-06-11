@@ -62,7 +62,7 @@ export function WhatsappMobileHeaderUser({
                             {mobileAvatarInitial ? (
                                 <span
                                     aria-hidden="true"
-                                    className="segoe-ui-semibold grid h-full w-full place-items-center rounded-full border text-[18px] leading-none"
+                                    className="font-bold grid h-full w-full place-items-center rounded-full border text-[18px] leading-none"
                                     data-avatar-initial="true"
                                     style={{
                                         backgroundColor: avatarTheme.bg,
@@ -136,7 +136,7 @@ export function WhatsappMobileHeaderUser({
                     <div className="min-w-0 flex-1 leading-tight">
                         <div
                             className={[
-                                'segoe-ui truncate pb-px text-[13px] leading-[17px] tracking-tight',
+                                'truncate pb-px text-[13px] leading-[17px] tracking-tight',
                                 isDark ? 'text-white' : 'text-[#111b21]',
                             ].join(' ')}
                         >

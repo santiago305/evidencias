@@ -29,7 +29,7 @@ export function WhatsappDesktopHeaderUser({
         }
 
         return Math.random() < 0.5 ? { type: 'online' } : { type: 'hidden' };
-    }, [data, status]);
+    }, [status]);
 
     const avatarTheme = useMemo(() => createWhatsappAvatarTheme(buildWhatsappAvatarSeed(data), themeMode), [data, themeMode]);
 
@@ -102,7 +102,7 @@ export function WhatsappDesktopHeaderUser({
 
                     <div className="min-w-0 leading-tight">
                         <div
-                            className={['segoe-ui-semibold truncate text-[13px] tracking-tight', isDark ? 'text-white' : 'text-[#111b21]'].join(' ')}
+                            className={['font-semibold truncate text-[13px] tracking-tight', isDark ? 'text-white' : 'text-[#111b21]'].join(' ')}
                         >
                             {headerTitle}
                         </div>
