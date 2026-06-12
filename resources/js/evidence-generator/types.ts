@@ -26,6 +26,7 @@ export interface FormState {
     fechaHora: string;
     fechaHoraRegistro: string;
     duracion: string;
+    img_64: string;
     modoEntrada: ModoEntrada;
 }
 
@@ -35,6 +36,7 @@ export interface GeneratedMessage {
     dateKey?: string;
     lines: string[];
     status?: 'sent' | 'delivered' | 'read';
+    id_?: string;
     quote?: {
         side: 'in' | 'out';
         text: string;

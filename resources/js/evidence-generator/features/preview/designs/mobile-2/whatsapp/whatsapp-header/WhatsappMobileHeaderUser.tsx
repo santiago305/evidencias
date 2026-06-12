@@ -1,6 +1,7 @@
 import { ArrowLeft } from 'lucide-react';
 import { useMemo } from 'react';
 import type { PreviewThemeMode } from '../../../../../../types';
+import { WhatsappAvatarImage } from '../../../WhatsappAvatarImage';
 import { createWhatsappAvatarTheme } from '../avatarTheme';
 import { buildWhatsappAvatarSeed } from '../whatsappAppearance';
 import type { MsgStatus } from '../WhatsappPieces';
@@ -59,41 +60,46 @@ export function WhatsappMobileHeaderUser({
 
                     <div className="relative h-9 w-9 shrink-0">
                         <div className="h-9 w-9 overflow-hidden rounded-full">
-                            {mobileAvatarInitial ? (
-                                <span
-                                    aria-hidden="true"
-                                    className="font-bold grid h-full w-full place-items-center rounded-full border text-[18px] leading-none"
-                                    data-avatar-initial="true"
-                                    style={{
-                                        backgroundColor: avatarTheme.bg,
-                                        borderColor: avatarTheme.border,
-                                        color: avatarTheme.icon,
-                                    }}
-                                >
-                                    {mobileAvatarInitial}
-                                </span>
-                            ) : (
-                                <span aria-hidden="true" data-icon="default-contact-refreshed" className="block h-full w-full">
-                                    <svg
-                                        viewBox="0 0 48 48"
-                                        height="48"
-                                        width="48"
-                                        preserveAspectRatio="xMidYMid meet"
-                                        className="h-full w-full rounded-full border"
+                            <WhatsappAvatarImage
+                                img64={data.img_64}
+                                alt={headerTitle}
+                            className="h-full w-full rounded-full object-cover"
+                            >
+                                {mobileAvatarInitial ? (
+                                    <span
+                                        aria-hidden="true"
+                                        className="font-bold grid h-full w-full place-items-center rounded-full border text-[18px] leading-none"
+                                        data-avatar-initial="true"
                                         style={{
                                             backgroundColor: avatarTheme.bg,
                                             borderColor: avatarTheme.border,
+                                            color: avatarTheme.icon,
                                         }}
-                                        fill="none"
                                     >
-                                        <title>default-contact-refreshed</title>
-                                        <path
-                                            d="M24 23q-1.857 0-3.178-1.322Q19.5 20.357 19.5 18.5t1.322-3.178T24 14t3.178 1.322Q28.5 16.643 28.5 18.5t-1.322 3.178T24 23m-6.75 10q-.928 0-1.59-.66-.66-.662-.66-1.59v-.9q0-.956.492-1.758A3.3 3.3 0 0 1 16.8 26.87a16.7 16.7 0 0 1 3.544-1.308q1.8-.435 3.656-.436 1.856 0 3.656.436T31.2 26.87q.816.422 1.308 1.223T33 29.85v.9q0 .928-.66 1.59-.662.66-1.59.66z"
-                                            fill={avatarTheme.icon}
-                                        />
-                                    </svg>
-                                </span>
-                            )}
+                                        {mobileAvatarInitial}
+                                    </span>
+                                ) : (
+                                    <span aria-hidden="true" data-icon="default-contact-refreshed" className="block h-full w-full">
+                                        <svg
+                                            viewBox="0 0 48 48"
+                                            height="48"
+                                            width="48"
+                                            preserveAspectRatio="xMidYMid meet"
+                                        className="h-full w-full rounded-full"
+                                            style={{
+                                                backgroundColor: avatarTheme.bg,
+                                            }}
+                                            fill="none"
+                                        >
+                                            <title>default-contact-refreshed</title>
+                                            <path
+                                                d="M24 23q-1.857 0-3.178-1.322Q19.5 20.357 19.5 18.5t1.322-3.178T24 14t3.178 1.322Q28.5 16.643 28.5 18.5t-1.322 3.178T24 23m-6.75 10q-.928 0-1.59-.66-.66-.662-.66-1.59v-.9q0-.956.492-1.758A3.3 3.3 0 0 1 16.8 26.87a16.7 16.7 0 0 1 3.544-1.308q1.8-.435 3.656-.436 1.856 0 3.656.436T31.2 26.87q.816.422 1.308 1.223T33 29.85v.9q0 .928-.66 1.59-.662.66-1.59.66z"
+                                                fill={avatarTheme.icon}
+                                            />
+                                        </svg>
+                                    </span>
+                                )}
+                            </WhatsappAvatarImage>
                         </div>
 
                         {showTemporaryIndicator && (
@@ -136,18 +142,18 @@ export function WhatsappMobileHeaderUser({
                     <div className="min-w-0 flex-1 leading-tight">
                         <div
                             className={[
-                                'truncate pb-px text-[13px] leading-[17px] tracking-tight',
+                                'truncate pb-px text-[15px] leading-[17px]  [word-spacing:3px] font-medium',
                                 isDark ? 'text-white' : 'text-[#111b21]',
                             ].join(' ')}
                         >
                             {headerTitle}
                         </div>
 
-                        {headerStatus.type !== 'hidden' && (
+                        {/* {headerStatus.type !== 'hidden' && (
                             <div className={['truncate text-[11px] font-medium', isDark ? 'text-slate-400' : 'text-[#667781]'].join(' ')}>
                                 en linea
                             </div>
-                        )}
+                        )} */}
                     </div>
                 </div>
 

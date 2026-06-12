@@ -6,6 +6,21 @@ type DateParts = {
     day: number;
 };
 
+const peruMonthNames = [
+    'enero',
+    'febrero',
+    'marzo',
+    'abril',
+    'mayo',
+    'junio',
+    'julio',
+    'agosto',
+    'septiembre',
+    'octubre',
+    'noviembre',
+    'diciembre',
+];
+
 export function getPeruDateParts(date: Date): DateParts {
     const parts = new Intl.DateTimeFormat('en-US', {
         timeZone: 'America/Lima',
@@ -57,6 +72,11 @@ export function formatDateDMY({ year, month, day }: DateParts) {
     return `${day}/${month}/${year}`;
 }
 
+export function formatDateLongMobile({ year, month, day }: DateParts) {
+    const monthName = peruMonthNames[month - 1] ?? '';
+    return `${day} de ${monthName} de ${year}`;
+}
+
 function getDayChipTextFromParts(input: DateParts | null, reference: DateParts) {
     if (!input) return 'Hoy';
 
@@ -75,6 +95,24 @@ function getDayChipTextFromParts(input: DateParts | null, reference: DateParts) 
     return formatDateDMY(input);
 }
 
+function getMobileDayChipTextFromParts(input: DateParts | null, reference: DateParts) {
+    if (!input) return 'Hoy';
+
+    const todayUtc = Date.UTC(reference.year, reference.month - 1, reference.day);
+    const inputUtc = Date.UTC(input.year, input.month - 1, input.day);
+    const diffDays = Math.floor((todayUtc - inputUtc) / 86_400_000);
+
+    if (diffDays === 0) return 'Hoy';
+    if (diffDays === 1) return 'Ayer';
+
+    if (diffDays >= 2 && diffDays <= 6) {
+        const dayIndex = new Date(inputUtc).getUTCDay();
+        return peruDayNames[dayIndex] ?? 'Hoy';
+    }
+
+    return formatDateLongMobile(input);
+}
+
 export function getDayChipText(fechaHora: string) {
     return getDayChipTextFromParts(parsePeruDateOnly(fechaHora), getPeruDateParts(new Date()));
 }
@@ -83,6 +121,16 @@ export function getDayChipTextForDate(dateKey: string, referenceFechaHora?: stri
     const reference = referenceFechaHora ? (parsePeruDateOnly(referenceFechaHora) ?? getPeruDateParts(currentDate)) : getPeruDateParts(currentDate);
 
     return getDayChipTextFromParts(parseDateKey(dateKey), reference);
+}
+
+export function getMobileDayChipText(fechaHora: string) {
+    return getMobileDayChipTextFromParts(parsePeruDateOnly(fechaHora), getPeruDateParts(new Date()));
+}
+
+export function getMobileDayChipTextForDate(dateKey: string, referenceFechaHora?: string | null, currentDate = new Date()) {
+    const reference = referenceFechaHora ? (parsePeruDateOnly(referenceFechaHora) ?? getPeruDateParts(currentDate)) : getPeruDateParts(currentDate);
+
+    return getMobileDayChipTextFromParts(parseDateKey(dateKey), reference);
 }
 
 export function parseLocalDateTime(fechaHora: string) {

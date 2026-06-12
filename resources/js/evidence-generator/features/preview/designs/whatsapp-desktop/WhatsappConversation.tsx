@@ -213,8 +213,8 @@ export function WhatsappConversation({
             }
 
             const maxScrollTop = scrollHeight - clientHeight;
-            const scrollRatios = [0.18, 0.42, 0.68, 1];
-            const scrollRatio = scrollRatios[Math.floor(Math.random() * scrollRatios.length)] ?? 0.42;
+            const scrollRatios = [0.8, 0.88, 0.94, 1];
+            const scrollRatio = scrollRatios[Math.floor(Math.random() * scrollRatios.length)] ?? 1;
 
             scrollContainer.scrollTop = Math.round(maxScrollTop * scrollRatio);
             updateScrollState();
@@ -267,6 +267,7 @@ export function WhatsappConversation({
 
                                         <div className={wrapperSpacing}>
                                             <Bubble
+                                                id={msg.id_}
                                                 side={msg.side}
                                                 firstInGroup={isFirstInGroup}
                                                 time={msg.time}

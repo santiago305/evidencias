@@ -42,7 +42,7 @@ class ConversationRenderService
 
     /**
      * @param  array<string, mixed>  $input
-     * @return list<array{side:string,time:string,dateKey:string,lines:list<string>,quote?:array{side:string,text:string}}>
+     * @return list<array{side:string,time:string,dateKey:string,lines:list<string>,quote?:array{side:string,text:string},id_?:string}>
      */
     public function render(Conversation $conversation, array $input): array
     {
@@ -131,6 +131,10 @@ class ConversationRenderService
             }
 
             $rendered[] = $renderedMessage;
+        }
+
+        if ($rendered !== []) {
+            $rendered[array_key_last($rendered)]['id_'] = 'ultimo_mensaje';
         }
 
         return $rendered;

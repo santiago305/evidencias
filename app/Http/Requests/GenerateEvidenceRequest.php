@@ -25,16 +25,17 @@ class GenerateEvidenceRequest extends FormRequest
         return [
             'seedCode' => ['nullable', 'string', 'max:100'],
             'conversationCode' => ['nullable', 'string', 'max:100'],
-            'telefono' => ['required', 'string', 'max:30'],
+            'telefono' => ['required', 'string', 'regex:/^9\d{8}$/'],
             'nombre' => ['required', 'string', 'max:150'],
             'dniCliente' => ['required', 'string', 'regex:/^\d{8}$/'],
             'monto' => ['required', 'string', 'max:40'],
             'tasa' => ['required', 'string', 'max:40'],
             'cuota' => ['required', 'string', 'max:40'],
             'plazo' => ['required', 'string', 'max:40'],
-            'fechaHora' => ['required', 'string', 'max:40'],
-            'fechaHoraRegistro' => ['required', 'string', 'max:40'],
-            'duracion' => ['required', 'string', 'max:40'],
+            'fechaHora' => ['required', 'date_format:Y-m-d\TH:i'],
+            'fechaHoraRegistro' => ['required', 'date_format:Y-m-d\TH:i', 'after_or_equal:fechaHora'],
+            'duracion' => ['required', 'integer', 'min:1'],
+            'img_64' => ['nullable', 'string', 'max:2000000'],
         ];
     }
 }

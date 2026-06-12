@@ -2,6 +2,7 @@
 
 use App\Models\Conversation;
 use App\Models\ConversationMessage;
+use App\Models\GeneratedEvidence;
 use App\Models\User;
 use App\Models\UserConversationProgress;
 use App\Services\Conversation\ConversationRenderService;
@@ -303,6 +304,8 @@ test('generate evidence returns seed and rendered messages', function () {
             ],
         ]);
 
+    expect($response->json('messages.0.id_'))->toBe('ultimo_mensaje');
+
     $this->assertDatabaseCount('generated_evidences', 1);
 });
 
@@ -369,6 +372,27 @@ test('generate evidence returns quote metadata for replied messages', function (
     ]);
 });
 
+test('generate evidence marks only the last rendered message with the final message id', function () {
+    $user = User::factory()->create();
+
+    createConversationForTest('conv_last_message_id_001', [
+        ['side' => 'out', 'delay_minutes' => 0, 'lines' => ['Primer mensaje']],
+        ['side' => 'in', 'delay_minutes' => 6, 'lines' => ['Segundo mensaje']],
+        ['side' => 'out', 'delay_minutes' => 6, 'lines' => ['Ultimo mensaje']],
+    ]);
+
+    $response = $this->actingAs($user)->postJson(route('evidences.generate'), evidencePayload());
+
+    $response->assertOk();
+
+    $messages = $response->json('messages');
+
+    expect($messages)->toHaveCount(3)
+        ->and($messages[0])->not->toHaveKey('id_')
+        ->and($messages[1])->not->toHaveKey('id_')
+        ->and($messages[2]['id_'])->toBe('ultimo_mensaje');
+});
+
 test('generate evidence renders only canonical client and advisor name variables', function () {
     $user = User::factory()->create([
         'name' => 'MARIA ELENA LOPEZ',
@@ -412,6 +436,23 @@ test('generate evidence renders client dni variable', function () {
 
     $response->assertOk()
         ->assertJsonPath('messages.0.lines.0', 'DNI cliente 87654321');
+});
+
+test('generate evidence keeps the submitted phone number when rendering phone variable', function () {
+    $user = User::factory()->create();
+
+    createConversationForTest('conv_phone_variable_001', [
+        ['side' => 'out', 'delay_minutes' => 0, 'lines' => ['Telefono cliente {telefono}']],
+    ]);
+
+    $response = $this->actingAs($user)->postJson(route('evidences.generate'), [
+        ...evidencePayload(),
+        'conversationCode' => 'conv_phone_variable_001',
+        'telefono' => '987654321',
+    ]);
+
+    $response->assertOk()
+        ->assertJsonPath('messages.0.lines.0', 'Telefono cliente 987654321');
 });
 
 test('generate evidence renders amount variable with a flexible thousands separator', function () {
@@ -514,6 +555,73 @@ test('generate evidence requires an eight digit client dni', function () {
         ->assertJsonValidationErrorFor('dniCliente');
 });
 
+test('generate evidence requires a nine digit phone starting with nine', function (string $telefono) {
+    $user = User::factory()->create();
+
+    createConversationForTest('conv_phone_validation_001', [
+        ['side' => 'out', 'delay_minutes' => 0, 'lines' => ['Telefono {telefono}']],
+    ]);
+
+    $response = $this->actingAs($user)->postJson(route('evidences.generate'), [
+        ...evidencePayload(),
+        'telefono' => $telefono,
+    ]);
+
+    $response->assertUnprocessable()
+        ->assertJsonValidationErrorFor('telefono');
+})->with([
+    'does not start with nine' => '899999999',
+    'has eight digits' => '99999999',
+    'has ten digits' => '9999999999',
+    'contains letters' => '99999a999',
+    'contains spaces' => '999 999999',
+]);
+
+test('generate evidence requires a positive numeric duration', function (string $duracion) {
+    $user = User::factory()->create();
+
+    createConversationForTest('conv_duration_validation_001', [
+        ['side' => 'out', 'delay_minutes' => 0, 'lines' => ['Duracion {duracion}']],
+    ]);
+
+    $response = $this->actingAs($user)->postJson(route('evidences.generate'), [
+        ...evidencePayload(),
+        'duracion' => $duracion,
+    ]);
+
+    $response->assertUnprocessable()
+        ->assertJsonValidationErrorFor('duracion');
+
+    $this->assertDatabaseCount('generated_evidences', 0);
+})->with([
+    'letters' => 'abc',
+    'zero' => '0',
+    'negative' => '-5',
+    'decimal' => '2.5',
+]);
+
+test('generate evidence requires valid chronological timestamps', function (array $overrides, string $field) {
+    $user = User::factory()->create();
+
+    createConversationForTest('conv_timestamp_validation_001', [
+        ['side' => 'out', 'delay_minutes' => 0, 'lines' => ['Hola']],
+    ]);
+
+    $response = $this->actingAs($user)->postJson(route('evidences.generate'), [
+        ...evidencePayload(),
+        ...$overrides,
+    ]);
+
+    $response->assertUnprocessable()
+        ->assertJsonValidationErrorFor($field);
+
+    $this->assertDatabaseCount('generated_evidences', 0);
+})->with([
+    'invalid minimum timestamp' => [['fechaHora' => 'no-es-fecha'], 'fechaHora'],
+    'invalid registration timestamp' => [['fechaHoraRegistro' => '2026/05/29 10:55'], 'fechaHoraRegistro'],
+    'registration before minimum timestamp' => [['fechaHoraRegistro' => '2026-05-29T10:20'], 'fechaHoraRegistro'],
+]);
+
 test('generate evidence accepts the registration timestamp without advisor identity in the payload', function () {
     $user = User::factory()->create();
 
@@ -536,6 +644,26 @@ test('generate evidence accepts the registration timestamp without advisor ident
 
     $response->assertOk();
     $this->assertDatabaseCount('generated_evidences', 1);
+});
+
+test('generate evidence accepts and stores an optional base64 contact image value', function () {
+    $user = User::factory()->create();
+    $imageDataUrl = 'data:image/jpeg;base64,'.base64_encode('fake-avatar-image');
+
+    createConversationForTest('conv_avatar_image_001', [
+        ['side' => 'out', 'delay_minutes' => 0, 'lines' => ['Hola {nombre_cliente}']],
+    ]);
+
+    $response = $this->actingAs($user)->postJson(route('evidences.generate'), [
+        ...evidencePayload(),
+        'img_64' => $imageDataUrl,
+    ]);
+
+    $response->assertOk();
+
+    $storedEvidence = GeneratedEvidence::query()->firstOrFail();
+
+    expect($storedEvidence->input_data['img_64'] ?? null)->toBe($imageDataUrl);
 });
 
 test('windows tray profile is persisted and reused for the same user', function () {
@@ -814,9 +942,9 @@ test('generated conversation includes a date key for each rendered message', fun
 
     $response = $this->actingAs($user)->postJson(route('evidences.generate'), [
         ...evidencePayload(),
-        'fechaHora' => '2026-06-02T23:45',
-        'fechaHoraRegistro' => '2026-06-03T00:20',
-        'duracion' => '25',
+        'fechaHora' => '2026-06-02T22:45',
+        'fechaHoraRegistro' => '2026-06-03T07:15',
+        'duracion' => '20',
     ]);
 
     $response->assertOk()

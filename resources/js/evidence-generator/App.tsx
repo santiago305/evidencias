@@ -157,7 +157,14 @@ export default function App({
     const isTestMobileDesignGloballyRegistered = globalMobileDesignKeys.includes(testMobileDesignKey);
 
     const handleChange = (key: keyof FormState) => (e: ChangeEvent<HTMLInputElement>) => {
-        const value = key === 'dniCliente' ? e.target.value.replace(/\D/g, '').slice(0, 8) : e.target.value;
+        const value =
+            key === 'dniCliente'
+                ? e.target.value.replace(/\D/g, '').slice(0, 8)
+                : key === 'telefono'
+                  ? e.target.value.replace(/\D/g, '').slice(0, 9)
+                  : key === 'duracion'
+                    ? e.target.value.replace(/\D/g, '')
+                    : e.target.value;
 
         setForm((prev) => ({ ...prev, [key]: value }));
     };

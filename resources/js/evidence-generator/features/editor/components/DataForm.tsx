@@ -61,7 +61,16 @@ export function DataForm({
                 </div>
             </div>
 
-            <Input label="Telefono" id="telefono" value={form.telefono} onChange={onChange('telefono')} placeholder="Ej: 999 999 999" />
+            <Input
+                label="Telefono"
+                id="telefono"
+                value={form.telefono}
+                onChange={onChange('telefono')}
+                placeholder="Ej: 999999999"
+                maxLength={9}
+                inputMode="numeric"
+                pattern="9[0-9]{8}"
+            />
 
             <Input label="Nombre" id="nombre-cliente" value={form.nombre} onChange={onChange('nombre')} placeholder="Ej: Juan Pérez" />
 
@@ -97,7 +106,24 @@ export function DataForm({
                 value={form.fechaHoraRegistro}
                 onChange={onChange('fechaHoraRegistro')}
             />
-            <Input label="Duracion (min)" id="duracion" value={form.duracion} onChange={onChange('duracion')} placeholder="Ej: 6" />
+            <Input
+                label="Duracion (min)"
+                id="duracion"
+                type="number"
+                value={form.duracion}
+                onChange={onChange('duracion')}
+                placeholder="Ej: 6"
+                inputMode="numeric"
+            />
+
+            <Input
+                label="img 64"
+                id="img_64"
+                value={form.img_64}
+                onChange={onChange('img_64')}
+                placeholder="data:image/jpeg;base64,/9j/4AAQSkZJR..."
+                hint="Opcional"
+            />
 
             <Input
                 label="ID de sal generada"

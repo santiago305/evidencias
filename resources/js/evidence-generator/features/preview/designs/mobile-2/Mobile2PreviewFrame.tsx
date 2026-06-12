@@ -29,7 +29,7 @@ export function Mobile2PreviewFrame({
             <div
                 id="CAPTURA"
                 className={[
-                    'flex h-[760px] max-h-[calc(100vh-2rem)] w-[390px] max-w-full flex-col overflow-hidden shadow-2xl',
+                    'flex h-[700px] max-h-[calc(100vh-2rem)] w-[335px] max-w-full flex-col overflow-hidden shadow-2xl',
                     isDark ? 'bg-[#101418] shadow-black/45' : 'bg-white shadow-slate-300/60',
                 ].join(' ')}
             >

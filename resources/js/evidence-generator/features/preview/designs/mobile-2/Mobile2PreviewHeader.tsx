@@ -1,19 +1,5 @@
-import { AlarmClock, Signal, Wifi } from 'lucide-react';
+import { Signal, Wifi } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
-
-import {
-    mdiBattery,
-    mdiBattery10,
-    mdiBattery20,
-    mdiBattery30,
-    mdiBattery40,
-    mdiBattery50,
-    mdiBattery60,
-    mdiBattery70,
-    mdiBattery80,
-    mdiBattery90,
-} from '@mdi/js';
-import Icon from '@mdi/react';
 
 import {
     BCPIcon,
@@ -36,24 +22,13 @@ import {
     YouTubeMusicIcon,
 } from '@/components/icons';
 
+
 import type { ComponentType, SVGProps } from 'react';
 import { mulberry32 } from '../../../../lib/whatsapp/random';
 import type { PreviewThemeMode } from '../../../../types';
+import { AndroidBatteryIcon } from './components/AndroidBatteryIcon';
 
-const batteryIcons = {
-    10: mdiBattery10,
-    20: mdiBattery20,
-    30: mdiBattery30,
-    40: mdiBattery40,
-    50: mdiBattery50,
-    60: mdiBattery60,
-    70: mdiBattery70,
-    80: mdiBattery80,
-    90: mdiBattery90,
-    100: mdiBattery,
-};
-
-type BatteryLevel = keyof typeof batteryIcons;
+type BatteryLevel = 10 | 20 | 30 | 40 | 50 | 60 | 70 | 80 | 90 | 100;
 type NotificationIconComponent = ComponentType<SVGProps<SVGSVGElement>>;
 
 type NotificationIcon = {
@@ -100,25 +75,11 @@ function randomIndex(limit: number, random: () => number): number {
 function pickNotificationCount(random: () => number): number {
     const roll = random();
 
-    if (roll < 0.2) {
-        return 0;
-    }
-
-    if (roll < 0.45) {
-        return 1;
-    }
-
-    if (roll < 0.68) {
-        return 2;
-    }
-
-    if (roll < 0.84) {
-        return 3;
-    }
-
-    if (roll < 0.95) {
-        return 4;
-    }
+    if (roll < 0.2) return 0;
+    if (roll < 0.45) return 1;
+    if (roll < 0.68) return 2;
+    if (roll < 0.84) return 3;
+    if (roll < 0.95) return 4;
 
     return 5;
 }
@@ -129,7 +90,10 @@ function buildNotificationSet(random: () => number): NotificationIcon[] {
     const usage = new Map<string, number>();
 
     const pickRandomIcon = (allowIndicator: boolean, allowDuplicate: boolean): NotificationIcon => {
-        const source = allowIndicator ? notificationIconPool : notificationIconPool.filter(({ id }) => id !== 'notification-dot');
+        const source = allowIndicator
+            ? notificationIconPool
+            : notificationIconPool.filter(({ id }) => id !== 'notification-dot');
+
         const available = source.filter(({ id }) => (usage.get(id) ?? 0) === 0);
         const repeated = source.filter(({ id }) => (usage.get(id) ?? 0) > 0 && (usage.get(id) ?? 0) < 3);
 
@@ -156,23 +120,13 @@ function buildNotificationSet(random: () => number): NotificationIcon[] {
 
 function getBatteryLevel(): BatteryLevel {
     const hour = new Date().getHours();
-
     const levels: BatteryLevel[] = [100, 90, 80, 70, 60, 50, 40, 30, 20, 10];
 
     return levels[Math.floor(hour / 2) % levels.length];
 }
 
 function BatteryIcon({ level }: { level: BatteryLevel }) {
-    return (
-        <Icon
-            path={batteryIcons[level]}
-            size={0.72}
-            color="currentColor"
-            style={{
-                transform: 'rotate()',
-            }}
-        />
-    );
+    return <AndroidBatteryIcon level={level} className="h-[13px] w-[26px] text-current" />;
 }
 
 type Mobile2PreviewHeaderProps = {
@@ -181,9 +135,14 @@ type Mobile2PreviewHeaderProps = {
     variant?: 'default' | 'whatsapp';
 };
 
-export function Mobile2PreviewHeader({ themeMode, notificationSeed, variant = 'default' }: Mobile2PreviewHeaderProps) {
+export function Mobile2PreviewHeader({
+    themeMode,
+    notificationSeed,
+    variant = 'default',
+}: Mobile2PreviewHeaderProps) {
     const isDark = themeMode === 'dark';
     const isWhatsappVariant = variant === 'whatsapp' && isDark;
+
     const [time, setTime] = useState('');
     const [batteryLevel, setBatteryLevel] = useState<BatteryLevel>(getBatteryLevel());
 
@@ -210,13 +169,24 @@ export function Mobile2PreviewHeader({ themeMode, notificationSeed, variant = 'd
     }, []);
 
     const notifications = useMemo(() => {
-        const random = notificationSeed?.trim() ? mulberry32(hashString(notificationSeed)) : Math.random;
+        const random = notificationSeed?.trim()
+            ? mulberry32(hashString(notificationSeed))
+            : Math.random;
 
         return buildNotificationSet(random);
     }, [notificationSeed]);
 
     return (
-        <div className={['shrink-0 px-5 py-1', isWhatsappVariant ? 'bg-[#0B1014] text-white' : isDark ? 'bg-[#070c0f] text-white' : 'bg-white text-[#5f6368]'].join(' ')}>
+        <div
+            className={[
+                'shrink-0 px-5 py-1',
+                isWhatsappVariant
+                    ? 'bg-[#0B1014] text-white'
+                    : isDark
+                      ? 'bg-[#070c0f] text-white'
+                      : 'bg-white text-[#5f6368]',
+            ].join(' ')}
+        >
             <div
                 className="flex h-5 items-center justify-between"
                 style={{
@@ -224,28 +194,37 @@ export function Mobile2PreviewHeader({ themeMode, notificationSeed, variant = 'd
                 }}
             >
                 <div className="flex items-center gap-1.5">
-                    <span className={['text-[12px] leading-none font-normal tracking-[-0.01em]', isWhatsappVariant ? 'text-white' : isDark ? 'text-white' : 'text-[#5f6368]'].join(' ')}>
+                    <span
+                        className={[
+                            'text-[14px] leading-none font-normal tracking-[-0.01em]',
+                            isWhatsappVariant ? 'text-white' : isDark ? 'text-white' : 'text-[#5f6368]',
+                        ].join(' ')}
+                    >
                         {time}
                     </span>
 
                     <div className="flex items-center gap-1">
                         {notifications.map(({ id, Icon: NotificationIcon }, index) => (
-                            <NotificationIcon key={`${id}-${index}`} className="h-[12px] w-[12px] text-current" aria-hidden="true" />
+                            <NotificationIcon
+                                key={`${id}-${index}`}
+                                className="h-[14px] w-[14px] text-current"
+                                aria-hidden="true"
+                            />
                         ))}
                     </div>
                 </div>
 
                 <div className="flex items-center gap-1 text-current">
-                    <AlarmClock className="h-[13px] w-[13px]" strokeWidth={2.1} />
-                    <Wifi className="h-[14px] w-[14px]" strokeWidth={2.2} />
+                    <Wifi className="h-[16px] w-[16px]" strokeWidth={2.2} />
 
-                    <span className="text-[7px] leading-[0.75] font-bold tracking-[-0.04em]">
+                    <span className="text-[8px] leading-[0.75] font-bold tracking-[-0.04em]">
                         Vo
                         <br />
                         LTE
                     </span>
 
-                    <Signal className="h-[14px] w-[14px]" strokeWidth={2.2} />
+                    <Signal className="h-[16px] w-[16px]" strokeWidth={2.2} />
+                    <Signal className="h-[16px] w-[16px]" strokeWidth={2.2} />
 
                     <BatteryIcon level={batteryLevel} />
                 </div>

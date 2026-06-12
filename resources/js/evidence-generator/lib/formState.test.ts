@@ -14,6 +14,7 @@ test('createInitialFormState returns an empty form ready for a new evidence', ()
         fechaHora: '',
         fechaHoraRegistro: '',
         duracion: '',
+        img_64: '',
         modoEntrada: 'informativo',
     });
 });

@@ -19,7 +19,7 @@ export function DayChip({ text, themeMode = "light" }: { text: string; themeMode
     <div className="sticky top-0.5 z-20 flex justify-center my-1">
       <span
         className={[
-          "rounded-md px-2 py-0.5 text-[10px] shadow font-medium",
+          "rounded-md px-2 py-0.5 text-[9px] shadow font-medium",
           isDark ? "bg-[#12181C] text-[#767C80]" : "bg-[#fefdfc] text-[#667781]",
         ].join(" ")}
       >

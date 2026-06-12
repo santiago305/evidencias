@@ -21,6 +21,7 @@ export interface WhatsappConversationMessage {
     dateKey?: string;
     lines: ReactNode[];
     status?: MsgStatus;
+    id_?: string;
     quote?: {
         side: 'in' | 'out';
         text: string;
@@ -332,6 +333,10 @@ export function buildWhatsappConversation(data: WhatsappData, messageStatus?: Ms
               ]
             : []),
     ];
+
+    if (baseMessages.length > 0) {
+        baseMessages[baseMessages.length - 1].id_ = 'ultimo_mensaje';
+    }
 
     return baseMessages;
 }

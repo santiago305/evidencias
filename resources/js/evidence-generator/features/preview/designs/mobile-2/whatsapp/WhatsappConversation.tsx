@@ -1,5 +1,5 @@
 import { Fragment, useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
-import { formatWhatsappTimeValue, getDateKeyFromLocalDateTime, getDayChipTextForDate } from '../../../../../lib/whatsapp/time';
+import { formatWhatsappTimeValue, getDateKeyFromLocalDateTime, getMobileDayChipTextForDate } from '../../../../../lib/whatsapp/time';
 import type { GeneratedMessage, PreviewThemeMode } from '../../../../../types';
 import { shouldShowConversationMoreIndicator } from '../../whatsappConversationIndicator';
 import type { WhatsappConversationMessage } from './buildWhatsappConversation';
@@ -151,7 +151,6 @@ export function WhatsappConversation({
 
     const updateScrollState = useCallback(() => {
         const el = scrollContainerRef.current;
-
         if (!el) return;
 
         const { scrollTop, scrollHeight, clientHeight } = el;
@@ -173,6 +172,7 @@ export function WhatsappConversation({
             height: thumbHeight,
             visible: true,
         });
+
         setShowMoreConversationIndicator(shouldShowConversationMoreIndicator(scrollTop, scrollHeight, clientHeight, 'mobile'));
     }, []);
 
@@ -193,13 +193,13 @@ export function WhatsappConversation({
     );
 
     const firstDayChipDateKey = conversationMessages[0] ? resolveMessageDateKey(conversationMessages[0], fallbackDateKey) : fallbackDateKey;
+
     const clientQuoteTheme = useMemo(() => {
         return buildMobileClientQuoteTheme(data);
     }, [data]);
 
     useEffect(() => {
         const scrollContainer = scrollContainerRef.current;
-
         if (!scrollContainer) return;
 
         const frameId = window.requestAnimationFrame(() => {
@@ -211,8 +211,8 @@ export function WhatsappConversation({
             }
 
             const maxScrollTop = scrollHeight - clientHeight;
-            const scrollRatios = [0.18, 0.42, 0.68, 1];
-            const scrollRatio = scrollRatios[Math.floor(Math.random() * scrollRatios.length)] ?? 0.42;
+            const scrollRatios = [0.8, 0.88, 0.94, 1];
+            const scrollRatio = scrollRatios[Math.floor(Math.random() * scrollRatios.length)] ?? 1;
 
             scrollContainer.scrollTop = Math.round(maxScrollTop * scrollRatio);
             updateScrollState();
@@ -240,7 +240,10 @@ export function WhatsappConversation({
                             onScroll={updateScrollState}
                             className="scrollbar-mobile-soft h-full w-full overflow-y-auto pr-[4px]"
                         >
-                            {firstDayChipDateKey !== '' && <DayChip text={getDayChipTextForDate(firstDayChipDateKey)} themeMode={themeMode} />}
+                            {firstDayChipDateKey !== '' && (
+                                <DayChip text={getMobileDayChipTextForDate(firstDayChipDateKey)} themeMode={themeMode} />
+                            )}
+
                             <EncryptedMessage themeMode={themeMode} />
                             {showDefaultTemporalMessage && <TempporalMessage themeMode={themeMode} />}
 
@@ -255,6 +258,7 @@ export function WhatsappConversation({
                                 const isFirstInGroup = idx === 0 || markerBeforeCurrent || prev.side !== msg.side;
                                 const staysInSameGroup = !!next && !markerAfterCurrent && next.side === msg.side;
                                 const wrapperSpacing = staysInSameGroup ? 'mb-0.5' : 'mb-4';
+
                                 const quoteColors =
                                     msg.quote?.side === 'out'
                                         ? buildMobileAdvisorQuoteColors(msg.quote.side, themeMode)
@@ -264,10 +268,13 @@ export function WhatsappConversation({
 
                                 return (
                                     <Fragment key={`message-${idx}-${msg.side}`}>
-                                        {showsDayChip && <DayChip text={getDayChipTextForDate(currentDateKey)} themeMode={themeMode} />}
+                                        {showsDayChip && (
+                                            <DayChip text={getMobileDayChipTextForDate(currentDateKey)} themeMode={themeMode} />
+                                        )}
 
                                         <div className={wrapperSpacing}>
                                             <Bubble
+                                                id={msg.id_}
                                                 side={msg.side}
                                                 firstInGroup={isFirstInGroup}
                                                 time={msg.time}
@@ -289,6 +296,7 @@ export function WhatsappConversation({
                                         </div>
 
                                         {markerAfterCurrent && inlineTemporalMode === 'active' && <ActiveTemporalMessage themeMode={themeMode} />}
+
                                         {markerAfterCurrent && inlineTemporalMode === 'deactive' && (
                                             <DesactiveTemporalMessage themeMode={themeMode} />
                                         )}

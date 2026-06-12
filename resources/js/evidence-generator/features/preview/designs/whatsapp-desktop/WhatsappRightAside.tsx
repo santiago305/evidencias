@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import type { PreviewThemeMode } from '../../../../types';
+import { WhatsappAvatarImage } from '../WhatsappAvatarImage';
 import { createWhatsappAvatarTheme } from './avatarTheme';
 import { ContactActionButtons } from './ContactActionButtons';
 import { buildWhatsappAvatarSeed } from './whatsappAppearance';
@@ -103,20 +104,25 @@ export function WhatsappRightAside({
                         <div className="flex flex-col items-center gap-2">
                             {/* avatar */}
                             <div className="h-26 w-26 overflow-hidden rounded-full">
-                                <svg
-                                    viewBox="0 0 48 48"
-                                    className="h-full w-full rounded-full border"
-                                    style={{
-                                        backgroundColor: avatarTheme.bg,
-                                        borderColor: avatarTheme.border,
-                                    }}
-                                    fill="none"
+                                <WhatsappAvatarImage
+                                    img64={data.img_64}
+                                    alt={contactActionTitle}
+                        className="h-full w-full rounded-full object-cover"
                                 >
-                                    <path
-                                        d="M24 23q-1.857 0-3.178-1.322Q19.5 20.357 19.5 18.5t1.322-3.178T24 14t3.178 1.322Q28.5 16.643 28.5 18.5t-1.322 3.178T24 23m-6.75 10q-.928 0-1.59-.66-.66-.662-.66-1.59v-.9q0-.956.492-1.758A3.3 3.3 0 0 1 16.8 26.87a16.7 16.7 0 0 1 3.544-1.308q1.8-.435 3.656-.436 1.856 0 3.656.436T31.2 26.87q.816.422 1.308 1.223T33 29.85v.9q0 .928-.66 1.59-.662.66-1.59.66z"
-                                        fill={avatarTheme.icon}
-                                    />
-                                </svg>
+                                    <svg
+                                        viewBox="0 0 48 48"
+                                    className="h-full w-full rounded-full"
+                                        style={{
+                                            backgroundColor: avatarTheme.bg,
+                                        }}
+                                        fill="none"
+                                    >
+                                        <path
+                                            d="M24 23q-1.857 0-3.178-1.322Q19.5 20.357 19.5 18.5t1.322-3.178T24 14t3.178 1.322Q28.5 16.643 28.5 18.5t-1.322 3.178T24 23m-6.75 10q-.928 0-1.59-.66-.66-.662-.66-1.59v-.9q0-.956.492-1.758A3.3 3.3 0 0 1 16.8 26.87a16.7 16.7 0 0 1 3.544-1.308q1.8-.435 3.656-.436 1.856 0 3.656.436T31.2 26.87q.816.422 1.308 1.223T33 29.85v.9q0 .928-.66 1.59-.662.66-1.59.66z"
+                                            fill={avatarTheme.icon}
+                                        />
+                                    </svg>
+                                </WhatsappAvatarImage>
                             </div>
 
                             {/* name + phone */}
