@@ -18,6 +18,8 @@ test('applyConversationTestDefaults fills empty evidence fields for conversation
         fechaHora: '2026-06-06T14:15',
         fechaHoraRegistro: '2026-06-06T15:30',
         duracion: '60',
+        img_64: '',
+        img_64_file: null,
         modoEntrada: 'informativo',
     });
 });

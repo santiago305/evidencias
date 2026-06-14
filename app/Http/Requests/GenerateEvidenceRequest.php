@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Validator;
 
 class GenerateEvidenceRequest extends FormRequest
 {
@@ -35,7 +36,26 @@ class GenerateEvidenceRequest extends FormRequest
             'fechaHora' => ['required', 'date_format:Y-m-d\TH:i'],
             'fechaHoraRegistro' => ['required', 'date_format:Y-m-d\TH:i', 'after_or_equal:fechaHora'],
             'duracion' => ['required', 'integer', 'min:1'],
-            'img_64' => ['nullable', 'string', 'max:2000000'],
+            'img_64' => ['nullable', 'file', 'mimes:png', 'max:2048'],
+        ];
+    }
+
+    public function after(): array
+    {
+        return [
+            function (Validator $validator): void {
+                $image = $this->file('img_64');
+
+                if ($image === null || $this->filled('conversationCode')) {
+                    return;
+                }
+
+                $fileDni = pathinfo($image->getClientOriginalName(), PATHINFO_FILENAME);
+
+                if ($fileDni !== $this->string('dniCliente')->value()) {
+                    $validator->errors()->add('img_64', 'El nombre del archivo PNG debe coincidir con el DNI del cliente.');
+                }
+            },
         ];
     }
 }

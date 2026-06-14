@@ -1,4 +1,5 @@
-const IMAGE_DATA_URL_PATTERN = /^data:image\/(?:jpeg|jpg|png|webp);base64,([A-Za-z0-9+/]+={0,2})$/i;
+const BLOB_IMAGE_SRC_PATTERN = /^blob:/i;
+const PNG_IMAGE_SRC_PATTERN = /^(?:https?:\/\/|\/|\.\/|\.\.\/).+\.png(?:[?#].*)?$/i;
 
 export function resolveValidWhatsappAvatarImageSrc(value?: string | null): string | null {
     const trimmedValue = value?.trim();
@@ -7,12 +8,5 @@ export function resolveValidWhatsappAvatarImageSrc(value?: string | null): strin
         return null;
     }
 
-    const match = IMAGE_DATA_URL_PATTERN.exec(trimmedValue);
-    const base64Payload = match?.[1] ?? '';
-
-    if (!match || base64Payload.length % 4 !== 0) {
-        return null;
-    }
-
-    return trimmedValue;
+    return BLOB_IMAGE_SRC_PATTERN.test(trimmedValue) || PNG_IMAGE_SRC_PATTERN.test(trimmedValue) ? trimmedValue : null;
 }

@@ -27,8 +27,11 @@ export interface FormState {
     fechaHoraRegistro: string;
     duracion: string;
     img_64: string;
+    img_64_file: File | null;
     modoEntrada: ModoEntrada;
 }
+
+export type FormInputKey = Exclude<keyof FormState, 'img_64_file'>;
 
 export interface GeneratedMessage {
     side: 'in' | 'out';

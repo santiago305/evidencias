@@ -13,6 +13,7 @@ export function createInitialFormState(): FormState {
         fechaHoraRegistro: '',
         duracion: '',
         img_64: '',
+        img_64_file: null,
         modoEntrada: 'informativo',
     };
 }

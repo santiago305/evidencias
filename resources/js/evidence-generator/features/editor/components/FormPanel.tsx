@@ -1,6 +1,14 @@
 import type { ChangeEvent } from 'react';
 import { Monitor, Moon, Smartphone, Sun } from 'lucide-react';
-import type { ActiveDesign, ConversationProgressSummary, FormState, PreviewDeviceMode, PreviewThemeMode, SavedData } from '../../../types';
+import type {
+    ActiveDesign,
+    ConversationProgressSummary,
+    FormInputKey,
+    FormState,
+    PreviewDeviceMode,
+    PreviewThemeMode,
+    SavedData,
+} from '../../../types';
 import { DataForm } from './DataForm';
 import { DesignTabs } from './DesignTabs';
 
@@ -21,7 +29,9 @@ interface FormPanelProps {
     themeMode: PreviewThemeMode;
     onWhatsappPreviewModeChange: (mode: PreviewDeviceMode) => void;
     onThemeModeChange: (mode: PreviewThemeMode) => void;
-    onChange: (key: keyof FormState) => (e: ChangeEvent<HTMLInputElement>) => void;
+    onChange: (key: FormInputKey) => (e: ChangeEvent<HTMLInputElement>) => void;
+    onImageFileChange: (e: ChangeEvent<HTMLInputElement>) => void;
+    imageFileInputKey: number;
     onGenerate: () => void;
     isGenerating: boolean;
     generatedSeedCode: string;
@@ -49,6 +59,8 @@ export function FormPanel({
     onWhatsappPreviewModeChange,
     onThemeModeChange,
     onChange,
+    onImageFileChange,
+    imageFileInputKey,
     onGenerate,
     isGenerating,
     generatedSeedCode,
@@ -112,6 +124,8 @@ export function FormPanel({
                     activeDesign={activeDesign}
                     saved={saved}
                     onChange={onChange}
+                    onImageFileChange={onImageFileChange}
+                    imageFileInputKey={imageFileInputKey}
                     onGenerate={onGenerate}
                     isGenerating={isGenerating}
                     generatedSeedCode={generatedSeedCode}

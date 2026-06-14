@@ -7,6 +7,8 @@ use App\Models\User;
 use App\Models\UserConversationProgress;
 use App\Services\Conversation\ConversationRenderService;
 use Carbon\Carbon;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 
 afterEach(function () {
     Carbon::setTestNow();
@@ -51,6 +53,13 @@ function evidencePayload(): array
         'fechaHoraRegistro' => '2026-05-29T10:55',
         'duracion' => '8',
     ];
+}
+
+function fakePngUpload(string $name): UploadedFile
+{
+    $png = base64_decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+/p9sAAAAASUVORK5CYII=', true);
+
+    return UploadedFile::fake()->createWithContent($name, $png === false ? '' : $png);
 }
 
 function workingMinutesBetween(Carbon $startDate, Carbon $endDate): int
@@ -646,24 +655,72 @@ test('generate evidence accepts the registration timestamp without advisor ident
     $this->assertDatabaseCount('generated_evidences', 1);
 });
 
-test('generate evidence accepts and stores an optional base64 contact image value', function () {
+test('generate evidence accepts and stores an optional png contact image named with the client dni', function () {
+    Storage::fake('public');
+
     $user = User::factory()->create();
-    $imageDataUrl = 'data:image/jpeg;base64,'.base64_encode('fake-avatar-image');
 
     createConversationForTest('conv_avatar_image_001', [
         ['side' => 'out', 'delay_minutes' => 0, 'lines' => ['Hola {nombre_cliente}']],
     ]);
 
-    $response = $this->actingAs($user)->postJson(route('evidences.generate'), [
+    $response = $this->actingAs($user)->post(route('evidences.generate'), [
         ...evidencePayload(),
-        'img_64' => $imageDataUrl,
+        'img_64' => fakePngUpload('12345678.png'),
+    ], ['Accept' => 'application/json']);
+
+    $response->assertOk();
+
+    $storedEvidence = GeneratedEvidence::query()->firstOrFail();
+    $storedImage = $storedEvidence->input_data['img_64'] ?? null;
+
+    expect($storedImage)->toBeString()
+        ->toContain('/storage/contact-images/'.$user->id.'/')
+        ->toEndWith('.png');
+
+    Storage::disk('public')->assertExists(str_replace('/storage/', '', $storedImage));
+});
+
+test('generate evidence requires the png file name to match the client dni outside testing mode', function () {
+    Storage::fake('public');
+
+    $user = User::factory()->create();
+
+    createConversationForTest('conv_avatar_image_name_001', [
+        ['side' => 'out', 'delay_minutes' => 0, 'lines' => ['Hola {nombre_cliente}']],
     ]);
+
+    $response = $this->actingAs($user)->post(route('evidences.generate'), [
+        ...evidencePayload(),
+        'img_64' => fakePngUpload('87654321.png'),
+    ], ['Accept' => 'application/json']);
+
+    $response->assertUnprocessable()
+        ->assertInvalid(['img_64']);
+
+    Storage::disk('public')->assertMissing('contact-images/'.$user->id.'/87654321.png');
+});
+
+test('generate evidence allows a png file name mismatch in conversation testing mode', function () {
+    Storage::fake('public');
+
+    $user = User::factory()->create();
+
+    createConversationForTest('conv_avatar_testing_001', [
+        ['side' => 'out', 'delay_minutes' => 0, 'lines' => ['Hola {nombre_cliente}']],
+    ], 'development');
+
+    $response = $this->actingAs($user)->post(route('evidences.generate'), [
+        ...evidencePayload(),
+        'conversationCode' => 'conv_avatar_testing_001',
+        'img_64' => fakePngUpload('87654321.png'),
+    ], ['Accept' => 'application/json']);
 
     $response->assertOk();
 
     $storedEvidence = GeneratedEvidence::query()->firstOrFail();
 
-    expect($storedEvidence->input_data['img_64'] ?? null)->toBe($imageDataUrl);
+    expect($storedEvidence->input_data['img_64'] ?? null)->toContain('/storage/contact-images/'.$user->id.'/');
 });
 
 test('windows tray profile is persisted and reused for the same user', function () {

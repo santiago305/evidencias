@@ -1,12 +1,14 @@
 import type { ChangeEvent } from 'react';
 import { Input } from '../../../components/ui/Input';
-import type { ActiveDesign, ConversationProgressSummary, FormState, SavedData } from '../../../types';
+import type { ActiveDesign, ConversationProgressSummary, FormInputKey, FormState, SavedData } from '../../../types';
 
 interface DataFormProps {
     form: FormState;
     activeDesign: ActiveDesign;
     saved: SavedData | null;
-    onChange: (key: keyof FormState) => (e: ChangeEvent<HTMLInputElement>) => void;
+    onChange: (key: FormInputKey) => (e: ChangeEvent<HTMLInputElement>) => void;
+    onImageFileChange: (e: ChangeEvent<HTMLInputElement>) => void;
+    imageFileInputKey: number;
     onGenerate: () => void;
     isGenerating: boolean;
     generatedSeedCode: string;
@@ -25,6 +27,8 @@ interface DataFormProps {
 export function DataForm({
     form,
     onChange,
+    onImageFileChange,
+    imageFileInputKey,
     onGenerate,
     isGenerating,
     generatedSeedCode,
@@ -116,14 +120,22 @@ export function DataForm({
                 inputMode="numeric"
             />
 
-            <Input
-                label="img 64"
-                id="img_64"
-                value={form.img_64}
-                onChange={onChange('img_64')}
-                placeholder="data:image/jpeg;base64,/9j/4AAQSkZJR..."
-                hint="Opcional"
-            />
+            <div className="space-y-1">
+                <label htmlFor="img_64" className="block text-xs font-semibold text-slate-700">
+                    Imagen PNG
+                </label>
+                <input
+                    key={imageFileInputKey}
+                    id="img_64"
+                    type="file"
+                    accept="image/png,.png"
+                    onChange={onImageFileChange}
+                    className="block w-full cursor-pointer rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs text-slate-700 shadow-sm file:mr-3 file:cursor-pointer file:rounded-md file:border-0 file:bg-slate-900 file:px-3 file:py-1.5 file:text-xs file:font-semibold file:text-white hover:bg-slate-50 focus:border-slate-500 focus:ring-2 focus:ring-slate-900/10 focus:outline-none"
+                />
+                <p className="text-[10px] text-slate-500">
+                    Opcional. El archivo debe llamarse {form.dniCliente || 'DNI'}.png, salvo en modo prueba.
+                </p>
+            </div>
 
             <Input
                 label="ID de sal generada"

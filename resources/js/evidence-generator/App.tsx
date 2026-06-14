@@ -11,7 +11,7 @@ import {
 import { buildConversationVariables } from './features/conversations/conversationVariables';
 import { FormPanel } from './features/editor/components/FormPanel';
 import { PreviewPanel } from './features/preview/components/PreviewPanel';
-import { getJson, postJson, putJson } from './lib/api';
+import { getJson, postFormData, postJson, putJson } from './lib/api';
 import { createInitialFormState } from './lib/formState';
 import { resolveActiveMobileDesignKey } from './lib/mobileDesignSelection';
 import { applyConversationTestDefaults } from './lib/testingDefaults';
@@ -19,6 +19,7 @@ import type {
     ActiveDesign,
     ConversationProgressSummary,
     ConversationStatus,
+    FormInputKey,
     FormState,
     GeneratedMessage,
     MobileDesignKey,
@@ -113,6 +114,7 @@ export default function App({
     const [testWhatsappPreviewMode, setTestWhatsappPreviewMode] = useState<PreviewDeviceMode>('desktop');
     const [testPreviewThemeMode, setTestPreviewThemeMode] = useState<PreviewThemeMode>('light');
     const [form, setForm] = useState<FormState>(() => createInitialFormState());
+    const [imageFileInputKey, setImageFileInputKey] = useState(0);
 
     const [saved, setSaved] = useState<SavedData | null>(null);
     const [isGenerating, setIsGenerating] = useState(false);
@@ -156,7 +158,7 @@ export default function App({
     const activeMobileDesignKey = shouldUseTestMobileDesign ? testMobileDesignKey : userMobileDesignKey;
     const isTestMobileDesignGloballyRegistered = globalMobileDesignKeys.includes(testMobileDesignKey);
 
-    const handleChange = (key: keyof FormState) => (e: ChangeEvent<HTMLInputElement>) => {
+    const handleChange = (key: FormInputKey) => (e: ChangeEvent<HTMLInputElement>) => {
         const value =
             key === 'dniCliente'
                 ? e.target.value.replace(/\D/g, '').slice(0, 8)
@@ -167,6 +169,22 @@ export default function App({
                     : e.target.value;
 
         setForm((prev) => ({ ...prev, [key]: value }));
+    };
+
+    const handleImageFileChange = (e: ChangeEvent<HTMLInputElement>) => {
+        const imageFile = e.target.files?.[0] ?? null;
+
+        setForm((previous) => {
+            if (previous.img_64.startsWith('blob:')) {
+                URL.revokeObjectURL(previous.img_64);
+            }
+
+            return {
+                ...previous,
+                img_64: imageFile ? URL.createObjectURL(imageFile) : '',
+                img_64_file: imageFile,
+            };
+        });
     };
 
     const loadConversations = async () => {
@@ -215,11 +233,30 @@ export default function App({
         const requestForm = shouldUseConversationDefaults ? applyConversationTestDefaults(form) : form;
 
         try {
-            const response = await postJson<GenerateEvidenceResponse>(route('evidences.generate'), {
+            const payload = new FormData();
+            const requestData = {
                 ...requestForm,
                 ...(seedCodeInput.trim() !== '' ? { seedCode: seedCodeInput.trim() } : {}),
                 ...(seedCodeInput.trim() === '' && conversationCodeInput.trim() !== '' ? { conversationCode: conversationCodeInput.trim() } : {}),
+            };
+
+            Object.entries(requestData).forEach(([key, value]) => {
+                if (key === 'img_64_file') {
+                    return;
+                }
+
+                if (key === 'img_64') {
+                    if (requestForm.img_64_file) {
+                        payload.append('img_64', requestForm.img_64_file);
+                    }
+
+                    return;
+                }
+
+                payload.append(key, String(value ?? ''));
             });
+
+            const response = await postFormData<GenerateEvidenceResponse>(route('evidences.generate'), payload);
 
             setLastGeneratedFromConversationCode(shouldUseConversationDefaults);
             setSaved({
@@ -240,6 +277,7 @@ export default function App({
             setProgress(response.progress);
             setFeedbackMessage(`Conversacion usada: ${response.conversationId}`);
             setForm(createInitialFormState());
+            setImageFileInputKey((previous) => previous + 1);
             setSeedCodeInput('');
             setConversationCodeInput('');
         } catch (error) {
@@ -388,6 +426,8 @@ export default function App({
                         onWhatsappPreviewModeChange={setTestWhatsappPreviewMode}
                         onThemeModeChange={setTestPreviewThemeMode}
                         onChange={handleChange}
+                        onImageFileChange={handleImageFileChange}
+                        imageFileInputKey={imageFileInputKey}
                         onGenerate={handleGenerate}
                         isGenerating={isGenerating}
                         generatedSeedCode={generatedSeedCode}

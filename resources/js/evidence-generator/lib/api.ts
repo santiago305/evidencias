@@ -63,6 +63,25 @@ export async function postJson<T>(url: string, body: unknown): Promise<T> {
     return payload as T;
 }
 
+export async function postFormData<T>(url: string, body: FormData): Promise<T> {
+    const response = await fetch(url, {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: {
+            Accept: 'application/json',
+            ...csrfHeaders(),
+        },
+        body,
+    });
+
+    const payload = await response.json();
+    if (!response.ok) {
+        throw payload;
+    }
+
+    return payload as T;
+}
+
 export async function putJson<T>(url: string, body: unknown): Promise<T> {
     const response = await fetch(url, {
         method: 'PUT',
