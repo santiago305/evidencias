@@ -52,7 +52,7 @@ function renderDocumentNumberLinks(
                 href="#"
                 target="_blank"
                 rel="noopener noreferrer"
-                className={['font-bold cursor-pointer select-text underline', documentNumberColor].join(' ')}
+                className={['cursor-pointer font-bold underline select-text', documentNumberColor].join(' ')}
             >
                 {documentNumber}
             </a>,
@@ -143,8 +143,8 @@ export function WhatsappConversation({
     const scrollContainerRef = useRef<HTMLDivElement | null>(null);
 
     const [scrollThumb, setScrollThumb] = useState({
-        top: 8,
-        height: 60,
+        top: 10,
+        height: 75,
         visible: false,
     });
     const [showMoreConversationIndicator, setShowMoreConversationIndicator] = useState(false);
@@ -161,9 +161,9 @@ export function WhatsappConversation({
             return;
         }
 
-        const trackPadding = 8;
+        const trackPadding = 10;
         const trackHeight = clientHeight - trackPadding * 2;
-        const thumbHeight = Math.max((clientHeight / scrollHeight) * trackHeight, 38);
+        const thumbHeight = Math.max((clientHeight / scrollHeight) * trackHeight, 47.5);
         const maxThumbTop = trackHeight - thumbHeight;
         const scrollProgress = scrollTop / (scrollHeight - clientHeight);
 
@@ -238,11 +238,9 @@ export function WhatsappConversation({
                         <div
                             ref={scrollContainerRef}
                             onScroll={updateScrollState}
-                            className="scrollbar-mobile-soft h-full w-full overflow-y-auto pr-[4px]"
+                            className="scrollbar-mobile-soft h-full w-full overflow-y-auto pr-[5px]"
                         >
-                            {firstDayChipDateKey !== '' && (
-                                <DayChip text={getMobileDayChipTextForDate(firstDayChipDateKey)} themeMode={themeMode} />
-                            )}
+                            {firstDayChipDateKey !== '' && <DayChip text={getMobileDayChipTextForDate(firstDayChipDateKey)} themeMode={themeMode} />}
 
                             <EncryptedMessage themeMode={themeMode} />
                             {showDefaultTemporalMessage && <TempporalMessage themeMode={themeMode} />}
@@ -257,7 +255,7 @@ export function WhatsappConversation({
                                 const markerAfterCurrent = resolvedInlineTemporalInsertIndex === idx + 1;
                                 const isFirstInGroup = idx === 0 || markerBeforeCurrent || prev.side !== msg.side;
                                 const staysInSameGroup = !!next && !markerAfterCurrent && next.side === msg.side;
-                                const wrapperSpacing = staysInSameGroup ? 'mb-0.5' : 'mb-4';
+                                const wrapperSpacing = staysInSameGroup ? 'mb-[2.5px]' : 'mb-5';
 
                                 const quoteColors =
                                     msg.quote?.side === 'out'
@@ -268,9 +266,7 @@ export function WhatsappConversation({
 
                                 return (
                                     <Fragment key={`message-${idx}-${msg.side}`}>
-                                        {showsDayChip && (
-                                            <DayChip text={getMobileDayChipTextForDate(currentDateKey)} themeMode={themeMode} />
-                                        )}
+                                        {showsDayChip && <DayChip text={getMobileDayChipTextForDate(currentDateKey)} themeMode={themeMode} />}
 
                                         <div className={wrapperSpacing}>
                                             <Bubble
@@ -307,17 +303,17 @@ export function WhatsappConversation({
 
                         {scrollThumb.visible && (
                             <div
-                                className="pointer-events-none absolute right-[2px] z-20 rounded-full bg-black/30"
+                                className="pointer-events-none absolute right-[2.5px] z-20 rounded-full bg-black/30"
                                 style={{
                                     top: `${scrollThumb.top}px`,
                                     height: `${scrollThumb.height}px`,
-                                    width: '2px',
+                                    width: '2.5px',
                                 }}
                             />
                         )}
 
                         {showMoreConversationIndicator && (
-                            <div className="pointer-events-none absolute right-2.5 bottom-[10px] z-30">
+                            <div className="pointer-events-none absolute right-[12.5px] bottom-[12.5px] z-30">
                                 <MoreConversationIndicator themeMode={themeMode} />
                             </div>
                         )}

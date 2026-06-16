@@ -16,13 +16,13 @@ export function MoreConversationIndicator({ className, iconClassName, themeMode 
             aria-label="Hay más conversación abajo"
             role="status"
             className={cn(
-                'flex h-6.5 w-6.5 items-center justify-center rounded-full shadow-lg shadow-black/10 backdrop-blur-sm',
+                'flex h-[32.5px] w-[32.5px] items-center justify-center rounded-full shadow-lg shadow-black/10 backdrop-blur-sm',
                 isDark ? 'border-0 bg-[#26353a] text-[#949fa5]' : 'border border-black/10 bg-white/95 text-[#54656f]',
                 className,
             )}
             {...props}
         >
-            <MoreConversationIcon aria-hidden="true" className={cn('h-2.5/c w-2.5', iconClassName)} />
+            <MoreConversationIcon aria-hidden="true" className={cn('h-[12.5px] w-[12.5px]', iconClassName)} />
         </div>
     );
 }

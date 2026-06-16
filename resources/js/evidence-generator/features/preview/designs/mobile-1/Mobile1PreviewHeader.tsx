@@ -216,36 +216,36 @@ export function Mobile1PreviewHeader({ themeMode, notificationSeed, variant = 'd
     }, [notificationSeed]);
 
     return (
-        <div className={['shrink-0 px-5 py-1', isWhatsappVariant ? 'bg-[#0B1014] text-white' : isDark ? 'bg-[#070c0f] text-white' : 'bg-white text-[#5f6368]'].join(' ')}>
+        <div className={['shrink-0 px-6.25 py-1', isWhatsappVariant ? 'bg-[#0B1014] text-white' : isDark ? 'bg-[#070c0f] text-white' : 'bg-white text-[#5f6368]'].join(' ')}>
             <div
-                className="flex h-5 items-center justify-between"
+                className="flex h-6.25 items-center justify-between"
                 style={{
                     fontFamily: 'Roboto, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
                 }}
             >
-                <div className="flex items-center gap-1.5">
-                    <span className={['text-[12px] leading-none font-normal tracking-[-0.01em]', isWhatsappVariant ? 'text-white' : isDark ? 'text-white' : 'text-[#5f6368]'].join(' ')}>
+                <div className="flex items-center gap-[7.5px]">
+                    <span className={['text-[15px] leading-none font-medium tracking-[-0.01em]', isWhatsappVariant ? 'text-white' : isDark ? 'text-white' : 'text-[#5f6368]'].join(' ')}>
                         {time}
                     </span>
 
-                    <div className="flex items-center gap-1">
+                    <div className="flex items-center gap-1.25">
                         {notifications.map(({ id, Icon: NotificationIcon }, index) => (
-                            <NotificationIcon key={`${id}-${index}`} className="h-[12px] w-[12px] text-current" aria-hidden="true" />
+                            <NotificationIcon key={`${id}-${index}`} className="h-[15px] w-[15px] text-current" aria-hidden="true" />
                         ))}
                     </div>
                 </div>
 
-                <div className="flex items-center gap-1 text-current">
-                    <AlarmClock className="h-[13px] w-[13px]" strokeWidth={2.1} />
-                    <Wifi className="h-[14px] w-[14px]" strokeWidth={2.2} />
+                <div className="flex items-center gap-1.5 text-current">
+                    <AlarmClock className="h-[16.25px] w-[16.25px]" strokeWidth={2.1} />
+                    <Wifi className="h-[17.5px] w-[17.5px]" strokeWidth={2.2} />
 
-                    <span className="text-[7px] leading-[0.75] font-bold tracking-[-0.04em]">
+                    <span className="text-[8.75px] leading-[0.9375] font-bold tracking-[-0.04em]">
                         Vo
                         <br />
                         LTE
                     </span>
 
-                    <Signal className="h-[14px] w-[14px]" strokeWidth={2.2} />
+                    <Signal className="h-[17.5px] w-[17.5px]" strokeWidth={2.2} />
 
                     <BatteryIcon level={batteryLevel} />
                 </div>
