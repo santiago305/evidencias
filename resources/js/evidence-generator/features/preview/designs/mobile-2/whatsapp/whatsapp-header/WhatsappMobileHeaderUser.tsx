@@ -43,32 +43,28 @@ export function WhatsappMobileHeaderUser({
     }, [headerTitle]);
 
     return (
-        <div className={['w-full border-b px-1 py-2.5', isDark ? 'border-white/5 bg-[#0B1014]' : 'border-black/10 bg-white'].join(' ')}>
-            <div className="flex items-center justify-between gap-2">
-                <div className="flex min-w-0 flex-1 items-center gap-2">
+        <div className={['w-full border-b px-[5px] py-[12.5px]', isDark ? 'border-white/5 bg-[#0B1014]' : 'border-black/10 bg-white'].join(' ')}>
+            <div className="flex items-center justify-between gap-2.5">
+                <div className="flex min-w-0 flex-1 items-center gap-2.5">
                     <button
                         type="button"
                         className={[
-                            'grid h-8 w-8 shrink-0 place-items-center rounded-full transition',
+                            'grid h-10 w-10 shrink-0 place-items-center rounded-full transition',
                             isDark ? 'text-slate-200 active:bg-white/15' : 'text-black active:bg-black/10',
                         ].join(' ')}
                         aria-label="Volver"
                         title="Volver"
                     >
-                        <ArrowLeft className="h-5 w-5" aria-hidden="true" strokeWidth={2.4} />
+                        <ArrowLeft className="h-[25px] w-[25px]" aria-hidden="true" strokeWidth={2.4} />
                     </button>
 
-                    <div className="relative h-9 w-9 shrink-0">
-                        <div className="h-9 w-9 overflow-hidden rounded-full">
-                            <WhatsappAvatarImage
-                                img64={data.img_64}
-                                alt={headerTitle}
-                            className="h-full w-full rounded-full object-cover"
-                            >
+                    <div className="relative h-[45px] w-[45px] shrink-0">
+                        <div className="h-[45px] w-[45px] overflow-hidden rounded-full">
+                            <WhatsappAvatarImage img64={data.img_64} alt={headerTitle} className="h-full w-full rounded-full object-cover">
                                 {mobileAvatarInitial ? (
                                     <span
                                         aria-hidden="true"
-                                        className="font-bold grid h-full w-full place-items-center rounded-full border text-[18px] leading-none"
+                                        className="grid h-full w-full place-items-center rounded-full border text-[22.5px] leading-none font-bold"
                                         data-avatar-initial="true"
                                         style={{
                                             backgroundColor: avatarTheme.bg,
@@ -85,7 +81,7 @@ export function WhatsappMobileHeaderUser({
                                             height="48"
                                             width="48"
                                             preserveAspectRatio="xMidYMid meet"
-                                        className="h-full w-full rounded-full"
+                                            className="h-full w-full rounded-full"
                                             style={{
                                                 backgroundColor: avatarTheme.bg,
                                             }}
@@ -105,13 +101,13 @@ export function WhatsappMobileHeaderUser({
                         {showTemporaryIndicator && (
                             <span
                                 aria-hidden="true"
-                                className="absolute -right-[2px] -bottom-[2px] grid h-[18px] w-[18px] place-items-center rounded-full"
+                                className="absolute -right-[2.5px] -bottom-[2.5px] grid h-[22.5px] w-[22.5px] place-items-center rounded-full"
                                 style={{
                                     backgroundColor: avatarTheme.badgeRing,
                                 }}
                             >
                                 <span
-                                    className="grid h-[16px] w-[16px] place-items-center overflow-hidden rounded-full"
+                                    className="grid h-5 w-5 place-items-center overflow-hidden rounded-full"
                                     style={{
                                         backgroundColor: avatarTheme.badgeBg,
                                         color: avatarTheme.badgeIcon,
@@ -119,8 +115,8 @@ export function WhatsappMobileHeaderUser({
                                 >
                                     <svg
                                         viewBox="0 0 24 24"
-                                        height="16"
-                                        width="16"
+                                        height="20"
+                                        width="20"
                                         preserveAspectRatio="xMidYMid meet"
                                         fill="currentColor"
                                         className="block"
@@ -142,7 +138,7 @@ export function WhatsappMobileHeaderUser({
                     <div className="min-w-0 flex-1 leading-tight">
                         <div
                             className={[
-                                'truncate pb-px text-[15px] leading-[17px]  [word-spacing:3px] font-medium',
+                                'truncate pb-[1.25px] text-[18.75px] leading-[21.25px] font-medium [word-spacing:3.75px]',
                                 isDark ? 'text-white' : 'text-[#111b21]',
                             ].join(' ')}
                         >
@@ -150,20 +146,20 @@ export function WhatsappMobileHeaderUser({
                         </div>
 
                         {/* {headerStatus.type !== 'hidden' && (
-                            <div className={['truncate text-[11px] font-medium', isDark ? 'text-slate-400' : 'text-[#667781]'].join(' ')}>
+                            <div className={['truncate text-[13.75px] font-medium', isDark ? 'text-slate-400' : 'text-[#667781]'].join(' ')}>
                                 en linea
                             </div>
                         )} */}
                     </div>
                 </div>
 
-                <div className="flex shrink-0 items-center gap-3.5 text-[#54656f]">
+                <div className="flex shrink-0 items-center gap-[17.5px] text-[#54656f]">
                     <span
                         aria-hidden="true"
                         data-icon="video-call-refreshed"
-                        className={['h-[25px] w-[25px]', isDark ? 'text-slate-200' : 'text-black'].join(' ')}
+                        className={['h-[31.25px] w-[31.25px]', isDark ? 'text-slate-200' : 'text-black'].join(' ')}
                     >
-                        <svg viewBox="0 0 22 22" height="20" width="20" fill="none">
+                        <svg viewBox="0 0 22 22" height="25" width="25" fill="none">
                             <title>video-call-refreshed</title>
                             <path
                                 d="M4 20C3.45 20 2.97917 19.8042 2.5875 19.4125C2.19583 19.0208 2 18.55 2 18V6C2 5.45 2.19583 4.97917 2.5875 4.5875C2.97917 4.19583 3.45 4 4 4H16C16.55 4 17.0208 4.19583 17.4125 4.5875C17.8042 4.97917 18 5.45 18 6V10.5L21.15 7.35C21.3167 7.18333 21.5 7.14167 21.7 7.225C21.9 7.30833 22 7.46667 22 7.7V16.3C22 16.5333 21.9 16.6917 21.7 16.775C21.5 16.8583 21.3167 16.8167 21.15 16.65L18 13.5V18C18 18.55 17.8042 19.0208 17.4125 19.4125C17.0208 19.8042 16.55 20 16 20H4ZM4 18H16V6H4V18Z"
@@ -175,9 +171,9 @@ export function WhatsappMobileHeaderUser({
                     <span
                         aria-hidden="true"
                         data-icon="audio-call-refreshed"
-                        className={['h-[25px] w-[25px]', isDark ? 'text-slate-200' : 'text-black'].join(' ')}
+                        className={['h-[31.25px] w-[31.25px]', isDark ? 'text-slate-200' : 'text-black'].join(' ')}
                     >
-                        <svg viewBox="0 0 22 22" height="20" width="20" preserveAspectRatio="xMidYMid meet" fill="currentColor">
+                        <svg viewBox="0 0 22 22" height="25" width="25" preserveAspectRatio="xMidYMid meet" fill="currentColor">
                             <title>ic-call</title>
                             <path
                                 d="M19.95 21C17.8667 21 15.8083 20.5458 13.775 19.6375C11.7417 18.7292 9.89167 17.4417 8.225 15.775C6.55833 14.1083 5.27083 12.2583 4.3625 10.225C3.45417 8.19167 3 6.13333 3 4.05C3 3.75 3.1 3.5 3.3 3.3C3.5 3.1 3.75 3 4.05 3H8.1C8.33333 3 8.54167 3.07917 8.725 3.2375C8.90833 3.39583 9.01667 3.58333 9.05 3.8L9.7 7.3C9.73333 7.56667 9.725 7.79167 9.675 7.975C9.625 8.15833 9.53333 8.31667 9.4 8.45L6.975 10.9C7.30833 11.5167 7.70417 12.1125 8.1625 12.6875C8.62083 13.2625 9.125 13.8167 9.675 14.35C10.1917 14.8667 10.7333 15.3458 11.3 15.7875C11.8667 16.2292 12.4667 16.6333 13.1 17L15.45 14.65C15.6 14.5 15.7958 14.3875 16.0375 14.3125C16.2792 14.2375 16.5167 14.2167 16.75 14.25L20.2 14.95C20.4333 15.0167 20.625 15.1375 20.775 15.3125C20.925 15.4875 21 15.6833 21 15.9V19.95C21 20.25 20.9 20.5 20.7 20.7C20.5 20.9 20.25 21 19.95 21ZM6.025 9L7.675 7.35L7.25 5H5.025C5.10833 5.68333 5.225 6.35833 5.375 7.025C5.525 7.69167 5.74167 8.35 6.025 9ZM14.975 17.95C15.625 18.2333 16.2875 18.4583 16.9625 18.625C17.6375 18.7917 18.3167 18.9 19 18.95V16.75L16.65 16.275L14.975 17.95Z"
@@ -189,13 +185,13 @@ export function WhatsappMobileHeaderUser({
                     <button
                         type="button"
                         className={[
-                            'grid h-5 w-5 place-items-center rounded-full transition',
+                            'grid h-[25px] w-[25px] place-items-center rounded-full transition',
                             isDark ? 'text-slate-200 hover:bg-white/10 active:bg-white/15' : 'text-black hover:bg-black/5 active:bg-black/10',
                         ].join(' ')}
                         aria-label="Menu"
                         title="Menu"
                     >
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                        <svg width="25" height="25" viewBox="0 0 24 24" fill="currentColor">
                             <circle cx="12" cy="5" r="1.6" />
                             <circle cx="12" cy="12" r="1.6" />
                             <circle cx="12" cy="19" r="1.6" />

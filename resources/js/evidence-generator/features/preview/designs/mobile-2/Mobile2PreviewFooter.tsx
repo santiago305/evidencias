@@ -7,46 +7,20 @@ export function Mobile2PreviewFooter({ themeMode }: { themeMode: PreviewThemeMod
     const color = isDark ? '#B8BABC' : '#777777';
 
     return (
-        <div
-            className="shrink-0 flex h-[40px] items-center justify-center gap-[76px]"
-            style={{ backgroundColor: bg }}
-        >
+        <div className="flex h-[50px] shrink-0 items-center justify-center gap-[95px]" style={{ backgroundColor: bg }}>
             {/* Triángulo Android */}
-            <svg width="24" height="24" viewBox="0 0 34 34">
-                <polygon
-                    points="25,6 5,17 25,28"
-                    fill="none"
-                    stroke={color}
-                    strokeWidth="2"
-                    strokeLinejoin="round"
-                    strokeLinecap="round"
-                />
+            <svg width="30" height="30" viewBox="0 0 34 34">
+                <polygon points="25,6 5,17 25,28" fill="none" stroke={color} strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" />
             </svg>
 
             {/* Círculo Android */}
-            <svg width="24" height="24" viewBox="0 0 34 34">
-                <circle
-                    cx="17"
-                    cy="17"
-                    r="10.8"
-                    fill="none"
-                    stroke={color}
-                    strokeWidth="2"
-                />
+            <svg width="30" height="30" viewBox="0 0 34 34">
+                <circle cx="17" cy="17" r="10.8" fill="none" stroke={color} strokeWidth="2" />
             </svg>
 
             {/* Cuadrado Android */}
-            <svg width="24" height="24" viewBox="0 0 34 34">
-                <rect
-                    x="7.5"
-                    y="7.5"
-                    width="19"
-                    height="19"
-                    rx="0.8"
-                    fill="none"
-                    stroke={color}
-                    strokeWidth="2"
-                />
+            <svg width="30" height="30" viewBox="0 0 34 34">
+                <rect x="7.5" y="7.5" width="19" height="19" rx="0.8" fill="none" stroke={color} strokeWidth="2" />
             </svg>
         </div>
     );

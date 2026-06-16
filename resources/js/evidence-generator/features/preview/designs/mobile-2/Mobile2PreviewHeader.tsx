@@ -22,7 +22,6 @@ import {
     YouTubeMusicIcon,
 } from '@/components/icons';
 
-
 import type { ComponentType, SVGProps } from 'react';
 import { mulberry32 } from '../../../../lib/whatsapp/random';
 import type { PreviewThemeMode } from '../../../../types';
@@ -90,9 +89,7 @@ function buildNotificationSet(random: () => number): NotificationIcon[] {
     const usage = new Map<string, number>();
 
     const pickRandomIcon = (allowIndicator: boolean, allowDuplicate: boolean): NotificationIcon => {
-        const source = allowIndicator
-            ? notificationIconPool
-            : notificationIconPool.filter(({ id }) => id !== 'notification-dot');
+        const source = allowIndicator ? notificationIconPool : notificationIconPool.filter(({ id }) => id !== 'notification-dot');
 
         const available = source.filter(({ id }) => (usage.get(id) ?? 0) === 0);
         const repeated = source.filter(({ id }) => (usage.get(id) ?? 0) > 0 && (usage.get(id) ?? 0) < 3);
@@ -126,7 +123,7 @@ function getBatteryLevel(): BatteryLevel {
 }
 
 function BatteryIcon({ level }: { level: BatteryLevel }) {
-    return <AndroidBatteryIcon level={level} className="h-[13px] w-[26px] text-current" />;
+    return <AndroidBatteryIcon level={level} className="h-[16.25px] w-[32.5px] text-current" />;
 }
 
 type Mobile2PreviewHeaderProps = {
@@ -135,11 +132,7 @@ type Mobile2PreviewHeaderProps = {
     variant?: 'default' | 'whatsapp';
 };
 
-export function Mobile2PreviewHeader({
-    themeMode,
-    notificationSeed,
-    variant = 'default',
-}: Mobile2PreviewHeaderProps) {
+export function Mobile2PreviewHeader({ themeMode, notificationSeed, variant = 'default' }: Mobile2PreviewHeaderProps) {
     const isDark = themeMode === 'dark';
     const isWhatsappVariant = variant === 'whatsapp' && isDark;
 
@@ -169,9 +162,7 @@ export function Mobile2PreviewHeader({
     }, []);
 
     const notifications = useMemo(() => {
-        const random = notificationSeed?.trim()
-            ? mulberry32(hashString(notificationSeed))
-            : Math.random;
+        const random = notificationSeed?.trim() ? mulberry32(hashString(notificationSeed)) : Math.random;
 
         return buildNotificationSet(random);
     }, [notificationSeed]);
@@ -179,52 +170,44 @@ export function Mobile2PreviewHeader({
     return (
         <div
             className={[
-                'shrink-0 px-5 py-1',
-                isWhatsappVariant
-                    ? 'bg-[#0B1014] text-white'
-                    : isDark
-                      ? 'bg-[#070c0f] text-white'
-                      : 'bg-white text-[#5f6368]',
+                'shrink-0 px-[25px] py-[5px]',
+                isWhatsappVariant ? 'bg-[#0B1014] text-white' : isDark ? 'bg-[#070c0f] text-white' : 'bg-white text-[#5f6368]',
             ].join(' ')}
         >
             <div
-                className="flex h-5 items-center justify-between"
+                className="flex h-[25px] items-center justify-between"
                 style={{
                     fontFamily: 'Roboto, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
                 }}
             >
-                <div className="flex items-center gap-1.5">
+                <div className="flex items-center gap-[7.5px]">
                     <span
                         className={[
-                            'text-[14px] leading-none font-normal tracking-[-0.01em]',
+                            'text-[17.5px] leading-none font-medium tracking-[-0.01em]',
                             isWhatsappVariant ? 'text-white' : isDark ? 'text-white' : 'text-[#5f6368]',
                         ].join(' ')}
                     >
                         {time}
                     </span>
 
-                    <div className="flex items-center gap-1">
+                    <div className="flex items-center gap-[5px]">
                         {notifications.map(({ id, Icon: NotificationIcon }, index) => (
-                            <NotificationIcon
-                                key={`${id}-${index}`}
-                                className="h-[14px] w-[14px] text-current"
-                                aria-hidden="true"
-                            />
+                            <NotificationIcon key={`${id}-${index}`} className="h-[17.5px] w-[17.5px] text-current" aria-hidden="true" />
                         ))}
                     </div>
                 </div>
 
-                <div className="flex items-center gap-1 text-current">
-                    <Wifi className="h-[16px] w-[16px]" strokeWidth={2.2} />
+                <div className="flex items-center gap-[5px] text-current">
+                    <Wifi className="h-[20px] w-[20px]" strokeWidth={2.2} />
 
-                    <span className="text-[8px] leading-[0.75] font-bold tracking-[-0.04em]">
+                    <span className="text-[10px] leading-[0.9375] font-bold tracking-[-0.04em]">
                         Vo
                         <br />
                         LTE
                     </span>
 
-                    <Signal className="h-[16px] w-[16px]" strokeWidth={2.2} />
-                    <Signal className="h-[16px] w-[16px]" strokeWidth={2.2} />
+                    <Signal className="h-[20px] w-[20px]" strokeWidth={2.2} />
+                    <Signal className="h-[20px] w-[20px]" strokeWidth={2.2} />
 
                     <BatteryIcon level={batteryLevel} />
                 </div>

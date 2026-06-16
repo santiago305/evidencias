@@ -25,11 +25,11 @@ export function Mobile2PreviewFrame({
     const isDark = themeMode === 'dark';
 
     return (
-        <div className={['flex h-full w-full items-center justify-center p-4', isDark ? 'bg-slate-950' : 'bg-slate-100'].join(' ')}>
+        <div className={['flex h-full w-full items-center justify-center p-5', isDark ? 'bg-slate-950' : 'bg-slate-100'].join(' ')}>
             <div
                 id="CAPTURA"
                 className={[
-                    'flex h-[700px] max-h-[calc(100vh-2rem)] w-[335px] max-w-full flex-col overflow-hidden shadow-2xl',
+                    'flex h-[875px] max-h-[calc(100vh-2.5rem)] w-[418.75px] max-w-full flex-col overflow-hidden shadow-2xl',
                     isDark ? 'bg-[#101418] shadow-black/45' : 'bg-white shadow-slate-300/60',
                 ].join(' ')}
             >

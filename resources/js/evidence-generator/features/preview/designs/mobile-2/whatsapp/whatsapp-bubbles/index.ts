@@ -16,4 +16,3 @@ export {
     type QuotedMessage,
 } from '../WhatsappPieces';
 export { WhatsappMobileTextBubble } from './WhatsappMobileTextBubble';
-

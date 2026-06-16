@@ -10,7 +10,7 @@ export function WhatsappDarkConversationBackground() {
                     maskImage: `url(${fondoWhatsapp})`,
                     maskPosition: 'left top',
                     maskRepeat: 'repeat',
-                    maskSize: '374px 666px',
+                    maskSize: '467.5px 832.5px',
                     WebkitMaskImage: `url(${fondoWhatsapp})`,
                     WebkitMaskPosition: 'left top',
                     WebkitMaskRepeat: 'repeat',
