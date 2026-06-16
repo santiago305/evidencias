@@ -36,8 +36,7 @@ class GenerateEvidenceRequest extends FormRequest
             'fechaHora' => ['required', 'date_format:Y-m-d\TH:i'],
             'fechaHoraRegistro' => ['required', 'date_format:Y-m-d\TH:i', 'after_or_equal:fechaHora'],
             'duracion' => ['required', 'integer', 'min:1'],
-            'img_64' => ['nullable', 'file', 'mimes:png', 'max:2048'],
-        ];
+            'img_64' => ['nullable', 'file', 'mimes:png', 'max:15360'],        ];
     }
 
     public function after(): array
