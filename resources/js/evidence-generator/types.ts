@@ -7,7 +7,7 @@ export type WhatsappDesktopScale = 80 | 85 | 90 | 95 | 100;
 export type ModoEntrada = 'informativo' | 'contactado';
 export type TipoCliente = 'apurado' | 'sereno' | 'desconfiado' | 'frio' | 'conversador' | 'indeciso';
 export type ConversationStatus = 'production' | 'development';
-export type MobileDesignKey = 'mobile-1' | 'mobile-2';
+export type MobileDesignKey = 'mobile-1' | 'mobile-2' | 'mobile-3';
 
 export interface MobileDesignDefinition {
     key: MobileDesignKey;

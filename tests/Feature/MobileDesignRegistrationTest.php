@@ -37,6 +37,21 @@ test('authenticated users can register mobile two globally', function () {
     ]);
 });
 
+test('authenticated users can register mobile three globally', function () {
+    $user = User::factory()->create();
+
+    $this->actingAs($user)
+        ->postJson(route('mobile-designs.store'), [
+            'design_key' => 'mobile-3',
+        ])
+        ->assertSuccessful()
+        ->assertJsonPath('data.design_key', 'mobile-3');
+
+    $this->assertDatabaseHas('mobile_designs', [
+        'design_key' => 'mobile-3',
+    ]);
+});
+
 test('registering the same mobile design twice is idempotent', function () {
     $user = User::factory()->create();
 

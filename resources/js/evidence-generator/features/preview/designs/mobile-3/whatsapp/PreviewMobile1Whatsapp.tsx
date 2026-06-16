@@ -1,13 +1,13 @@
 import { useMemo } from 'react';
 import type { PreviewProps } from '../../../../../types';
 import { EmptyState } from '../../../components/EmptyState';
+import type { WhatsappTypographyPlatform } from '../../whatsappTypography';
 import { Mobile1PreviewFrame } from '../Mobile1PreviewFrame';
 import { buildContactIdentityDisplay } from './contactIdentityDisplay';
 import { WhatsappHeaderUser } from './whatsapp-header';
 import { buildWhatsappAvatarSeed } from './whatsappAppearance';
 import { WhatsappConversation } from './WhatsappConversation';
 import type { MsgStatus } from './WhatsappPieces';
-import type { WhatsappTypographyPlatform } from '../../whatsappTypography';
 
 function hashString(value: string): number {
     let hash = 2166136261;

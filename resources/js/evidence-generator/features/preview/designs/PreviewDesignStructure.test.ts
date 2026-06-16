@@ -27,6 +27,11 @@ test('preview designs are isolated by target design folder', () => {
     assert.equal(existsSync(resolve(designsDir, 'mobile-2', 'sms', 'PreviewMobile2Sms.tsx')), true);
     assert.equal(existsSync(resolve(designsDir, 'mobile-2', 'calls', 'design-1', 'PreviewMobile2CallDesign1.tsx')), true);
     assert.equal(existsSync(resolve(designsDir, 'mobile-2', 'calls', 'design-2', 'PreviewMobile2CallDesign2.tsx')), true);
+    assert.equal(existsSync(resolve(designsDir, 'mobile-3', 'Mobile1PreviewFrame.tsx')), true);
+    assert.equal(existsSync(resolve(designsDir, 'mobile-3', 'whatsapp', 'PreviewMobile1Whatsapp.tsx')), true);
+    assert.equal(existsSync(resolve(designsDir, 'mobile-3', 'sms', 'PreviewMobile1Sms.tsx')), true);
+    assert.equal(existsSync(resolve(designsDir, 'mobile-3', 'calls', 'design-1', 'PreviewMobile1CallDesign1.tsx')), true);
+    assert.equal(existsSync(resolve(designsDir, 'mobile-3', 'calls', 'design-2', 'PreviewMobile1CallDesign2.tsx')), true);
 });
 
 test('preview channel entry points use design folders directly', () => {
@@ -36,6 +41,7 @@ test('preview channel entry points use design folders directly', () => {
 
     assert.match(previewChannelsSource, /from ["']\.\.\/designs\/whatsapp-desktop["']/);
     assert.match(previewChannelsSource, /from ["']\.\.\/designs\/mobile-2["']/);
+    assert.match(previewChannelsSource, /from ["']\.\.\/designs\/mobile-3["']/);
     assert.doesNotMatch(previewChannelsSource, /preview\/whatsapp|\.\.\/whatsapp/);
     assert.doesNotMatch(desktopSource, /preview\/whatsapp|\.\.\/\.\.\/whatsapp|deviceMode=/);
     assert.doesNotMatch(mobileSource, /preview\/whatsapp|\.\.\/\.\.\/\.\.\/whatsapp/);

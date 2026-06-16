@@ -21,6 +21,6 @@ test('evidence generator receives available mobile designs in catalog order', fu
         ->assertOk()
         ->assertInertia(fn (AssertableInertia $page) => $page
             ->component('evidence-generator')
-            ->where('availableMobileDesigns', ['mobile-1', 'mobile-2'])
+            ->where('availableMobileDesigns', ['mobile-1', 'mobile-2', 'mobile-3'])
         );
 });
