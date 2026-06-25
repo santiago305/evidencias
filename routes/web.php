@@ -35,6 +35,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/api/conversations', [ConversationController::class, 'store'])->name('conversations.store');
     Route::put('/api/conversations/{conversation}', [ConversationController::class, 'update'])->name('conversations.update');
     Route::post('/api/mobile-designs', [MobileDesignController::class, 'store'])->name('mobile-designs.store');
+    Route::get('/api/evidences/{seedCode}', [EvidenceController::class, 'showBySeed'])->name('evidences.show-by-seed');
     Route::post('/api/evidences/generate', [EvidenceController::class, 'generate'])->name('evidences.generate');
 });
 

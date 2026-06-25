@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\GenerateEvidenceRequest;
+use App\Models\GeneratedEvidence;
 use App\Services\Evidence\EvidenceGeneratorService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
@@ -44,5 +46,23 @@ class EvidenceController extends Controller
         ]);
 
         return response()->json($result);
+    }
+
+    public function showBySeed(Request $request, string $seedCode): JsonResponse
+    {
+        $user = $request->user();
+        abort_unless($user !== null, 403);
+
+        $evidence = GeneratedEvidence::query()
+            ->where('user_id', $user->id)
+            ->where('seed_code', $seedCode)
+            ->firstOrFail();
+
+        return response()->json([
+            'seedCode' => $evidence->seed_code,
+            'conversationId' => $evidence->conversation_id,
+            'generatedAt' => $evidence->generated_at,
+            'inputData' => $evidence->input_data,
+        ]);
     }
 }

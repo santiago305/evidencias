@@ -93,12 +93,17 @@ class EvidenceGeneratorService
     {
         $seedCode = isset($input['seedCode']) ? trim((string) $input['seedCode']) : '';
         $conversationCode = isset($input['conversationCode']) ? trim((string) $input['conversationCode']) : '';
+        $isReplay = $seedCode !== '';
 
         $conversation = null;
         $cycle = 1;
         $previewSeed = $this->seedService->generatePreviewSeed();
+        $renderInput = [
+            ...$input,
+            'previewSeed' => $previewSeed,
+        ];
 
-        if ($seedCode !== '') {
+        if ($isReplay) {
             $decoded = $this->seedService->decodeSeedCode($seedCode);
 
             if ($decoded === null || $decoded['user_id'] !== $user->id) {
@@ -122,6 +127,19 @@ class EvidenceGeneratorService
             $previewSeed = $decoded['preview_seed'] !== null
                 ? (string) $decoded['preview_seed']
                 : strtoupper(substr(hash('sha256', $seedCode), 0, 8));
+
+            $replayEvidence = $this->resolveReplayEvidence($user, $seedCode);
+
+            if ($replayEvidence === null) {
+                throw ValidationException::withMessages([
+                    'seedCode' => 'No se encontró evidencia almacenada para la sal ingresada.',
+                ]);
+            }
+
+            $renderInput = [
+                ...(is_array($replayEvidence->input_data) ? $replayEvidence->input_data : []),
+                'previewSeed' => $previewSeed,
+            ];
         } elseif ($conversationCode !== '') {
             $conversation = Conversation::query()
                 ->with('messages')
@@ -140,15 +158,14 @@ class EvidenceGeneratorService
             $cycle = (int) $selected['progress']->cycle;
         }
 
-        $renderInput = [
-            ...$input,
-            'previewSeed' => $previewSeed,
-        ];
-
         $messages = $this->renderService->render($conversation, $renderInput);
         $trayProfile = $this->resolveWindowsTrayProfile($user);
         $previewSnapshot = $this->buildPreviewSnapshot($renderInput, $messages, $previewSeed, $trayProfile);
-        $seedCode = $this->storeEvidenceWithUniqueSeed($user, $conversation, $cycle, $renderInput, $previewSeed);
+        $returnedSeedCode = $seedCode;
+
+        if (! $isReplay) {
+            $returnedSeedCode = $this->storeEvidenceWithUniqueSeed($user, $conversation, $cycle, $renderInput, $previewSeed);
+        }
 
         $progress = UserConversationProgress::query()->where('user_id', $user->id)->first();
         $pending = is_array($progress?->pending_ids) ? count($progress->pending_ids) : Conversation::query()->where('is_active', true)->where('status', 'production')->count();
@@ -157,7 +174,7 @@ class EvidenceGeneratorService
 
         return [
             'conversationId' => $conversation->code,
-            'seedCode' => $seedCode,
+            'seedCode' => $returnedSeedCode,
             'messages' => $messages,
             'previewSnapshot' => $previewSnapshot,
             'progress' => [
@@ -168,6 +185,14 @@ class EvidenceGeneratorService
             ],
             'trayProfile' => $trayProfile,
         ];
+    }
+
+    private function resolveReplayEvidence(User $user, string $seedCode): ?GeneratedEvidence
+    {
+        return GeneratedEvidence::query()
+            ->where('user_id', $user->id)
+            ->where('seed_code', $seedCode)
+            ->first();
     }
 
     /**

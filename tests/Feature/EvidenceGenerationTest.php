@@ -796,7 +796,7 @@ test('random generation does not repeat until cycle is completed', function () {
     expect($first['conversationId'])->not->toBe($second['conversationId']);
 });
 
-test('generating by seed reuses the same conversation without consuming bag and returns a new unique seed', function () {
+test('generating by seed reuses the same conversation and original seed without consuming bag or creating a new row', function () {
     $user = User::factory()->create();
 
     createConversationForTest('conv_001', [
@@ -812,15 +812,73 @@ test('generating by seed reuses the same conversation without consuming bag and 
 
     $seedResponse = $this->actingAs($user)->postJson(route('evidences.generate'), [
         ...evidencePayload(),
+        'nombre' => 'Nombre Ignorado',
         'seedCode' => $first['seedCode'],
     ])->json();
 
     $progressAfter = UserConversationProgress::query()->where('user_id', $user->id)->firstOrFail();
 
     expect($seedResponse['conversationId'])->toBe($first['conversationId']);
-    expect($seedResponse['seedCode'])->not->toBe($first['seedCode']);
+    expect($seedResponse['seedCode'])->toBe($first['seedCode']);
+    expect($seedResponse['messages'])->toBe($first['messages']);
     expect($progressAfter->used_ids)->toBe($progressBefore->used_ids);
     expect($progressAfter->pending_ids)->toBe($progressBefore->pending_ids);
+    expect(GeneratedEvidence::query()->count())->toBe(1);
+});
+
+test('authenticated user can fetch stored evidence payload by seed', function () {
+    $user = User::factory()->create();
+
+    $conversation = createConversationForTest('conv_lookup_001', [
+        ['side' => 'out', 'delay_minutes' => 0, 'lines' => ['Hola {nombre_cliente}']],
+    ]);
+
+    $generatedAt = Carbon::parse('2026-06-25 09:15:00', 'America/Lima');
+
+    $evidence = GeneratedEvidence::query()->create([
+        'user_id' => $user->id,
+        'conversation_id' => $conversation->id,
+        'seed_code' => 'SEED-LOOKUP-001',
+        'input_data' => [
+            ...evidencePayload(),
+            'previewSeed' => 'abc12345',
+        ],
+        'generated_at' => $generatedAt,
+    ]);
+
+    $response = $this->actingAs($user)->getJson(route('evidences.show-by-seed', ['seedCode' => $evidence->seed_code]));
+
+    $response->assertOk()
+        ->assertJson([
+            'seedCode' => 'SEED-LOOKUP-001',
+            'conversationId' => $conversation->id,
+            'generatedAt' => $evidence->fresh()->generated_at?->toJSON(),
+            'inputData' => [
+                ...evidencePayload(),
+                'previewSeed' => 'abc12345',
+            ],
+        ]);
+});
+
+test('authenticated user cannot fetch another users stored evidence payload by seed', function () {
+    $owner = User::factory()->create();
+    $viewer = User::factory()->create();
+
+    $conversation = createConversationForTest('conv_lookup_002', [
+        ['side' => 'out', 'delay_minutes' => 0, 'lines' => ['Hola {nombre_cliente}']],
+    ]);
+
+    $evidence = GeneratedEvidence::query()->create([
+        'user_id' => $owner->id,
+        'conversation_id' => $conversation->id,
+        'seed_code' => 'SEED-LOOKUP-002',
+        'input_data' => evidencePayload(),
+        'generated_at' => Carbon::parse('2026-06-25 10:00:00', 'America/Lima'),
+    ]);
+
+    $response = $this->actingAs($viewer)->getJson(route('evidences.show-by-seed', ['seedCode' => $evidence->seed_code]));
+
+    $response->assertNotFound();
 });
 
 test('different users start with different conversations when available', function () {
