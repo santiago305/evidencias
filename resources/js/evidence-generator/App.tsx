@@ -173,7 +173,6 @@ export default function App({
     const previewThemeMode = isTestingPreview ? testPreviewThemeMode : evidenceThemeMode;
     const activeMobileDesignKey = shouldUseTestMobileDesign ? testMobileDesignKey : userMobileDesignKey;
     const isTestMobileDesignGloballyRegistered = globalMobileDesignKeys.includes(testMobileDesignKey);
-    const visibleGeneratedSeedCode = seedCodeInput.trim() !== '' ? seedCodeInput.trim() : generatedSeedCode;
     const isGenerateDisabled = isReplayGenerateBlocked({
         isGenerating,
         isReplayLookupPending,
@@ -266,6 +265,7 @@ export default function App({
         }
 
         setIsReplayLookupPending(true);
+        setGeneratedSeedCode('');
 
         const timeoutId = window.setTimeout(() => {
             void (async () => {
@@ -299,6 +299,7 @@ export default function App({
                         return clearReplayHydratedForm(previous);
                     });
                     setImageFileInputKey((previous) => previous + 1);
+                    setGeneratedSeedCode('');
                     setFeedbackMessage(errorPayload.message ?? 'No se pudo cargar la evidencia guardada para esa sal.');
                 } finally {
                     if (shouldApplyReplayLookupResult(replayLookupSeedRef.current, trimmedSeedCode)) {
@@ -524,7 +525,7 @@ export default function App({
                         onGenerate={handleGenerate}
                         isGenerating={isGenerating}
                         isReplayLookupPending={isReplayLookupPending}
-                        generatedSeedCode={visibleGeneratedSeedCode}
+                        generatedSeedCode={generatedSeedCode}
                         seedCodeInput={seedCodeInput}
                         onSeedCodeInputChange={setSeedCodeInput}
                         conversationCodeInput={conversationCodeInput}
