@@ -66,3 +66,36 @@ Implemented.
 ## Concerns
 
 - `npm run build` still reports the pre-existing Vite chunk-size warning for the evidence generator bundle (`> 500 kB` after minification). The build itself passes.
+
+---
+
+## Review Fix - 2026-06-25
+
+### Status
+
+Implemented review fixes for replay hydration behavior.
+
+### Findings Addressed
+
+- Replaced the source-text proof test with a behavioral unit test suite in `resources/js/evidence-generator/lib/replayForm.test.ts`.
+- Blocked replay regeneration while a replay lookup is pending, including the debounce window before the fetch starts.
+- Cleared stale replay-hydrated form values when a lookup fails for the currently typed sal.
+- Expanded replay hydration to reuse stored `modoEntrada` and `img_64` values while always resetting `img_64_file` to `null`.
+
+### Files Updated
+
+- `resources/js/evidence-generator/App.tsx`
+- `resources/js/evidence-generator/features/editor/components/DataForm.tsx`
+- `resources/js/evidence-generator/features/editor/components/FormPanel.tsx`
+- `resources/js/evidence-generator/lib/replayForm.ts`
+- `resources/js/evidence-generator/lib/replayForm.test.ts`
+
+### Verification
+
+- `node --test resources/js/evidence-generator/lib/replayForm.test.ts resources/js/evidence-generator/lib/formState.test.ts`
+- `npm exec eslint -- resources/js/evidence-generator/App.tsx resources/js/evidence-generator/features/editor/components/DataForm.tsx resources/js/evidence-generator/features/editor/components/FormPanel.tsx resources/js/evidence-generator/lib/replayForm.ts resources/js/evidence-generator/lib/replayForm.test.ts`
+
+### Notes
+
+- The replay sal remains visible after regeneration because replay generate still submits the existing seed and no longer depends on clearing the input.
+- Unrelated worktree changes were left untouched.

@@ -34,6 +34,7 @@ interface FormPanelProps {
     imageFileInputKey: number;
     onGenerate: () => void;
     isGenerating: boolean;
+    isReplayLookupPending: boolean;
     generatedSeedCode: string;
     seedCodeInput: string;
     onSeedCodeInputChange: (value: string) => void;
@@ -63,6 +64,7 @@ export function FormPanel({
     imageFileInputKey,
     onGenerate,
     isGenerating,
+    isReplayLookupPending,
     generatedSeedCode,
     seedCodeInput,
     onSeedCodeInputChange,
@@ -128,6 +130,7 @@ export function FormPanel({
                     imageFileInputKey={imageFileInputKey}
                     onGenerate={onGenerate}
                     isGenerating={isGenerating}
+                    isReplayLookupPending={isReplayLookupPending}
                     generatedSeedCode={generatedSeedCode}
                     seedCodeInput={seedCodeInput}
                     onSeedCodeInputChange={onSeedCodeInputChange}

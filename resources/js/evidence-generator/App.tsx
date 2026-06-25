@@ -1,5 +1,5 @@
 import type { ChangeEvent } from 'react';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { pickRandomClientProfile } from './config/whatsapp/clientProfiles';
 import { pickRandomModoEntrada } from './config/whatsapp/conversationModes';
 import { ConversationsListModal } from './features/conversations/components/ConversationsListModal';
@@ -14,6 +14,7 @@ import { PreviewPanel } from './features/preview/components/PreviewPanel';
 import { getJson, postFormData, postJson, putJson } from './lib/api';
 import { createInitialFormState } from './lib/formState';
 import { resolveActiveMobileDesignKey } from './lib/mobileDesignSelection';
+import { clearReplayHydratedForm, hydrateReplayForm, isReplayGenerateBlocked, shouldApplyReplayLookupResult } from './lib/replayForm';
 import { applyConversationTestDefaults } from './lib/testingDefaults';
 import type {
     ActiveDesign,
@@ -101,38 +102,10 @@ interface ConversationListItem {
     messages: ConversationModalMessageDraft[];
 }
 
-const replayHydratedFields = [
-    'telefono',
-    'nombre',
-    'dniCliente',
-    'monto',
-    'tasa',
-    'cuota',
-    'plazo',
-    'fechaHora',
-    'fechaHoraRegistro',
-    'duracion',
-] as const satisfies ReadonlyArray<FormInputKey>;
-
 function revokePreviewImage(form: FormState): void {
     if (form.img_64.startsWith('blob:')) {
         URL.revokeObjectURL(form.img_64);
     }
-}
-
-function hydrateReplayForm(previousForm: FormState, inputData: ReplayEvidenceResponse['inputData']): FormState {
-    const nextForm = {
-        ...previousForm,
-        img_64: '',
-        img_64_file: null,
-    };
-
-    for (const field of replayHydratedFields) {
-        const value = inputData[field];
-        nextForm[field] = typeof value === 'string' ? value : '';
-    }
-
-    return nextForm;
 }
 
 /* ---------------- App ---------------- */
@@ -159,6 +132,7 @@ export default function App({
 
     const [saved, setSaved] = useState<SavedData | null>(null);
     const [isGenerating, setIsGenerating] = useState(false);
+    const [isReplayLookupPending, setIsReplayLookupPending] = useState(false);
     const [generatedSeedCode, setGeneratedSeedCode] = useState('');
     const [seedCodeInput, setSeedCodeInput] = useState('');
     const [conversationCodeInput, setConversationCodeInput] = useState('');
@@ -174,6 +148,7 @@ export default function App({
     const [conversationModalError, setConversationModalError] = useState<string | null>(null);
     const [conversations, setConversations] = useState<ConversationListItem[]>([]);
     const [editingConversation, setEditingConversation] = useState<ConversationListItem | null>(null);
+    const replayLookupSeedRef = useRef('');
 
     const hasRegisteredMobileDesign = registeredMobileDesigns.length > 0;
     const testMobileDesignKey = resolveActiveMobileDesignKey({
@@ -199,6 +174,11 @@ export default function App({
     const activeMobileDesignKey = shouldUseTestMobileDesign ? testMobileDesignKey : userMobileDesignKey;
     const isTestMobileDesignGloballyRegistered = globalMobileDesignKeys.includes(testMobileDesignKey);
     const visibleGeneratedSeedCode = seedCodeInput.trim() !== '' ? seedCodeInput.trim() : generatedSeedCode;
+    const isGenerateDisabled = isReplayGenerateBlocked({
+        isGenerating,
+        isReplayLookupPending,
+        seedCodeInput,
+    });
 
     const handleChange = (key: FormInputKey) => (e: ChangeEvent<HTMLInputElement>) => {
         const value =
@@ -270,9 +250,10 @@ export default function App({
 
     useEffect(() => {
         const trimmedSeedCode = seedCodeInput.trim();
-        let ignore = false;
+        replayLookupSeedRef.current = trimmedSeedCode;
 
         if (trimmedSeedCode === '') {
+            setIsReplayLookupPending(false);
             setForm((previous) => {
                 revokePreviewImage(previous);
 
@@ -284,12 +265,14 @@ export default function App({
             return;
         }
 
+        setIsReplayLookupPending(true);
+
         const timeoutId = window.setTimeout(() => {
             void (async () => {
                 try {
                     const response = await getJson<ReplayEvidenceResponse>(route('evidences.show-by-seed', { seedCode: trimmedSeedCode }));
 
-                    if (ignore) {
+                    if (!shouldApplyReplayLookupResult(replayLookupSeedRef.current, trimmedSeedCode)) {
                         return;
                     }
 
@@ -302,7 +285,7 @@ export default function App({
                     setImageFileInputKey((previous) => previous + 1);
                     setFeedbackMessage(null);
                 } catch (error) {
-                    if (ignore) {
+                    if (!shouldApplyReplayLookupResult(replayLookupSeedRef.current, trimmedSeedCode)) {
                         return;
                     }
 
@@ -310,18 +293,31 @@ export default function App({
                         message?: string;
                     };
 
+                    setForm((previous) => {
+                        revokePreviewImage(previous);
+
+                        return clearReplayHydratedForm(previous);
+                    });
+                    setImageFileInputKey((previous) => previous + 1);
                     setFeedbackMessage(errorPayload.message ?? 'No se pudo cargar la evidencia guardada para esa sal.');
+                } finally {
+                    if (shouldApplyReplayLookupResult(replayLookupSeedRef.current, trimmedSeedCode)) {
+                        setIsReplayLookupPending(false);
+                    }
                 }
             })();
         }, 300);
 
         return () => {
-            ignore = true;
             window.clearTimeout(timeoutId);
         };
     }, [seedCodeInput]);
 
     const handleGenerate = async () => {
+        if (isGenerateDisabled) {
+            return;
+        }
+
         setIsGenerating(true);
         setFeedbackMessage(null);
         const isReplayGeneration = seedCodeInput.trim() !== '';
@@ -527,6 +523,7 @@ export default function App({
                         imageFileInputKey={imageFileInputKey}
                         onGenerate={handleGenerate}
                         isGenerating={isGenerating}
+                        isReplayLookupPending={isReplayLookupPending}
                         generatedSeedCode={visibleGeneratedSeedCode}
                         seedCodeInput={seedCodeInput}
                         onSeedCodeInputChange={setSeedCodeInput}

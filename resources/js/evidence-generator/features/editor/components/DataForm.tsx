@@ -1,5 +1,6 @@
 import type { ChangeEvent } from 'react';
 import { Input } from '../../../components/ui/Input';
+import { getGenerateEvidenceActionLabel, isReplayGenerateBlocked } from '../../../lib/replayForm';
 import type { ActiveDesign, ConversationProgressSummary, FormInputKey, FormState, SavedData } from '../../../types';
 
 interface DataFormProps {
@@ -11,6 +12,7 @@ interface DataFormProps {
     imageFileInputKey: number;
     onGenerate: () => void;
     isGenerating: boolean;
+    isReplayLookupPending: boolean;
     generatedSeedCode: string;
     seedCodeInput: string;
     onSeedCodeInputChange: (value: string) => void;
@@ -31,6 +33,7 @@ export function DataForm({
     imageFileInputKey,
     onGenerate,
     isGenerating,
+    isReplayLookupPending,
     generatedSeedCode,
     seedCodeInput,
     onSeedCodeInputChange,
@@ -41,6 +44,17 @@ export function DataForm({
     onOpenConversationsListModal,
     feedbackMessage,
 }: DataFormProps) {
+    const isGenerateDisabled = isReplayGenerateBlocked({
+        isGenerating,
+        isReplayLookupPending,
+        seedCodeInput,
+    });
+    const generateButtonLabel = getGenerateEvidenceActionLabel({
+        isGenerating,
+        isReplayLookupPending,
+        seedCodeInput,
+    });
+
     return (
         <div className="grid min-h-0 flex-1 grid-cols-1 gap-2 overflow-y-auto p-3">
             <div className="grid grid-cols-2 gap-2">
@@ -145,12 +159,12 @@ export function DataForm({
             />
 
             <Input
-                label="Autocompletar por sal"
+                label="Recuperar evidencia por sal"
                 id="seed-input"
                 value={seedCodeInput}
                 onChange={(e) => onSeedCodeInputChange(e.target.value)}
                 placeholder="Ej: EVC2-C020-U01-R03-AB12CD34-Z9Q7K3A1B2"
-                hint="Carga una evidencia guardada"
+                hint="Carga una evidencia guardada para regenerarla"
             />
 
             <Input
@@ -166,7 +180,7 @@ export function DataForm({
                 type="button"
                 id="generate-evidence-btn"
                 onClick={onGenerate}
-                disabled={isGenerating}
+                disabled={isGenerateDisabled}
                 className={[
                     'mt-1 inline-flex items-center justify-center rounded-2xl px-4 py-2.5 text-sm font-semibold',
                     'bg-slate-900 text-white shadow-sm transition-all',
@@ -174,7 +188,7 @@ export function DataForm({
                     'cursor-pointer focus:ring-2 focus:ring-slate-900/25 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50',
                 ].join(' ')}
             >
-                {isGenerating ? 'Regenerando...' : seedCodeInput.trim() !== '' ? 'Regenerar evidencia' : 'Generar evidencia'}
+                {generateButtonLabel}
             </button>
 
             {feedbackMessage ? (
