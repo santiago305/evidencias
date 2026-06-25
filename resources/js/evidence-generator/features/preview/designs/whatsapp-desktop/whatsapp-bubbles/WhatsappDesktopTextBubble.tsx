@@ -118,7 +118,7 @@ export function WhatsappDesktopTextBubble({ side, firstInGroup, time, status, id
     const content = renderBubbleContent(children);
 
     return (
-        <div id={id} className={`flex px-15.75 ${isOut ? 'justify-end' : 'justify-start'}`}>
+        <div id={id} className={`whatsapp-windows  flex px-15.75 ${isOut ? 'justify-end' : 'justify-start'}`}>
             <div className="relative max-w-[70%] flex-none text-[14.2px] leading-4.75">
                 {firstInGroup && <BubbleTail side={isOut ? 'right' : 'left'} colorClass={tailColor} />}
 
@@ -127,7 +127,7 @@ export function WhatsappDesktopTextBubble({ side, firstInGroup, time, status, id
                         {quote ? <QuotedMessageBox quote={quote} themeMode={themeMode} /> : null}
 
                         <div className="relative overflow-hidden ps-1.25 pe-1.25 break-words whitespace-pre-wrap">
-                            <span data-testid="selectable-text" dir="ltr" className="visible text-[12px] leading-4.5 font-normal tracking-[0.005rem] select-text" style={{ minHeight: '0px' }}>
+                            <span data-testid="selectable-text" dir="ltr" className="visible text-[12px] leading-4.5 font-normal tracking-tighter select-text" style={{ minHeight: '0px' }}>
                                 {content}
                             </span>
                             <span>

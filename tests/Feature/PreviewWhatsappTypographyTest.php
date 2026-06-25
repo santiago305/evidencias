@@ -34,7 +34,7 @@ test('whatsapp previews declare their typography platform at the entry point', f
     expect($segoeCss)->toContain('font-weight: 700;');
 });
 
-test('whatsapp typography is inherited from the preview platform instead of node classes', function () {
+test('whatsapp typography is inherited from the preview platform except desktop message bubbles', function () {
     $designPaths = [
         base_path('resources/js/evidence-generator/features/preview/designs/mobile-1/whatsapp'),
         base_path('resources/js/evidence-generator/features/preview/designs/mobile-2/whatsapp'),
@@ -54,8 +54,15 @@ test('whatsapp typography is inherited from the preview platform instead of node
 
             expect($source)->not->toContain('whatsapp-android');
             expect($source)->not->toContain('whatsapp-ios');
-            expect($source)->not->toContain('whatsapp-windows');
             expect($source)->not->toContain('segoe-ui');
+
+            if ($file->getFilename() === 'WhatsappDesktopTextBubble.tsx') {
+                expect($source)->toContain('whatsapp-windows');
+
+                continue;
+            }
+
+            expect($source)->not->toContain('whatsapp-windows');
         }
     }
 });
