@@ -240,14 +240,6 @@ export default function App({
     }, [activeDesign, hasRegisteredMobileDesign]);
 
     useEffect(() => {
-        if (conversationCodeInput.trim() === '' || seedCodeInput.trim() !== '') {
-            return;
-        }
-
-        setForm((previous) => applyConversationTestDefaults(previous));
-    }, [conversationCodeInput, seedCodeInput]);
-
-    useEffect(() => {
         const trimmedSeedCode = seedCodeInput.trim();
         replayLookupSeedRef.current = trimmedSeedCode;
 
@@ -314,6 +306,14 @@ export default function App({
         };
     }, [seedCodeInput]);
 
+    useEffect(() => {
+        if (conversationCodeInput.trim() === '' || seedCodeInput.trim() !== '') {
+            return;
+        }
+
+        setForm((previous) => applyConversationTestDefaults(previous));
+    }, [conversationCodeInput, seedCodeInput]);
+
     const handleGenerate = async () => {
         if (isGenerateDisabled) {
             return;
@@ -357,7 +357,7 @@ export default function App({
                 nombreAsesor: resolvedCurrentUser.name,
                 dni: resolvedCurrentUser.dni,
                 sexualidadAsesor: resolvedCurrentUser.sexualidad,
-                modoEntrada: pickRandomModoEntrada(),
+                modoEntrada: requestForm.modoEntrada,
                 tipoCliente: pickRandomClientProfile(),
                 conversationId: response.conversationId,
                 seedCode: response.seedCode,
