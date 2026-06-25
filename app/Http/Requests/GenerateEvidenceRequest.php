@@ -26,17 +26,18 @@ class GenerateEvidenceRequest extends FormRequest
         return [
             'seedCode' => ['nullable', 'string', 'max:100'],
             'conversationCode' => ['nullable', 'string', 'max:100'],
-            'telefono' => ['required', 'string', 'regex:/^9\d{8}$/'],
-            'nombre' => ['required', 'string', 'max:150'],
-            'dniCliente' => ['required', 'string', 'regex:/^\d{8}$/'],
-            'monto' => ['required', 'string', 'max:40'],
-            'tasa' => ['required', 'string', 'max:40'],
-            'cuota' => ['required', 'string', 'max:40'],
-            'plazo' => ['required', 'string', 'max:40'],
-            'fechaHora' => ['required', 'date_format:Y-m-d\TH:i'],
-            'fechaHoraRegistro' => ['required', 'date_format:Y-m-d\TH:i', 'after_or_equal:fechaHora'],
-            'duracion' => ['required', 'integer', 'min:1'],
-            'img_64' => ['nullable', 'file', 'mimes:png', 'max:15360'],        ];
+            'telefono' => ['required_without:seedCode', 'nullable', 'string', 'regex:/^9\d{8}$/'],
+            'nombre' => ['required_without:seedCode', 'nullable', 'string', 'max:150'],
+            'dniCliente' => ['required_without:seedCode', 'nullable', 'string', 'regex:/^\d{8}$/'],
+            'monto' => ['required_without:seedCode', 'nullable', 'string', 'max:40'],
+            'tasa' => ['required_without:seedCode', 'nullable', 'string', 'max:40'],
+            'cuota' => ['required_without:seedCode', 'nullable', 'string', 'max:40'],
+            'plazo' => ['required_without:seedCode', 'nullable', 'string', 'max:40'],
+            'fechaHora' => ['required_without:seedCode', 'nullable', 'date_format:Y-m-d\TH:i'],
+            'fechaHoraRegistro' => ['required_without:seedCode', 'nullable', 'date_format:Y-m-d\TH:i', 'after_or_equal:fechaHora'],
+            'duracion' => ['required_without:seedCode', 'nullable', 'integer', 'min:1'],
+            'img_64' => ['nullable', 'file', 'mimes:png', 'max:15360'],
+        ];
     }
 
     public function after(): array
@@ -45,7 +46,7 @@ class GenerateEvidenceRequest extends FormRequest
             function (Validator $validator): void {
                 $image = $this->file('img_64');
 
-                if ($image === null || $this->filled('conversationCode')) {
+                if ($image === null || $this->filled('conversationCode') || $this->filled('seedCode')) {
                     return;
                 }
 

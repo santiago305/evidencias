@@ -318,6 +318,62 @@ test('generate evidence returns seed and rendered messages', function () {
     $this->assertDatabaseCount('generated_evidences', 1);
 });
 
+test('generate evidence stores visual seed metadata for new evidences', function () {
+    $user = User::factory()->create([
+        'name' => 'Ana Lopez',
+        'dni' => '87654321',
+    ]);
+
+    createConversationForTest('conv_visual_seed_new_001', [
+        ['side' => 'out', 'delay_minutes' => 0, 'lines' => ['Hola {nombre_cliente}']],
+    ]);
+
+    $response = $this->actingAs($user)->postJson(route('evidences.generate'), evidencePayload());
+
+    $response->assertOk()
+        ->assertJsonPath('visualSeedVersion', 'legacy-v1');
+
+    $storedEvidence = GeneratedEvidence::query()->firstOrFail();
+    $inputData = $storedEvidence->input_data;
+
+    expect($inputData['visualSeed'])->toBeString()
+        ->and($inputData['visualSeed'])->toContain('999999999|12345678|87654321|Juan Perez|Ana Lopez|')
+        ->and($inputData['visualSeedHash'])->toBe(hash('sha256', $inputData['visualSeed']))
+        ->and($inputData['visualSeedVersion'])->toBe('legacy-v1')
+        ->and($response->json('visualSeed'))->toBe($inputData['visualSeed']);
+});
+
+test('generate evidence uses stored visual seed for preview snapshot when present', function () {
+    $user = User::factory()->create();
+
+    createConversationForTest('conv_visual_seed_snapshot_001', [
+        ['side' => 'out', 'delay_minutes' => 0, 'lines' => ['Telefono {telefono}']],
+        ['side' => 'in', 'delay_minutes' => 1, 'lines' => ['Ok']],
+    ]);
+
+    $first = $this->actingAs($user)->postJson(route('evidences.generate'), [
+        ...evidencePayload(),
+        'conversationCode' => 'conv_visual_seed_snapshot_001',
+        'telefono' => '999999999',
+    ])->json();
+
+    $storedEvidence = GeneratedEvidence::query()->firstOrFail();
+    $inputData = $storedEvidence->input_data;
+    $inputData['visualSeed'] = 'frozen-seed-for-test';
+    $inputData['visualSeedHash'] = hash('sha256', 'frozen-seed-for-test');
+    $inputData['visualSeedVersion'] = 'legacy-v1';
+    $storedEvidence->input_data = $inputData;
+    $storedEvidence->save();
+
+    $second = $this->actingAs($user)->postJson(route('evidences.generate'), [
+        ...evidencePayload(),
+        'seedCode' => $first['seedCode'],
+        'telefono' => '988888888',
+    ])->json();
+
+    expect($second['visualSeed'])->toBe('frozen-seed-for-test');
+});
+
 test('generate evidence by conversation code can render a development conversation', function () {
     $user = User::factory()->create();
 
@@ -824,6 +880,69 @@ test('generating by seed reuses the same conversation and original seed without 
     expect($progressAfter->used_ids)->toBe($progressBefore->used_ids);
     expect($progressAfter->pending_ids)->toBe($progressBefore->pending_ids);
     expect(GeneratedEvidence::query()->count())->toBe(1);
+});
+
+test('generate evidence by seed accepts only the seed code', function () {
+    $user = User::factory()->create();
+
+    createConversationForTest('conv_seed_only_001', [
+        ['side' => 'out', 'delay_minutes' => 0, 'lines' => ['Telefono {telefono}']],
+    ]);
+
+    $first = $this->actingAs($user)->postJson(route('evidences.generate'), evidencePayload())->json();
+
+    $response = $this->actingAs($user)->postJson(route('evidences.generate'), [
+        'seedCode' => $first['seedCode'],
+    ]);
+
+    $response->assertOk()
+        ->assertJsonPath('seedCode', $first['seedCode']);
+});
+
+test('generate evidence by seed allows correcting phone while preserving visual seed and snapshot', function () {
+    $user = User::factory()->create();
+
+    createConversationForTest('conv_seed_phone_edit_001', [
+        ['side' => 'out', 'delay_minutes' => 0, 'lines' => ['Telefono {telefono}']],
+        ['side' => 'in', 'delay_minutes' => 1, 'lines' => ['Ok']],
+    ]);
+
+    $first = $this->actingAs($user)->postJson(route('evidences.generate'), [
+        ...evidencePayload(),
+        'telefono' => '969600585',
+    ])->json();
+
+    $second = $this->actingAs($user)->postJson(route('evidences.generate'), [
+        'seedCode' => $first['seedCode'],
+        'telefono' => '988888888',
+    ])->json();
+
+    expect($second['messages'][0]['lines'][0])->toBe('Telefono 988888888')
+        ->and($second['visualSeed'])->toBe($first['visualSeed'])
+        ->and($second['previewSnapshot']['messageStatus'])->toBe($first['previewSnapshot']['messageStatus'])
+        ->and($second['previewSnapshot']['temporalBehavior'])->toBe($first['previewSnapshot']['temporalBehavior'])
+        ->and($second['previewSnapshot']['inlineTemporalInsertIndex'])->toBe($first['previewSnapshot']['inlineTemporalInsertIndex']);
+
+    expect(GeneratedEvidence::query()->count())->toBe(1);
+});
+
+test('generate evidence by seed ignores attempted visual seed override', function () {
+    $user = User::factory()->create();
+
+    createConversationForTest('conv_seed_visual_override_001', [
+        ['side' => 'out', 'delay_minutes' => 0, 'lines' => ['Hola']],
+    ]);
+
+    $first = $this->actingAs($user)->postJson(route('evidences.generate'), evidencePayload())->json();
+
+    $second = $this->actingAs($user)->postJson(route('evidences.generate'), [
+        'seedCode' => $first['seedCode'],
+        'visualSeed' => 'malicious-change',
+        'visualSeedHash' => hash('sha256', 'malicious-change'),
+        'visualSeedVersion' => 'legacy-v1',
+    ])->json();
+
+    expect($second['visualSeed'])->toBe($first['visualSeed']);
 });
 
 test('authenticated user can fetch stored evidence payload by seed', function () {

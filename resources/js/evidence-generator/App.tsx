@@ -65,6 +65,9 @@ interface ConversationApiModel {
 interface GenerateEvidenceResponse {
     conversationId: string;
     seedCode: string;
+    visualSeed: string;
+    visualSeedHash: string;
+    visualSeedVersion: string;
     messages: GeneratedMessage[];
     previewSnapshot: SavedData['previewSnapshot'];
     progress: ConversationProgressSummary;
@@ -354,6 +357,9 @@ export default function App({
                 tipoCliente: pickRandomClientProfile(),
                 conversationId: response.conversationId,
                 seedCode: response.seedCode,
+                visualSeed: response.visualSeed,
+                visualSeedHash: response.visualSeedHash,
+                visualSeedVersion: response.visualSeedVersion,
                 generatedMessages: response.messages,
                 previewSnapshot: response.previewSnapshot,
                 progress: response.progress,

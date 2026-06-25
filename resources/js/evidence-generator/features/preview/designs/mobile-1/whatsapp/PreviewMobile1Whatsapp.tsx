@@ -112,7 +112,7 @@ export function PreviewMobile1Whatsapp({ data, themeMode }: PreviewProps) {
     return (
         <Mobile1PreviewFrame
             themeMode={themeMode}
-            notificationSeed={[data.seedCode, data.conversationId, data.telefono, data.dniCliente, data.generatedMessages?.length]
+            notificationSeed={[data.visualSeed ?? data.seedCode, data.conversationId, data.generatedMessages?.length]
                 .filter((value) => value !== undefined && value !== null && `${value}`.trim() !== '')
                 .join('|')}
             headerVariant="whatsapp"

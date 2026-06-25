@@ -54,6 +54,7 @@ class EvidenceGeneratorService
         private readonly ConversationBagService $bagService,
         private readonly EvidenceSeedService $seedService,
         private readonly ConversationRenderService $renderService,
+        private readonly EvidenceVisualSeedService $visualSeedService,
     ) {}
 
     /**
@@ -80,6 +81,9 @@ class EvidenceGeneratorService
      *       languagePosition:'next-to-hidden'|'next-to-clock'
      *     }
      *   },
+     *   visualSeed:string,
+     *   visualSeedHash:string,
+     *   visualSeedVersion:string,
      *   progress:array{cycle:int,used:int,pending:int,total:int},
      *   trayProfile:array{
      *     taskbarColor:string,
@@ -136,8 +140,25 @@ class EvidenceGeneratorService
                 ]);
             }
 
+            $storedInput = is_array($replayEvidence->input_data) ? $replayEvidence->input_data : [];
+            $editableInput = collect($input)
+                ->except([
+                    'seedCode',
+                    'conversationCode',
+                    'previewSeed',
+                    'visualSeed',
+                    'visualSeedHash',
+                    'visualSeedVersion',
+                ])
+                ->filter(static fn (mixed $value): bool => $value !== null && $value !== '')
+                ->all();
+
             $renderInput = [
-                ...(is_array($replayEvidence->input_data) ? $replayEvidence->input_data : []),
+                ...$storedInput,
+                ...$editableInput,
+                'visualSeed' => $storedInput['visualSeed'] ?? null,
+                'visualSeedHash' => $storedInput['visualSeedHash'] ?? null,
+                'visualSeedVersion' => $storedInput['visualSeedVersion'] ?? null,
                 'previewSeed' => $previewSeed,
             ];
         } elseif ($conversationCode !== '') {
@@ -158,6 +179,7 @@ class EvidenceGeneratorService
             $cycle = (int) $selected['progress']->cycle;
         }
 
+        $renderInput = $this->withVisualSeedMetadata($renderInput, $previewSeed);
         $messages = $this->renderService->render($conversation, $renderInput);
         $trayProfile = $this->resolveWindowsTrayProfile($user);
         $previewSnapshot = $this->buildPreviewSnapshot($renderInput, $messages, $previewSeed, $trayProfile);
@@ -177,6 +199,9 @@ class EvidenceGeneratorService
             'seedCode' => $returnedSeedCode,
             'messages' => $messages,
             'previewSnapshot' => $previewSnapshot,
+            'visualSeed' => (string) ($renderInput['visualSeed'] ?? ''),
+            'visualSeedHash' => (string) ($renderInput['visualSeedHash'] ?? ''),
+            'visualSeedVersion' => (string) ($renderInput['visualSeedVersion'] ?? ''),
             'progress' => [
                 'cycle' => $progressCycle,
                 'used' => $used,
@@ -184,6 +209,26 @@ class EvidenceGeneratorService
                 'total' => Conversation::query()->where('is_active', true)->where('status', 'production')->count(),
             ],
             'trayProfile' => $trayProfile,
+        ];
+    }
+
+    /**
+     * @param  array<string, mixed>  $input
+     * @return array<string, mixed>
+     */
+    private function withVisualSeedMetadata(array $input, string $previewSeed): array
+    {
+        $visualSeed = trim((string) ($input['visualSeed'] ?? ''));
+
+        if ($visualSeed === '') {
+            $visualSeed = $this->visualSeedService->buildLegacyVisualSeed($input, $previewSeed);
+        }
+
+        return [
+            ...$input,
+            'visualSeed' => $visualSeed,
+            'visualSeedHash' => $this->visualSeedService->hashVisualSeed($visualSeed),
+            'visualSeedVersion' => (string) ($input['visualSeedVersion'] ?? 'legacy-v1'),
         ];
     }
 
@@ -453,18 +498,13 @@ class EvidenceGeneratorService
      */
     private function buildStateSeed(array $input, string $previewSeed): string
     {
-        $values = [
-            trim((string) ($input['telefono'] ?? '')),
-            trim((string) ($input['dniCliente'] ?? '')),
-            trim((string) ($input['dni'] ?? '')),
-            trim((string) ($input['nombre'] ?? '')),
-            trim((string) ($input['nombreAsesor'] ?? '')),
-            $previewSeed,
-        ];
+        $visualSeed = trim((string) ($input['visualSeed'] ?? ''));
 
-        $normalized = array_values(array_filter($values, static fn (string $value): bool => $value !== ''));
+        if ($visualSeed !== '') {
+            return $visualSeed;
+        }
 
-        return $normalized === [] ? 'preview-default' : implode('|', $normalized);
+        return $this->visualSeedService->buildLegacyVisualSeed($input, $previewSeed);
     }
 
     private function buildMessageStatus(string $stateSeed): string
