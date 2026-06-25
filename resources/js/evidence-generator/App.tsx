@@ -14,7 +14,7 @@ import { PreviewPanel } from './features/preview/components/PreviewPanel';
 import { getJson, postFormData, postJson, putJson } from './lib/api';
 import { createInitialFormState } from './lib/formState';
 import { resolveActiveMobileDesignKey } from './lib/mobileDesignSelection';
-import { clearReplayHydratedForm, hydrateReplayForm, isReplayGenerateBlocked, shouldApplyReplayLookupResult } from './lib/replayForm';
+import { hydrateReplayForm, isReplayGenerateBlocked, shouldApplyReplayLookupResult } from './lib/replayForm';
 import { applyConversationTestDefaults } from './lib/testingDefaults';
 import type {
     ActiveDesign,
@@ -257,7 +257,7 @@ export default function App({
         }
 
         setIsReplayLookupPending(true);
-        setGeneratedSeedCode('');
+        setGeneratedSeedCode(trimmedSeedCode);
 
         const timeoutId = window.setTimeout(() => {
             void (async () => {
@@ -285,13 +285,6 @@ export default function App({
                         message?: string;
                     };
 
-                    setForm((previous) => {
-                        revokePreviewImage(previous);
-
-                        return clearReplayHydratedForm(previous);
-                    });
-                    setImageFileInputKey((previous) => previous + 1);
-                    setGeneratedSeedCode('');
                     setFeedbackMessage(errorPayload.message ?? 'No se pudo cargar la evidencia guardada para esa sal.');
                 } finally {
                     if (shouldApplyReplayLookupResult(replayLookupSeedRef.current, trimmedSeedCode)) {
