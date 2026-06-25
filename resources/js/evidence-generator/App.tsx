@@ -70,6 +70,13 @@ interface GenerateEvidenceResponse {
     trayProfile: WindowsTrayProfile;
 }
 
+interface ReplayEvidenceResponse {
+    seedCode: string;
+    conversationId: number;
+    generatedAt: string | null;
+    inputData: Partial<Record<FormInputKey, string>>;
+}
+
 interface StoreConversationResponse {
     message: string;
     data: {
@@ -92,6 +99,40 @@ interface ConversationListItem {
     code: string;
     status: ConversationStatus;
     messages: ConversationModalMessageDraft[];
+}
+
+const replayHydratedFields = [
+    'telefono',
+    'nombre',
+    'dniCliente',
+    'monto',
+    'tasa',
+    'cuota',
+    'plazo',
+    'fechaHora',
+    'fechaHoraRegistro',
+    'duracion',
+] as const satisfies ReadonlyArray<FormInputKey>;
+
+function revokePreviewImage(form: FormState): void {
+    if (form.img_64.startsWith('blob:')) {
+        URL.revokeObjectURL(form.img_64);
+    }
+}
+
+function hydrateReplayForm(previousForm: FormState, inputData: ReplayEvidenceResponse['inputData']): FormState {
+    const nextForm = {
+        ...previousForm,
+        img_64: '',
+        img_64_file: null,
+    };
+
+    for (const field of replayHydratedFields) {
+        const value = inputData[field];
+        nextForm[field] = typeof value === 'string' ? value : '';
+    }
+
+    return nextForm;
 }
 
 /* ---------------- App ---------------- */
@@ -157,6 +198,7 @@ export default function App({
     const previewThemeMode = isTestingPreview ? testPreviewThemeMode : evidenceThemeMode;
     const activeMobileDesignKey = shouldUseTestMobileDesign ? testMobileDesignKey : userMobileDesignKey;
     const isTestMobileDesignGloballyRegistered = globalMobileDesignKeys.includes(testMobileDesignKey);
+    const visibleGeneratedSeedCode = seedCodeInput.trim() !== '' ? seedCodeInput.trim() : generatedSeedCode;
 
     const handleChange = (key: FormInputKey) => (e: ChangeEvent<HTMLInputElement>) => {
         const value =
@@ -226,9 +268,63 @@ export default function App({
         setForm((previous) => applyConversationTestDefaults(previous));
     }, [conversationCodeInput, seedCodeInput]);
 
+    useEffect(() => {
+        const trimmedSeedCode = seedCodeInput.trim();
+        let ignore = false;
+
+        if (trimmedSeedCode === '') {
+            setForm((previous) => {
+                revokePreviewImage(previous);
+
+                return createInitialFormState();
+            });
+            setImageFileInputKey((previous) => previous + 1);
+            setGeneratedSeedCode('');
+
+            return;
+        }
+
+        const timeoutId = window.setTimeout(() => {
+            void (async () => {
+                try {
+                    const response = await getJson<ReplayEvidenceResponse>(route('evidences.show-by-seed', { seedCode: trimmedSeedCode }));
+
+                    if (ignore) {
+                        return;
+                    }
+
+                    setForm((previous) => {
+                        revokePreviewImage(previous);
+
+                        return hydrateReplayForm(previous, response.inputData);
+                    });
+                    setGeneratedSeedCode(response.seedCode);
+                    setImageFileInputKey((previous) => previous + 1);
+                    setFeedbackMessage(null);
+                } catch (error) {
+                    if (ignore) {
+                        return;
+                    }
+
+                    const errorPayload = error as {
+                        message?: string;
+                    };
+
+                    setFeedbackMessage(errorPayload.message ?? 'No se pudo cargar la evidencia guardada para esa sal.');
+                }
+            })();
+        }, 300);
+
+        return () => {
+            ignore = true;
+            window.clearTimeout(timeoutId);
+        };
+    }, [seedCodeInput]);
+
     const handleGenerate = async () => {
         setIsGenerating(true);
         setFeedbackMessage(null);
+        const isReplayGeneration = seedCodeInput.trim() !== '';
         const shouldUseConversationDefaults = seedCodeInput.trim() === '' && conversationCodeInput.trim() !== '';
         const requestForm = shouldUseConversationDefaults ? applyConversationTestDefaults(form) : form;
 
@@ -276,9 +372,10 @@ export default function App({
             setGeneratedSeedCode(response.seedCode);
             setProgress(response.progress);
             setFeedbackMessage(`Conversacion usada: ${response.conversationId}`);
-            setForm(createInitialFormState());
-            setImageFileInputKey((previous) => previous + 1);
-            setSeedCodeInput('');
+            if (!isReplayGeneration) {
+                setForm(createInitialFormState());
+                setImageFileInputKey((previous) => previous + 1);
+            }
             setConversationCodeInput('');
         } catch (error) {
             const errorPayload = error as {
@@ -430,7 +527,7 @@ export default function App({
                         imageFileInputKey={imageFileInputKey}
                         onGenerate={handleGenerate}
                         isGenerating={isGenerating}
-                        generatedSeedCode={generatedSeedCode}
+                        generatedSeedCode={visibleGeneratedSeedCode}
                         seedCodeInput={seedCodeInput}
                         onSeedCodeInputChange={setSeedCodeInput}
                         conversationCodeInput={conversationCodeInput}

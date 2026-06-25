@@ -132,9 +132,7 @@ export function DataForm({
                     onChange={onImageFileChange}
                     className="block w-full cursor-pointer rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs text-slate-700 shadow-sm file:mr-3 file:cursor-pointer file:rounded-md file:border-0 file:bg-slate-900 file:px-3 file:py-1.5 file:text-xs file:font-semibold file:text-white hover:bg-slate-50 focus:border-slate-500 focus:ring-2 focus:ring-slate-900/10 focus:outline-none"
                 />
-                <p className="text-[10px] text-slate-500">
-                    Opcional. El archivo debe llamarse {form.dniCliente || 'DNI'}.png, salvo en modo prueba.
-                </p>
+                <p className="text-[10px] text-slate-500">Opcional. El archivo debe llamarse {form.dniCliente || 'DNI'}.png, salvo en modo prueba.</p>
             </div>
 
             <Input
@@ -147,11 +145,12 @@ export function DataForm({
             />
 
             <Input
-                label="Completar por sal"
+                label="Autocompletar por sal"
                 id="seed-input"
                 value={seedCodeInput}
                 onChange={(e) => onSeedCodeInputChange(e.target.value)}
                 placeholder="Ej: EVC2-C020-U01-R03-AB12CD34-Z9Q7K3A1B2"
+                hint="Carga una evidencia guardada"
             />
 
             <Input
@@ -175,7 +174,7 @@ export function DataForm({
                     'cursor-pointer focus:ring-2 focus:ring-slate-900/25 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50',
                 ].join(' ')}
             >
-                {isGenerating ? 'Generando...' : 'Generar evidencia'}
+                {isGenerating ? 'Regenerando...' : seedCodeInput.trim() !== '' ? 'Regenerar evidencia' : 'Generar evidencia'}
             </button>
 
             {feedbackMessage ? (
