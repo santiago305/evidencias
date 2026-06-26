@@ -23,7 +23,7 @@ export default function EvidenceGeneratorPage() {
         <div className="relative min-h-screen">
             <Head title="Inicio" />
 
-            <div className="absolute top-4 right-4 z-[500]">
+            <div className="absolute top-4 left-4 z-[500]">
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                         <Button className="h-10 gap-2 rounded-xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-slate-800">

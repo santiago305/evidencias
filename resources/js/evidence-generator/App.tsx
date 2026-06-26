@@ -496,23 +496,6 @@ export default function App({
         <div className="h-screen w-full bg-slate-50">
             <div className="h-full min-h-0 w-full overflow-hidden">
                 <div className="grid h-full min-h-0 grid-cols-1 gap-4 lg:grid-cols-8">
-                    <PreviewPanel
-                        activeDesign={activeDesign}
-                        saved={saved}
-                        whatsappPreviewMode={whatsappPreviewMode}
-                        mobileDesignKey={activeMobileDesignKey}
-                        whatsappDesktopScale={whatsappDesktopScale}
-                        themeMode={previewThemeMode}
-                        canRegisterMobileDesign={
-                            activeDesign === 'whatsapp' &&
-                            whatsappPreviewMode === 'mobile' &&
-                            lastGeneratedFromConversationCode &&
-                            !isTestMobileDesignGloballyRegistered
-                        }
-                        isRegisteringMobileDesign={isRegisteringMobileDesign}
-                        mobileDesignLabel={activeMobileDesignKey.replace('-', ' ').replace(/\b\w/g, (letter) => letter.toUpperCase())}
-                        onRegisterMobileDesign={handleRegisterMobileDesign}
-                    />
                     <FormPanel
                         activeDesign={activeDesign}
                         form={form}
@@ -546,6 +529,23 @@ export default function App({
                             setIsConversationsListModalOpen(true);
                         }}
                         feedbackMessage={feedbackMessage}
+                    />
+                    <PreviewPanel
+                        activeDesign={activeDesign}
+                        saved={saved}
+                        whatsappPreviewMode={whatsappPreviewMode}
+                        mobileDesignKey={activeMobileDesignKey}
+                        whatsappDesktopScale={whatsappDesktopScale}
+                        themeMode={previewThemeMode}
+                        canRegisterMobileDesign={
+                            activeDesign === 'whatsapp' &&
+                            whatsappPreviewMode === 'mobile' &&
+                            lastGeneratedFromConversationCode &&
+                            !isTestMobileDesignGloballyRegistered
+                        }
+                        isRegisteringMobileDesign={isRegisteringMobileDesign}
+                        mobileDesignLabel={activeMobileDesignKey.replace('-', ' ').replace(/\b\w/g, (letter) => letter.toUpperCase())}
+                        onRegisterMobileDesign={handleRegisterMobileDesign}
                     />
                 </div>
             </div>

@@ -125,7 +125,7 @@ export function WhatsappDesktopTextBubble({ side, firstInGroup, time, status, id
                 paddingInline: 'var(--whatsapp-desktop-message-horizontal-padding, 15.75px)',
             }}
         >
-            <div className="relative max-w-[70%] flex-none text-[14.2px] leading-4.75">
+            <div className="relative max-w-[65%] flex-none text-[14.2px] leading-4.75">
                 {firstInGroup && <BubbleTail side={isOut ? 'right' : 'left'} colorClass={tailColor} />}
 
                 <div className={['relative z-10 rounded-[7.5px]', cornerCut, bubbleBg, bubbleText, 'shadow-[0_1px_0.5px_rgba(11,20,26,0.13)]'].join(' ')}>
@@ -133,7 +133,7 @@ export function WhatsappDesktopTextBubble({ side, firstInGroup, time, status, id
                         {quote ? <QuotedMessageBox quote={quote} themeMode={themeMode} /> : null}
 
                         <div className="relative overflow-hidden ps-1.25 pe-1.25 break-words whitespace-pre-wrap">
-                            <span data-testid="selectable-text" dir="ltr" className="visible text-[12px] leading-4.5 font-normal tracking-tighter select-text" style={{ minHeight: '0px' }}>
+                            <span data-testid="selectable-text" dir="ltr" className="visible text-[12px] leading-4.5 font-normal tracking-tighter select-text" style={{ minHeight: '0px'}}>
                                 {content}
                             </span>
                             <span>

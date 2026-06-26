@@ -460,7 +460,7 @@ export function PreviewBlockWhatsapp({ data, whatsappDesktopScale, themeMode }: 
     if (!data) return <EmptyState />;
 
     return (
-        <div className={['flex h-full w-full max-w-300 flex-col', themeMode === 'dark' ? 'bg-[#0b141a]' : 'bg-[#efeae2]'].join(' ')} id="CAPTURA">
+        <div className={['flex h-full w-full max-w-320 flex-col', themeMode === 'dark' ? 'bg-[#0b141a]' : 'bg-[#efeae2]'].join(' ')} id="CAPTURA">
             <div className="min-h-0 w-full flex-1 overflow-hidden">
                 <div className="flex h-full min-h-0 w-full" style={desktopPreviewStyle}>
                     <div className="flex min-w-0 flex-1 flex-col">
