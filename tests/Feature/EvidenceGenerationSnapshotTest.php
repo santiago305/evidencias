@@ -68,6 +68,7 @@ test('generate evidence includes a preview snapshot and reproduces it from the s
             'messages' => [['side', 'time', 'lines']],
             'previewSnapshot' => [
                 'messageStatus',
+                'showRightInfoPanel',
                 'temporalBehavior' => [
                     'showTemporaryIcon',
                     'showDefaultTemporalMessage',
@@ -85,6 +86,8 @@ test('generate evidence includes a preview snapshot and reproduces it from the s
                 ],
             ],
         ]);
+
+    expect($firstResponse->json('previewSnapshot.showRightInfoPanel'))->toBeBool();
 
     $seedCode = (string) $firstResponse->json('seedCode');
 

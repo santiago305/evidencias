@@ -75,6 +75,22 @@ test('desktop WhatsApp scale applies to content without scaling the Windows tray
     assert.ok(desktopPreviewBlock.indexOf('transform: `scale(${desktopScaleFactor})`') < desktopPreviewBlock.indexOf('<WindowsTrayBar'));
 });
 
+test('desktop WhatsApp right info panel uses preview snapshot visibility', () => {
+    const desktopPreviewBlock = readFileSync(resolve(designsDir, 'whatsapp-desktop', 'PreviewBlockWhatsapp.tsx'), 'utf8');
+
+    assert.match(desktopPreviewBlock, /showRightInfoPanel/);
+    assert.match(desktopPreviewBlock, /data\.previewSnapshot\?\.showRightInfoPanel/);
+    assert.match(desktopPreviewBlock, /<WhatsappRightAside/);
+    assert.match(desktopPreviewBlock, /showInfoPanel=\{showRightInfoPanel\}/);
+    assert.doesNotMatch(desktopPreviewBlock, /\{showRightInfoPanel \? \(\s*<WhatsappRightAside/);
+
+    const rightAsideSource = readFileSync(resolve(designsDir, 'whatsapp-desktop', 'WhatsappRightAside.tsx'), 'utf8');
+
+    assert.match(rightAsideSource, /showInfoPanel/);
+    assert.match(rightAsideSource, /\{showInfoPanel \? \(/);
+    assert.match(rightAsideSource, />Info\.<\/div>/);
+});
+
 test('desktop WhatsApp conversation starts anchored to the bottom', () => {
     const desktopConversation = readFileSync(resolve(designsDir, 'whatsapp-desktop', 'WhatsappConversation.tsx'), 'utf8');
 

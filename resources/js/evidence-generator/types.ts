@@ -82,6 +82,7 @@ export interface PreviewTemporalBehavior {
 
 export interface PreviewSnapshot {
     messageStatus: 'read' | 'delivered';
+    showRightInfoPanel: boolean;
     temporalBehavior: PreviewTemporalBehavior;
     inlineTemporalInsertIndex: number | null;
     trayTime: string;

@@ -29,6 +29,7 @@ export function WhatsappRightAside({
     profileTitle,
     profileSubtitle,
     showAddContactAction,
+    showInfoPanel = true,
     widthPx = 360,
     themeMode = 'light',
 }: {
@@ -36,6 +37,7 @@ export function WhatsappRightAside({
     profileTitle?: string;
     profileSubtitle?: string;
     showAddContactAction?: boolean;
+    showInfoPanel?: boolean;
     widthPx?: number;
     temporalStatusLabel: '90 días' | 'Desactivado';
     themeMode?: PreviewThemeMode;
@@ -138,7 +140,9 @@ export function WhatsappRightAside({
 
                                 <ContactActionButtons showAddAction={showAddContactAction} themeMode={themeMode} />
                             </div>
-                            <div className={['my-2 block w-full text-[11px]', primaryText].join(' ')}>Info.</div>
+                            {showInfoPanel ? (
+                                <div className={['my-2 block w-full text-[11px]', primaryText].join(' ')}>Info.</div>
+                            ) : null}
                         </div>
                     </div>
 

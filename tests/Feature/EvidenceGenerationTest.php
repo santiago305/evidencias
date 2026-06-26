@@ -899,6 +899,32 @@ test('generate evidence by seed accepts only the seed code', function () {
         ->assertJsonPath('seedCode', $first['seedCode']);
 });
 
+test('generate evidence by seed returns right info visibility for older stored evidence', function () {
+    $user = User::factory()->create();
+
+    createConversationForTest('conv_old_snapshot_right_info_001', [
+        ['side' => 'out', 'delay_minutes' => 0, 'lines' => ['Hola {nombre_cliente}']],
+    ]);
+
+    $first = $this->actingAs($user)->postJson(route('evidences.generate'), evidencePayload())->assertOk()->json();
+
+    $evidence = GeneratedEvidence::query()
+        ->where('seed_code', $first['seedCode'])
+        ->firstOrFail();
+
+    $inputData = $evidence->input_data;
+    unset($inputData['showRightInfoPanel']);
+    $evidence->input_data = $inputData;
+    $evidence->save();
+
+    $response = $this->actingAs($user)->postJson(route('evidences.generate'), [
+        'seedCode' => $first['seedCode'],
+    ])->assertOk();
+
+    expect($response->json('previewSnapshot.showRightInfoPanel'))->toBeBool();
+    expect(GeneratedEvidence::query()->count())->toBe(1);
+});
+
 test('generate evidence by seed allows correcting phone while preserving visual seed and snapshot', function () {
     $user = User::factory()->create();
 

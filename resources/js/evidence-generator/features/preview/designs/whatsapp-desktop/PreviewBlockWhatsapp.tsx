@@ -345,7 +345,6 @@ export function PreviewBlockWhatsapp({ data, whatsappDesktopScale, themeMode }: 
     const desktopScaleFactor = WHATSAPP_DESKTOP_SCALE_FACTORS[whatsappDesktopScale];
     const desktopMessageHorizontalPaddingPx = WHATSAPP_DESKTOP_MESSAGE_HORIZONTAL_PADDING_PX[whatsappDesktopScale];
     const desktopScaledLayoutSize = `${100 / desktopScaleFactor}%`;
-    const rightAsideWidthPx = WHATSAPP_RIGHT_ASIDE_WIDTHS[whatsappDesktopScale] / desktopScaleFactor;
     const desktopPreviewStyle = {
         width: desktopScaledLayoutSize,
         height: desktopScaledLayoutSize,
@@ -410,6 +409,16 @@ export function PreviewBlockWhatsapp({ data, whatsappDesktopScale, themeMode }: 
         };
     }, [data?.previewSnapshot, userSeed]);
 
+    const showRightInfoPanel = useMemo(() => {
+        if (data?.previewSnapshot && typeof data.previewSnapshot?.showRightInfoPanel === 'boolean') {
+            return data.previewSnapshot.showRightInfoPanel;
+        }
+
+        const random = createSeededRandom(hashString(`${userSeed}|right-info-panel`));
+        return random() < 0.5;
+    }, [data?.previewSnapshot?.showRightInfoPanel, userSeed]);
+    const rightAsideWidthPx = WHATSAPP_RIGHT_ASIDE_WIDTHS[whatsappDesktopScale] / desktopScaleFactor;
+
     const contactIdentityDisplay = useMemo(
         () =>
             data
@@ -471,6 +480,7 @@ export function PreviewBlockWhatsapp({ data, whatsappDesktopScale, themeMode }: 
                         profileTitle={contactIdentityDisplay.profileTitle}
                         profileSubtitle={contactIdentityDisplay.profileSubtitle}
                         showAddContactAction={contactIdentityDisplay.showAddContactAction}
+                        showInfoPanel={showRightInfoPanel}
                         widthPx={rightAsideWidthPx}
                         themeMode={themeMode}
                     />

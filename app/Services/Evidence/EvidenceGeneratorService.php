@@ -65,6 +65,7 @@ class EvidenceGeneratorService
      *   messages:list<array{side:string,time:string,dateKey:string,lines:list<string>}>,
      *   previewSnapshot:array{
      *     messageStatus:'read'|'delivered',
+     *     showRightInfoPanel:bool,
      *     temporalBehavior:array{
      *       showTemporaryIcon:bool,
      *       showDefaultTemporalMessage:bool,
@@ -475,6 +476,7 @@ class EvidenceGeneratorService
      * @param  array{taskbarColor:string,icons:list<array{key:string,glyph:string,title:string,className:string|null,iconClassName:string|null}>,language:array{top:string,bottom:string|null},languagePosition:'next-to-hidden'|'next-to-clock'}  $trayProfile
      * @return array{
      *   messageStatus:'read'|'delivered',
+     *   showRightInfoPanel:bool,
      *   temporalBehavior:array{
      *     showTemporaryIcon:bool,
      *     showDefaultTemporalMessage:bool,
@@ -491,12 +493,14 @@ class EvidenceGeneratorService
     {
         $stateSeed = $this->buildStateSeed($input, $previewSeed);
         $messageStatus = $this->buildMessageStatus($stateSeed);
+        $showRightInfoPanel = $this->buildRightInfoPanelVisibility($stateSeed);
         $temporalBehavior = $this->buildTemporalBehavior($stateSeed);
         $inlineTemporalInsertIndex = $this->buildInlineTemporalInsertIndex($stateSeed, count($messages), $temporalBehavior['inlineTemporalMode']);
         ['trayTime' => $trayTime, 'trayDate' => $trayDate] = $this->buildTrayClock();
 
         return [
             'messageStatus' => $messageStatus,
+            'showRightInfoPanel' => $showRightInfoPanel,
             'temporalBehavior' => $temporalBehavior,
             'inlineTemporalInsertIndex' => $inlineTemporalInsertIndex,
             'trayTime' => $trayTime,
@@ -524,6 +528,11 @@ class EvidenceGeneratorService
         $roll = $this->seededInt($stateSeed.'|status', 1, 100);
 
         return $roll <= 50 ? 'read' : 'delivered';
+    }
+
+    private function buildRightInfoPanelVisibility(string $stateSeed): bool
+    {
+        return $this->seededInt($stateSeed.'|right-info-panel', 1, 100) <= 50;
     }
 
     /**
