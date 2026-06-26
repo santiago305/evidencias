@@ -99,6 +99,9 @@ export type SavedData = FormState & {
     visualSeed?: string;
     visualSeedHash?: string;
     visualSeedVersion?: string;
+    avatarSeed?: string;
+    avatarSeedHash?: string;
+    avatarSeedVersion?: string;
     generatedMessages?: GeneratedMessage[];
     progress?: ConversationProgressSummary;
     trayProfile?: WindowsTrayProfile;

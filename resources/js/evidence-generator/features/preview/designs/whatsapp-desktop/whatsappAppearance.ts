@@ -15,10 +15,10 @@ function lightenHexColor(hexColor: string, ratio = 0.2): string {
 }
 
 export function buildWhatsappAvatarSeed(data: WhatsappData | null | undefined): string {
-    const frozenVisualSeed = data?.visualSeed?.trim();
+    const frozenAvatarSeed = data?.avatarSeed?.trim();
 
-    if (frozenVisualSeed) {
-        return frozenVisualSeed;
+    if (frozenAvatarSeed) {
+        return frozenAvatarSeed;
     }
 
     const seed = [data?.telefono, data?.dniCliente, data?.nombre, data?.seedCode, data?.conversationId, data?.nombreAsesor]

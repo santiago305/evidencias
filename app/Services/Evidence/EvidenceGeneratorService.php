@@ -84,6 +84,9 @@ class EvidenceGeneratorService
      *   visualSeed:string,
      *   visualSeedHash:string,
      *   visualSeedVersion:string,
+     *   avatarSeed:string,
+     *   avatarSeedHash:string,
+     *   avatarSeedVersion:string,
      *   progress:array{cycle:int,used:int,pending:int,total:int},
      *   trayProfile:array{
      *     taskbarColor:string,
@@ -149,6 +152,9 @@ class EvidenceGeneratorService
                     'visualSeed',
                     'visualSeedHash',
                     'visualSeedVersion',
+                    'avatarSeed',
+                    'avatarSeedHash',
+                    'avatarSeedVersion',
                 ])
                 ->filter(static fn (mixed $value): bool => $value !== null && $value !== '')
                 ->all();
@@ -159,6 +165,9 @@ class EvidenceGeneratorService
                 'visualSeed' => $storedInput['visualSeed'] ?? null,
                 'visualSeedHash' => $storedInput['visualSeedHash'] ?? null,
                 'visualSeedVersion' => $storedInput['visualSeedVersion'] ?? null,
+                'avatarSeed' => $storedInput['avatarSeed'] ?? null,
+                'avatarSeedHash' => $storedInput['avatarSeedHash'] ?? null,
+                'avatarSeedVersion' => $storedInput['avatarSeedVersion'] ?? null,
                 'previewSeed' => $previewSeed,
             ];
         } elseif ($conversationCode !== '') {
@@ -202,6 +211,9 @@ class EvidenceGeneratorService
             'visualSeed' => (string) ($renderInput['visualSeed'] ?? ''),
             'visualSeedHash' => (string) ($renderInput['visualSeedHash'] ?? ''),
             'visualSeedVersion' => (string) ($renderInput['visualSeedVersion'] ?? ''),
+            'avatarSeed' => (string) ($renderInput['avatarSeed'] ?? ''),
+            'avatarSeedHash' => (string) ($renderInput['avatarSeedHash'] ?? ''),
+            'avatarSeedVersion' => (string) ($renderInput['avatarSeedVersion'] ?? ''),
             'progress' => [
                 'cycle' => $progressCycle,
                 'used' => $used,

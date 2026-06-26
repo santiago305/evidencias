@@ -945,6 +945,44 @@ test('generate evidence by seed ignores attempted visual seed override', functio
     expect($second['visualSeed'])->toBe($first['visualSeed']);
 });
 
+test('replay preserves stored avatar seed when editable phone changes', function () {
+    $user = User::factory()->create();
+
+    createConversationForTest('conv_seed_avatar_phone_edit_001', [
+        ['side' => 'out', 'delay_minutes' => 0, 'lines' => ['Telefono {telefono}']],
+    ]);
+
+    $first = $this->actingAs($user)->postJson(route('evidences.generate'), [
+        ...evidencePayload(),
+        'telefono' => '969600585',
+        'dniCliente' => '12345678',
+        'dni' => '87654321',
+        'nombre' => 'Juan Perez',
+        'nombreAsesor' => 'Ana Lopez',
+    ])->assertOk()->json();
+
+    $evidence = GeneratedEvidence::query()
+        ->where('seed_code', $first['seedCode'])
+        ->firstOrFail();
+
+    $inputData = $evidence->input_data;
+    $inputData['avatarSeed'] = '969600585|12345678|Juan Perez|'.$first['seedCode'].'|'.$first['conversationId'].'|Ana Lopez';
+    $inputData['avatarSeedHash'] = hash('sha256', $inputData['avatarSeed']);
+    $inputData['avatarSeedVersion'] = 'legacy-avatar-v1';
+    $evidence->input_data = $inputData;
+    $evidence->save();
+
+    $second = $this->actingAs($user)->postJson(route('evidences.generate'), [
+        'seedCode' => $first['seedCode'],
+        'telefono' => '999999999',
+    ])->assertOk()->json();
+
+    expect($second['messages'][0]['lines'][0])->toBe('Telefono 999999999')
+        ->and($second['avatarSeed'])->toBe($inputData['avatarSeed'])
+        ->and($second['avatarSeedHash'])->toBe(hash('sha256', $inputData['avatarSeed']))
+        ->and($second['avatarSeedVersion'])->toBe('legacy-avatar-v1');
+});
+
 test('authenticated user can fetch stored evidence payload by seed', function () {
     $user = User::factory()->create();
 

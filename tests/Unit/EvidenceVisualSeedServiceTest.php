@@ -34,6 +34,38 @@ test('it falls back when all seed values are empty', function () {
     expect($service->buildLegacyVisualSeed([], ''))->toBe('preview-default');
 });
 
+test('it builds the legacy avatar seed with the original frontend field order', function () {
+    $service = new EvidenceVisualSeedService;
+
+    $seed = $service->buildLegacyAvatarSeed([
+        'telefono' => ' 969600585 ',
+        'dniCliente' => '12345678',
+        'nombre' => ' Juan Perez ',
+        'nombreAsesor' => ' Ana Lopez ',
+    ], 'SAL12345', 'conv_abc123');
+
+    expect($seed)->toBe('969600585|12345678|Juan Perez|SAL12345|conv_abc123|Ana Lopez');
+});
+
+test('it skips empty legacy avatar seed values', function () {
+    $service = new EvidenceVisualSeedService;
+
+    $seed = $service->buildLegacyAvatarSeed([
+        'telefono' => '',
+        'dniCliente' => '12345678',
+        'nombre' => null,
+        'nombreAsesor' => '',
+    ], 'SAL12345', 'conv_abc123');
+
+    expect($seed)->toBe('12345678|SAL12345|conv_abc123');
+});
+
+test('it falls back when all avatar seed values are empty', function () {
+    $service = new EvidenceVisualSeedService;
+
+    expect($service->buildLegacyAvatarSeed([], '', ''))->toBe('contact');
+});
+
 test('it hashes the visual seed for verification', function () {
     $service = new EvidenceVisualSeedService;
 

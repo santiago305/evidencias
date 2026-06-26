@@ -54,7 +54,8 @@ test('WhatsApp avatar seeds use client identity and keep desktop/mobile color lo
     for (const sourcePath of seedSources) {
         const source = readFileSync(sourcePath, 'utf8');
 
-        assert.match(source, /visualSeed/);
+        assert.match(source, /avatarSeed/);
+        assert.doesNotMatch(source, /frozenVisualSeed/);
         assert.match(source, /dniCliente/);
         assert.match(source, /seedCode/);
         assert.match(source, /conversationId/);

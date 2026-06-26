@@ -68,6 +68,9 @@ interface GenerateEvidenceResponse {
     visualSeed: string;
     visualSeedHash: string;
     visualSeedVersion: string;
+    avatarSeed: string;
+    avatarSeedHash: string;
+    avatarSeedVersion: string;
     messages: GeneratedMessage[];
     previewSnapshot: SavedData['previewSnapshot'];
     progress: ConversationProgressSummary;
@@ -360,6 +363,9 @@ export default function App({
                 visualSeed: response.visualSeed,
                 visualSeedHash: response.visualSeedHash,
                 visualSeedVersion: response.visualSeedVersion,
+                avatarSeed: response.avatarSeed,
+                avatarSeedHash: response.avatarSeedHash,
+                avatarSeedVersion: response.avatarSeedVersion,
                 generatedMessages: response.messages,
                 previewSnapshot: response.previewSnapshot,
                 progress: response.progress,
