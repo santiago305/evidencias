@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, type CSSProperties } from 'react';
 import type { PreviewProps, WhatsappDesktopScale, WhatsappDesktopScaleProps } from '../../../../types';
 import { EmptyState } from '../../components/EmptyState';
 import { buildContactIdentityDisplay } from './contactIdentityDisplay';
@@ -324,6 +324,14 @@ const WHATSAPP_DESKTOP_SCALE_FACTORS: Record<WhatsappDesktopScale, number> = {
     100: 1.2,
 };
 
+const WHATSAPP_DESKTOP_MESSAGE_HORIZONTAL_PADDING_PX: Record<WhatsappDesktopScale, number> = {
+    80: 63,
+    85: 59.29,
+    90: 56,
+    95: 53.05,
+    100: 50.4,
+};
+
 const WHATSAPP_RIGHT_ASIDE_WIDTHS: Record<WhatsappDesktopScale, number> = {
     80: 550,
     85: 550,
@@ -335,8 +343,16 @@ const WHATSAPP_RIGHT_ASIDE_WIDTHS: Record<WhatsappDesktopScale, number> = {
 export function PreviewBlockWhatsapp({ data, whatsappDesktopScale, themeMode }: PreviewBlockWhatsappProps) {
     const userSeed = useMemo(() => buildWhatsappAvatarSeed(data ?? undefined), [data]);
     const desktopScaleFactor = WHATSAPP_DESKTOP_SCALE_FACTORS[whatsappDesktopScale];
+    const desktopMessageHorizontalPaddingPx = WHATSAPP_DESKTOP_MESSAGE_HORIZONTAL_PADDING_PX[whatsappDesktopScale];
     const desktopScaledLayoutSize = `${100 / desktopScaleFactor}%`;
     const rightAsideWidthPx = WHATSAPP_RIGHT_ASIDE_WIDTHS[whatsappDesktopScale] / desktopScaleFactor;
+    const desktopPreviewStyle = {
+        width: desktopScaledLayoutSize,
+        height: desktopScaledLayoutSize,
+        transform: `scale(${desktopScaleFactor})`,
+        transformOrigin: 'top left',
+        '--whatsapp-desktop-message-horizontal-padding': `${desktopMessageHorizontalPaddingPx}px`,
+    } as CSSProperties;
 
     const messageStatus = useMemo<MsgStatus>(() => {
         if (data?.previewSnapshot) {
@@ -426,12 +442,7 @@ export function PreviewBlockWhatsapp({ data, whatsappDesktopScale, themeMode }: 
             <div className="min-h-0 w-full flex-1 overflow-hidden">
                 <div
                     className="flex h-full min-h-0 w-full"
-                    style={{
-                        width: desktopScaledLayoutSize,
-                        height: desktopScaledLayoutSize,
-                        transform: `scale(${desktopScaleFactor})`,
-                        transformOrigin: 'top left',
-                    }}
+                    style={desktopPreviewStyle}
                 >
                     <div className="flex min-w-0 flex-1 flex-col">
                         <WhatsappHeaderUser

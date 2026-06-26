@@ -118,7 +118,13 @@ export function WhatsappDesktopTextBubble({ side, firstInGroup, time, status, id
     const content = renderBubbleContent(children);
 
     return (
-        <div id={id} className={`whatsapp-windows  flex px-15.75 ${isOut ? 'justify-end' : 'justify-start'}`}>
+        <div
+            id={id}
+            className={`whatsapp-windows flex ${isOut ? 'justify-end' : 'justify-start'}`}
+            style={{
+                paddingInline: 'var(--whatsapp-desktop-message-horizontal-padding, 15.75px)',
+            }}
+        >
             <div className="relative max-w-[70%] flex-none text-[14.2px] leading-4.75">
                 {firstInGroup && <BubbleTail side={isOut ? 'right' : 'left'} colorClass={tailColor} />}
 

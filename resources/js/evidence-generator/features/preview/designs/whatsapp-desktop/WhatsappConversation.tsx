@@ -212,11 +212,7 @@ export function WhatsappConversation({
                 return;
             }
 
-            const maxScrollTop = scrollHeight - clientHeight;
-            const scrollRatios = [0.8, 0.88, 0.94, 1];
-            const scrollRatio = scrollRatios[Math.floor(Math.random() * scrollRatios.length)] ?? 1;
-
-            scrollContainer.scrollTop = Math.round(maxScrollTop * scrollRatio);
+            scrollContainer.scrollTop = scrollHeight - clientHeight;
             updateScrollState();
         });
 
@@ -244,7 +240,7 @@ export function WhatsappConversation({
                         <div
                             ref={scrollContainerRef}
                             onScroll={updateScrollState}
-                            className="scrollbar-soft h-full w-full overflow-y-auto"
+                            className="scrollbar-soft flex h-full w-full flex-col justify-end overflow-y-auto"
                         >
                             {firstDayChipDateKey !== '' && <DayChip text={getDayChipTextForDate(firstDayChipDateKey)} themeMode={themeMode} />}
                             <EncryptedMessage themeMode={themeMode} />

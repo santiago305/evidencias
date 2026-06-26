@@ -1,6 +1,10 @@
-import React from "react";
+import React, { type CSSProperties } from "react";
 import type { PreviewThemeMode } from "../../../../types";
 import { WhatsappDesktopTextBubble } from "./whatsapp-bubbles/WhatsappDesktopTextBubble";
+
+const whatsappDesktopHorizontalPaddingStyle: CSSProperties = {
+  paddingInline: "var(--whatsapp-desktop-message-horizontal-padding, 15.75px)",
+};
 
 export function MessageGroup({
   children,
@@ -177,7 +181,10 @@ export function EncryptedMessage({ themeMode = "light" }: { themeMode?: PreviewT
         <div className="relative pb-2">
           <div className="flex justify-center">
             <div>
-              <div className="mx-auto flex max-w-125 flex-col justify-center px-15.75">
+              <div
+                className="mx-auto flex max-w-125 flex-col justify-center"
+                style={whatsappDesktopHorizontalPaddingStyle}
+              >
                 <span></span>
 
                 <div
@@ -189,12 +196,12 @@ export function EncryptedMessage({ themeMode = "light" }: { themeMode?: PreviewT
                   <div className="relative z-10 rounded-[7.35px]">
                     <div className="cursorpointer">
                       <span>
-                        <div className={['me-0.5 mt-0.5 inline-block align-top', isDark ? 'text-[#a4a4a4]' : 'text-black/60'].join(' ')}>
+                        <div className={['me-0.5 mt-1 inline-block align-top', isDark ? 'text-[#EECC84]' : 'bg-[#FFF0D4]'].join(' ')}>
                           <span aria-hidden="true" data-icon="lock-small">
                             <svg
                               viewBox="0 0 10 12"
-                              height="8"
-                              width="7"
+                              height="9"
+                              width="8"
                               preserveAspectRatio="xMidYMid meet"
                               version="1.1"
                             >
@@ -207,7 +214,7 @@ export function EncryptedMessage({ themeMode = "light" }: { themeMode?: PreviewT
                           </span>
                         </div>
 
-                        <span className={`visible min-h-0 wrap-break-word text-[9.8px] leading-[16px]`}>
+                        <span className="visible min-h-0 wrap-break-word text-[9.8px] leading-[16px]">
                           Los mensajes y las llamadas están cifrados de extremo
                           a extremo. Solo las personas en este chat pueden
                           leerlos, escucharlos o compartirlos. Haz clic para obtener más información."
@@ -238,7 +245,10 @@ export function TempporalMessage({ themeMode = "light" }: { themeMode?: PreviewT
         <div className="relative pb-2">
           <div className="flex justify-center">
             <div>
-              <div className="mx-auto flex max-w-125 flex-col justify-center px-15.75">
+              <div
+                className="mx-auto flex max-w-125 flex-col justify-center"
+                style={whatsappDesktopHorizontalPaddingStyle}
+              >
                 <span></span>
 
                 <div
@@ -302,7 +312,10 @@ export function ActiveTemporalMessage({ themeMode = "light" }: { themeMode?: Pre
         <div className="relative pb-2">
           <div className="flex justify-center">
             <div>
-              <div className="mx-auto flex max-w-125 flex-col justify-center px-15.75">
+              <div
+                className="mx-auto flex max-w-125 flex-col justify-center"
+                style={whatsappDesktopHorizontalPaddingStyle}
+              >
                 <span></span>
 
                 <div

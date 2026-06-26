@@ -75,6 +75,14 @@ test('desktop WhatsApp scale applies to content without scaling the Windows tray
     assert.ok(desktopPreviewBlock.indexOf('transform: `scale(${desktopScaleFactor})`') < desktopPreviewBlock.indexOf('<WindowsTrayBar'));
 });
 
+test('desktop WhatsApp conversation starts anchored to the bottom', () => {
+    const desktopConversation = readFileSync(resolve(designsDir, 'whatsapp-desktop', 'WhatsappConversation.tsx'), 'utf8');
+
+    assert.match(desktopConversation, /flex h-full w-full flex-col justify-end overflow-y-auto/);
+    assert.match(desktopConversation, /scrollContainer\.scrollTop = scrollHeight - clientHeight;/);
+    assert.doesNotMatch(desktopConversation, /scrollRatios|scrollRatio/);
+});
+
 test('whatsapp typography platform is configured at the preview entry point', () => {
     const typographySource = readFileSync(resolve(designsDir, 'whatsappTypography.ts'), 'utf8');
     const mobile1Source = readFileSync(resolve(designsDir, 'mobile-1', 'whatsapp', 'PreviewMobile1Whatsapp.tsx'), 'utf8');

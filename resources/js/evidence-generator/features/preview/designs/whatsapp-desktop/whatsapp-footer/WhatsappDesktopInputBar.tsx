@@ -7,7 +7,7 @@ export function WhatsappDesktopInputBar({ themeMode = 'light' }: { themeMode?: P
         <div className="px-3 pb-2">
             <div className="flex items-center">
                 <div className={['flex flex-1 items-center justify-center rounded-full border px-2 py-2.5 text-[11px]', isDark ? 'border-transparent bg-[#242626] text-[#bbb4b4]' : 'border-black/5 bg-white text-slate-400'].join(' ')}>
-                    <div className="mr-2.5 h-full w-auto">
+                    <div className="ml-1 mr-2.5 h-full w-auto">
                         <span aria-hidden="true" data-icon="plus-rounded">
                             <svg viewBox="0 0 24 24" height="16" width="16" preserveAspectRatio="xMidYMid meet" className={isDark ? 'text-[#ffffff]' : 'text-black'} fill="none">
                                 <title>plus-rounded</title>
