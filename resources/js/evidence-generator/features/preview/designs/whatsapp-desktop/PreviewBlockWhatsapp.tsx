@@ -187,6 +187,10 @@ function pickOne<T>(values: T[], random: () => number): T {
     return values[Math.floor(random() * values.length)];
 }
 
+function randomBoolean(): boolean {
+    return Boolean(Math.round(Math.random()));
+}
+
 function createWindowsTrayProfile(seedInput: string): WindowsTrayProfile {
     const seed = hashString(seedInput || 'tray-default');
     const random = createSeededRandom(seed);
@@ -409,6 +413,20 @@ export function PreviewBlockWhatsapp({ data, whatsappDesktopScale, themeMode }: 
         };
     }, [data?.previewSnapshot, userSeed]);
 
+    const contactIdentityDisplay = useMemo(
+        () =>
+            data
+                ? buildContactIdentityDisplay(data)
+                : {
+                      headerTitle: 'Aracely MD',
+                      headerDisplaysPhone: false,
+                      profileTitle: 'Sin nombre',
+                      profileSubtitle: '+51 —',
+                      showAddContactAction: false,
+                  },
+        [data],
+    );
+
     const showRightInfoPanel = useMemo(() => {
         if (data?.previewSnapshot && typeof data.previewSnapshot?.showRightInfoPanel === 'boolean') {
             return data.previewSnapshot.showRightInfoPanel;
@@ -417,20 +435,15 @@ export function PreviewBlockWhatsapp({ data, whatsappDesktopScale, themeMode }: 
         const random = createSeededRandom(hashString(`${userSeed}|right-info-panel`));
         return random() < 0.5;
     }, [data?.previewSnapshot?.showRightInfoPanel, userSeed]);
-    const rightAsideWidthPx = WHATSAPP_RIGHT_ASIDE_WIDTHS[whatsappDesktopScale] / desktopScaleFactor;
 
-    const contactIdentityDisplay = useMemo(
-        () =>
-            data
-                ? buildContactIdentityDisplay(data)
-                : {
-                      headerTitle: 'Aracely MD',
-                      profileTitle: 'Sin nombre',
-                      profileSubtitle: '+51 —',
-                      showAddContactAction: false,
-                  },
-        [data],
-    );
+    const showRightAside = useMemo(() => {
+        if (!contactIdentityDisplay.headerDisplaysPhone) {
+            return true;
+        }
+
+        return randomBoolean();
+    }, [contactIdentityDisplay]);
+    const rightAsideWidthPx = WHATSAPP_RIGHT_ASIDE_WIDTHS[whatsappDesktopScale] / desktopScaleFactor;
 
     const windowsTrayData = useMemo(() => {
         if (data?.previewSnapshot) {
@@ -447,12 +460,9 @@ export function PreviewBlockWhatsapp({ data, whatsappDesktopScale, themeMode }: 
     if (!data) return <EmptyState />;
 
     return (
-        <div className={['flex h-full w-full flex-col', themeMode === 'dark' ? 'bg-[#0b141a]' : 'bg-[#efeae2]'].join(' ')} id="CAPTURA">
+        <div className={['flex h-full w-full max-w-300 flex-col', themeMode === 'dark' ? 'bg-[#0b141a]' : 'bg-[#efeae2]'].join(' ')} id="CAPTURA">
             <div className="min-h-0 w-full flex-1 overflow-hidden">
-                <div
-                    className="flex h-full min-h-0 w-full"
-                    style={desktopPreviewStyle}
-                >
+                <div className="flex h-full min-h-0 w-full" style={desktopPreviewStyle}>
                     <div className="flex min-w-0 flex-1 flex-col">
                         <WhatsappHeaderUser
                             data={data}
@@ -474,16 +484,18 @@ export function PreviewBlockWhatsapp({ data, whatsappDesktopScale, themeMode }: 
                         />
                     </div>
 
-                    <WhatsappRightAside
-                        data={data}
-                        temporalStatusLabel={temporalBehavior.temporalStatusLabel}
-                        profileTitle={contactIdentityDisplay.profileTitle}
-                        profileSubtitle={contactIdentityDisplay.profileSubtitle}
-                        showAddContactAction={contactIdentityDisplay.showAddContactAction}
-                        showInfoPanel={showRightInfoPanel}
-                        widthPx={rightAsideWidthPx}
-                        themeMode={themeMode}
-                    />
+                    {showRightAside ? (
+                        <WhatsappRightAside
+                            data={data}
+                            temporalStatusLabel={temporalBehavior.temporalStatusLabel}
+                            profileTitle={contactIdentityDisplay.profileTitle}
+                            profileSubtitle={contactIdentityDisplay.profileSubtitle}
+                            showAddContactAction={contactIdentityDisplay.showAddContactAction}
+                            showInfoPanel={showRightInfoPanel}
+                            widthPx={rightAsideWidthPx}
+                            themeMode={themeMode}
+                        />
+                    ) : null}
                 </div>
             </div>
 

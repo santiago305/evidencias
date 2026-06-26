@@ -240,65 +240,67 @@ export function WhatsappConversation({
                         <div
                             ref={scrollContainerRef}
                             onScroll={updateScrollState}
-                            className="scrollbar-soft flex h-full w-full flex-col justify-end overflow-y-auto"
+                            className="scrollbar-soft h-full w-full overflow-y-auto"
                         >
-                            {firstDayChipDateKey !== '' && <DayChip text={getDayChipTextForDate(firstDayChipDateKey)} themeMode={themeMode} />}
-                            <EncryptedMessage themeMode={themeMode} />
-                            {showDefaultTemporalMessage && <TempporalMessage themeMode={themeMode} />}
+                            <div className="flex min-h-full w-full flex-col justify-end">
+                                {firstDayChipDateKey !== '' && <DayChip text={getDayChipTextForDate(firstDayChipDateKey)} themeMode={themeMode} />}
+                                <EncryptedMessage themeMode={themeMode} />
+                                {showDefaultTemporalMessage && <TempporalMessage themeMode={themeMode} />}
 
-                            {conversationMessages.map((msg, idx) => {
-                                const prev = conversationMessages[idx - 1];
-                                const next = conversationMessages[idx + 1];
-                                const currentDateKey = resolveMessageDateKey(msg, fallbackDateKey);
-                                const previousDateKey = prev ? resolveMessageDateKey(prev, fallbackDateKey) : null;
-                                const showsDayChip = currentDateKey !== '' && idx > 0 && currentDateKey !== previousDateKey;
-                                const markerBeforeCurrent = resolvedInlineTemporalInsertIndex === idx;
-                                const markerAfterCurrent = resolvedInlineTemporalInsertIndex === idx + 1;
-                                const isFirstInGroup = idx === 0 || markerBeforeCurrent || prev.side !== msg.side;
-                                const staysInSameGroup = !!next && !markerAfterCurrent && next.side === msg.side;
-                                const wrapperSpacing = staysInSameGroup ? 'mb-0.5' : 'mb-4';
-                                return (
-                                    <Fragment key={`message-${idx}-${msg.side}`}>
-                                        {showsDayChip && <DayChip text={getDayChipTextForDate(currentDateKey)} themeMode={themeMode} />}
+                                {conversationMessages.map((msg, idx) => {
+                                    const prev = conversationMessages[idx - 1];
+                                    const next = conversationMessages[idx + 1];
+                                    const currentDateKey = resolveMessageDateKey(msg, fallbackDateKey);
+                                    const previousDateKey = prev ? resolveMessageDateKey(prev, fallbackDateKey) : null;
+                                    const showsDayChip = currentDateKey !== '' && idx > 0 && currentDateKey !== previousDateKey;
+                                    const markerBeforeCurrent = resolvedInlineTemporalInsertIndex === idx;
+                                    const markerAfterCurrent = resolvedInlineTemporalInsertIndex === idx + 1;
+                                    const isFirstInGroup = idx === 0 || markerBeforeCurrent || prev.side !== msg.side;
+                                    const staysInSameGroup = !!next && !markerAfterCurrent && next.side === msg.side;
+                                    const wrapperSpacing = staysInSameGroup ? 'mb-0.5' : 'mb-4';
+                                    return (
+                                        <Fragment key={`message-${idx}-${msg.side}`}>
+                                            {showsDayChip && <DayChip text={getDayChipTextForDate(currentDateKey)} themeMode={themeMode} />}
 
-                                        <div className={wrapperSpacing}>
-                                            <Bubble
-                                                id={msg.id_}
-                                                side={msg.side}
-                                                firstInGroup={isFirstInGroup}
-                                                time={msg.time}
-                                                status={msg.status}
-                                                quote={
-                                                    msg.quote
-                                                        ? {
-                                                              author: msg.quote.side === 'out' ? 'Tú' : (displayTitle ?? 'Cliente'),
-                                                              text: msg.quote.text,
-                                                              accentColor:
-                                                                  msg.quote.side === 'out'
-                                                                      ? ADVISOR_QUOTE_ACCENT_COLOR
-                                                                      : clientQuoteTheme.accentColor,
-                                                              authorColor:
-                                                                  msg.quote.side === 'out'
-                                                                      ? ADVISOR_QUOTE_AUTHOR_COLOR
-                                                                      : clientQuoteTheme.authorColor,
-                                                          }
-                                                        : undefined
-                                                }
-                                                themeMode={themeMode}
-                                            >
-                                                {linesToSpans(msg.lines, themeMode)}
-                                            </Bubble>
-                                        </div>
+                                            <div className={wrapperSpacing}>
+                                                <Bubble
+                                                    id={msg.id_}
+                                                    side={msg.side}
+                                                    firstInGroup={isFirstInGroup}
+                                                    time={msg.time}
+                                                    status={msg.status}
+                                                    quote={
+                                                        msg.quote
+                                                            ? {
+                                                                  author: msg.quote.side === 'out' ? 'Tú' : (displayTitle ?? 'Cliente'),
+                                                                  text: msg.quote.text,
+                                                                  accentColor:
+                                                                      msg.quote.side === 'out'
+                                                                          ? ADVISOR_QUOTE_ACCENT_COLOR
+                                                                          : clientQuoteTheme.accentColor,
+                                                                  authorColor:
+                                                                      msg.quote.side === 'out'
+                                                                          ? ADVISOR_QUOTE_AUTHOR_COLOR
+                                                                          : clientQuoteTheme.authorColor,
+                                                              }
+                                                            : undefined
+                                                    }
+                                                    themeMode={themeMode}
+                                                >
+                                                    {linesToSpans(msg.lines, themeMode)}
+                                                </Bubble>
+                                            </div>
 
-                                        {markerAfterCurrent && inlineTemporalMode === 'active' && (
-                                            <ActiveTemporalMessage themeMode={themeMode} />
-                                        )}
-                                        {markerAfterCurrent && inlineTemporalMode === 'deactive' && (
-                                            <DesactiveTemporalMessage themeMode={themeMode} />
-                                        )}
-                                    </Fragment>
-                                );
-                            })}
+                                            {markerAfterCurrent && inlineTemporalMode === 'active' && (
+                                                <ActiveTemporalMessage themeMode={themeMode} />
+                                            )}
+                                            {markerAfterCurrent && inlineTemporalMode === 'deactive' && (
+                                                <DesactiveTemporalMessage themeMode={themeMode} />
+                                            )}
+                                        </Fragment>
+                                    );
+                                })}
+                            </div>
                         </div>
 
                         {showMoreConversationIndicator && (

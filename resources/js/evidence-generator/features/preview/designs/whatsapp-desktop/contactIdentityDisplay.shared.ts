@@ -2,6 +2,7 @@ import type { WhatsappData } from './whatsappTypes';
 
 export type ContactIdentityDisplay = {
     headerTitle: string;
+    headerDisplaysPhone: boolean;
     profileTitle: string;
     profileSubtitle: string;
     showAddContactAction: boolean;
@@ -77,6 +78,7 @@ export function buildContactIdentityDisplay(data: WhatsappData): ContactIdentity
     if (!showPhoneInsteadOfName) {
         return {
             headerTitle: contactName,
+            headerDisplaysPhone: false,
             profileTitle: contactName,
             profileSubtitle: phoneLabel,
             showAddContactAction: false,
@@ -100,6 +102,7 @@ export function buildContactIdentityDisplay(data: WhatsappData): ContactIdentity
 
     return {
         headerTitle: phoneLabel,
+        headerDisplaysPhone: true,
         profileTitle: phoneLabel,
         profileSubtitle,
         showAddContactAction: true,
