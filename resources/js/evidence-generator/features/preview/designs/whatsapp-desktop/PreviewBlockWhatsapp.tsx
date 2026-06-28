@@ -336,12 +336,20 @@ const WHATSAPP_DESKTOP_MESSAGE_HORIZONTAL_PADDING_PX: Record<WhatsappDesktopScal
     100: 50.4,
 };
 
+const WHATSAPP_DESKTOP_CAPTURE_MAX_WIDTHS: Record<WhatsappDesktopScale, number> = {
+    80: 1294,
+    85: 1294,
+    90: 1287,
+    95: 1287,
+    100: 1280,
+};
+
 const WHATSAPP_RIGHT_ASIDE_WIDTHS: Record<WhatsappDesktopScale, number> = {
-    80: 550,
-    85: 550,
-    90: 550,
-    95: 550,
-    100: 550,
+    80: 578,
+    85: 578,
+    90: 578,
+    95: 578,
+    100: 578,
 };
 
 export function PreviewBlockWhatsapp({ data, whatsappDesktopScale, themeMode }: PreviewBlockWhatsappProps) {
@@ -444,6 +452,7 @@ export function PreviewBlockWhatsapp({ data, whatsappDesktopScale, themeMode }: 
         return randomBoolean();
     }, [contactIdentityDisplay]);
     const rightAsideWidthPx = WHATSAPP_RIGHT_ASIDE_WIDTHS[whatsappDesktopScale] / desktopScaleFactor;
+    const captureMaxWidthPx = WHATSAPP_DESKTOP_CAPTURE_MAX_WIDTHS[whatsappDesktopScale];
 
     const windowsTrayData = useMemo(() => {
         if (data?.previewSnapshot) {
@@ -460,7 +469,11 @@ export function PreviewBlockWhatsapp({ data, whatsappDesktopScale, themeMode }: 
     if (!data) return <EmptyState />;
 
     return (
-        <div className={['flex h-full w-full max-w-320 flex-col', themeMode === 'dark' ? 'bg-[#0b141a]' : 'bg-[#efeae2]'].join(' ')} id="CAPTURA">
+        <div
+            className={['flex h-full w-full flex-col', themeMode === 'dark' ? 'bg-[#0b141a]' : 'bg-[#efeae2]'].join(' ')}
+            id="CAPTURA"
+            style={{ maxWidth: `${captureMaxWidthPx}px` }}
+        >
             <div className="min-h-0 w-full flex-1 overflow-hidden">
                 <div className="flex h-full min-h-0 w-full" style={desktopPreviewStyle}>
                     <div className="flex min-w-0 flex-1 flex-col">

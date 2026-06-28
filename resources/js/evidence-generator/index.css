@@ -1,26 +1,33 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 /* Scrollbar suave tipo WhatsApp */
 .scrollbar-soft {
-  scrollbar-width: thin;                 /* Firefox */
-  scrollbar-color: rgba(0,0,0,.28) transparent;
+    --scrollbar-soft-thumb: rgba(0, 0, 0, 0.28);
+    --scrollbar-soft-thumb-hover: #000000;
+    scrollbar-width: thin; /* Firefox */
+    scrollbar-color: var(--scrollbar-soft-thumb) transparent;
+}
+
+.scrollbar-soft-dark {
+    --scrollbar-soft-thumb: rgba(251, 251, 251, 0.28);
+    --scrollbar-soft-thumb-hover: #fbfbfb;
 }
 
 /* Chrome / Edge / Safari */
 .scrollbar-soft::-webkit-scrollbar {
-  width: 8px;
+    width: 8px;
 }
 
 .scrollbar-soft::-webkit-scrollbar-track {
-  background: transparent;
+    background: transparent;
 }
 
 .scrollbar-soft::-webkit-scrollbar-thumb {
-  background-color: rgba(0,0,0,.22);
-  border-radius: 999px;
-  border: 2px solid transparent;         /* hace que se vea más delgado */
-  background-clip: content-box;
+    background-color: var(--scrollbar-soft-thumb);
+    border-radius: 999px;
+    border: 2px solid transparent; /* hace que se vea más delgado */
+    background-clip: content-box;
 }
 
 .scrollbar-soft::-webkit-scrollbar-thumb:hover {
-  background-color: rgba(0,0,0,.32);
+    background-color: var(--scrollbar-soft-thumb-hover);
 }

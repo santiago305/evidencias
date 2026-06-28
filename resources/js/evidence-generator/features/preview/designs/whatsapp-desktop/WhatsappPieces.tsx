@@ -217,7 +217,7 @@ export function EncryptedMessage({ themeMode = "light" }: { themeMode?: PreviewT
                         <span className="visible min-h-0 wrap-break-word text-[9.8px] leading-[16px]">
                           Los mensajes y las llamadas están cifrados de extremo
                           a extremo. Solo las personas en este chat pueden
-                          leerlos, escucharlos o compartirlos. Haz clic para obtener más información."
+                          leerlos, escucharlos o compartirlos. Haz clic para obtener más información.
                         </span>
                       </span>
                     </div>

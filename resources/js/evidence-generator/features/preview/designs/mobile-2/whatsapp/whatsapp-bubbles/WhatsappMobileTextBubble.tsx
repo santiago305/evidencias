@@ -121,7 +121,7 @@ export function WhatsappMobileTextBubble({ side, firstInGroup, time, status, id,
     const isOut = side === 'out';
     const isDark = themeMode === 'dark';
     const bubbleBg = isDark ? (isOut ? 'bg-[#134D37]' : 'bg-[#1F272A]') : isOut ? 'bg-[#D9FDD3]' : 'bg-white';
-    const bubbleText = isDark ? 'text-[#FBFEFF]' : 'text-[#111B21]';
+    const bubbleText = isDark ? 'text-[#FBFBFB]' : 'text-[#111B21]';
     const tailColor = isDark ? (isOut ? 'text-[#134D37]' : 'text-[#1F272A]') : isOut ? 'text-[#D9FDD3]' : 'text-white';
     const metaText = isDark ? 'text-[#878F92]' : 'text-[rgba(0,0,0,0.6)]';
     const cornerCut = firstInGroup ? (isOut ? 'rounded-tr-none' : 'rounded-tl-none') : '';

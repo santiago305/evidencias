@@ -59,7 +59,7 @@ function renderDocumentNumberLinks(
                 target="_blank"
                 rel="noopener noreferrer"
                 className={[
-                    'font-bold cursor-pointer no-underline select-text hover:underline',
+                    'cursor-pointer font-bold no-underline select-text hover:underline',
                     'focus-visible:bg-[#1B8755] focus-visible:text-white focus-visible:underline-offset-1 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#00A884]',
                     documentNumberColor,
                 ].join(' ')}
@@ -240,7 +240,7 @@ export function WhatsappConversation({
                         <div
                             ref={scrollContainerRef}
                             onScroll={updateScrollState}
-                            className="scrollbar-soft h-full w-full overflow-y-auto"
+                            className={['scrollbar-soft h-full w-full overflow-y-auto', themeMode === 'dark' ? 'scrollbar-soft-dark' : ''].join(' ')}
                         >
                             <div className="flex min-h-full w-full flex-col justify-end">
                                 {firstDayChipDateKey !== '' && <DayChip text={getDayChipTextForDate(firstDayChipDateKey)} themeMode={themeMode} />}
@@ -291,9 +291,7 @@ export function WhatsappConversation({
                                                 </Bubble>
                                             </div>
 
-                                            {markerAfterCurrent && inlineTemporalMode === 'active' && (
-                                                <ActiveTemporalMessage themeMode={themeMode} />
-                                            )}
+                                            {markerAfterCurrent && inlineTemporalMode === 'active' && <ActiveTemporalMessage themeMode={themeMode} />}
                                             {markerAfterCurrent && inlineTemporalMode === 'deactive' && (
                                                 <DesactiveTemporalMessage themeMode={themeMode} />
                                             )}

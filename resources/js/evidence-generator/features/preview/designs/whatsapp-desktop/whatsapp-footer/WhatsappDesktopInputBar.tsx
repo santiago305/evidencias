@@ -7,19 +7,19 @@ export function WhatsappDesktopInputBar({ themeMode = 'light' }: { themeMode?: P
         <div className="px-3 pb-2">
             <div className="flex items-center">
                 <div className={['flex flex-1 items-center justify-center rounded-full border px-2 py-2.5 text-[11px]', isDark ? 'border-transparent bg-[#242626] text-[#bbb4b4]' : 'border-black/5 bg-white text-slate-400'].join(' ')}>
-                    <div className="ml-1 mr-2.5 h-full w-auto">
+                    <div className=" mr-2.5 h-full w-auto">
                         <span aria-hidden="true" data-icon="plus-rounded">
-                            <svg viewBox="0 0 24 24" height="16" width="16" preserveAspectRatio="xMidYMid meet" className={isDark ? 'text-[#ffffff]' : 'text-black'} fill="none">
+                            <svg viewBox="0 0 24 24" height="21" width="21" preserveAspectRatio="xMidYMid meet" className={isDark ? 'text-[#ffffff]' : 'text-black'} fill="none">
                                 <title>plus-rounded</title>
                                 <path d="M11 13H5.5C4.94772 13 4.5 12.5523 4.5 12C4.5 11.4477 4.94772 11 5.5 11H11V5.5C11 4.94772 11.4477 4.5 12 4.5C12.5523 4.5 13 4.94772 13 5.5V11H18.5C19.0523 11 19.5 11.4477 19.5 12C19.5 12.5523 19.0523 13 18.5 13H13V18.5C13 19.0523 12.5523 19.5 12 19.5C11.4477 19.5 11 19.0523 11 18.5V13Z" fill="currentColor" />
                             </svg>
                         </span>
                     </div>
 
-                    <div className=" mr-2 flex h-full w-auto items-center justify-center">
+                    <div className=" mr-3 flex h-full w-auto items-center justify-center">
                         <button data-tab="10" aria-label="Emojis, GIF, Stickers" aria-disabled="false" aria-expanded="false" type="button">
                             <span aria-hidden="true" data-icon="expressions">
-                                <svg viewBox="0 0 24 24" height="18" width="18" preserveAspectRatio="xMidYMid meet" className={isDark ? 'text-[#ffffff]' : 'text-black'} fill="none">
+                                <svg viewBox="0 0 24 24" height="21" width="21" preserveAspectRatio="xMidYMid meet" className={isDark ? 'text-[#ffffff]' : 'text-black'} fill="none">
                                     <title>expressions</title>
                                     <path d="M8.49893 10.2521C9.32736 10.2521 9.99893 9.5805 9.99893 8.75208C9.99893 7.92365 9.32736 7.25208 8.49893 7.25208C7.6705 7.25208 6.99893 7.92365 6.99893 8.75208C6.99893 9.5805 7.6705 10.2521 8.49893 10.2521Z" fill="currentColor" />
                                     <path d="M17.0011 8.75208C17.0011 9.5805 16.3295 10.2521 15.5011 10.2521C14.6726 10.2521 14.0011 9.5805 14.0011 8.75208C14.0011 7.92365 14.6726 7.25208 15.5011 7.25208C16.3295 7.25208 17.0011 7.92365 17.0011 8.75208Z" fill="currentColor" />
@@ -29,7 +29,7 @@ export function WhatsappDesktopInputBar({ themeMode = 'light' }: { themeMode?: P
                         </button>
                     </div>
 
-                    <div className="flex h-full flex-1 items-center">Escribe un mensaje...</div>
+                    <div className="flex h-full flex-1 items-center text-[12px] leading-4.5 font-normal">Escribe un mensaje</div>
 
                     <span aria-hidden="true" data-icon="mic-outlined" className="h-full w-auto">
                         <svg viewBox="0 0 24 24" height="18" width="18" preserveAspectRatio="xMidYMid meet" className={isDark ? 'text-[#ffffff]' : 'text-black'}>

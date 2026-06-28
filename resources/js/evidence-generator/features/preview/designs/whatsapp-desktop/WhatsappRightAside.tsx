@@ -57,10 +57,7 @@ export function WhatsappRightAside({
     const avatarTheme = useMemo(() => createWhatsappAvatarTheme(buildWhatsappAvatarSeed(data), themeMode), [data, themeMode]);
 
     return (
-        <aside
-            className={['flex min-h-0 shrink-0 flex-col border-l', softBorderColor, panelBg].join(' ')}
-            style={{ width: widthPx }}
-        >
+        <aside className={['flex min-h-0 shrink-0 flex-col', softBorderColor, panelBg].join(' ')} style={{ width: widthPx }}>
             {/* ---------- HEADER ---------- */}
             <div className={['w-full shrink-0 px-3 py-2', sectionBg].join(' ')}>
                 <div className="flex items-center justify-between">
@@ -99,21 +96,17 @@ export function WhatsappRightAside({
                 </div>
             </div>
 
-            <div className="scrollbar-soft min-h-0 flex-1 overflow-y-auto">
+            <div className={['scrollbar-soft min-h-0 flex-1 overflow-y-auto', isDark ? 'scrollbar-soft-dark' : ''].join(' ')}>
                 <div className="w-full px-4">
                     {/* ---------- USER CARD ---------- */}
                     <div className={['border-b-[1.5px] py-3', softBorderColor, sectionBg].join(' ')}>
                         <div className="flex flex-col items-center gap-2">
                             {/* avatar */}
                             <div className="h-26 w-26 overflow-hidden rounded-full">
-                                <WhatsappAvatarImage
-                                    img64={data.img_64}
-                                    alt={contactActionTitle}
-                        className="h-full w-full rounded-full object-cover"
-                                >
+                                <WhatsappAvatarImage img64={data.img_64} alt={contactActionTitle} className="h-full w-full rounded-full object-cover">
                                     <svg
                                         viewBox="0 0 48 48"
-                                    className="h-full w-full rounded-full"
+                                        className="h-full w-full rounded-full"
                                         style={{
                                             backgroundColor: avatarTheme.bg,
                                         }}
@@ -129,7 +122,7 @@ export function WhatsappRightAside({
 
                             {/* name + phone */}
                             <div className="flex w-full min-w-0 flex-col items-center">
-                                <div className={['font-medium truncate p-1 text-[18px] text-wrap', primaryText].join(' ')}>
+                                <div className={['truncate p-1 text-[18px] font-medium text-wrap', primaryText].join(' ')}>
                                     {profileTitle ?? (data.nombre?.trim() ? data.nombre : '')}
                                 </div>
 
@@ -140,9 +133,7 @@ export function WhatsappRightAside({
 
                                 <ContactActionButtons showAddAction={showAddContactAction} themeMode={themeMode} />
                             </div>
-                            {showInfoPanel ? (
-                                <div className={['my-2 block w-full text-[11px]', primaryText].join(' ')}>Info.</div>
-                            ) : null}
+                            {showInfoPanel ? <div className={['my-2 block w-full text-[11px]', primaryText].join(' ')}>Info.</div> : null}
                         </div>
                     </div>
 
@@ -215,7 +206,10 @@ export function WhatsappRightAside({
                             <button
                                 type="button"
                                 aria-label="Silenciar notificaciones"
-                                className={['relative inline-flex h-5 w-9 items-center rounded-full transition', isDark ? 'bg-white/15' : 'bg-black/15'].join(' ')}
+                                className={[
+                                    'relative inline-flex h-5 w-9 items-center rounded-full transition',
+                                    isDark ? 'bg-white/15' : 'bg-black/15',
+                                ].join(' ')}
                             >
                                 <span className="inline-block h-4 w-4 translate-x-0.5 rounded-full bg-white shadow-sm" />
                             </button>
@@ -316,10 +310,7 @@ export function WhatsappRightAside({
                     {/*foteer */}
                     <div className={['mt-4 flex flex-col border-t', borderColor, cardBg].join(' ')}>
                         {/* Añadir a Favoritos */}
-                        <button
-                            type="button"
-                            className={['flex w-full items-center gap-3 px-4 py-3 text-left transition', hoverBg].join(' ')}
-                        >
+                        <button type="button" className={['flex w-full items-center gap-3 px-4 py-3 text-left transition', hoverBg].join(' ')}>
                             <span className={['shrink-0', iconText].join(' ')}>
                                 {/* favorite-refreshed */}
                                 <svg viewBox="0 0 24 24" height="18" width="18" fill="none">
@@ -334,10 +325,7 @@ export function WhatsappRightAside({
                             <span className={['text-[12px]', primaryText].join(' ')}>Añadir a Favoritos</span>
                         </button>
                         {/* añadir lista */}
-                        <button
-                            type="button"
-                            className={['flex w-full items-center gap-3 px-4 py-3 text-left transition', hoverBg].join(' ')}
-                        >
+                        <button type="button" className={['flex w-full items-center gap-3 px-4 py-3 text-left transition', hoverBg].join(' ')}>
                             <span className={['shrink-0', iconText].join(' ')}>
                                 {/* favorite-refreshed */}
                                 <svg viewBox="0 0 24 24" height="18" width="18" fill="none">
@@ -353,11 +341,8 @@ export function WhatsappRightAside({
                         </button>
 
                         {/* vaciar */}
-                        <button
-                            type="button"
-                            className={['flex w-full items-center gap-3 px-4 py-3 text-left transition', hoverBg].join(' ')}
-                        >
-                            <span className={["shrink-0 ", isDark ? "text-[#f296a0]" : "text-[#e1193e]"].join(' ')}>
+                        <button type="button" className={['flex w-full items-center gap-3 px-4 py-3 text-left transition', hoverBg].join(' ')}>
+                            <span className={['shrink-0', isDark ? 'text-[#f296a0]' : 'text-[#e1193e]'].join(' ')}>
                                 {/* delete-refreshed */}
                                 <svg viewBox="0 0 24 24" height="18" width="18" fill="none">
                                     <path
@@ -366,17 +351,12 @@ export function WhatsappRightAside({
                                     />
                                 </svg>
                             </span>
-                            <span className={["text-[12px]", isDark ? "text-[#f296a0]" : "text-[#e1193e]"].join(' ')}>
-                                {`Vaciar chat`}
-                            </span>
+                            <span className={['text-[12px]', isDark ? 'text-[#f296a0]' : 'text-[#e1193e]'].join(' ')}>{`Vaciar chat`}</span>
                         </button>
 
                         {/* Bloquear */}
-                        <button
-                            type="button"
-                            className={['flex w-full items-center gap-3 px-4 py-3 text-left transition', hoverBg].join(' ')}
-                        >
-                            <span className={["shrink-0 ", isDark ? "text-[#f296a0]" : "text-[#e1193e]"].join(' ')}>
+                        <button type="button" className={['flex w-full items-center gap-3 px-4 py-3 text-left transition', hoverBg].join(' ')}>
+                            <span className={['shrink-0', isDark ? 'text-[#f296a0]' : 'text-[#e1193e]'].join(' ')}>
                                 {/* block-refreshed */}
                                 <svg viewBox="0 0 24 24" height="18" width="18" fill="none">
                                     <path
@@ -385,17 +365,14 @@ export function WhatsappRightAside({
                                     />
                                 </svg>
                             </span>
-                            <span className={["text-[12px]", isDark ? "text-[#f296a0]" : "text-[#e1193e]"].join(' ')}>
+                            <span className={['text-[12px]', isDark ? 'text-[#f296a0]' : 'text-[#e1193e]'].join(' ')}>
                                 {`Bloquear a ${contactActionTitle}`}
                             </span>
                         </button>
 
                         {/* Reportar */}
-                        <button
-                            type="button"
-                            className={['flex w-full items-center gap-3 px-4 py-3 text-left transition', hoverBg].join(' ')}
-                        >
-                            <span className={["shrink-0 ", isDark ? "text-[#f296a0]" : "text-[#e1193e]"].join(' ')}>
+                        <button type="button" className={['flex w-full items-center gap-3 px-4 py-3 text-left transition', hoverBg].join(' ')}>
+                            <span className={['shrink-0', isDark ? 'text-[#f296a0]' : 'text-[#e1193e]'].join(' ')}>
                                 {/* report-refreshed */}
                                 <svg viewBox="0 0 24 24" height="18" width="18" fill="none">
                                     <path
@@ -404,17 +381,14 @@ export function WhatsappRightAside({
                                     />
                                 </svg>
                             </span>
-                            <span className={["text-[12px]", isDark ? "text-[#f296a0]" : "text-[#e1193e]"].join(' ')}>
+                            <span className={['text-[12px]', isDark ? 'text-[#f296a0]' : 'text-[#e1193e]'].join(' ')}>
                                 {`Reportar a ${contactActionTitle}`}
                             </span>
                         </button>
 
                         {/* Eliminar chat */}
-                        <button
-                            type="button"
-                            className={['flex w-full items-center gap-3 px-4 py-3 text-left transition', hoverBg].join(' ')}
-                        >
-                            <span className={["shrink-0 ", isDark ? "text-[#f296a0]" : "text-[#e1193e]"].join(' ')} >
+                        <button type="button" className={['flex w-full items-center gap-3 px-4 py-3 text-left transition', hoverBg].join(' ')}>
+                            <span className={['shrink-0', isDark ? 'text-[#f296a0]' : 'text-[#e1193e]'].join(' ')}>
                                 {/* delete-refreshed */}
                                 <svg viewBox="0 0 24 24" height="18" width="18" fill="none">
                                     <path
@@ -423,9 +397,7 @@ export function WhatsappRightAside({
                                     />
                                 </svg>
                             </span>
-                            <span className={["text-[12px]", isDark ? "text-[#f296a0]" : "text-[#e1193e]"].join(' ')}>
-                                {`Eliminar chat`}
-                            </span>
+                            <span className={['text-[12px]', isDark ? 'text-[#f296a0]' : 'text-[#e1193e]'].join(' ')}>{`Eliminar chat`}</span>
                         </button>
                     </div>
                 </div>

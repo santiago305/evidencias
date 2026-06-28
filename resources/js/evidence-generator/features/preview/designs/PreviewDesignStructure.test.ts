@@ -71,9 +71,18 @@ test('desktop WhatsApp scale applies to content without scaling the Windows tray
     assert.match(desktopPreviewBlock, /WHATSAPP_RIGHT_ASIDE_WIDTHS\[whatsappDesktopScale\]\s*\/\s*desktopScaleFactor/);
     assert.match(desktopPreviewBlock, /widthPx=\{rightAsideWidthPx\}/);
     assert.match(desktopPreviewBlock, /overflow-hidden/);
-    assert.match(desktopPreviewBlock, /max-w-300/);
+    assert.match(desktopPreviewBlock, /WHATSAPP_DESKTOP_CAPTURE_MAX_WIDTHS/);
     assert.match(desktopPreviewBlock, /transformOrigin:\s*['"]top left['"]/);
     assert.ok(desktopPreviewBlock.indexOf('transform: `scale(${desktopScaleFactor})`') < desktopPreviewBlock.indexOf('<WindowsTrayBar'));
+});
+
+test('desktop WhatsApp capture max width follows the selected page scale', () => {
+    const desktopPreviewBlock = readFileSync(resolve(designsDir, 'whatsapp-desktop', 'PreviewBlockWhatsapp.tsx'), 'utf8');
+
+    assert.match(desktopPreviewBlock, /WHATSAPP_DESKTOP_CAPTURE_MAX_WIDTHS/);
+    assert.match(desktopPreviewBlock, /const captureMaxWidthPx = WHATSAPP_DESKTOP_CAPTURE_MAX_WIDTHS\[whatsappDesktopScale\];/);
+    assert.match(desktopPreviewBlock, /maxWidth: `\$\{captureMaxWidthPx\}px`/);
+    assert.doesNotMatch(desktopPreviewBlock, /max-w-320/);
 });
 
 test('desktop WhatsApp right aside is forced for saved contacts and random for phone headers', () => {
@@ -102,17 +111,26 @@ test('desktop WhatsApp right info panel still uses preview snapshot visibility w
     assert.match(desktopPreviewBlock, /<WhatsappRightAside/);
     assert.match(desktopPreviewBlock, /showInfoPanel=\{showRightInfoPanel\}/);
     assert.match(rightAsideSource, /showInfoPanel/);
-    assert.match(rightAsideSource, /\{showInfoPanel \? \(/);
+    assert.match(rightAsideSource, /showInfoPanel \?/);
     assert.match(rightAsideSource, />Info\.<\/div>/);
 });
 
 test('desktop WhatsApp conversation starts anchored to the bottom', () => {
     const desktopConversation = readFileSync(resolve(designsDir, 'whatsapp-desktop', 'WhatsappConversation.tsx'), 'utf8');
 
-    assert.match(desktopConversation, /className="scrollbar-soft h-full w-full overflow-y-auto"/);
+    assert.match(desktopConversation, /scrollbar-soft h-full w-full overflow-y-auto/);
+    assert.match(desktopConversation, /scrollbar-soft-dark/);
     assert.match(desktopConversation, /className="flex min-h-full w-full flex-col justify-end"/);
     assert.match(desktopConversation, /scrollContainer\.scrollTop = scrollHeight - clientHeight;/);
     assert.doesNotMatch(desktopConversation, /scrollRatios|scrollRatio/);
+});
+
+test('desktop WhatsApp input bar matches the message bubble text rhythm', () => {
+    const desktopInputBar = readFileSync(resolve(designsDir, 'whatsapp-desktop', 'whatsapp-footer', 'WhatsappDesktopInputBar.tsx'), 'utf8');
+    const desktopMessageBubble = readFileSync(resolve(designsDir, 'whatsapp-desktop', 'whatsapp-bubbles', 'WhatsappDesktopTextBubble.tsx'), 'utf8');
+
+    assert.match(desktopInputBar, /text-\[12px\]\s+leading-4\.5\s+font-normal/);
+    assert.match(desktopMessageBubble, /text-\[12px\] leading-4\.5 font-normal select-text/);
 });
 
 test('whatsapp typography platform is configured at the preview entry point', () => {
