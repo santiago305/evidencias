@@ -121,7 +121,7 @@ export function WhatsappRightAside({
                             </div>
 
                             {/* name + phone */}
-                            <div className="flex w-full min-w-0 flex-col items-center">
+                            <div data-wa-right-aside-identity className="flex w-full min-w-0 flex-col items-center">
                                 <div className={['truncate p-1 text-[18px] font-medium text-wrap', primaryText].join(' ')}>
                                     {profileTitle ?? (data.nombre?.trim() ? data.nombre : '')}
                                 </div>

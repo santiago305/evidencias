@@ -192,6 +192,43 @@ function randomBoolean(): boolean {
     return Boolean(Math.round(Math.random()));
 }
 
+function createRuntimeNonce(): number {
+    if (typeof crypto !== 'undefined' && typeof crypto.getRandomValues === 'function') {
+        const values = new Uint32Array(1);
+        crypto.getRandomValues(values);
+
+        return values[0] ?? Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
+    }
+
+    return Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
+}
+
+function getPixelStyleValue(value: CSSProperties[keyof CSSProperties]): number {
+    if (typeof value === 'number') {
+        return value;
+    }
+
+    if (typeof value === 'string') {
+        const parsedValue = Number.parseFloat(value);
+        return Number.isFinite(parsedValue) ? parsedValue : 0;
+    }
+
+    return 0;
+}
+
+function getCaptureFrameStyleDistance(previousStyle: CSSProperties | null, nextStyle: CSSProperties): number {
+    if (!previousStyle) {
+        return Number.POSITIVE_INFINITY;
+    }
+
+    return (
+        Math.abs(getPixelStyleValue(previousStyle.top) - getPixelStyleValue(nextStyle.top)) +
+        Math.abs(getPixelStyleValue(previousStyle.right) - getPixelStyleValue(nextStyle.right)) +
+        Math.abs(getPixelStyleValue(previousStyle.bottom) - getPixelStyleValue(nextStyle.bottom)) +
+        Math.abs(getPixelStyleValue(previousStyle.left) - getPixelStyleValue(nextStyle.left))
+    );
+}
+
 function createWindowsTrayProfile(seedInput: string): WindowsTrayProfile {
     const seed = hashString(seedInput || 'tray-default');
     const random = createSeededRandom(seed);
@@ -357,6 +394,8 @@ export function PreviewBlockWhatsapp({ data, whatsappDesktopScale, themeMode }: 
     const captureRootRef = useRef<HTMLDivElement | null>(null);
     const captureFrameRef = useRef<HTMLDivElement | null>(null);
     const pendingCaptureFrameAnimationRef = useRef<number | null>(null);
+    const pendingCaptureFrameTimeoutsRef = useRef<number[]>([]);
+    const lastCaptureFrameStyleRef = useRef<CSSProperties | null>(null);
     const [captureFrameStyle, setCaptureFrameStyle] = useState<CSSProperties>({
         top: '0px',
         right: '0px',
@@ -364,6 +403,7 @@ export function PreviewBlockWhatsapp({ data, whatsappDesktopScale, themeMode }: 
         left: '0px',
     });
     const userSeed = useMemo(() => buildWhatsappAvatarSeed(data ?? undefined), [data]);
+    const visualGenerationKey = useMemo(() => createRuntimeNonce(), [data]);
     const desktopScaleFactor = WHATSAPP_DESKTOP_SCALE_FACTORS[whatsappDesktopScale];
     const desktopMessageHorizontalPaddingPx = WHATSAPP_DESKTOP_MESSAGE_HORIZONTAL_PADDING_PX[whatsappDesktopScale];
     const desktopScaledLayoutSize = `${100 / desktopScaleFactor}%`;
@@ -460,7 +500,7 @@ export function PreviewBlockWhatsapp({ data, whatsappDesktopScale, themeMode }: 
         }
 
         return randomBoolean();
-    }, [contactIdentityDisplay]);
+    }, [contactIdentityDisplay.headerDisplaysPhone, visualGenerationKey]);
     const rightAsideWidthPx = WHATSAPP_RIGHT_ASIDE_WIDTHS[whatsappDesktopScale] / desktopScaleFactor;
     const captureMaxWidthPx = WHATSAPP_DESKTOP_CAPTURE_MAX_WIDTHS[whatsappDesktopScale];
 
@@ -479,15 +519,46 @@ export function PreviewBlockWhatsapp({ data, whatsappDesktopScale, themeMode }: 
         }
 
         const rightAside = captureRoot.querySelector<HTMLElement>('[data-wa-right-aside]');
+        const requiredRightAsideIdentity =
+            showRightAside && !contactIdentityDisplay.headerDisplaysPhone
+                ? captureRoot.querySelector<HTMLElement>('[data-wa-right-aside-identity]')
+                : null;
         const tray = captureRoot.querySelector<HTMLElement>('[data-wa-windows-tray]');
-        const frame = buildRandomDesktopCaptureFrame({
-            rootRect: captureRoot.getBoundingClientRect(),
-            headerRect: header.getBoundingClientRect(),
-            messageViewportRect: messageViewport.getBoundingClientRect(),
-            rightAsideRect: rightAside?.getBoundingClientRect() ?? null,
-            trayRect: tray?.getBoundingClientRect() ?? null,
-        });
-        const nextFrameStyle = buildDesktopCaptureFrameStyle({ frame });
+        const rootRect = captureRoot.getBoundingClientRect();
+        const headerRect = header.getBoundingClientRect();
+        const messageViewportRect = messageViewport.getBoundingClientRect();
+        const rightAsideRect = rightAside?.getBoundingClientRect() ?? null;
+        const requiredRightAsideIdentityRect = requiredRightAsideIdentity?.getBoundingClientRect() ?? null;
+        const trayRect = tray?.getBoundingClientRect() ?? null;
+        let nextFrameStyle: CSSProperties | null = null;
+        let fallbackFrameStyle: CSSProperties | null = null;
+
+        for (let attempt = 0; attempt < 12; attempt += 1) {
+            const frame = buildRandomDesktopCaptureFrame({
+                rootRect,
+                headerRect,
+                messageViewportRect,
+                rightAsideRect,
+                requiredRightAsideIdentityRect,
+                trayRect,
+            });
+            const candidateFrameStyle = buildDesktopCaptureFrameStyle({ frame });
+
+            fallbackFrameStyle = candidateFrameStyle;
+
+            if (getCaptureFrameStyleDistance(lastCaptureFrameStyleRef.current, candidateFrameStyle) >= 46) {
+                nextFrameStyle = candidateFrameStyle;
+                break;
+            }
+        }
+
+        nextFrameStyle = nextFrameStyle ?? fallbackFrameStyle;
+
+        if (!nextFrameStyle) {
+            return;
+        }
+
+        lastCaptureFrameStyleRef.current = nextFrameStyle;
         const captureFrame = captureFrameRef.current;
 
         if (captureFrame) {
@@ -498,9 +569,9 @@ export function PreviewBlockWhatsapp({ data, whatsappDesktopScale, themeMode }: 
         }
 
         setCaptureFrameStyle(nextFrameStyle);
-    }, []);
+    }, [contactIdentityDisplay.headerDisplaysPhone, showRightAside]);
 
-    const scheduleCaptureFrameRegeneration = useCallback((): void => {
+    const requestCaptureFrameAnimation = useCallback((): void => {
         if (pendingCaptureFrameAnimationRef.current !== null) {
             window.cancelAnimationFrame(pendingCaptureFrameAnimationRef.current);
         }
@@ -511,16 +582,62 @@ export function PreviewBlockWhatsapp({ data, whatsappDesktopScale, themeMode }: 
         });
     }, [regenerateCaptureFrame]);
 
+    const scheduleCaptureFrameRegeneration = useCallback(
+        (delayMs = 0): void => {
+            if (delayMs > 0) {
+                const timeoutId = window.setTimeout(() => {
+                    pendingCaptureFrameTimeoutsRef.current = pendingCaptureFrameTimeoutsRef.current.filter(
+                        (pendingTimeoutId) => pendingTimeoutId !== timeoutId,
+                    );
+                    requestCaptureFrameAnimation();
+                }, delayMs);
+
+                pendingCaptureFrameTimeoutsRef.current.push(timeoutId);
+
+                return;
+            }
+
+            requestCaptureFrameAnimation();
+        },
+        [requestCaptureFrameAnimation],
+    );
+
+    const clearPendingCaptureFrameWork = useCallback((): void => {
+        if (pendingCaptureFrameAnimationRef.current !== null) {
+            window.cancelAnimationFrame(pendingCaptureFrameAnimationRef.current);
+            pendingCaptureFrameAnimationRef.current = null;
+        }
+
+        pendingCaptureFrameTimeoutsRef.current.forEach((timeoutId) => {
+            window.clearTimeout(timeoutId);
+        });
+        pendingCaptureFrameTimeoutsRef.current = [];
+    }, []);
+
+    const scheduleCaptureFrameRegenerationBurst = useCallback((): void => {
+        clearPendingCaptureFrameWork();
+
+        [0, 48, 132, 260].forEach((delayMs) => {
+            scheduleCaptureFrameRegeneration(delayMs);
+        });
+    }, [clearPendingCaptureFrameWork, scheduleCaptureFrameRegeneration]);
+
     useEffect(() => {
-        scheduleCaptureFrameRegeneration();
+        scheduleCaptureFrameRegenerationBurst();
 
         return () => {
-            if (pendingCaptureFrameAnimationRef.current !== null) {
-                window.cancelAnimationFrame(pendingCaptureFrameAnimationRef.current);
-                pendingCaptureFrameAnimationRef.current = null;
-            }
+            clearPendingCaptureFrameWork();
         };
-    }, [data?.generatedMessages.length, scheduleCaptureFrameRegeneration, showRightAside, themeMode, whatsappDesktopScale]);
+    }, [
+        clearPendingCaptureFrameWork,
+        data,
+        data?.generatedMessages.length,
+        scheduleCaptureFrameRegenerationBurst,
+        showRightAside,
+        themeMode,
+        visualGenerationKey,
+        whatsappDesktopScale,
+    ]);
 
     useEffect(() => {
         const captureRoot = captureRootRef.current;
@@ -548,6 +665,7 @@ export function PreviewBlockWhatsapp({ data, whatsappDesktopScale, themeMode }: 
                 captureRoot.querySelector<HTMLElement>('[data-wa-header]'),
                 captureRoot.querySelector<HTMLElement>('[data-wa-message-viewport]'),
                 captureRoot.querySelector<HTMLElement>('[data-wa-right-aside]'),
+                captureRoot.querySelector<HTMLElement>('[data-wa-right-aside-identity]'),
                 captureRoot.querySelector<HTMLElement>('[data-wa-windows-tray]'),
             ];
 
@@ -572,13 +690,24 @@ export function PreviewBlockWhatsapp({ data, whatsappDesktopScale, themeMode }: 
             childList: true,
             subtree: true,
         });
-        scheduleCaptureFrameRegeneration();
+        scheduleCaptureFrameRegenerationBurst();
 
         return () => {
             resizeObserver?.disconnect();
             mutationObserver?.disconnect();
+            clearPendingCaptureFrameWork();
         };
-    }, [data?.generatedMessages.length, scheduleCaptureFrameRegeneration, showRightAside, themeMode, whatsappDesktopScale]);
+    }, [
+        clearPendingCaptureFrameWork,
+        data,
+        data?.generatedMessages.length,
+        scheduleCaptureFrameRegeneration,
+        scheduleCaptureFrameRegenerationBurst,
+        showRightAside,
+        themeMode,
+        visualGenerationKey,
+        whatsappDesktopScale,
+    ]);
 
     const windowsTrayData = useMemo(() => {
         if (data?.previewSnapshot) {
@@ -634,6 +763,7 @@ export function PreviewBlockWhatsapp({ data, whatsappDesktopScale, themeMode }: 
 
                     {showRightAside ? (
                         <WhatsappRightAside
+                            key={`right-aside-${visualGenerationKey}`}
                             data={data}
                             temporalStatusLabel={temporalBehavior.temporalStatusLabel}
                             profileTitle={contactIdentityDisplay.profileTitle}

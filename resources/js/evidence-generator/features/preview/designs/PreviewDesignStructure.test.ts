@@ -92,8 +92,15 @@ test('desktop WhatsApp capture frame contract stays frontend local', () => {
     assert.match(captureFrameSource, /export type WhatsappDesktopCaptureMode/);
     assert.match(captureFrameSource, /'near-full'/);
     assert.match(captureFrameSource, /'chat-main'/);
+    assert.match(captureFrameSource, /'wide-chat'/);
+    assert.match(captureFrameSource, /'aside-mostly-visible'/);
+    assert.match(captureFrameSource, /'aside-wide-visible'/);
     assert.match(captureFrameSource, /'chat-with-aside-slice'/);
+    assert.match(captureFrameSource, /'chat-with-deep-aside-slice'/);
     assert.match(captureFrameSource, /'chat-with-tray-slice'/);
+    assert.match(captureFrameSource, /'tray-heavy'/);
+    assert.match(captureFrameSource, /'left-offset'/);
+    assert.match(captureFrameSource, /'tight-conversation'/);
     assert.match(captureFrameSource, /'slightly-cropped'/);
     assert.match(captureFrameSource, /export interface WhatsappDesktopCaptureFrame/);
     assert.match(captureFrameSource, /version: 'desktop-capture-v1';/);
@@ -115,9 +122,12 @@ test('desktop WhatsApp capture frame is generated at runtime without persisted s
     assert.match(captureFrameSource, /crypto\.getRandomValues/);
     assert.match(captureFrameSource, /Math\.random\(\)/);
     assert.match(captureFrameSource, /MAX_RANDOM_ATTEMPTS/);
+    assert.match(captureFrameSource, /const MAX_RANDOM_ATTEMPTS = 160;/);
     assert.match(captureFrameSource, /buildFallbackCaptureFrame/);
     assert.match(captureFrameSource, /MIN_HEADER_VISIBLE_HEIGHT_PX/);
     assert.match(captureFrameSource, /MIN_MESSAGE_VISIBLE_HEIGHT_PX/);
+    assert.match(captureFrameSource, /MIN_REQUIRED_RIGHT_ASIDE_IDENTITY_VISIBLE_HEIGHT_PX/);
+    assert.match(captureFrameSource, /requiredRightAsideIdentityRect/);
     assert.match(captureFrameSource, /getIntersection/);
     assert.doesNotMatch(captureFrameSource, /createSeededRandom/);
     assert.doesNotMatch(captureFrameSource, /hashString/);
@@ -139,6 +149,7 @@ test('desktop WhatsApp exposes safe DOM markers for runtime capture framing', ()
     assert.match(desktopConversation, /data-wa-input-bar/);
     assert.match(desktopHeader, /data-wa-header/);
     assert.match(desktopRightAside, /data-wa-right-aside/);
+    assert.match(desktopRightAside, /data-wa-right-aside-identity/);
 });
 
 test('desktop WhatsApp capture id is an absolute overlay marker', () => {
@@ -165,8 +176,17 @@ test('desktop WhatsApp capture frame reacts to layout changes without persisted 
 
     assert.match(desktopPreviewBlock, /captureFrameRef/);
     assert.match(desktopPreviewBlock, /pendingCaptureFrameAnimationRef/);
+    assert.match(desktopPreviewBlock, /pendingCaptureFrameTimeoutsRef/);
+    assert.match(desktopPreviewBlock, /lastCaptureFrameStyleRef/);
+    assert.match(desktopPreviewBlock, /getCaptureFrameStyleDistance/);
+    assert.match(desktopPreviewBlock, /for \(let attempt = 0; attempt < 12; attempt \+= 1\)/);
+    assert.match(desktopPreviewBlock, /requestCaptureFrameAnimation/);
     assert.match(desktopPreviewBlock, /window\.cancelAnimationFrame\(pendingCaptureFrameAnimationRef\.current\)/);
     assert.match(desktopPreviewBlock, /window\.requestAnimationFrame\(\(\) => \{/);
+    assert.match(desktopPreviewBlock, /scheduleCaptureFrameRegenerationBurst/);
+    assert.match(desktopPreviewBlock, /\[0,\s*48,\s*132,\s*260\]/);
+    assert.match(desktopPreviewBlock, /window\.setTimeout/);
+    assert.match(desktopPreviewBlock, /window\.clearTimeout/);
     assert.match(desktopPreviewBlock, /new ResizeObserver/);
     assert.match(desktopPreviewBlock, /resizeObserver\.observe\(captureRoot\)/);
     assert.match(desktopPreviewBlock, /new MutationObserver/);
@@ -177,6 +197,7 @@ test('desktop WhatsApp capture frame reacts to layout changes without persisted 
     assert.match(desktopPreviewBlock, /captureFrame\.style\.right/);
     assert.match(desktopPreviewBlock, /captureFrame\.style\.bottom/);
     assert.match(desktopPreviewBlock, /captureFrame\.style\.left/);
+    assert.match(desktopPreviewBlock, /requiredRightAsideIdentityRect/);
     assert.doesNotMatch(desktopPreviewBlock, /__regenerateWhatsappCaptureFrame/);
     assert.doesNotMatch(desktopPreviewBlock, /previewSnapshot\?\.desktopCaptureFrame/);
     assert.doesNotMatch(desktopPreviewBlock, /seedCode/);
@@ -191,12 +212,15 @@ test('desktop WhatsApp right aside is forced for saved contacts and random for p
     assert.match(contactIdentitySource, /headerDisplaysPhone: false/);
     assert.match(contactIdentitySource, /headerDisplaysPhone: true/);
     assert.match(desktopPreviewBlock, /function randomBoolean\(\): boolean/);
+    assert.match(desktopPreviewBlock, /function createRuntimeNonce\(\): number/);
+    assert.match(desktopPreviewBlock, /const visualGenerationKey = useMemo\(\(\) => createRuntimeNonce\(\), \[data\]\);/);
     assert.match(desktopPreviewBlock, /const showRightAside = useMemo/);
     assert.match(desktopPreviewBlock, /if \(!contactIdentityDisplay\.headerDisplaysPhone\)/);
     assert.match(desktopPreviewBlock, /return randomBoolean\(\);/);
-    assert.match(desktopPreviewBlock, /\}, \[contactIdentityDisplay\]\);/);
-    assert.doesNotMatch(desktopPreviewBlock, /\}, \[contactIdentityDisplay\.headerDisplaysPhone\]\);/);
+    assert.match(desktopPreviewBlock, /\}, \[contactIdentityDisplay\.headerDisplaysPhone,\s*visualGenerationKey\]\);/);
     assert.match(desktopPreviewBlock, /\{showRightAside \? \(\s*<WhatsappRightAside/);
+    assert.match(desktopPreviewBlock, /key=\{`right-aside-\$\{visualGenerationKey\}`\}/);
+    assert.match(desktopPreviewBlock, /!contactIdentityDisplay\.headerDisplaysPhone\s*\?\s*captureRoot\.querySelector<HTMLElement>\('\[data-wa-right-aside-identity\]'\)/);
     assert.doesNotMatch(desktopPreviewBlock, /previewSnapshot\?\.showRightAside/);
 });
 
