@@ -122,7 +122,7 @@ test('desktop WhatsApp capture frame is generated at runtime without persisted s
     assert.match(captureFrameSource, /crypto\.getRandomValues/);
     assert.match(captureFrameSource, /Math\.random\(\)/);
     assert.match(captureFrameSource, /MAX_RANDOM_ATTEMPTS/);
-    assert.match(captureFrameSource, /const MAX_RANDOM_ATTEMPTS = 160;/);
+    assert.match(captureFrameSource, /const MAX_RANDOM_ATTEMPTS = 500;/);
     assert.match(captureFrameSource, /buildFallbackCaptureFrame/);
     assert.match(captureFrameSource, /MIN_HEADER_VISIBLE_HEIGHT_PX/);
     assert.match(captureFrameSource, /MIN_MESSAGE_VISIBLE_HEIGHT_PX/);
@@ -177,9 +177,14 @@ test('desktop WhatsApp capture frame reacts to layout changes without persisted 
     assert.match(desktopPreviewBlock, /captureFrameRef/);
     assert.match(desktopPreviewBlock, /pendingCaptureFrameAnimationRef/);
     assert.match(desktopPreviewBlock, /pendingCaptureFrameTimeoutsRef/);
-    assert.match(desktopPreviewBlock, /lastCaptureFrameStyleRef/);
+    assert.match(desktopPreviewBlock, /recentCaptureFrameStylesRef/);
+    assert.match(desktopPreviewBlock, /CAPTURE_FRAME_RANDOM_CANDIDATES = 128/);
+    assert.match(desktopPreviewBlock, /CAPTURE_FRAME_RECENT_HISTORY_LIMIT = 5/);
+    assert.match(desktopPreviewBlock, /MIN_CAPTURE_FRAME_STYLE_DISTANCE = 64/);
     assert.match(desktopPreviewBlock, /getCaptureFrameStyleDistance/);
-    assert.match(desktopPreviewBlock, /for \(let attempt = 0; attempt < 12; attempt \+= 1\)/);
+    assert.match(desktopPreviewBlock, /for \(let attempt = 0; attempt < CAPTURE_FRAME_RANDOM_CANDIDATES; attempt \+= 1\)/);
+    assert.match(desktopPreviewBlock, /recentCaptureFrameStylesRef\.current\.every/);
+    assert.match(desktopPreviewBlock, /getCaptureFrameStyleDistance\(recentFrameStyle, candidateFrameStyle\) >= MIN_CAPTURE_FRAME_STYLE_DISTANCE/);
     assert.match(desktopPreviewBlock, /requestCaptureFrameAnimation/);
     assert.match(desktopPreviewBlock, /window\.cancelAnimationFrame\(pendingCaptureFrameAnimationRef\.current\)/);
     assert.match(desktopPreviewBlock, /window\.requestAnimationFrame\(\(\) => \{/);

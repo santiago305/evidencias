@@ -49,7 +49,7 @@ interface RelativeRect {
 
 type WhatsappDesktopCaptureFrameInput = Omit<WhatsappDesktopCaptureFrame, 'version'>;
 
-const MAX_RANDOM_ATTEMPTS = 160;
+const MAX_RANDOM_ATTEMPTS = 500;
 const MIN_CAPTURE_WIDTH_PX = 360;
 const MIN_CAPTURE_HEIGHT_PX = 260;
 const MIN_HEADER_VISIBLE_HEIGHT_PX = 38;

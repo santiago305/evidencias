@@ -390,12 +390,16 @@ const WHATSAPP_RIGHT_ASIDE_WIDTHS: Record<WhatsappDesktopScale, number> = {
     100: 578,
 };
 
+const CAPTURE_FRAME_RANDOM_CANDIDATES = 128;
+const CAPTURE_FRAME_RECENT_HISTORY_LIMIT = 5;
+const MIN_CAPTURE_FRAME_STYLE_DISTANCE = 64;
+
 export function PreviewBlockWhatsapp({ data, whatsappDesktopScale, themeMode }: PreviewBlockWhatsappProps) {
     const captureRootRef = useRef<HTMLDivElement | null>(null);
     const captureFrameRef = useRef<HTMLDivElement | null>(null);
     const pendingCaptureFrameAnimationRef = useRef<number | null>(null);
     const pendingCaptureFrameTimeoutsRef = useRef<number[]>([]);
-    const lastCaptureFrameStyleRef = useRef<CSSProperties | null>(null);
+    const recentCaptureFrameStylesRef = useRef<CSSProperties[]>([]);
     const [captureFrameStyle, setCaptureFrameStyle] = useState<CSSProperties>({
         top: '0px',
         right: '0px',
@@ -533,7 +537,7 @@ export function PreviewBlockWhatsapp({ data, whatsappDesktopScale, themeMode }: 
         let nextFrameStyle: CSSProperties | null = null;
         let fallbackFrameStyle: CSSProperties | null = null;
 
-        for (let attempt = 0; attempt < 12; attempt += 1) {
+        for (let attempt = 0; attempt < CAPTURE_FRAME_RANDOM_CANDIDATES; attempt += 1) {
             const frame = buildRandomDesktopCaptureFrame({
                 rootRect,
                 headerRect,
@@ -546,7 +550,11 @@ export function PreviewBlockWhatsapp({ data, whatsappDesktopScale, themeMode }: 
 
             fallbackFrameStyle = candidateFrameStyle;
 
-            if (getCaptureFrameStyleDistance(lastCaptureFrameStyleRef.current, candidateFrameStyle) >= 46) {
+            const isDifferentFromRecentFrames = recentCaptureFrameStylesRef.current.every(
+                (recentFrameStyle) => getCaptureFrameStyleDistance(recentFrameStyle, candidateFrameStyle) >= MIN_CAPTURE_FRAME_STYLE_DISTANCE,
+            );
+
+            if (isDifferentFromRecentFrames) {
                 nextFrameStyle = candidateFrameStyle;
                 break;
             }
@@ -558,7 +566,7 @@ export function PreviewBlockWhatsapp({ data, whatsappDesktopScale, themeMode }: 
             return;
         }
 
-        lastCaptureFrameStyleRef.current = nextFrameStyle;
+        recentCaptureFrameStylesRef.current = [nextFrameStyle, ...recentCaptureFrameStylesRef.current].slice(0, CAPTURE_FRAME_RECENT_HISTORY_LIMIT);
         const captureFrame = captureFrameRef.current;
 
         if (captureFrame) {
