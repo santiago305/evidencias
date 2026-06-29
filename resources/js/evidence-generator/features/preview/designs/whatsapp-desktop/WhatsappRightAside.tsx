@@ -57,7 +57,7 @@ export function WhatsappRightAside({
     const avatarTheme = useMemo(() => createWhatsappAvatarTheme(buildWhatsappAvatarSeed(data), themeMode), [data, themeMode]);
 
     return (
-        <aside className={['flex min-h-0 shrink-0 flex-col', softBorderColor, panelBg].join(' ')} style={{ width: widthPx }}>
+        <aside data-wa-right-aside className={['flex min-h-0 shrink-0 flex-col', softBorderColor, panelBg].join(' ')} style={{ width: widthPx }}>
             {/* ---------- HEADER ---------- */}
             <div className={['w-full shrink-0 px-3 py-2', sectionBg].join(' ')}>
                 <div className="flex items-center justify-between">

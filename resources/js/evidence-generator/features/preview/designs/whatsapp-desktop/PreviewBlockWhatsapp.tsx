@@ -1,7 +1,8 @@
-import { useEffect, useMemo, useState, type CSSProperties } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties } from 'react';
 import type { PreviewProps, WhatsappDesktopScale, WhatsappDesktopScaleProps } from '../../../../types';
 import { EmptyState } from '../../components/EmptyState';
 import { buildContactIdentityDisplay } from './contactIdentityDisplay';
+import { buildDesktopCaptureFrameStyle, buildRandomDesktopCaptureFrame } from './desktopCaptureFrame';
 import { WhatsappHeaderUser } from './whatsapp-header';
 import { buildWhatsappAvatarSeed } from './whatsappAppearance';
 import { WhatsappConversation } from './WhatsappConversation';
@@ -353,6 +354,15 @@ const WHATSAPP_RIGHT_ASIDE_WIDTHS: Record<WhatsappDesktopScale, number> = {
 };
 
 export function PreviewBlockWhatsapp({ data, whatsappDesktopScale, themeMode }: PreviewBlockWhatsappProps) {
+    const captureRootRef = useRef<HTMLDivElement | null>(null);
+    const captureFrameRef = useRef<HTMLDivElement | null>(null);
+    const pendingCaptureFrameAnimationRef = useRef<number | null>(null);
+    const [captureFrameStyle, setCaptureFrameStyle] = useState<CSSProperties>({
+        top: '0px',
+        right: '0px',
+        bottom: '0px',
+        left: '0px',
+    });
     const userSeed = useMemo(() => buildWhatsappAvatarSeed(data ?? undefined), [data]);
     const desktopScaleFactor = WHATSAPP_DESKTOP_SCALE_FACTORS[whatsappDesktopScale];
     const desktopMessageHorizontalPaddingPx = WHATSAPP_DESKTOP_MESSAGE_HORIZONTAL_PADDING_PX[whatsappDesktopScale];
@@ -454,6 +464,122 @@ export function PreviewBlockWhatsapp({ data, whatsappDesktopScale, themeMode }: 
     const rightAsideWidthPx = WHATSAPP_RIGHT_ASIDE_WIDTHS[whatsappDesktopScale] / desktopScaleFactor;
     const captureMaxWidthPx = WHATSAPP_DESKTOP_CAPTURE_MAX_WIDTHS[whatsappDesktopScale];
 
+    const regenerateCaptureFrame = useCallback((): void => {
+        const captureRoot = captureRootRef.current;
+
+        if (!captureRoot) {
+            return;
+        }
+
+        const header = captureRoot.querySelector<HTMLElement>('[data-wa-header]');
+        const messageViewport = captureRoot.querySelector<HTMLElement>('[data-wa-message-viewport]');
+
+        if (!header || !messageViewport) {
+            return;
+        }
+
+        const rightAside = captureRoot.querySelector<HTMLElement>('[data-wa-right-aside]');
+        const tray = captureRoot.querySelector<HTMLElement>('[data-wa-windows-tray]');
+        const frame = buildRandomDesktopCaptureFrame({
+            rootRect: captureRoot.getBoundingClientRect(),
+            headerRect: header.getBoundingClientRect(),
+            messageViewportRect: messageViewport.getBoundingClientRect(),
+            rightAsideRect: rightAside?.getBoundingClientRect() ?? null,
+            trayRect: tray?.getBoundingClientRect() ?? null,
+        });
+        const nextFrameStyle = buildDesktopCaptureFrameStyle({ frame });
+        const captureFrame = captureFrameRef.current;
+
+        if (captureFrame) {
+            captureFrame.style.top = String(nextFrameStyle.top ?? '0px');
+            captureFrame.style.right = String(nextFrameStyle.right ?? '0px');
+            captureFrame.style.bottom = String(nextFrameStyle.bottom ?? '0px');
+            captureFrame.style.left = String(nextFrameStyle.left ?? '0px');
+        }
+
+        setCaptureFrameStyle(nextFrameStyle);
+    }, []);
+
+    const scheduleCaptureFrameRegeneration = useCallback((): void => {
+        if (pendingCaptureFrameAnimationRef.current !== null) {
+            window.cancelAnimationFrame(pendingCaptureFrameAnimationRef.current);
+        }
+
+        pendingCaptureFrameAnimationRef.current = window.requestAnimationFrame(() => {
+            pendingCaptureFrameAnimationRef.current = null;
+            regenerateCaptureFrame();
+        });
+    }, [regenerateCaptureFrame]);
+
+    useEffect(() => {
+        scheduleCaptureFrameRegeneration();
+
+        return () => {
+            if (pendingCaptureFrameAnimationRef.current !== null) {
+                window.cancelAnimationFrame(pendingCaptureFrameAnimationRef.current);
+                pendingCaptureFrameAnimationRef.current = null;
+            }
+        };
+    }, [data?.generatedMessages.length, scheduleCaptureFrameRegeneration, showRightAside, themeMode, whatsappDesktopScale]);
+
+    useEffect(() => {
+        const captureRoot = captureRootRef.current;
+
+        if (!captureRoot) {
+            return;
+        }
+
+        const resizeObserver =
+            typeof ResizeObserver === 'undefined'
+                ? null
+                : new ResizeObserver(() => {
+                      scheduleCaptureFrameRegeneration();
+                  });
+
+        const observeLayoutTargets = (): void => {
+            if (!resizeObserver) {
+                return;
+            }
+
+            resizeObserver.disconnect();
+            resizeObserver.observe(captureRoot);
+
+            const targets = [
+                captureRoot.querySelector<HTMLElement>('[data-wa-header]'),
+                captureRoot.querySelector<HTMLElement>('[data-wa-message-viewport]'),
+                captureRoot.querySelector<HTMLElement>('[data-wa-right-aside]'),
+                captureRoot.querySelector<HTMLElement>('[data-wa-windows-tray]'),
+            ];
+
+            targets.forEach((target) => {
+                if (target) {
+                    resizeObserver.observe(target);
+                }
+            });
+        };
+
+        observeLayoutTargets();
+
+        const mutationObserver =
+            typeof MutationObserver === 'undefined'
+                ? null
+                : new MutationObserver(() => {
+                      observeLayoutTargets();
+                      scheduleCaptureFrameRegeneration();
+                  });
+
+        mutationObserver?.observe(captureRoot, {
+            childList: true,
+            subtree: true,
+        });
+        scheduleCaptureFrameRegeneration();
+
+        return () => {
+            resizeObserver?.disconnect();
+            mutationObserver?.disconnect();
+        };
+    }, [data?.generatedMessages.length, scheduleCaptureFrameRegeneration, showRightAside, themeMode, whatsappDesktopScale]);
+
     const windowsTrayData = useMemo(() => {
         if (data?.previewSnapshot) {
             return {
@@ -470,12 +596,21 @@ export function PreviewBlockWhatsapp({ data, whatsappDesktopScale, themeMode }: 
 
     return (
         <div
-            className={['flex h-full w-full flex-col', themeMode === 'dark' ? 'bg-[#0b141a]' : 'bg-[#efeae2]'].join(' ')}
-            id="CAPTURA"
+            ref={captureRootRef}
+            data-capture-root="whatsapp-desktop"
+            className={['relative flex h-full w-full flex-col overflow-hidden', themeMode === 'dark' ? 'bg-[#0b141a]' : 'bg-[#efeae2]'].join(' ')}
             style={{ maxWidth: `${captureMaxWidthPx}px` }}
         >
+            <div
+                ref={captureFrameRef}
+                id="CAPTURA"
+                data-capture-frame="whatsapp-desktop"
+                className="pointer-events-none absolute z-50"
+                style={captureFrameStyle}
+            />
+
             <div className="min-h-0 w-full flex-1 overflow-hidden">
-                <div className="flex h-full min-h-0 w-full" style={desktopPreviewStyle}>
+                <div data-wa-desktop-content className="flex h-full min-h-0 w-full" style={desktopPreviewStyle}>
                     <div className="flex min-w-0 flex-1 flex-col">
                         <WhatsappHeaderUser
                             data={data}
@@ -512,7 +647,9 @@ export function PreviewBlockWhatsapp({ data, whatsappDesktopScale, themeMode }: 
                 </div>
             </div>
 
-            <WindowsTrayBar profile={windowsTrayData.profile} />
+            <div data-wa-windows-tray className="shrink-0">
+                <WindowsTrayBar profile={windowsTrayData.profile} />
+            </div>
         </div>
     );
 }
