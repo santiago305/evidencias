@@ -57,7 +57,7 @@ export function WhatsappRightAside({
     const avatarTheme = useMemo(() => createWhatsappAvatarTheme(buildWhatsappAvatarSeed(data), themeMode), [data, themeMode]);
 
     return (
-        <aside className={['flex min-h-0 shrink-0 flex-col', softBorderColor, panelBg].join(' ')} style={{ width: widthPx }}>
+        <aside data-wa-right-aside className={['flex min-h-0 shrink-0 flex-col', softBorderColor, panelBg].join(' ')} style={{ width: widthPx }}>
             {/* ---------- HEADER ---------- */}
             <div className={['w-full shrink-0 px-3 py-2', sectionBg].join(' ')}>
                 <div className="flex items-center justify-between">
@@ -121,7 +121,7 @@ export function WhatsappRightAside({
                             </div>
 
                             {/* name + phone */}
-                            <div className="flex w-full min-w-0 flex-col items-center">
+                            <div data-wa-right-aside-identity className="flex w-full min-w-0 flex-col items-center">
                                 <div className={['truncate p-1 text-[18px] font-medium text-wrap', primaryText].join(' ')}>
                                     {profileTitle ?? (data.nombre?.trim() ? data.nombre : '')}
                                 </div>

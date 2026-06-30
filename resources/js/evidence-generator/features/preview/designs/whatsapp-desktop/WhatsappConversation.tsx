@@ -229,14 +229,14 @@ export function WhatsappConversation({
     ]);
 
     return (
-        <div className="h-full w-full overflow-hidden">
+        <div data-wa-conversation-root className="h-full w-full overflow-hidden">
             {/* Fondo WhatsApp */}
             <div className="relative h-full min-h-0 overflow-hidden">
                 <WhatsappConversationBackground themeMode={themeMode} />
 
                 <div className="relative flex h-full min-h-0 flex-col overflow-hidden">
                     {/* Mensajes */}
-                    <div className="relative min-h-0 flex-1 overflow-hidden">
+                    <div data-wa-message-viewport className="relative min-h-0 flex-1 overflow-hidden">
                         <div
                             ref={scrollContainerRef}
                             onScroll={updateScrollState}
@@ -308,7 +308,7 @@ export function WhatsappConversation({
                         )}
                     </div>
 
-                    <div className="shrink-0">
+                    <div data-wa-input-bar className="shrink-0">
                         <WhatsappInputBar themeMode={themeMode} />
                     </div>
                 </div>
