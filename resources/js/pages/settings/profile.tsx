@@ -1,5 +1,11 @@
+import type {
+    MobileDesignDefinition,
+    MobileDesignKey,
+    PreviewDevicePreference,
+    PreviewThemeMode,
+    WhatsappDesktopScale,
+} from '@/evidence-generator/types';
 import { type BreadcrumbItem, type SharedData } from '@/types';
-import type { MobileDesignDefinition, MobileDesignKey, PreviewDeviceMode, PreviewThemeMode, WhatsappDesktopScale } from '@/evidence-generator/types';
 import { Transition } from '@headlessui/react';
 import { Head, useForm, usePage } from '@inertiajs/react';
 import { FormEventHandler } from 'react';
@@ -38,7 +44,7 @@ export default function Profile() {
         mobile_design_key: MobileDesignKey | 'none' | null;
         whatsapp_desktop_scale: WhatsappDesktopScale;
         evidence_theme_mode: PreviewThemeMode;
-        evidence_device_mode: PreviewDeviceMode;
+        evidence_device_mode: PreviewDevicePreference;
     }>({
         name: auth.user.name,
         dni: auth.user.dni,
@@ -175,7 +181,9 @@ export default function Profile() {
 
                                 <Select
                                     value={data.evidence_device_mode}
-                                    onValueChange={(value) => setData('evidence_device_mode', value === 'mobile' ? 'mobile' : 'desktop')}
+                                    onValueChange={(value) => {
+                                        setData('evidence_device_mode', value === 'mobile' || value === 'mixed' ? value : 'desktop');
+                                    }}
                                 >
                                     <SelectTrigger id="evidence_device_mode" className="mt-1 w-full">
                                         <SelectValue placeholder="Selecciona una vista" />
@@ -183,6 +191,7 @@ export default function Profile() {
                                     <SelectContent>
                                         <SelectItem value="desktop">PC</SelectItem>
                                         <SelectItem value="mobile">Celular</SelectItem>
+                                        <SelectItem value="mixed">PC / Celular</SelectItem>
                                     </SelectContent>
                                 </Select>
 

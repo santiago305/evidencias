@@ -2,6 +2,7 @@ import type { ChangeEvent } from 'react';
 
 export type ActiveDesign = 'whatsapp' | 'llamada' | 'sms';
 export type PreviewDeviceMode = 'desktop' | 'mobile';
+export type PreviewDevicePreference = PreviewDeviceMode | 'mixed';
 export type PreviewThemeMode = 'light' | 'dark';
 export type WhatsappDesktopScale = 80 | 85 | 90 | 95 | 100;
 export type ModoEntrada = 'informativo' | 'contactado';

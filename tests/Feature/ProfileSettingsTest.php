@@ -162,6 +162,33 @@ test('users can update their evidence appearance preferences from profile settin
     ]);
 });
 
+test('users can choose mixed evidence device mode from profile settings', function () {
+    $user = User::factory()->create([
+        'evidence_device_mode' => 'desktop',
+    ]);
+    MobileDesign::create([
+        'design_key' => 'mobile-1',
+    ]);
+    $user->mobileDesigns()->create([
+        'design_key' => 'mobile-1',
+    ]);
+
+    $this->actingAs($user)->patch('/settings/profile', [
+        'name' => $user->name,
+        'dni' => $user->dni,
+        'sexualidad' => $user->sexualidad,
+        'mobile_design_key' => 'mobile-1',
+        'whatsapp_desktop_scale' => 80,
+        'evidence_theme_mode' => 'light',
+        'evidence_device_mode' => 'mixed',
+    ])->assertRedirect(route('profile.edit', absolute: false));
+
+    $this->assertDatabaseHas('users', [
+        'id' => $user->id,
+        'evidence_device_mode' => 'mixed',
+    ]);
+});
+
 test('users cannot choose unsupported evidence appearance preferences', function () {
     $user = User::factory()->create([
         'evidence_theme_mode' => 'light',

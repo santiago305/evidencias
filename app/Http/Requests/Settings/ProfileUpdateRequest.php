@@ -28,7 +28,7 @@ class ProfileUpdateRequest extends FormRequest
             'mobile_design_key' => ['nullable', 'string', Rule::exists('mobile_designs', 'design_key')],
             'whatsapp_desktop_scale' => ['required', 'integer', Rule::in([80, 85, 90, 95, 100])],
             'evidence_theme_mode' => ['required', 'string', Rule::in(['light', 'dark'])],
-            'evidence_device_mode' => ['required', 'string', Rule::in(['desktop', 'mobile'])],
+            'evidence_device_mode' => ['required', 'string', Rule::in(['desktop', 'mobile', 'mixed'])],
         ];
     }
 }

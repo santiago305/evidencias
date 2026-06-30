@@ -1,7 +1,6 @@
 import type { ChangeEvent } from 'react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { pickRandomClientProfile } from './config/whatsapp/clientProfiles';
-import { pickRandomModoEntrada } from './config/whatsapp/conversationModes';
 import { ConversationsListModal } from './features/conversations/components/ConversationsListModal';
 import {
     NewConversationModal,
@@ -14,6 +13,7 @@ import { PreviewPanel } from './features/preview/components/PreviewPanel';
 import { getJson, postFormData, postJson, putJson } from './lib/api';
 import { createInitialFormState } from './lib/formState';
 import { resolveActiveMobileDesignKey } from './lib/mobileDesignSelection';
+import { resolvePreviewDeviceMode } from './lib/previewDeviceModeSelection';
 import { hydrateReplayForm, isReplayGenerateBlocked, shouldApplyReplayLookupResult } from './lib/replayForm';
 import { applyConversationTestDefaults } from './lib/testingDefaults';
 import type {
@@ -25,6 +25,7 @@ import type {
     GeneratedMessage,
     MobileDesignKey,
     PreviewDeviceMode,
+    PreviewDevicePreference,
     PreviewThemeMode,
     SavedData,
     WhatsappDesktopScale,
@@ -44,7 +45,7 @@ interface AppProps {
     registeredMobileDesigns?: MobileDesignKey[];
     whatsappDesktopScale?: WhatsappDesktopScale;
     evidenceThemeMode?: PreviewThemeMode;
-    evidenceDeviceMode?: PreviewDeviceMode;
+    evidenceDeviceMode?: PreviewDevicePreference;
 }
 
 interface ConversationsIndexResponse {
@@ -137,6 +138,7 @@ export default function App({
     const [imageFileInputKey, setImageFileInputKey] = useState(0);
 
     const [saved, setSaved] = useState<SavedData | null>(null);
+    const [generatedWhatsappPreviewMode, setGeneratedWhatsappPreviewMode] = useState<PreviewDeviceMode>('desktop');
     const [isGenerating, setIsGenerating] = useState(false);
     const [isReplayLookupPending, setIsReplayLookupPending] = useState(false);
     const [generatedSeedCode, setGeneratedSeedCode] = useState('');
@@ -174,7 +176,7 @@ export default function App({
     const whatsappPreviewMode: PreviewDeviceMode = isTestingPreview
         ? testWhatsappPreviewMode
         : hasRegisteredMobileDesign
-          ? evidenceDeviceMode
+          ? generatedWhatsappPreviewMode
           : 'desktop';
     const previewThemeMode = isTestingPreview ? testPreviewThemeMode : evidenceThemeMode;
     const activeMobileDesignKey = shouldUseTestMobileDesign ? testMobileDesignKey : userMobileDesignKey;
@@ -349,8 +351,10 @@ export default function App({
             });
 
             const response = await postFormData<GenerateEvidenceResponse>(route('evidences.generate'), payload);
+            const resolvedWhatsappPreviewMode = hasRegisteredMobileDesign ? resolvePreviewDeviceMode(evidenceDeviceMode) : 'desktop';
 
             setLastGeneratedFromConversationCode(shouldUseConversationDefaults);
+            setGeneratedWhatsappPreviewMode(resolvedWhatsappPreviewMode);
             setSaved({
                 ...requestForm,
                 nombreAsesor: resolvedCurrentUser.name,
