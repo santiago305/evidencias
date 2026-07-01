@@ -14,6 +14,7 @@ import { getJson, postFormData, postJson, putJson } from './lib/api';
 import { createInitialFormState } from './lib/formState';
 import { resolveActiveMobileDesignKey } from './lib/mobileDesignSelection';
 import { resolvePreviewDeviceMode } from './lib/previewDeviceModeSelection';
+import { resolvePreviewThemeMode } from './lib/previewThemeModeSelection';
 import { hydrateReplayForm, isReplayGenerateBlocked, shouldApplyReplayLookupResult } from './lib/replayForm';
 import { applyConversationTestDefaults } from './lib/testingDefaults';
 import type {
@@ -45,6 +46,8 @@ interface AppProps {
     registeredMobileDesigns?: MobileDesignKey[];
     whatsappDesktopScale?: WhatsappDesktopScale;
     evidenceThemeMode?: PreviewThemeMode;
+    evidenceDesktopThemeMode?: PreviewThemeMode;
+    evidenceMobileThemeMode?: PreviewThemeMode;
     evidenceDeviceMode?: PreviewDevicePreference;
 }
 
@@ -124,6 +127,8 @@ export default function App({
     registeredMobileDesigns = [],
     whatsappDesktopScale = 80,
     evidenceThemeMode = 'light',
+    evidenceDesktopThemeMode = evidenceThemeMode,
+    evidenceMobileThemeMode = evidenceThemeMode,
     evidenceDeviceMode = 'desktop',
 }: AppProps) {
     const resolvedCurrentUser = currentUser ?? {
@@ -178,7 +183,14 @@ export default function App({
         : hasRegisteredMobileDesign
           ? generatedWhatsappPreviewMode
           : 'desktop';
-    const previewThemeMode = isTestingPreview ? testPreviewThemeMode : evidenceThemeMode;
+    const previewDeviceModeForTheme: PreviewDeviceMode = activeDesign === 'whatsapp' ? whatsappPreviewMode : 'mobile';
+    const previewThemeMode = isTestingPreview
+        ? testPreviewThemeMode
+        : resolvePreviewThemeMode({
+              previewDeviceMode: previewDeviceModeForTheme,
+              desktopThemeMode: evidenceDesktopThemeMode,
+              mobileThemeMode: evidenceMobileThemeMode,
+          });
     const activeMobileDesignKey = shouldUseTestMobileDesign ? testMobileDesignKey : userMobileDesignKey;
     const isTestMobileDesignGloballyRegistered = globalMobileDesignKeys.includes(testMobileDesignKey);
     const isGenerateDisabled = isReplayGenerateBlocked({

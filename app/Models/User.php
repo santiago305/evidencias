@@ -27,6 +27,8 @@ class User extends Authenticatable
         'windows_tray_config',
         'whatsapp_desktop_scale',
         'evidence_theme_mode',
+        'evidence_desktop_theme_mode',
+        'evidence_mobile_theme_mode',
         'evidence_device_mode',
         'password',
     ];

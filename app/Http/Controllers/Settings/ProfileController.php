@@ -49,6 +49,8 @@ class ProfileController extends Controller
             $validated['evidence_device_mode'] = 'desktop';
         }
 
+        $validated['evidence_theme_mode'] = $validated['evidence_desktop_theme_mode'];
+
         $request->user()->fill($validated);
 
         $request->user()->save();

@@ -162,6 +162,39 @@ test('users can update their evidence appearance preferences from profile settin
     ]);
 });
 
+test('users can update desktop and mobile evidence themes independently from profile settings', function () {
+    $user = User::factory()->create([
+        'evidence_theme_mode' => 'light',
+        'evidence_device_mode' => 'desktop',
+    ]);
+    MobileDesign::create([
+        'design_key' => 'mobile-1',
+    ]);
+    $user->mobileDesigns()->create([
+        'design_key' => 'mobile-1',
+    ]);
+
+    $this->actingAs($user)->patch('/settings/profile', [
+        'name' => $user->name,
+        'dni' => $user->dni,
+        'sexualidad' => $user->sexualidad,
+        'mobile_design_key' => 'mobile-1',
+        'whatsapp_desktop_scale' => 80,
+        'evidence_theme_mode' => 'light',
+        'evidence_desktop_theme_mode' => 'dark',
+        'evidence_mobile_theme_mode' => 'light',
+        'evidence_device_mode' => 'mixed',
+    ])->assertRedirect(route('profile.edit', absolute: false));
+
+    $this->assertDatabaseHas('users', [
+        'id' => $user->id,
+        'evidence_theme_mode' => 'dark',
+        'evidence_desktop_theme_mode' => 'dark',
+        'evidence_mobile_theme_mode' => 'light',
+        'evidence_device_mode' => 'mixed',
+    ]);
+});
+
 test('users can choose mixed evidence device mode from profile settings', function () {
     $user = User::factory()->create([
         'evidence_device_mode' => 'desktop',
@@ -201,8 +234,10 @@ test('users cannot choose unsupported evidence appearance preferences', function
         'sexualidad' => $user->sexualidad,
         'whatsapp_desktop_scale' => 80,
         'evidence_theme_mode' => 'system',
+        'evidence_desktop_theme_mode' => 'system',
+        'evidence_mobile_theme_mode' => 'sepia',
         'evidence_device_mode' => 'tablet',
-    ])->assertSessionHasErrors(['evidence_theme_mode', 'evidence_device_mode']);
+    ])->assertSessionHasErrors(['evidence_theme_mode', 'evidence_desktop_theme_mode', 'evidence_mobile_theme_mode', 'evidence_device_mode']);
 
     expect($user->refresh()->evidence_theme_mode)->toBe('light')
         ->and($user->evidence_device_mode)->toBe('desktop');

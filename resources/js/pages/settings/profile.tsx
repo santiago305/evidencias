@@ -44,6 +44,8 @@ export default function Profile() {
         mobile_design_key: MobileDesignKey | 'none' | null;
         whatsapp_desktop_scale: WhatsappDesktopScale;
         evidence_theme_mode: PreviewThemeMode;
+        evidence_desktop_theme_mode: PreviewThemeMode;
+        evidence_mobile_theme_mode: PreviewThemeMode;
         evidence_device_mode: PreviewDevicePreference;
     }>({
         name: auth.user.name,
@@ -52,6 +54,8 @@ export default function Profile() {
         mobile_design_key: selectedMobileDesignKey ?? 'none',
         whatsapp_desktop_scale: auth.user.whatsapp_desktop_scale ?? 80,
         evidence_theme_mode: auth.user.evidence_theme_mode ?? 'light',
+        evidence_desktop_theme_mode: auth.user.evidence_desktop_theme_mode ?? auth.user.evidence_theme_mode ?? 'light',
+        evidence_mobile_theme_mode: auth.user.evidence_mobile_theme_mode ?? auth.user.evidence_theme_mode ?? 'light',
         evidence_device_mode: selectedMobileDesignKey ? (auth.user.evidence_device_mode ?? 'desktop') : 'desktop',
     });
 
@@ -60,6 +64,7 @@ export default function Profile() {
 
         transform((formData) => ({
             ...formData,
+            evidence_theme_mode: formData.evidence_desktop_theme_mode,
             mobile_design_key: formData.mobile_design_key === 'none' ? null : formData.mobile_design_key,
             evidence_device_mode: formData.mobile_design_key === 'none' ? 'desktop' : formData.evidence_device_mode,
         }));
@@ -157,14 +162,19 @@ export default function Profile() {
                         </div>
 
                         <div className="grid gap-2">
-                            <Label htmlFor="evidence_theme_mode">Tema de evidencia</Label>
+                            <Label htmlFor="evidence_desktop_theme_mode">Tema en PC</Label>
 
                             <Select
-                                value={data.evidence_theme_mode}
-                                onValueChange={(value) => setData('evidence_theme_mode', value === 'dark' ? 'dark' : 'light')}
+                                value={data.evidence_desktop_theme_mode}
+                                onValueChange={(value) => {
+                                    const themeMode = value === 'dark' ? 'dark' : 'light';
+
+                                    setData('evidence_desktop_theme_mode', themeMode);
+                                    setData('evidence_theme_mode', themeMode);
+                                }}
                             >
-                                <SelectTrigger id="evidence_theme_mode" className="mt-1 w-full">
-                                    <SelectValue placeholder="Selecciona un tema" />
+                                <SelectTrigger id="evidence_desktop_theme_mode" className="mt-1 w-full">
+                                    <SelectValue placeholder="Selecciona un tema para PC" />
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectItem value="light">Modo claro</SelectItem>
@@ -172,7 +182,26 @@ export default function Profile() {
                                 </SelectContent>
                             </Select>
 
-                            <InputError className="mt-2" message={errors.evidence_theme_mode} />
+                            <InputError className="mt-2" message={errors.evidence_desktop_theme_mode ?? errors.evidence_theme_mode} />
+                        </div>
+
+                        <div className="grid gap-2">
+                            <Label htmlFor="evidence_mobile_theme_mode">Tema en celular</Label>
+
+                            <Select
+                                value={data.evidence_mobile_theme_mode}
+                                onValueChange={(value) => setData('evidence_mobile_theme_mode', value === 'dark' ? 'dark' : 'light')}
+                            >
+                                <SelectTrigger id="evidence_mobile_theme_mode" className="mt-1 w-full">
+                                    <SelectValue placeholder="Selecciona un tema para celular" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="light">Modo claro</SelectItem>
+                                    <SelectItem value="dark">Modo oscuro</SelectItem>
+                                </SelectContent>
+                            </Select>
+
+                            <InputError className="mt-2" message={errors.evidence_mobile_theme_mode} />
                         </div>
 
                         {data.mobile_design_key !== 'none' ? (
