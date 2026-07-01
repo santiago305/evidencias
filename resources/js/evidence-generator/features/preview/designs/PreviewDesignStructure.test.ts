@@ -87,7 +87,7 @@ test('desktop WhatsApp capture max width follows the selected page scale', () =>
 
 test('desktop WhatsApp capture frame contract stays frontend local', () => {
     const captureFrameSource = readFileSync(resolve(designsDir, 'whatsapp-desktop', 'desktopCaptureFrame.ts'), 'utf8');
-    const typesSource = readFileSync(resolve(designsDir, '..', '..', 'types.ts'), 'utf8');
+    const typesSource = readFileSync(resolve(designsDir, '..', '..', '..', 'types.ts'), 'utf8');
 
     assert.match(captureFrameSource, /export type WhatsappDesktopCaptureMode/);
     assert.match(captureFrameSource, /'near-full'/);
@@ -225,7 +225,10 @@ test('desktop WhatsApp right aside is forced for saved contacts and random for p
     assert.match(desktopPreviewBlock, /\}, \[contactIdentityDisplay\.headerDisplaysPhone,\s*visualGenerationKey\]\);/);
     assert.match(desktopPreviewBlock, /\{showRightAside \? \(\s*<WhatsappRightAside/);
     assert.match(desktopPreviewBlock, /key=\{`right-aside-\$\{visualGenerationKey\}`\}/);
-    assert.match(desktopPreviewBlock, /!contactIdentityDisplay\.headerDisplaysPhone\s*\?\s*captureRoot\.querySelector<HTMLElement>\('\[data-wa-right-aside-identity\]'\)/);
+    assert.match(
+        desktopPreviewBlock,
+        /!contactIdentityDisplay\.headerDisplaysPhone\s*\?\s*captureRoot\.querySelector<HTMLElement>\('\[data-wa-right-aside-identity\]'\)/,
+    );
     assert.doesNotMatch(desktopPreviewBlock, /previewSnapshot\?\.showRightAside/);
 });
 

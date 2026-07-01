@@ -1,5 +1,5 @@
 import React from 'react';
-import type { PreviewThemeMode } from '../../../../../../types';
+import type { PreviewThemeMode } from '../../../../../types';
 
 type MsgStatus = 'sent' | 'delivered' | 'read';
 
@@ -57,7 +57,10 @@ function QuotedMessageBox({ quote, themeMode }: { quote: QuotedMessage; themeMod
                     style={quote.accentColor ? { backgroundColor: quote.accentColor } : undefined}
                 />
                 <div className="flex min-w-0 flex-col gap-1.5 px-2 pt-1 pb-2">
-                    <p className="truncate text-[10.5px] leading-4 font-semibold text-[#0078D7]" style={quote.authorColor ? { color: quote.authorColor } : undefined}>
+                    <p
+                        className="truncate text-[10.5px] leading-4 font-semibold text-[#0078D7]"
+                        style={quote.authorColor ? { color: quote.authorColor } : undefined}
+                    >
                         {quote.author}
                     </p>
                     <p className={['line-clamp-2 text-[11px] leading-4', isDark ? 'text-[#878F92]' : 'text-black/60'].join(' ')}>{quote.text}</p>
@@ -95,7 +98,14 @@ function renderBubbleContent(children: React.ReactNode): React.ReactNode {
 }
 
 function Ticks({ status, themeMode }: { status: MsgStatus; themeMode: PreviewThemeMode }) {
-    const color = status === 'read' ? (themeMode === 'dark' ? 'text-[#53BDEB]' : 'text-[#007BFC]') : themeMode === 'dark' ? 'text-[#878F92]' : 'text-[rgba(0,0,0,0.6)]';
+    const color =
+        status === 'read'
+            ? themeMode === 'dark'
+                ? 'text-[#53BDEB]'
+                : 'text-[#007BFC]'
+            : themeMode === 'dark'
+              ? 'text-[#878F92]'
+              : 'text-[rgba(0,0,0,0.6)]';
 
     return (
         <span className={`${color} inline-block`}>
@@ -128,12 +138,21 @@ export function WhatsappDesktopTextBubble({ side, firstInGroup, time, status, id
             <div className="relative max-w-[65%] flex-none text-[14.2px] leading-4.75">
                 {firstInGroup && <BubbleTail side={isOut ? 'right' : 'left'} colorClass={tailColor} />}
 
-                <div className={['relative z-10 rounded-[7.5px]', cornerCut, bubbleBg, bubbleText, 'shadow-[0_1px_0.5px_rgba(11,20,26,0.13)]'].join(' ')}>
-                    <div className="box-border py-1 px-0.5 select-text">
+                <div
+                    className={['relative z-10 rounded-[7.5px]', cornerCut, bubbleBg, bubbleText, 'shadow-[0_1px_0.5px_rgba(11,20,26,0.13)]'].join(
+                        ' ',
+                    )}
+                >
+                    <div className="box-border px-0.5 py-1 select-text">
                         {quote ? <QuotedMessageBox quote={quote} themeMode={themeMode} /> : null}
 
                         <div className="relative overflow-hidden ps-1.25 pe-1.25 break-words whitespace-pre-wrap">
-                            <span data-testid="selectable-text" dir="ltr" className="visible text-[12px] leading-4.5 font-normal select-text" style={{ minHeight: '0px'}}>
+                            <span
+                                data-testid="selectable-text"
+                                dir="ltr"
+                                className="visible text-[12px] leading-4.5 font-normal select-text"
+                                style={{ minHeight: '0px' }}
+                            >
                                 {content}
                             </span>
                             <span>
@@ -146,10 +165,21 @@ export function WhatsappDesktopTextBubble({ side, firstInGroup, time, status, id
 
                         {(time || (isOut && status)) && (
                             <div className="relative z-10 float-right -mt-3 -mb-1.25 ps-0 pe-1">
-                                <div className={['flex h-3.75 items-center text-[0.6875rem] leading-3.75 whitespace-nowrap', metaText, isOut ? 'cursor-pointer' : ''].join(' ')}>
+                                <div
+                                    className={[
+                                        'flex h-3.75 items-center text-[0.6875rem] leading-3.75 whitespace-nowrap',
+                                        metaText,
+                                        isOut ? 'cursor-pointer' : '',
+                                    ].join(' ')}
+                                >
                                     {time && (
                                         <span className="inline-block align-top" dir="auto">
-                                            <span className={['inline min-w-0 max-w-full wrap-break-word text-[10px] leading-4 font-normal break-all whitespace-pre-line select-text', metaText].join(' ')}>
+                                            <span
+                                                className={[
+                                                    'inline max-w-full min-w-0 text-[10px] leading-4 font-normal wrap-break-word break-all whitespace-pre-line select-text',
+                                                    metaText,
+                                                ].join(' ')}
+                                            >
                                                 {time}
                                             </span>
                                         </span>

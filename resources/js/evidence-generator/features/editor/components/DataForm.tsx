@@ -115,6 +115,8 @@ export function DataForm({
                 <Input label="Plazo" id="plazo" value={form.plazo} onChange={onChange('plazo')} placeholder="Ej: 12 meses" />
             </div>
 
+            <Input label="TCEA" id="TCEA" value={form.TCEA} onChange={onChange('TCEA')} placeholder="Ej: 45.20%" />
+
             <Input label="Fecha y hora" id="fecha-hora" type="datetime-local" value={form.fechaHora} onChange={onChange('fechaHora')} />
 
             <Input

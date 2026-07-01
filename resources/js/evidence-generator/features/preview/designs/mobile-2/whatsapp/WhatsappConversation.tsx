@@ -97,10 +97,10 @@ function renderFormattedLine(line: string, lineIndex: number, themeMode: Preview
     return parts;
 }
 
-function linesToSpans(lines: string[], themeMode: PreviewThemeMode) {
+function linesToSpans(lines: ReactNode[], themeMode: PreviewThemeMode) {
     return lines.map((line, idx) => {
-        const key = `${idx}-${line.slice(0, 8)}`;
-        return <span key={key}>{renderFormattedLine(line, idx, themeMode)}</span>;
+        const key = `${idx}-${typeof line === 'string' ? line.slice(0, 8) : 'node'}`;
+        return <span key={key}>{typeof line === 'string' ? renderFormattedLine(line, idx, themeMode) : line}</span>;
     });
 }
 

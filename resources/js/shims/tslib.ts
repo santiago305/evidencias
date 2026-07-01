@@ -15,14 +15,11 @@ export function __extends(d: Function, b: Function | null): void {
 
     setPrototypeOf(d, b);
 
-    function __() {
+    function __(this: { constructor: Function }) {
         this.constructor = d;
     }
 
-    d.prototype =
-        b === null
-            ? Object.create(null)
-            : ((__.prototype = b.prototype), new (__ as unknown as { new (): object })());
+    d.prototype = b === null ? Object.create(null) : ((__.prototype = b.prototype), new (__ as unknown as { new (): object })());
 }
 
 export const __assign =
@@ -49,10 +46,7 @@ export function __rest(source: Record<string, unknown>, exclude: string[]): Reco
 
     if (source != null && typeof Object.getOwnPropertySymbols === 'function') {
         for (const symbol of Object.getOwnPropertySymbols(source)) {
-            if (
-                !exclude.includes(symbol as unknown as string) &&
-                Object.prototype.propertyIsEnumerable.call(source, symbol)
-            ) {
+            if (!exclude.includes(symbol as unknown as string) && Object.prototype.propertyIsEnumerable.call(source, symbol)) {
                 target[symbol as unknown as string] = source[symbol as unknown as string];
             }
         }
@@ -62,9 +56,7 @@ export function __rest(source: Record<string, unknown>, exclude: string[]): Reco
 }
 
 export function __values<T>(value: Iterable<T> | ArrayLike<T>) {
-    const iterator = (typeof Symbol === 'function' && (value as Iterable<T>)[Symbol.iterator]) as
-        | (() => Iterator<T>)
-        | undefined;
+    const iterator = (typeof Symbol === 'function' && (value as Iterable<T>)[Symbol.iterator]) as (() => Iterator<T>) | undefined;
 
     if (iterator) {
         return iterator.call(value);

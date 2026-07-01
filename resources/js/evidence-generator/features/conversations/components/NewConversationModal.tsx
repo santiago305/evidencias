@@ -196,32 +196,34 @@ export function NewConversationModal({
     const insertVariable = (messageId: string, placeholder: string) => {
         const textarea = textareaRefs.current[messageId];
         const selection = getSelectionForInsertion(messageId);
-        let nextSelection: SelectionRange | null = null;
+        const currentMessage = messages.find((message) => message.id === messageId);
+
+        if (!currentMessage) {
+            return;
+        }
+
+        const result = insertTextAtSelection(currentMessage.linesText, placeholder, selection?.start, selection?.end);
+        const selectionToRestore: SelectionRange = {
+            start: result.selectionStart,
+            end: result.selectionEnd,
+        };
 
         setMessages((previous) =>
-            previous.map((message) => {
-                if (message.id !== messageId) {
-                    return message;
-                }
-
-                const result = insertTextAtSelection(message.linesText, placeholder, selection?.start, selection?.end);
-                nextSelection = {
-                    start: result.selectionStart,
-                    end: result.selectionEnd,
-                };
-
-                return {
-                    ...message,
-                    linesText: result.text,
-                };
-            }),
+            previous.map((message) =>
+                message.id === messageId
+                    ? {
+                          ...message,
+                          linesText: result.text,
+                      }
+                    : message,
+            ),
         );
 
-        if (textarea !== null && nextSelection !== null) {
+        if (textarea !== null) {
             window.requestAnimationFrame(() => {
                 textarea.focus();
-                textarea.setSelectionRange(nextSelection.start, nextSelection.end);
-                selectionRefs.current[messageId] = nextSelection;
+                textarea.setSelectionRange(selectionToRestore.start, selectionToRestore.end);
+                selectionRefs.current[messageId] = selectionToRestore;
             });
         }
     };

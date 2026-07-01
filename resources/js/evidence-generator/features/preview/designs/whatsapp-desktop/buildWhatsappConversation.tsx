@@ -127,6 +127,7 @@ export function buildWhatsappConversation(data: WhatsappData, messageStatus?: Ms
     const formattedCuota = data.cuota?.trim() ? formatMoneyValue(data.cuota, useThousandsCuota) : null;
     const tasaValue = data.tasa?.trim() ? data.tasa.trim() : null;
     const plazoValue = data.plazo?.trim() ? data.plazo.trim() : null;
+    const tceaValue = data.TCEA?.trim() ? data.TCEA.trim() : null;
 
     const templateValues = buildWhatsappTemplateValues({
         nombreCliente,
@@ -142,6 +143,7 @@ export function buildWhatsappConversation(data: WhatsappData, messageStatus?: Ms
         cuota_formateada: formattedCuota ?? 'N/A',
         plazo: plazoValue ?? 'N/A',
         tasa: formatTasaValue(tasaValue),
+        TCEA: tceaValue ?? 'N/A',
     };
 
     const normalizeReply = (lines: string[]) => lines.map((line) => interpolateTemplate(line, extendedTemplateValues));

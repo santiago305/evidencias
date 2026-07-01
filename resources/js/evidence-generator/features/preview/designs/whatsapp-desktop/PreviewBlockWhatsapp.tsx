@@ -639,7 +639,7 @@ export function PreviewBlockWhatsapp({ data, whatsappDesktopScale, themeMode }: 
     }, [
         clearPendingCaptureFrameWork,
         data,
-        data?.generatedMessages.length,
+        data?.generatedMessages?.length,
         scheduleCaptureFrameRegenerationBurst,
         showRightAside,
         themeMode,
@@ -708,7 +708,7 @@ export function PreviewBlockWhatsapp({ data, whatsappDesktopScale, themeMode }: 
     }, [
         clearPendingCaptureFrameWork,
         data,
-        data?.generatedMessages.length,
+        data?.generatedMessages?.length,
         scheduleCaptureFrameRegeneration,
         scheduleCaptureFrameRegenerationBurst,
         showRightAside,

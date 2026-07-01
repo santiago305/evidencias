@@ -284,6 +284,7 @@ class ConversationRenderService
             'cuota_formateada' => $this->formatMoney($cuota),
             'plazo' => (string) ($input['plazo'] ?? ''),
             'tasa' => (string) ($input['tasa'] ?? ''),
+            'TCEA' => (string) ($input['TCEA'] ?? ''),
             'saludo' => $saludo,
             'tramo' => $tramo,
             'sexualidad_asesor' => in_array($input['sexualidadAsesor'] ?? null, ['M', 'F'], true) ? (string) $input['sexualidadAsesor'] : 'M',

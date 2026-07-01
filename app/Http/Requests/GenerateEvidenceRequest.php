@@ -33,6 +33,7 @@ class GenerateEvidenceRequest extends FormRequest
             'tasa' => ['required_without:seedCode', 'nullable', 'string', 'max:40'],
             'cuota' => ['required_without:seedCode', 'nullable', 'string', 'max:40'],
             'plazo' => ['required_without:seedCode', 'nullable', 'string', 'max:40'],
+            'TCEA' => ['nullable', 'string', 'max:40'],
             'fechaHora' => ['required_without:seedCode', 'nullable', 'date_format:Y-m-d\TH:i'],
             'fechaHoraRegistro' => ['required_without:seedCode', 'nullable', 'date_format:Y-m-d\TH:i', 'after_or_equal:fechaHora'],
             'duracion' => ['required_without:seedCode', 'nullable', 'integer', 'min:1'],

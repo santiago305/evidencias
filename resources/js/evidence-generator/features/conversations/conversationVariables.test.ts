@@ -54,5 +54,9 @@ test('buildConversationVariables exposes only canonical placeholders in order', 
             key: 'plazo',
             placeholder: '{plazo}',
         },
+        {
+            key: 'TCEA',
+            placeholder: '{TCEA}',
+        },
     ]);
 });

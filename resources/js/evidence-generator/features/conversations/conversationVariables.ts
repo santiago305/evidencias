@@ -53,5 +53,9 @@ export function buildConversationVariables(): ConversationVariable[] {
             key: 'plazo',
             placeholder: '{plazo}',
         },
+        {
+            key: 'TCEA',
+            placeholder: '{TCEA}',
+        },
     ];
 }

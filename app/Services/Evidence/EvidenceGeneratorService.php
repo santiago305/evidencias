@@ -171,6 +171,14 @@ class EvidenceGeneratorService
                 'avatarSeedVersion' => $storedInput['avatarSeedVersion'] ?? null,
                 'previewSeed' => $previewSeed,
             ];
+
+            if (array_key_exists('TCEA', $editableInput)) {
+                $replayEvidence->input_data = [
+                    ...$storedInput,
+                    'TCEA' => (string) $editableInput['TCEA'],
+                ];
+                $replayEvidence->save();
+            }
         } elseif ($conversationCode !== '') {
             $conversation = Conversation::query()
                 ->with('messages')

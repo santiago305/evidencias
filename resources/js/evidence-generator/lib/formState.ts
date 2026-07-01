@@ -9,6 +9,7 @@ export function createInitialFormState(): FormState {
         tasa: '',
         cuota: '',
         plazo: '',
+        TCEA: '',
         fechaHora: '',
         fechaHoraRegistro: '',
         duracion: '',

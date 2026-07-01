@@ -503,6 +503,23 @@ test('generate evidence renders client dni variable', function () {
         ->assertJsonPath('messages.0.lines.0', 'DNI cliente 87654321');
 });
 
+test('generate evidence renders optional TCEA variable', function () {
+    $user = User::factory()->create();
+
+    createConversationForTest('conv_tcea_variable_001', [
+        ['side' => 'out', 'delay_minutes' => 0, 'lines' => ['TCEA {TCEA}']],
+    ]);
+
+    $response = $this->actingAs($user)->postJson(route('evidences.generate'), [
+        ...evidencePayload(),
+        'conversationCode' => 'conv_tcea_variable_001',
+        'TCEA' => '45.20%',
+    ]);
+
+    $response->assertOk()
+        ->assertJsonPath('messages.0.lines.0', 'TCEA 45.20%');
+});
+
 test('generate evidence keeps the submitted phone number when rendering phone variable', function () {
     $user = User::factory()->create();
 
@@ -949,6 +966,31 @@ test('generate evidence by seed allows correcting phone while preserving visual 
         ->and($second['previewSnapshot']['temporalBehavior'])->toBe($first['previewSnapshot']['temporalBehavior'])
         ->and($second['previewSnapshot']['inlineTemporalInsertIndex'])->toBe($first['previewSnapshot']['inlineTemporalInsertIndex']);
 
+    expect(GeneratedEvidence::query()->count())->toBe(1);
+});
+
+test('generate evidence by seed can add TCEA to an older stored evidence', function () {
+    $user = User::factory()->create();
+
+    createConversationForTest('conv_seed_tcea_edit_001', [
+        ['side' => 'out', 'delay_minutes' => 0, 'lines' => ['TCEA {TCEA}']],
+    ]);
+
+    $first = $this->actingAs($user)->postJson(route('evidences.generate'), evidencePayload())->assertOk()->json();
+
+    $storedEvidence = GeneratedEvidence::query()
+        ->where('seed_code', $first['seedCode'])
+        ->firstOrFail();
+
+    expect($storedEvidence->input_data)->not->toHaveKey('TCEA');
+
+    $second = $this->actingAs($user)->postJson(route('evidences.generate'), [
+        'seedCode' => $first['seedCode'],
+        'TCEA' => '45.20%',
+    ])->assertOk()->json();
+
+    expect($second['messages'][0]['lines'][0])->toBe('TCEA 45.20%');
+    expect($storedEvidence->fresh()->input_data['TCEA'])->toBe('45.20%');
     expect(GeneratedEvidence::query()->count())->toBe(1);
 });
 

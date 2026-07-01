@@ -11,6 +11,7 @@ test('createInitialFormState returns an empty form ready for a new evidence', ()
         tasa: '',
         cuota: '',
         plazo: '',
+        TCEA: '',
         fechaHora: '',
         fechaHoraRegistro: '',
         duracion: '',

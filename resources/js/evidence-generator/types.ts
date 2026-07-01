@@ -24,6 +24,7 @@ export interface FormState {
     tasa: string;
     cuota: string;
     plazo: string;
+    TCEA: string;
     fechaHora: string;
     fechaHoraRegistro: string;
     duracion: string;

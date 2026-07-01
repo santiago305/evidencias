@@ -15,6 +15,7 @@ test('applyConversationTestDefaults fills empty evidence fields for conversation
         tasa: '9.99',
         cuota: '2148',
         plazo: '60',
+        TCEA: '',
         fechaHora: '2026-06-06T14:15',
         fechaHoraRegistro: '2026-06-06T15:30',
         duracion: '60',
