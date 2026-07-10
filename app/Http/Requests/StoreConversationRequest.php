@@ -36,7 +36,7 @@ class StoreConversationRequest extends FormRequest
         $messagesRule = $this->isMethod('post') ? 'required' : 'sometimes';
 
         return [
-            'status' => ['required', Rule::in(['production', 'development'])],
+            'status' => ['required', Rule::in(['production', 'development', 'fixed'])],
             'messages' => [$messagesRule, 'array', 'min:1'],
             'messages.*.side' => ['required', Rule::in(['in', 'out'])],
             'messages.*.reply_to_position' => ['nullable', 'integer', 'min:1'],

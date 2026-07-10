@@ -1,6 +1,7 @@
 import type { PreviewProps } from '../../../../../types';
 import { EmptyState } from '../../../components/EmptyState';
 import { Row } from '../../../components/Row';
+import { buildMobilePreviewNotificationIds } from '../../../mobileNotifications';
 import { Mobile2PreviewFrame } from '../Mobile2PreviewFrame';
 
 export function PreviewMobile2Sms({ data, themeMode }: PreviewProps) {
@@ -11,12 +12,7 @@ export function PreviewMobile2Sms({ data, themeMode }: PreviewProps) {
     const isDark = themeMode === 'dark';
 
     return (
-        <Mobile2PreviewFrame
-            themeMode={themeMode}
-            notificationSeed={[data.seedCode, data.conversationId, data.telefono, data.dniCliente]
-                .filter((value) => value !== undefined && value !== null && `${value}`.trim() !== '')
-                .join('|')}
-        >
+        <Mobile2PreviewFrame themeMode={themeMode} notificationIds={buildMobilePreviewNotificationIds(data, 'mobile-2', 'sms')}>
             <div className={['flex h-full flex-col', isDark ? 'bg-[#0f172a]' : 'bg-[#f6f7fb]'].join(' ')}>
                 <div
                     className={[

@@ -34,6 +34,10 @@ class ConversationController extends Controller
         $conversationCode = $this->generateUniqueConversationCode();
 
         $conversation = DB::transaction(function () use ($validated, $delays, $conversationCode) {
+            if ($validated['status'] === 'fixed') {
+                $this->clearFixedConversations();
+            }
+
             $conversation = Conversation::query()->create([
                 'code' => $conversationCode,
                 'is_active' => true,
@@ -61,6 +65,10 @@ class ConversationController extends Controller
         $delays = is_array($messages) ? $delayDistributionService->distribute($messages) : [];
 
         DB::transaction(function () use ($conversation, $validated, $messages, $delays) {
+            if ($validated['status'] === 'fixed') {
+                $this->clearFixedConversations($conversation);
+            }
+
             $conversation->status = $validated['status'];
 
             if (is_array($messages)) {
@@ -96,6 +104,17 @@ class ConversationController extends Controller
                 'lines' => $message['lines'],
             ]);
         }
+    }
+
+    private function clearFixedConversations(?Conversation $exceptConversation = null): void
+    {
+        Conversation::query()
+            ->where('status', 'fixed')
+            ->when(
+                $exceptConversation !== null,
+                fn ($query) => $query->whereKeyNot($exceptConversation->id),
+            )
+            ->update(['status' => 'development']);
     }
 
     private function generateUniqueConversationCode(): string

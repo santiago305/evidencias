@@ -73,6 +73,19 @@ export function ConversationsListModal({ open, onOpenChange, conversations, onSe
                                                 D
                                             </button>
 
+                                            <button
+                                                type="button"
+                                                onClick={() => onChangeStatus(conversation.id, 'fixed')}
+                                                className={[
+                                                    'inline-flex h-7 min-w-7 cursor-pointer items-center justify-center rounded border px-2 text-[11px] font-bold transition',
+                                                    conversation.status === 'fixed'
+                                                        ? 'border-red-600 bg-red-600 text-white'
+                                                        : 'border-red-200 bg-red-50 text-red-700 hover:bg-red-100',
+                                                ].join(' ')}
+                                            >
+                                                F
+                                            </button>
+
                                             <span className="rounded bg-slate-100 px-2 py-0.5 text-[11px] font-medium text-slate-600">
                                                 #{index + 1}
                                             </span>

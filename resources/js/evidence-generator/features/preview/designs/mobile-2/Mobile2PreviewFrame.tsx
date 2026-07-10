@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import type { PreviewThemeMode } from '../../../../types';
+import type { MobileNotificationIconId } from '../../mobileNotifications';
 import { Mobile2PreviewFooter } from './Mobile2PreviewFooter';
 import { Mobile2PreviewHeader } from './Mobile2PreviewHeader';
 
@@ -10,6 +11,7 @@ type Mobile2PreviewFrameProps = {
     hideSystemHeader?: boolean;
     hideSystemFooter?: boolean;
     notificationSeed?: string;
+    notificationIds?: MobileNotificationIconId[];
     headerVariant?: 'default' | 'whatsapp';
 };
 
@@ -20,6 +22,7 @@ export function Mobile2PreviewFrame({
     hideSystemHeader = false,
     hideSystemFooter = false,
     notificationSeed,
+    notificationIds,
     headerVariant = 'default',
 }: Mobile2PreviewFrameProps) {
     const isDark = themeMode === 'dark';
@@ -34,7 +37,12 @@ export function Mobile2PreviewFrame({
                 ].join(' ')}
             >
                 {!hideSystemHeader ? (
-                    <Mobile2PreviewHeader themeMode={themeMode} notificationSeed={notificationSeed} variant={headerVariant} />
+                    <Mobile2PreviewHeader
+                        themeMode={themeMode}
+                        notificationSeed={notificationSeed}
+                        notificationIds={notificationIds}
+                        variant={headerVariant}
+                    />
                 ) : null}
                 <div className={['min-h-0 flex-1 overflow-hidden', contentClassName].filter(Boolean).join(' ')}>{children}</div>
                 {!hideSystemFooter ? <Mobile2PreviewFooter themeMode={themeMode} /> : null}

@@ -25,6 +25,7 @@ import {
 import type { ComponentType, SVGProps } from 'react';
 import { mulberry32 } from '../../../../lib/whatsapp/random';
 import type { PreviewThemeMode } from '../../../../types';
+import type { MobileNotificationIconId } from '../../mobileNotifications';
 import { AndroidBatteryIcon } from './components/AndroidBatteryIcon';
 
 type BatteryLevel = 10 | 20 | 30 | 40 | 50 | 60 | 70 | 80 | 90 | 100;
@@ -129,10 +130,11 @@ function BatteryIcon({ level }: { level: BatteryLevel }) {
 type Mobile2PreviewHeaderProps = {
     themeMode: PreviewThemeMode;
     notificationSeed?: string;
+    notificationIds?: MobileNotificationIconId[];
     variant?: 'default' | 'whatsapp';
 };
 
-export function Mobile2PreviewHeader({ themeMode, notificationSeed, variant = 'default' }: Mobile2PreviewHeaderProps) {
+export function Mobile2PreviewHeader({ themeMode, notificationSeed, notificationIds, variant = 'default' }: Mobile2PreviewHeaderProps) {
     const isDark = themeMode === 'dark';
     const isWhatsappVariant = variant === 'whatsapp' && isDark;
 
@@ -162,10 +164,16 @@ export function Mobile2PreviewHeader({ themeMode, notificationSeed, variant = 'd
     }, []);
 
     const notifications = useMemo(() => {
+        if (notificationIds) {
+            const iconById = new Map(notificationIconPool.map((icon) => [icon.id, icon]));
+
+            return notificationIds.map((id) => iconById.get(id)).filter((icon): icon is NotificationIcon => icon !== undefined);
+        }
+
         const random = notificationSeed?.trim() ? mulberry32(hashString(notificationSeed)) : Math.random;
 
         return buildNotificationSet(random);
-    }, [notificationSeed]);
+    }, [notificationIds, notificationSeed]);
 
     return (
         <div

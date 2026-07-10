@@ -39,6 +39,7 @@ import {
 import type { ComponentType, SVGProps } from 'react';
 import { mulberry32 } from '../../../../lib/whatsapp/random';
 import type { PreviewThemeMode } from '../../../../types';
+import type { MobileNotificationIconId } from '../../mobileNotifications';
 
 const batteryIcons = {
     10: mdiBattery10,
@@ -178,10 +179,11 @@ function BatteryIcon({ level }: { level: BatteryLevel }) {
 type Mobile1PreviewHeaderProps = {
     themeMode: PreviewThemeMode;
     notificationSeed?: string;
+    notificationIds?: MobileNotificationIconId[];
     variant?: 'default' | 'whatsapp';
 };
 
-export function Mobile1PreviewHeader({ themeMode, notificationSeed, variant = 'default' }: Mobile1PreviewHeaderProps) {
+export function Mobile1PreviewHeader({ themeMode, notificationSeed, notificationIds, variant = 'default' }: Mobile1PreviewHeaderProps) {
     const isDark = themeMode === 'dark';
     const isWhatsappVariant = variant === 'whatsapp' && isDark;
     const [time, setTime] = useState('');
@@ -210,13 +212,24 @@ export function Mobile1PreviewHeader({ themeMode, notificationSeed, variant = 'd
     }, []);
 
     const notifications = useMemo(() => {
+        if (notificationIds) {
+            const iconById = new Map(notificationIconPool.map((icon) => [icon.id, icon]));
+
+            return notificationIds.map((id) => iconById.get(id)).filter((icon): icon is NotificationIcon => icon !== undefined);
+        }
+
         const random = notificationSeed?.trim() ? mulberry32(hashString(notificationSeed)) : Math.random;
 
         return buildNotificationSet(random);
-    }, [notificationSeed]);
+    }, [notificationIds, notificationSeed]);
 
     return (
-        <div className={['shrink-0 px-6.25 py-1', isWhatsappVariant ? 'bg-[#0B1014] text-white' : isDark ? 'bg-[#070c0f] text-white' : 'bg-white text-[#5f6368]'].join(' ')}>
+        <div
+            className={[
+                'shrink-0 px-6.25 py-1',
+                isWhatsappVariant ? 'bg-[#0B1014] text-white' : isDark ? 'bg-[#070c0f] text-white' : 'bg-white text-[#5f6368]',
+            ].join(' ')}
+        >
             <div
                 className="flex h-6.25 items-center justify-between"
                 style={{
@@ -224,7 +237,12 @@ export function Mobile1PreviewHeader({ themeMode, notificationSeed, variant = 'd
                 }}
             >
                 <div className="flex items-center gap-[7.5px]">
-                    <span className={['text-[15px] leading-none font-medium tracking-[-0.01em]', isWhatsappVariant ? 'text-white' : isDark ? 'text-white' : 'text-[#5f6368]'].join(' ')}>
+                    <span
+                        className={[
+                            'text-[15px] leading-none font-medium tracking-[-0.01em]',
+                            isWhatsappVariant ? 'text-white' : isDark ? 'text-white' : 'text-[#5f6368]',
+                        ].join(' ')}
+                    >
                         {time}
                     </span>
 

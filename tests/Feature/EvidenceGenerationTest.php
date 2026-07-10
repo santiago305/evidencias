@@ -249,6 +249,28 @@ test('authenticated user can update only a conversation status', function () {
     expect($messages[1]['delay_minutes'])->toBe(15);
 });
 
+test('marking a conversation as fixed clears the previous fixed conversation', function () {
+    $user = User::factory()->create();
+
+    $first = createConversationForTest('conv_fixed_previous_001', [
+        ['side' => 'out', 'delay_minutes' => 0, 'lines' => ['Primera fija']],
+    ], 'fixed');
+    $second = createConversationForTest('conv_fixed_next_001', [
+        ['side' => 'out', 'delay_minutes' => 0, 'lines' => ['Nueva fija']],
+    ], 'development');
+
+    $response = $this->actingAs($user)->putJson(route('conversations.update', ['conversation' => $second->id]), [
+        'status' => 'fixed',
+    ]);
+
+    $response->assertOk()
+        ->assertJsonPath('data.id', $second->id)
+        ->assertJsonPath('data.status', 'fixed');
+
+    expect($first->fresh()->status)->toBe('development')
+        ->and($second->fresh()->status)->toBe('fixed');
+});
+
 test('authenticated user can create a conversation with reply targets', function () {
     $user = User::factory()->create();
 
@@ -410,6 +432,55 @@ test('random evidence generation skips development conversations', function () {
     $response->assertOk()
         ->assertJsonPath('conversationId', 'conv_prod_001')
         ->assertJsonPath('messages.0.lines.0', 'Produccion');
+});
+
+test('normal evidence generation uses fixed conversation when one is configured', function () {
+    $user = User::factory()->create();
+
+    createConversationForTest('conv_prod_uses_fixed_001', [
+        ['side' => 'out', 'delay_minutes' => 0, 'lines' => ['Produccion random']],
+    ], 'production');
+    createConversationForTest('conv_fixed_uses_fixed_001', [
+        ['side' => 'out', 'delay_minutes' => 0, 'lines' => ['Fija {nombre_cliente}']],
+    ], 'fixed');
+
+    $response = $this->actingAs($user)->postJson(route('evidences.generate'), evidencePayload());
+
+    $response->assertOk()
+        ->assertJsonPath('conversationId', 'conv_fixed_uses_fixed_001')
+        ->assertJsonPath('messages.0.lines.0', 'Fija Juan Perez')
+        ->assertJsonPath('progress.used', 0);
+
+    $this->assertDatabaseMissing('user_conversation_progress', [
+        'user_id' => $user->id,
+    ]);
+
+    $this->assertDatabaseHas('generated_evidences', [
+        'user_id' => $user->id,
+        'conversation_id' => Conversation::query()->where('code', 'conv_fixed_uses_fixed_001')->value('id'),
+    ]);
+});
+
+test('normal evidence generation returns to production bag when no fixed conversation exists', function () {
+    $user = User::factory()->create();
+
+    createConversationForTest('conv_dev_not_fixed_001', [
+        ['side' => 'out', 'delay_minutes' => 0, 'lines' => ['Desarrollo']],
+    ], 'development');
+    createConversationForTest('conv_prod_after_fixed_001', [
+        ['side' => 'out', 'delay_minutes' => 0, 'lines' => ['Produccion disponible']],
+    ], 'production');
+
+    $response = $this->actingAs($user)->postJson(route('evidences.generate'), evidencePayload());
+
+    $response->assertOk()
+        ->assertJsonPath('conversationId', 'conv_prod_after_fixed_001')
+        ->assertJsonPath('progress.used', 1);
+
+    $this->assertDatabaseHas('user_conversation_progress', [
+        'user_id' => $user->id,
+        'last_conversation_id' => Conversation::query()->where('code', 'conv_prod_after_fixed_001')->value('id'),
+    ]);
 });
 
 test('generate evidence returns quote metadata for replied messages', function () {

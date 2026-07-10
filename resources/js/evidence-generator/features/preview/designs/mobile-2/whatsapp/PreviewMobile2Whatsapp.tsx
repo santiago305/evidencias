@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import type { PreviewProps } from '../../../../../types';
 import { EmptyState } from '../../../components/EmptyState';
+import { buildMobilePreviewNotificationIds } from '../../../mobileNotifications';
 import type { WhatsappTypographyPlatform } from '../../whatsappTypography';
 import { Mobile2PreviewFrame } from '../Mobile2PreviewFrame';
 import { buildContactIdentityDisplay } from './contactIdentityDisplay';
@@ -112,9 +113,7 @@ export function PreviewMobile2Whatsapp({ data, themeMode }: PreviewProps) {
     return (
         <Mobile2PreviewFrame
             themeMode={themeMode}
-            notificationSeed={[data.visualSeed ?? data.seedCode, data.conversationId, data.generatedMessages?.length]
-                .filter((value) => value !== undefined && value !== null && `${value}`.trim() !== '')
-                .join('|')}
+            notificationIds={buildMobilePreviewNotificationIds(data, 'mobile-2', 'whatsapp')}
             headerVariant="whatsapp"
         >
             <div

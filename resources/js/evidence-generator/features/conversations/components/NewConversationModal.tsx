@@ -62,6 +62,18 @@ const createEmptyMessage = (): ConversationDraftMessage => ({
     linesText: '',
 });
 
+const getStatusDescription = (status: ConversationStatus): string => {
+    if (status === 'production') {
+        return 'Producción: entra en generación aleatoria';
+    }
+
+    if (status === 'fixed') {
+        return 'Fijo: se usa siempre al generar evidencias normales';
+    }
+
+    return 'Desarrollo: solo por código';
+};
+
 export function NewConversationModal({
     open,
     onOpenChange,
@@ -302,9 +314,20 @@ export function NewConversationModal({
                             D
                         </button>
 
-                        <span className="text-xs text-slate-500">
-                            {status === 'production' ? 'Producción: entra en generación aleatoria' : 'Desarrollo: solo por código'}
-                        </span>
+                        <button
+                            type="button"
+                            onClick={() => setStatus('fixed')}
+                            className={[
+                                'inline-flex h-8 cursor-pointer items-center rounded-md border px-3 text-xs font-bold transition',
+                                status === 'fixed'
+                                    ? 'border-red-600 bg-red-600 text-white shadow-sm'
+                                    : 'border-red-200 bg-red-50 text-red-700 hover:bg-red-100',
+                            ].join(' ')}
+                        >
+                            F
+                        </button>
+
+                        <span className="text-xs text-slate-500">{getStatusDescription(status)}</span>
                     </div>
                 </DialogHeader>
 

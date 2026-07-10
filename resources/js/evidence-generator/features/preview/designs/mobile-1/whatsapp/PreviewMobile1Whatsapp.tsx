@@ -1,13 +1,14 @@
 import { useMemo } from 'react';
 import type { PreviewProps } from '../../../../../types';
 import { EmptyState } from '../../../components/EmptyState';
+import { buildMobilePreviewNotificationIds } from '../../../mobileNotifications';
+import type { WhatsappTypographyPlatform } from '../../whatsappTypography';
 import { Mobile1PreviewFrame } from '../Mobile1PreviewFrame';
 import { buildContactIdentityDisplay } from './contactIdentityDisplay';
 import { WhatsappHeaderUser } from './whatsapp-header';
 import { buildWhatsappAvatarSeed } from './whatsappAppearance';
 import { WhatsappConversation } from './WhatsappConversation';
 import type { MsgStatus } from './WhatsappPieces';
-import type { WhatsappTypographyPlatform } from '../../whatsappTypography';
 
 function hashString(value: string): number {
     let hash = 2166136261;
@@ -112,9 +113,7 @@ export function PreviewMobile1Whatsapp({ data, themeMode }: PreviewProps) {
     return (
         <Mobile1PreviewFrame
             themeMode={themeMode}
-            notificationSeed={[data.visualSeed ?? data.seedCode, data.conversationId, data.generatedMessages?.length]
-                .filter((value) => value !== undefined && value !== null && `${value}`.trim() !== '')
-                .join('|')}
+            notificationIds={buildMobilePreviewNotificationIds(data, 'mobile-1', 'whatsapp')}
             headerVariant="whatsapp"
         >
             <div

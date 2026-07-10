@@ -191,6 +191,8 @@ class EvidenceGeneratorService
                     'conversationCode' => 'No se encontró una conversación activa con ese código.',
                 ]);
             }
+        } elseif ($fixedConversation = $this->resolveFixedConversation()) {
+            $conversation = $fixedConversation;
         } else {
             $selected = $this->bagService->takeNextForUser($user);
             $conversation = $selected['conversation'];
@@ -231,6 +233,17 @@ class EvidenceGeneratorService
             ],
             'trayProfile' => $trayProfile,
         ];
+    }
+
+    private function resolveFixedConversation(): ?Conversation
+    {
+        return Conversation::query()
+            ->with('messages')
+            ->where('is_active', true)
+            ->where('status', 'fixed')
+            ->orderByDesc('updated_at')
+            ->orderByDesc('id')
+            ->first();
     }
 
     /**

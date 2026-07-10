@@ -112,6 +112,18 @@ interface ConversationListItem {
     messages: ConversationModalMessageDraft[];
 }
 
+function getConversationStatusLabel(status: ConversationStatus): string {
+    if (status === 'production') {
+        return 'produccion';
+    }
+
+    if (status === 'fixed') {
+        return 'fijo';
+    }
+
+    return 'desarrollo';
+}
+
 function revokePreviewImage(form: FormState): void {
     if (form.img_64.startsWith('blob:')) {
         URL.revokeObjectURL(form.img_64);
@@ -480,7 +492,8 @@ export default function App({
             });
 
             setConversations((previous) => previous.map((item) => (item.id === conversationId ? { ...item, status } : item)));
-            setFeedbackMessage(`Conversacion ${conversation.code} marcada como ${status === 'production' ? 'produccion' : 'desarrollo'}.`);
+            await loadConversations();
+            setFeedbackMessage(`Conversacion ${conversation.code} marcada como ${getConversationStatusLabel(status)}.`);
         } catch (error) {
             const errorPayload = error as {
                 errors?: Record<string, string[]>;
