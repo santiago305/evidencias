@@ -3,6 +3,11 @@ import { EmptyState } from '../../../components/EmptyState';
 import { buildMobilePreviewNotificationIds } from '../../../mobileNotifications';
 import { Mobile1PreviewFrame } from '../Mobile1PreviewFrame';
 
+/* =========================================================
+   FORMATO DE FECHA
+   Ejemplo:
+   miércoles, 22 jul. · 3:33 p. m.
+========================================================= */
 function formatSmsDate(date: Date) {
     const weekday = new Intl.DateTimeFormat('es-PE', {
         weekday: 'long',
@@ -27,6 +32,167 @@ function formatSmsDate(date: Date) {
     return `${weekday}, ${day} ${month} · ${time}`;
 }
 
+/* =========================================================
+   FORMATO SOLO HORA
+   Ejemplo:
+   4:47 p. m.
+========================================================= */
+function formatSmsTime(date: Date) {
+    return new Intl.DateTimeFormat('es-PE', {
+        hour: 'numeric',
+        minute: '2-digit',
+        hour12: true,
+    })
+        .format(date)
+        .toLowerCase();
+}
+
+/* =========================================================
+   VERIFICAR SI LA FECHA ES HOY
+========================================================= */
+function isToday(date: Date) {
+    const now = new Date();
+
+    return (
+        date.getFullYear() === now.getFullYear() &&
+        date.getMonth() === now.getMonth() &&
+        date.getDate() === now.getDate()
+    );
+}
+
+/* =========================================================
+   DOBLE CHECK
+
+   El segundo check se pinta por encima del primero.
+
+   El círculo sólido con backgroundColor funciona como
+   máscara para que NO se vea el borde del primer círculo
+   atravesando el segundo.
+========================================================= */
+function DoubleCheckIcon({
+    color,
+    backgroundColor,
+}: {
+    color: string;
+    backgroundColor: string;
+}) {
+    return (
+        <svg
+            viewBox="0 0 30 20"
+            className="h-[17px] w-[27px] shrink-0"
+            fill="none"
+            aria-hidden="true"
+        >
+            {/* =========================================
+                PRIMER CHECK
+            ========================================= */}
+            <circle
+                cx="9.5"
+                cy="10"
+                r="7.2"
+                stroke={color}
+                strokeWidth="1.65"
+            />
+
+            <path
+                d="M6.1 10.1L8.7 12.5L13.1 7.9"
+                stroke={color}
+                strokeWidth="1.55"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+            />
+
+            {/* =========================================
+                MÁSCARA DEL SEGUNDO CHECK
+
+                Primero tapa la zona del primer círculo
+                que queda debajo.
+            ========================================= */}
+            <circle
+                cx="19.8"
+                cy="10"
+                r="8.15"
+                fill={backgroundColor}
+            />
+
+            {/* =========================================
+                SEGUNDO CHECK
+            ========================================= */}
+            <circle
+                cx="19.8"
+                cy="10"
+                r="7.2"
+                stroke={color}
+                strokeWidth="1.65"
+            />
+
+            <path
+                d="M16.4 10.1L19 12.5L23.4 7.9"
+                stroke={color}
+                strokeWidth="1.55"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+            />
+        </svg>
+    );
+}
+
+/* =========================================================
+   CANDADO DE ESTADO DEL MENSAJE
+
+   Es el mismo estilo del candado superior:
+   - arco
+   - cuerpo
+   - ranura interior
+========================================================= */
+function MessageStatusLockIcon({
+    color,
+}: {
+    color: string;
+}) {
+    return (
+        <svg
+            viewBox="0 0 24 24"
+            className="h-[14px] w-[14px] shrink-0"
+            fill="none"
+            stroke={color}
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden="true"
+        >
+            {/* Arco */}
+            <path d="M8 10V7.5a4 4 0 0 1 8 0V10" />
+
+            {/* Cuerpo */}
+            <rect
+                x="5.5"
+                y="10"
+                width="13"
+                height="10"
+                rx="1.8"
+            />
+
+            {/* Ranura */}
+            <circle
+                cx="12"
+                cy="14.2"
+                r="1.05"
+                fill={color}
+                stroke="none"
+            />
+
+            <path
+                d="M12 15.1v2"
+                strokeWidth="1.6"
+            />
+        </svg>
+    );
+}
+
+/* =========================================================
+   PREVIEW
+========================================================= */
 export function PreviewMobile1Sms({
     data,
     themeMode,
@@ -34,6 +200,8 @@ export function PreviewMobile1Sms({
     if (!data) {
         return <EmptyState />;
     }
+
+    const isDark = themeMode === 'dark';
 
     const telefono = data.telefono || '995 592 200';
 
@@ -45,7 +213,104 @@ export function PreviewMobile1Sms({
 
     const monto = data.monto || '65044.00';
 
-    const fechaConversacion = formatSmsDate(new Date());
+    /* =====================================================
+       FECHA DEL MENSAJE
+
+       Intenta obtenerla de varias propiedades posibles.
+       Si no existe ninguna, toma la hora actual.
+    ===================================================== */
+    const rawData = data as unknown as Record<string, unknown>;
+
+    const rawMessageDate =
+        rawData.fechaEnvio ??
+        rawData.sentAt ??
+        rawData.createdAt ??
+        rawData.fecha;
+
+    let messageDate = new Date();
+
+    if (
+        typeof rawMessageDate === 'string' ||
+        typeof rawMessageDate === 'number' ||
+        rawMessageDate instanceof Date
+    ) {
+        const parsedDate = new Date(rawMessageDate);
+
+        if (!Number.isNaN(parsedDate.getTime())) {
+            messageDate = parsedDate;
+        }
+    }
+
+    const fechaConversacion = formatSmsDate(messageDate);
+    const messageTime = formatSmsTime(messageDate);
+    const messageIsToday = isToday(messageDate);
+
+    /* =====================================================
+       COLORES
+
+       LIGHT
+       Basados en la captura clara.
+
+       DARK
+       Basados en las dos capturas oscuras.
+    ===================================================== */
+    const colors = isDark
+        ? {
+              shell: '#1B1F22',
+              header: '#1B1F22',
+
+              conversation: '#0D1215',
+
+              receivedBubble: '#1C2124',
+
+              sentBubble: '#00627D',
+
+              primaryText: '#E6E1E6',
+              secondaryText: '#BFC0C5',
+
+              headerIcon: '#C5C7CF',
+
+              composer: '#1C2124',
+
+              tealPoint: '#70B9D1',
+
+              link: '#68B8D0',
+
+              audioBackground: '#51456D',
+              audioIcon: '#E4DDEF',
+
+              redPoint: '#E9A0A5',
+
+              statusCheck: '#C8C8CF',
+          }
+        : {
+              shell: '#E9EEF2',
+              header: '#E9EEF2',
+
+              conversation: '#F6FAFD',
+
+              receivedBubble: '#E9EEF2',
+
+              sentBubble: '#00688D',
+
+              primaryText: '#202124',
+              secondaryText: '#5F6368',
+
+              headerIcon: '#303438',
+
+              composer: '#E9EEF2',
+
+              tealPoint: '#008C95',
+
+              link: '#147B86',
+
+              audioBackground: '#E5DEFF',
+              audioIcon: '#28243A',
+
+              redPoint: '#B3261E',
+
+              statusCheck: '#62676B',
+          };
 
     return (
         <Mobile1PreviewFrame
@@ -63,10 +328,10 @@ export function PreviewMobile1Sms({
                     min-h-0
                     flex-col
                     overflow-hidden
-                    bg-[#E9EEF2]
-                    text-[#202124]
                 "
                 style={{
+                    backgroundColor: colors.shell,
+                    color: colors.primaryText,
                     fontFamily:
                         'Roboto, "Google Sans", "Noto Sans", Arial, Helvetica, sans-serif',
                 }}
@@ -80,9 +345,11 @@ export function PreviewMobile1Sms({
                         h-[72px]
                         shrink-0
                         items-center
-                        bg-[#E9EEF2]
                         px-[12px]
                     "
+                    style={{
+                        backgroundColor: colors.header,
+                    }}
                 >
                     {/* ==================================================
                         VOLVER
@@ -98,8 +365,10 @@ export function PreviewMobile1Sms({
                             items-center
                             justify-center
                             rounded-full
-                            text-[#303438]
                         "
+                        style={{
+                            color: colors.headerIcon,
+                        }}
                         aria-label="Volver"
                     >
                         <svg
@@ -135,7 +404,7 @@ export function PreviewMobile1Sms({
                         <svg
                             viewBox="0 0 48 48"
                             className="h-[35px] w-[35px]"
-                            fill="white"
+                            fill={isDark ? '#15191C' : '#FFFFFF'}
                         >
                             <circle
                                 cx="24"
@@ -169,8 +438,10 @@ export function PreviewMobile1Sms({
                                 font-normal
                                 leading-none
                                 tracking-[-0.2px]
-                                text-[#202124]
                             "
+                            style={{
+                                color: colors.primaryText,
+                            }}
                         >
                             {telefono}
                         </div>
@@ -188,8 +459,10 @@ export function PreviewMobile1Sms({
                             shrink-0
                             items-center
                             justify-center
-                            text-[#303438]
                         "
+                        style={{
+                            color: colors.headerIcon,
+                        }}
                         aria-label="Llamar"
                     >
                         <svg
@@ -231,8 +504,10 @@ export function PreviewMobile1Sms({
                             shrink-0
                             items-center
                             justify-center
-                            text-[#303438]
                         "
+                        style={{
+                            color: colors.headerIcon,
+                        }}
                         aria-label="Videollamada"
                     >
                         <svg
@@ -264,7 +539,7 @@ export function PreviewMobile1Sms({
                     </button>
 
                     {/* ==================================================
-                        TRES PUNTOS + PUNTO ROJO
+                        OPCIONES + PUNTO ROJO
                     ================================================== */}
                     <button
                         type="button"
@@ -283,42 +558,41 @@ export function PreviewMobile1Sms({
                             className="h-[30px] w-[30px]"
                             fill="none"
                         >
-                            {/* puntos verticales */}
                             <circle
                                 cx="14.5"
                                 cy="10"
                                 r="2"
-                                fill="#303438"
+                                fill={colors.headerIcon}
                             />
 
                             <circle
                                 cx="14.5"
                                 cy="16"
                                 r="2"
-                                fill="#303438"
+                                fill={colors.headerIcon}
                             />
 
                             <circle
                                 cx="14.5"
                                 cy="22"
                                 r="2"
-                                fill="#303438"
+                                fill={colors.headerIcon}
                             />
 
-                            {/* borde blanco grueso */}
+                            {/* Borde alrededor del rojo */}
                             <circle
                                 cx="21.9"
                                 cy="6.2"
                                 r="4"
-                                fill="#FFFFFF"
+                                fill={colors.header}
                             />
 
-                            {/* punto rojo */}
+                            {/* Punto rojo */}
                             <circle
                                 cx="21.9"
                                 cy="6.2"
                                 r="3.15"
-                                fill="#B3261E"
+                                fill={colors.redPoint}
                             />
                         </svg>
                     </button>
@@ -336,8 +610,10 @@ export function PreviewMobile1Sms({
                         flex-col
                         overflow-hidden
                         rounded-t-[28px]
-                        bg-[#F6FAFD]
                     "
+                    style={{
+                        backgroundColor: colors.conversation,
+                    }}
                 >
                     <div
                         className="
@@ -351,7 +627,7 @@ export function PreviewMobile1Sms({
                         "
                     >
                         {/* ==================================================
-                            FECHA
+                            FECHA SUPERIOR
                         ================================================== */}
                         <div className="mb-[25px] flex justify-center">
                             <span
@@ -360,8 +636,10 @@ export function PreviewMobile1Sms({
                                     font-medium
                                     leading-none
                                     tracking-[-0.1px]
-                                    text-[#5F6368]
                                 "
+                                style={{
+                                    color: colors.secondaryText,
+                                }}
                             >
                                 {fechaConversacion}
                             </span>
@@ -376,8 +654,10 @@ export function PreviewMobile1Sms({
                                     text-[11.5px]
                                     font-normal
                                     leading-[16px]
-                                    text-[#5F6368]
                                 "
+                                style={{
+                                    color: colors.secondaryText,
+                                }}
                             >
                                 Chat RCS con {telefono}
                             </div>
@@ -396,8 +676,10 @@ export function PreviewMobile1Sms({
                                 text-[10.5px]
                                 font-normal
                                 leading-[15px]
-                                text-[#5F6368]
                             "
+                            style={{
+                                color: colors.secondaryText,
+                            }}
                         >
                             {/* Candado */}
                             <svg
@@ -409,10 +691,8 @@ export function PreviewMobile1Sms({
                                 strokeLinecap="round"
                                 strokeLinejoin="round"
                             >
-                                {/* arco */}
                                 <path d="M8 10V7.5a4 4 0 0 1 8 0V10" />
 
-                                {/* cuerpo */}
                                 <rect
                                     x="5.5"
                                     y="10"
@@ -421,7 +701,6 @@ export function PreviewMobile1Sms({
                                     rx="1.8"
                                 />
 
-                                {/* ranura */}
                                 <circle
                                     cx="12"
                                     cy="14.2"
@@ -442,10 +721,12 @@ export function PreviewMobile1Sms({
 
                             <span
                                 className="
-                                    text-[#147B86]
                                     underline
                                     underline-offset-2
                                 "
+                                style={{
+                                    color: colors.link,
+                                }}
                             >
                                 Más información
                             </span>
@@ -459,15 +740,18 @@ export function PreviewMobile1Sms({
                                 className="
                                     max-w-[72%]
                                     rounded-[23px]
-                                    bg-[#E9EEF2]
                                     px-[14px]
                                     py-[9px]
                                     text-[15.5px]
                                     font-normal
                                     leading-[1.34]
                                     tracking-[-0.18px]
-                                    text-[#202124]
                                 "
+                                style={{
+                                    backgroundColor:
+                                        colors.receivedBubble,
+                                    color: colors.primaryText,
+                                }}
                             >
                                 Buenas tardes, escriba un mensaje
                             </div>
@@ -485,43 +769,47 @@ export function PreviewMobile1Sms({
                                 px-[1px]
                             "
                         >
-                            {/* Mensaje 1 */}
+                            {/* MENSAJE 1 */}
                             <div
                                 className="
                                     max-w-[78%]
                                     rounded-[21px]
                                     rounded-br-[5px]
-                                    bg-[#00688D]
                                     px-[14px]
                                     py-[10px]
                                     text-[15.5px]
                                     font-normal
                                     leading-[1.39]
                                     tracking-[-0.18px]
-                                    text-[#F8FCFF]
                                 "
+                                style={{
+                                    backgroundColor: colors.sentBubble,
+                                    color: '#F8FCFF',
+                                }}
                             >
                                 Buenas tardes Sr {nombreCliente}, le habla{' '}
                                 {nombreAsesor} asesor de la empresa impulsa a365
                                 por encargo del banco de la nación
                             </div>
 
-                            {/* Mensaje 2 */}
+                            {/* MENSAJE 2 */}
                             <div
                                 className="
                                     max-w-[78%]
                                     rounded-[21px]
                                     rounded-tr-[5px]
                                     rounded-br-[5px]
-                                    bg-[#00688D]
                                     px-[14px]
                                     py-[10px]
                                     text-[15.5px]
                                     font-normal
                                     leading-[1.39]
                                     tracking-[-0.18px]
-                                    text-[#F8FCFF]
                                 "
+                                style={{
+                                    backgroundColor: colors.sentBubble,
+                                    color: '#F8FCFF',
+                                }}
                             >
                                 Comentarte que hemos intentado comunicarnos con
                                 usted a través de una llamada para brindarle lo
@@ -530,92 +818,148 @@ export function PreviewMobile1Sms({
                                 {monto} soles con una tasa promocional de 15.49%
                             </div>
 
-                            {/* Mensaje 3 */}
+                            {/* MENSAJE 3 */}
                             <div
                                 className="
                                     max-w-[78%]
                                     rounded-[21px]
                                     rounded-tr-[5px]
                                     rounded-br-[5px]
-                                    bg-[#00688D]
                                     px-[14px]
                                     py-[10px]
                                     text-[15.5px]
                                     font-normal
                                     leading-[1.39]
                                     tracking-[-0.18px]
-                                    text-[#F8FCFF]
                                 "
+                                style={{
+                                    backgroundColor: colors.sentBubble,
+                                    color: '#F8FCFF',
+                                }}
                             >
                                 Tendrá unos minutos para darle toda la
                                 información a través de una llamada
                             </div>
 
-                            {/* Mensaje 4 */}
+                            {/* MENSAJE 4 */}
                             <div
                                 className="
                                     max-w-[78%]
                                     rounded-[21px]
                                     rounded-tr-[5px]
-                                    bg-[#00688D]
                                     px-[14px]
                                     py-[10px]
                                     text-[15.5px]
                                     font-normal
                                     leading-[1.39]
                                     tracking-[-0.18px]
-                                    text-[#F8FCFF]
                                 "
+                                style={{
+                                    backgroundColor: colors.sentBubble,
+                                    color: '#F8FCFF',
+                                }}
                             >
                                 Toda la información brindada luego la puede
                                 corroborar asistiendo al banco de la nación con
                                 su DNI
                             </div>
+
+                            {/* =================================================
+                                ESTADO DEL MENSAJE DE HOY
+
+                                Hora + doble check + candado
+                            ================================================= */}
+                            {messageIsToday && (
+                                <div
+                                    className="
+                                        mt-[7px]
+                                        flex
+                                        items-center
+                                        justify-end
+                                        gap-[5px]
+                                        pr-[5px]
+                                    "
+                                    style={{
+                                        color: colors.secondaryText,
+                                    }}
+                                >
+                                    {/* Hora */}
+                                    <span
+                                        className="
+                                            text-[10.5px]
+                                            font-normal
+                                            leading-none
+                                        "
+                                    >
+                                        {messageTime}
+                                    </span>
+
+                                    {/* Doble check */}
+                                    <DoubleCheckIcon
+                                        color={colors.statusCheck}
+                                        backgroundColor={
+                                            colors.conversation
+                                        }
+                                    />
+
+                                    {/* Candado */}
+                                    <MessageStatusLockIcon
+                                        color={colors.statusCheck}
+                                    />
+                                </div>
+                            )}
                         </div>
 
                         {/* ==================================================
-                            FECHA INFERIOR
+                            FECHA / SIM PARA MENSAJES ANTIGUOS
                         ================================================== */}
-                        <div className="mt-[25px] flex justify-center">
-                            <span
-                                className="
-                                    text-[11.5px]
-                                    font-medium
-                                    leading-none
-                                    tracking-[-0.1px]
-                                    text-[#5F6368]
-                                "
-                            >
-                                {fechaConversacion}
-                            </span>
-                        </div>
+                        {!messageIsToday && (
+                            <>
+                                <div className="mt-[25px] flex justify-center">
+                                    <span
+                                        className="
+                                            text-[11.5px]
+                                            font-medium
+                                            leading-none
+                                            tracking-[-0.1px]
+                                        "
+                                        style={{
+                                            color: colors.secondaryText,
+                                        }}
+                                    >
+                                        {fechaConversacion}
+                                    </span>
+                                </div>
 
-                        {/* ==================================================
-                            SIM
-                        ================================================== */}
-                        <div
-                            className="
-                                mt-[22px]
-                                flex
-                                items-center
-                                justify-center
-                                gap-[4px]
-                                text-[10.5px]
-                                text-[#6A6E73]
-                            "
-                        >
-                            <span>Enviado con</span>
+                                <div
+                                    className="
+                                        mt-[22px]
+                                        flex
+                                        items-center
+                                        justify-center
+                                        gap-[4px]
+                                        text-[10.5px]
+                                    "
+                                    style={{
+                                        color: colors.secondaryText,
+                                    }}
+                                >
+                                    <span>Enviado con</span>
 
-                            <span
-                                className="
-                                    text-[#277A89]
-                                    underline
-                                    underline-offset-2
-                                "
-                            >
-                                3 SIM 1
-                            </span>
-                        </div>
+                                    <span
+                                        className="
+                                            underline
+                                            underline-offset-2
+                                        "
+                                        style={{
+                                            color: colors.link,
+                                        }}
+                                    >
+                                        3 SIM 1
+                                    </span>
+                                </div>
+                            </>
+                        )}
                     </div>
 
                     {/* ======================================================
@@ -624,13 +968,18 @@ export function PreviewMobile1Sms({
                     <div
                         className="
                             shrink-0
-                            bg-[#F6FAFD]
                             px-[8px]
                             pb-[10px]
                             pt-[6px]
                         "
+                        style={{
+                            backgroundColor: colors.conversation,
+                        }}
                     >
                         <div className="flex items-end gap-[7px]">
+                            {/* =================================================
+                                INPUT
+                            ================================================= */}
                             <div
                                 className="
                                     flex
@@ -638,9 +987,11 @@ export function PreviewMobile1Sms({
                                     flex-1
                                     items-center
                                     rounded-[29px]
-                                    bg-[#E9EEF2]
                                     px-[11px]
                                 "
+                                style={{
+                                    backgroundColor: colors.composer,
+                                }}
                             >
                                 {/* ==========================================
                                     +
@@ -655,8 +1006,10 @@ export function PreviewMobile1Sms({
                                         shrink-0
                                         items-center
                                         justify-center
-                                        text-[#3C4043]
                                     "
+                                    style={{
+                                        color: colors.headerIcon,
+                                    }}
                                     aria-label="Agregar"
                                 >
                                     <svg
@@ -681,26 +1034,26 @@ export function PreviewMobile1Sms({
                                             strokeLinecap="round"
                                         />
 
-                                        {/* borde del punto */}
+                                        {/* máscara */}
                                         <circle
                                             cx="22.2"
                                             cy="8.8"
                                             r="4.05"
-                                            fill="#E9EEF2"
+                                            fill={colors.composer}
                                         />
 
-                                        {/* punto turquesa más grande */}
+                                        {/* punto turquesa */}
                                         <circle
                                             cx="22.2"
                                             cy="8.8"
                                             r="3.55"
-                                            fill="#008C95"
+                                            fill={colors.tealPoint}
                                         />
                                     </svg>
                                 </button>
 
                                 {/* ==========================================
-                                    TEXTO
+                                    MENSAJE RCS
                                 ========================================== */}
                                 <div
                                     className="
@@ -711,8 +1064,10 @@ export function PreviewMobile1Sms({
                                         text-[15.7px]
                                         font-normal
                                         tracking-[-0.12px]
-                                        text-[#5F6368]
                                     "
+                                    style={{
+                                        color: colors.secondaryText,
+                                    }}
                                 >
                                     Mensaje RCS
                                 </div>
@@ -729,8 +1084,10 @@ export function PreviewMobile1Sms({
                                         shrink-0
                                         items-center
                                         justify-center
-                                        text-[#3C4043]
                                     "
+                                    style={{
+                                        color: colors.headerIcon,
+                                    }}
                                     aria-label="Emoji"
                                 >
                                     <svg
@@ -742,14 +1099,14 @@ export function PreviewMobile1Sms({
                                         strokeLinecap="round"
                                         strokeLinejoin="round"
                                     >
-                                        {/* borde exterior */}
+                                        {/* Cara */}
                                         <circle
                                             cx="15"
                                             cy="16"
                                             r="10.8"
                                         />
 
-                                        {/* ojo izquierdo */}
+                                        {/* Ojo izquierdo */}
                                         <circle
                                             cx="11.4"
                                             cy="12.8"
@@ -758,7 +1115,7 @@ export function PreviewMobile1Sms({
                                             stroke="none"
                                         />
 
-                                        {/* ojo derecho */}
+                                        {/* Ojo derecho */}
                                         <circle
                                             cx="18.6"
                                             cy="12.8"
@@ -767,7 +1124,7 @@ export function PreviewMobile1Sms({
                                             stroke="none"
                                         />
 
-                                        {/* sonrisa */}
+                                        {/* Sonrisa */}
                                         <path
                                             d="
                                                 M10.2 18.1
@@ -780,12 +1137,12 @@ export function PreviewMobile1Sms({
                                             "
                                         />
 
-                                        {/* borde del punto */}
+                                        {/* máscara */}
                                         <circle
                                             cx="22.7"
                                             cy="8.3"
                                             r="3.95"
-                                            fill="#E9EEF2"
+                                            fill={colors.composer}
                                             stroke="none"
                                         />
 
@@ -794,7 +1151,7 @@ export function PreviewMobile1Sms({
                                             cx="22.7"
                                             cy="8.3"
                                             r="3.45"
-                                            fill="#008C95"
+                                            fill={colors.tealPoint}
                                             stroke="none"
                                         />
                                     </svg>
@@ -821,26 +1178,26 @@ export function PreviewMobile1Sms({
                                         className="h-[30px] w-[30px]"
                                         fill="none"
                                     >
-                                        {/* Marco */}
+                                        {/* marco */}
                                         <rect
                                             x="5"
                                             y="5"
                                             width="22"
                                             height="22"
                                             rx="3"
-                                            stroke="#3C4043"
+                                            stroke={colors.headerIcon}
                                             strokeWidth="2.1"
                                         />
 
-                                        {/* Sol */}
+                                        {/* sol */}
                                         <circle
                                             cx="11"
                                             cy="11"
                                             r="2.15"
-                                            fill="#3C4043"
+                                            fill={colors.headerIcon}
                                         />
 
-                                        {/* Montaña pequeña primero */}
+                                        {/* montaña pequeña */}
                                         <path
                                             d="
                                                 M7 24
@@ -851,10 +1208,10 @@ export function PreviewMobile1Sms({
                                                 L16.9 24
                                                 Z
                                             "
-                                            fill="#3C4043"
+                                            fill={colors.headerIcon}
                                         />
 
-                                        {/* Montaña grande después */}
+                                        {/* montaña grande */}
                                         <path
                                             d="
                                                 M12.8 24
@@ -866,15 +1223,15 @@ export function PreviewMobile1Sms({
                                                 V24
                                                 Z
                                             "
-                                            fill="#3C4043"
+                                            fill={colors.headerIcon}
                                         />
                                     </svg>
                                 </button>
                             </div>
 
-                            {/* ==================================================
+                            {/* =================================================
                                 AUDIO
-                            ================================================== */}
+                            ================================================= */}
                             <button
                                 type="button"
                                 className="
@@ -885,9 +1242,12 @@ export function PreviewMobile1Sms({
                                     items-center
                                     justify-center
                                     rounded-full
-                                    bg-[#E5DEFF]
-                                    text-[#28243A]
                                 "
+                                style={{
+                                    backgroundColor:
+                                        colors.audioBackground,
+                                    color: colors.audioIcon,
+                                }}
                                 aria-label="Mensaje de voz"
                             >
                                 <svg
