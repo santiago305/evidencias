@@ -825,6 +825,25 @@ test('generate evidence accepts and stores an optional png contact image named w
     Storage::disk('public')->assertExists(str_replace('/storage/', '', $storedImage));
 });
 
+test('generate evidence accepts a png file name without the client dni leading zero', function () {
+    Storage::fake('public');
+
+    $user = User::factory()->create();
+
+    createConversationForTest('conv_avatar_leading_zero_001', [
+        ['side' => 'out', 'delay_minutes' => 0, 'lines' => ['Hola {nombre_cliente}']],
+    ]);
+
+    $response = $this->actingAs($user)->post(route('evidences.generate'), [
+        ...evidencePayload(),
+        'dniCliente' => '01234567',
+        'img_64' => fakePngUpload('1234567.png'),
+    ], ['Accept' => 'application/json']);
+
+    $response->assertOk();
+    $this->assertDatabaseCount('generated_evidences', 1);
+});
+
 test('generate evidence requires the png file name to match the client dni outside testing mode', function () {
     Storage::fake('public');
 

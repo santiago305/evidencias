@@ -53,10 +53,17 @@ class GenerateEvidenceRequest extends FormRequest
 
                 $fileDni = pathinfo($image->getClientOriginalName(), PATHINFO_FILENAME);
 
-                if ($fileDni !== $this->string('dniCliente')->value()) {
+                $clientDni = $this->string('dniCliente')->value();
+
+                if (! ctype_digit($fileDni) || $this->withoutLeadingZeros($fileDni) !== $this->withoutLeadingZeros($clientDni)) {
                     $validator->errors()->add('img_64', 'El nombre del archivo PNG debe coincidir con el DNI del cliente.');
                 }
             },
         ];
+    }
+
+    private function withoutLeadingZeros(string $value): string
+    {
+        return ltrim($value, '0') ?: '0';
     }
 }
