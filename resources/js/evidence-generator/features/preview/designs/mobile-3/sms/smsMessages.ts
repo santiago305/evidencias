@@ -1,5 +1,5 @@
 import type { GeneratedMessage } from '../../../../../types';
-import { resolveSmsDateKey, resolveSmsMessageStatus } from './smsDateTime.ts';
+import { isSmsDateKeyToday, resolveSmsDateKey, resolveSmsMessageStatus } from './smsDateTime.ts';
 import type { SmsConversationMessage, SmsData } from './smsTypes';
 
 export function buildSmsMessages(data: SmsData): SmsConversationMessage[] {
@@ -13,4 +13,16 @@ export function buildSmsMessages(data: SmsData): SmsConversationMessage[] {
         dateKey: resolveSmsDateKey(message, data),
         status: resolveSmsMessageStatus(message, fallbackStatus),
     }));
+}
+
+export function shouldShowSmsDateSeparator(previousDateKey: string | undefined, currentDateKey: string, currentDate = new Date()): boolean {
+    return !isSmsDateKeyToday(currentDateKey, currentDate) && (previousDateKey === undefined || previousDateKey !== currentDateKey);
+}
+
+export function shouldShowSmsMessageMetadata(messageIndex: number, messageCount: number): boolean {
+    return messageCount > 0 && messageIndex === messageCount - 1;
+}
+
+export function toggleSmsMetadataVisibility(isVisible: boolean): boolean {
+    return !isVisible;
 }

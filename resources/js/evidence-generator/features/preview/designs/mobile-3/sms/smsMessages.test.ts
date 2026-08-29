@@ -1,6 +1,32 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { buildSmsMessages } from './smsMessages.ts';
+import { buildSmsMessages, shouldShowSmsDateSeparator, shouldShowSmsMessageMetadata, toggleSmsMetadataVisibility } from './smsMessages.ts';
+
+test('shows a separator only when the calendar date changes', () => {
+    const currentDate = new Date('2026-08-29T17:00:00.000Z');
+
+    assert.equal(shouldShowSmsDateSeparator(undefined, '2026-08-29', currentDate), false);
+    assert.equal(shouldShowSmsDateSeparator(undefined, '2026-08-28', currentDate), true);
+    assert.equal(shouldShowSmsDateSeparator(undefined, '2026-08-27', currentDate), true);
+    assert.equal(shouldShowSmsDateSeparator('2026-08-28', '2026-08-28', currentDate), false);
+    assert.equal(shouldShowSmsDateSeparator('2026-08-28', '2026-08-29', currentDate), false);
+});
+
+test('separates calendar dates even when messages are four minutes apart', () => {
+    assert.equal(shouldShowSmsDateSeparator('2026-08-27', '2026-08-28', new Date('2026-08-29T17:00:00.000Z')), true);
+});
+
+test('shows message metadata only for the final conversation message', () => {
+    assert.equal(shouldShowSmsMessageMetadata(0, 3), false);
+    assert.equal(shouldShowSmsMessageMetadata(1, 3), false);
+    assert.equal(shouldShowSmsMessageMetadata(2, 3), true);
+    assert.equal(shouldShowSmsMessageMetadata(0, 0), false);
+});
+
+test('toggles SMS message metadata visibility when the message is clicked', () => {
+    assert.equal(toggleSmsMetadataVisibility(true), false);
+    assert.equal(toggleSmsMetadataVisibility(false), true);
+});
 
 test('normalizes generated messages without replacing their real content', () => {
     const messages = buildSmsMessages({

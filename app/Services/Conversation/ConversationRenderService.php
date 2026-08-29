@@ -14,6 +14,8 @@ class ConversationRenderService
 
     private const ADVISOR_QUIET_START_MINUTES = 1380;
 
+    private const MAX_RANDOM_REPLY_DELAY_MINUTES = 720;
+
     /**
      * @var array<string, string>
      */
@@ -83,16 +85,24 @@ class ConversationRenderService
         $clock = $startDate->copy();
         $variables = $this->buildVariables($input, $startDate);
         $rendered = [];
-        $delays = $this->delayDistributionService->distribute(
-            $conversationMessages
-                ->map(fn ($message) => [
-                    'side' => (string) $message->side,
-                    'lines' => array_values((array) $message->lines),
-                ])
-                ->all(),
-            $durationMinutes,
-            $previewSeed !== null ? "{$previewSeed}|delays" : null,
-        );
+        $usesConfiguredTimeline = $durationMinutes === null
+            && $conversationMessages->contains(
+                fn ($message): bool => (int) $message->delay_minutes > self::MAX_RANDOM_REPLY_DELAY_MINUTES,
+            );
+        $delays = $usesConfiguredTimeline
+            ? $conversationMessages
+                ->map(fn ($message): int => (int) $message->delay_minutes)
+                ->all()
+            : $this->delayDistributionService->distribute(
+                $conversationMessages
+                    ->map(fn ($message) => [
+                        'side' => (string) $message->side,
+                        'lines' => array_values((array) $message->lines),
+                    ])
+                    ->all(),
+                $durationMinutes,
+                $previewSeed !== null ? "{$previewSeed}|delays" : null,
+            );
 
         foreach ($conversationMessages as $index => $message) {
             if ($index > 0) {

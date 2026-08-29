@@ -2,6 +2,7 @@ import type { GeneratedMessage, PreviewProps } from '../../../../../types';
 
 export type SmsData = NonNullable<PreviewProps['data']>;
 export type SmsMessageStatus = NonNullable<GeneratedMessage['status']>;
+export type SmsConversationType = 'rcs' | 'sms';
 
 export interface SmsConversationMessage {
     id?: string;
@@ -28,4 +29,7 @@ export interface SmsColors {
     audioIcon: string;
     redPoint: string;
     statusCheck: string;
+    readReceiptBackground: string;
+    readReceiptForeground: string;
+    metadataIcon: string;
 }

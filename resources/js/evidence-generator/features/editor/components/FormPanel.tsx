@@ -83,9 +83,15 @@ export function FormPanel({
             <div className="flex h-full min-h-0 flex-col overflow-hidden border border-slate-200 bg-white shadow-sm">
                 <DesignTabs activeDesign={activeDesign} tabItems={tabItems} onSelect={onSelectDesign} />
 
-                {showTestingPreviewControls && activeDesign === 'whatsapp' ? (
-                    <div className="grid grid-cols-3 gap-2 border-b border-slate-200 bg-slate-50 p-2">
-                        <div className="col-span-2 grid grid-cols-2 gap-1 rounded-lg border border-slate-200 bg-white p-0.5">
+                {showTestingPreviewControls && (activeDesign === 'whatsapp' || activeDesign === 'sms') ? (
+                    <div
+                        className={[
+                            'border-b border-slate-200 bg-slate-50 p-2',
+                            activeDesign === 'whatsapp' ? 'grid grid-cols-3 gap-2' : 'flex',
+                        ].join(' ')}
+                    >
+                        {activeDesign === 'whatsapp' ? (
+                            <div className="col-span-2 grid grid-cols-2 gap-1 rounded-lg border border-slate-200 bg-white p-0.5">
                             {[
                                 { mode: 'desktop' as const, label: 'PC', icon: Monitor },
                                 { mode: 'mobile' as const, label: 'Celular', icon: Smartphone },
@@ -108,12 +114,16 @@ export function FormPanel({
                                     </button>
                                 );
                             })}
-                        </div>
+                            </div>
+                        ) : null}
 
                         <button
                             type="button"
                             onClick={() => onThemeModeChange(isDark ? 'light' : 'dark')}
-                            className="inline-flex min-h-10 cursor-pointer items-center justify-center gap-1.5 rounded-lg border border-slate-200 bg-white px-2 text-[11px] font-semibold text-slate-700 shadow-sm transition hover:bg-slate-100"
+                            className={[
+                                'inline-flex min-h-10 cursor-pointer items-center justify-center gap-1.5 rounded-lg border border-slate-200 bg-white px-2 text-[11px] font-semibold text-slate-700 shadow-sm transition hover:bg-slate-100',
+                                activeDesign === 'sms' ? 'w-full' : '',
+                            ].join(' ')}
                         >
                             {isDark ? <Sun className="h-4 w-4" aria-hidden="true" /> : <Moon className="h-4 w-4" aria-hidden="true" />}
                             {isDark ? 'Modo claro' : 'Modo oscuro'}

@@ -23,61 +23,38 @@ export function SmsMobileInputBar({ themeMode }: { themeMode: 'light' | 'dark' }
                     <div className="min-w-0 flex-1 truncate pl-px text-[15.7px] tracking-[-0.12px]" style={{ color: colors.secondaryText }}>
                         Mensaje RCS
                     </div>
-                     {/* ==========================================
+                    {/* ==========================================
                             EMOJI
                         ========================================== */}
-                        <button
-                            type="button"
-                            className="
-                                flex
-                                h-9
-                                w-9
-                                shrink-0
-                                items-center
-                                justify-center
-                            "
-                            style={{
-                                color: colors.headerIcon,
-                            }}
-                            aria-label="Emoji"
+                    <button
+                        type="button"
+                        className="flex h-9 w-9 shrink-0 items-center justify-center"
+                        style={{
+                            color: colors.headerIcon,
+                        }}
+                        aria-label="Emoji"
+                    >
+                        <svg
+                            viewBox="0 0 32 32"
+                            className="h-[30px] w-[30px]"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2.1"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
                         >
-                            <svg
-                                viewBox="0 0 32 32"
-                                className="h-[30px] w-[30px]"
-                                fill="none"
-                                stroke="currentColor"
-                                strokeWidth="2.1"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                            >
-                                {/* Cara */}
-                                <circle
-                                    cx="15"
-                                    cy="16"
-                                    r="10.8"
-                                />
+                            {/* Cara */}
+                            <circle cx="15" cy="16" r="10.8" />
 
-                                {/* Ojo izquierdo */}
-                                <circle
-                                    cx="11.4"
-                                    cy="12.8"
-                                    r="1.3"
-                                    fill="currentColor"
-                                    stroke="none"
-                                />
+                            {/* Ojo izquierdo */}
+                            <circle cx="11.4" cy="12.8" r="1.3" fill="currentColor" stroke="none" />
 
-                                {/* Ojo derecho */}
-                                <circle
-                                    cx="18.6"
-                                    cy="12.8"
-                                    r="1.3"
-                                    fill="currentColor"
-                                    stroke="none"
-                                />
+                            {/* Ojo derecho */}
+                            <circle cx="18.6" cy="12.8" r="1.3" fill="currentColor" stroke="none" />
 
-                                {/* Sonrisa */}
-                                <path
-                                    d="
+                            {/* Sonrisa */}
+                            <path
+                                d="
                                         M10.2 18.1
                                         C11.35 20.3
                                         13.05 21.3
@@ -86,27 +63,15 @@ export function SmsMobileInputBar({ themeMode }: { themeMode: 'light' | 'dark' }
                                         18.95 20.3
                                         20.1 18.1
                                     "
-                                />
+                            />
 
-                                {/* máscara */}
-                                <circle
-                                    cx="22.7"
-                                    cy="8.3"
-                                    r="3.95"
-                                    fill={colors.composer}
-                                    stroke="none"
-                                />
+                            {/* máscara */}
+                            <circle cx="22.7" cy="8.3" r="3.95" fill={colors.composer} stroke="none" />
 
-                                {/* punto turquesa */}
-                                <circle
-                                    cx="22.7"
-                                    cy="8.3"
-                                    r="3.45"
-                                    fill={colors.tealPoint}
-                                    stroke="none"
-                                />
-                            </svg>
-                        </button>
+                            {/* punto turquesa */}
+                            <circle cx="22.7" cy="8.3" r="3.45" fill={colors.tealPoint} stroke="none" />
+                        </svg>
+                    </button>
 
                     <button
                         type="button"
