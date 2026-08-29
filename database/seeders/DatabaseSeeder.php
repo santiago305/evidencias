@@ -13,6 +13,8 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        $this->call(MobileDesignSeeder::class);
+
         User::query()->delete();
 
         for ($i = 1; $i <= 50; $i++) {
@@ -21,5 +23,7 @@ class DatabaseSeeder extends Seeder
                 'dni' => (string) (10000000 + $i),
             ]);
         }
+
+        $this->call(ConversationSeeder::class);
     }
 }

@@ -19,6 +19,9 @@ export function getSmsColors(themeMode: PreviewThemeMode): SmsColors {
             audioIcon: '#E4DDEF',
             redPoint: '#E9A0A5',
             statusCheck: '#C8C8CF',
+            readReceiptBackground: '#70B9D1',
+            readReceiptForeground: '#16333D',
+            metadataIcon: '#BFC0C5',
         };
     }
 
@@ -38,5 +41,8 @@ export function getSmsColors(themeMode: PreviewThemeMode): SmsColors {
         audioIcon: '#28243A',
         redPoint: '#B3261E',
         statusCheck: '#62676B',
+        readReceiptBackground: '#F6FAFD',
+        readReceiptForeground: '#62676B',
+        metadataIcon: '#5F6368',
     };
 }

@@ -1,10 +1,15 @@
-import type { SmsColors, SmsConversationMessage, SmsData } from '../smsTypes';
+import { useState } from 'react';
+import { toggleSmsMetadataVisibility } from '../smsMessages';
+import type { SmsColors, SmsConversationMessage, SmsConversationType, SmsData } from '../smsTypes';
 import { SmsMessageMetadata } from './SmsMessageMetadata';
 
 export function SmsMobileTextBubble({
     message,
     isFirstInGroup,
     isLastInGroup,
+    showMetadata,
+    showLock,
+    conversationType,
     data,
     colors,
     currentDate,
@@ -12,10 +17,14 @@ export function SmsMobileTextBubble({
     message: SmsConversationMessage;
     isFirstInGroup: boolean;
     isLastInGroup: boolean;
+    showMetadata: boolean;
+    showLock: boolean;
+    conversationType: SmsConversationType;
     data: SmsData;
     colors: SmsColors;
     currentDate?: Date;
 }) {
+    const [isMetadataVisible, setIsMetadataVisible] = useState(showMetadata);
     const isOutgoing = message.side === 'out';
     const backgroundColor = isOutgoing ? colors.sentBubble : colors.receivedBubble;
     const textColor = isOutgoing ? '#F8FCFF' : colors.primaryText;
@@ -27,10 +36,13 @@ export function SmsMobileTextBubble({
         <div
             id={message.id}
             className={['flex px-[9px]', isOutgoing ? 'justify-end' : 'justify-start', isLastInGroup ? 'mb-[18px]' : 'mb-[2px]'].join(' ')}
+            onClick={() => {
+                setIsMetadataVisible((current) => toggleSmsMetadataVisibility(current));
+            }}
         >
             <div className="max-w-[78%]" style={{ color: textColor }}>
                 <div
-                    className={['rounded-[21px] px-[14px] py-2.5 text-[15.5px] leading-[1.39] tracking-[-0.18px]', radius].join(' ')}
+                    className={['rounded-[21px] px-[14px] py-2.5 text-[14.5px] leading-[1.39] tracking-[-0.18px]', radius].join(' ')}
                     style={{ backgroundColor }}
                 >
                     <div className="break-words whitespace-pre-wrap">
@@ -41,13 +53,17 @@ export function SmsMobileTextBubble({
                         ))}
                     </div>
                 </div>
-                {isLastInGroup ? (
+                {isMetadataVisible ? (
                     <SmsMessageMetadata
                         message={message}
                         data={data}
                         currentDate={currentDate}
-                        conversationColor={colors.conversation}
-                        statusColor={colors.secondaryText}
+                        conversationType={conversationType}
+                        conversationColor={colors.readReceiptBackground}
+                        textColor={colors.secondaryText}
+                        checkColor={colors.readReceiptForeground}
+                        lockColor={colors.metadataIcon}
+                        showLock={showLock}
                     />
                 ) : null}
             </div>

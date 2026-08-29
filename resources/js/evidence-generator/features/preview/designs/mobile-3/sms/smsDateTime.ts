@@ -1,6 +1,6 @@
 import { formatDateKey, getPeruDateParts, parseDateKey, parsePeruDateOnly } from '../../../../../lib/whatsapp/time.ts';
 import type { GeneratedMessage } from '../../../../../types';
-import type { SmsData, SmsMessageStatus } from './smsTypes';
+import type { SmsConversationType, SmsData, SmsMessageStatus } from './smsTypes';
 
 function isValidDateKey(dateKey: string | null): dateKey is string {
     return dateKey !== null && parseDateKey(dateKey) !== null;
@@ -8,6 +8,10 @@ function isValidDateKey(dateKey: string | null): dateKey is string {
 
 function dateKeyFromDate(date: Date): string {
     return formatDateKey(getPeruDateParts(date));
+}
+
+export function isSmsDateKeyToday(dateKey: string, currentDate = new Date()): boolean {
+    return dateKey === dateKeyFromDate(currentDate);
 }
 
 export function resolveSmsDateKey(message: Pick<GeneratedMessage, 'dateKey'>, data: Pick<SmsData, 'fechaHora' | 'fechaHoraRegistro'>): string {
@@ -55,19 +59,98 @@ export function formatSmsFullDate(dateKey: string, time: string): string {
     return `${dateLabel} · ${formatSmsTime(time)}`;
 }
 
-export function buildSmsMessageTimestamp(
-    message: Pick<GeneratedMessage, 'dateKey' | 'time' | 'side' | 'status'>,
-    data: Pick<SmsData, 'fechaHora' | 'fechaHoraRegistro'>,
+export function buildSmsConversationTimestamp(
+    dateKey: string,
+    time: string,
     currentDate = new Date(),
-): { kind: 'today'; label: string; showChecks: boolean } | { kind: 'full-date'; label: string; showChecks: false } {
-    const dateKey = resolveSmsDateKey(message, data);
-    const isToday = dateKey === dateKeyFromDate(currentDate);
+): { kind: 'today' | 'yesterday' | 'full-date'; label: string; timeLabel: string } {
+    const resolvedDate = parseDateKey(dateKey);
+    const timeLabel = formatSmsTime(time);
 
-    if (isToday) {
-        return { kind: 'today', label: formatSmsTime(message.time), showChecks: message.side === 'out' && Boolean(message.status) };
+    if (!resolvedDate) {
+        return { kind: 'full-date', label: timeLabel, timeLabel };
     }
 
-    return { kind: 'full-date', label: formatSmsFullDate(dateKey, message.time), showChecks: false };
+    const currentDateParts = getPeruDateParts(currentDate);
+    const currentDay = Date.UTC(currentDateParts.year, currentDateParts.month - 1, currentDateParts.day);
+    const messageDay = Date.UTC(resolvedDate.year, resolvedDate.month - 1, resolvedDate.day);
+    const dayDifference = Math.round((currentDay - messageDay) / 86_400_000);
+
+    if (dayDifference === 0) {
+        return { kind: 'today', label: timeLabel, timeLabel };
+    }
+
+    if (dayDifference === 1) {
+        return { kind: 'yesterday', label: timeLabel, timeLabel };
+    }
+
+    return { kind: 'full-date', label: formatSmsFullDate(dateKey, time), timeLabel };
+}
+
+export function buildSmsDateSeparatorLabel(dateKey: string, time: string, currentDate = new Date()): { dateLabel: string; timeLabel: string } {
+    const resolvedDate = parseDateKey(dateKey);
+    const timeLabel = formatSmsTime(time);
+
+    if (!resolvedDate) {
+        return { dateLabel: '', timeLabel };
+    }
+
+    const current = getPeruDateParts(currentDate);
+    const currentDay = Date.UTC(current.year, current.month - 1, current.day);
+    const messageDay = Date.UTC(resolvedDate.year, resolvedDate.month - 1, resolvedDate.day);
+    const dayDifference = Math.round((currentDay - messageDay) / 86_400_000);
+
+    if (dayDifference === 0) {
+        return { dateLabel: 'Hoy', timeLabel };
+    }
+
+    if (dayDifference === 1) {
+        return { dateLabel: 'Ayer', timeLabel };
+    }
+
+    const fullLabel = formatSmsFullDate(dateKey, time);
+    const separatorIndex = fullLabel.lastIndexOf(' · ');
+
+    return {
+        dateLabel: separatorIndex >= 0 ? fullLabel.slice(0, separatorIndex) : fullLabel,
+        timeLabel,
+    };
+}
+
+export function buildSmsConversationHeader(
+    data: Pick<SmsData, 'telefono' | 'nombre'>,
+    randomValue = Math.random(),
+): { kind: 'rcs'; title: string; description: string } | { kind: 'sms'; title: string } {
+    if (randomValue < 0.5) {
+        return {
+            kind: 'rcs',
+            title: `Chat RCS con ${data.telefono.trim() || '-'}`,
+            description: 'Ahora el chat está encriptado de extremo a extremo.',
+        };
+    }
+
+    return {
+        kind: 'sms',
+        title: `Mensajes de texto con ${data.nombre.trim() || '-'} (SMS/MMS)`,
+    };
+}
+
+export function buildSmsMessageTimestamp(
+    message: Pick<GeneratedMessage, 'dateKey' | 'time' | 'side'>,
+    data: Pick<SmsData, 'fechaHora' | 'fechaHoraRegistro'>,
+    currentDate = new Date(),
+    conversationType: SmsConversationType = 'rcs',
+): { kind: 'today' | 'full-date'; label: string; showChecks: boolean; showSmsLabel: boolean } {
+    const dateKey = resolveSmsDateKey(message, data);
+    const isToday = isSmsDateKeyToday(dateKey, currentDate);
+    const showChecks = conversationType === 'rcs' && message.side === 'out';
+    const showSmsLabel = conversationType === 'sms';
+
+    if (isToday) {
+        return { kind: 'today', label: formatSmsTime(message.time), showChecks, showSmsLabel };
+    }
+
+    return { kind: 'full-date', label: formatSmsFullDate(dateKey, message.time), showChecks, showSmsLabel };
 }
 
 export function resolveSmsMessageStatus(
