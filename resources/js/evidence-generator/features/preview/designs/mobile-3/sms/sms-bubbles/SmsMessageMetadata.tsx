@@ -1,5 +1,5 @@
 import type { GeneratedMessage } from '../../../../../../types';
-import { buildSmsMessageTimestamp } from '../smsDateTime';
+import { buildSmsMessageTimestamp, formatSmsTime } from '../smsDateTime';
 import type { SmsConversationType, SmsData } from '../smsTypes';
 import { EncryptionLockIcon } from './EncryptionLockIcon';
 
@@ -42,15 +42,19 @@ export function SmsMessageMetadata({
     return (
         <div
             className={[
-                'mt-[7px] flex items-center gap-[5px] text-[10.5px] leading-none',
+                'mt-[7px] flex items-center gap-[1.5px] text-[10.5px] leading-none',
                 message.side === 'out' ? 'justify-end pr-[5px]' : 'justify-start pl-[5px]',
             ].join(' ')}
             style={{ color: textColor }}
         >
-            <span>{timestamp.label}</span>
+            <span>{formatSmsTime(message.time)}</span>
             {timestamp.showSmsLabel ? <span>SMS</span> : null}
             {timestamp.showChecks ? <DoubleCheckIcon foregroundColor={checkColor} backgroundColor={conversationColor} /> : null}
-            {showLock && conversationType === 'rcs' ? <EncryptionLockIcon color={lockColor} /> : null}
+            {showLock && conversationType === 'rcs' ? (
+                <span className="-ml-[1.5px] inline-flex shrink-0" aria-hidden="true">
+                    <EncryptionLockIcon color={lockColor} />
+                </span>
+            ) : null}
         </div>
     );
 }

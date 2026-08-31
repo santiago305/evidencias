@@ -57,7 +57,33 @@ export function formatSmsFullDate(dateKey: string, time: string): string {
         timeZone: 'UTC',
     }).format(date);
 
-    return `${dateLabel} · ${formatSmsTime(time)}`;
+    return `${dateLabel} • ${formatSmsTime(time)}`;
+}
+
+export function formatSmsMessageDateTime(dateKey: string, time: string, currentDate = new Date()): string {
+    const timeLabel = formatSmsTime(time);
+    const resolvedDate = parseDateKey(dateKey);
+    if (!resolvedDate) return timeLabel;
+
+    const current = getPeruDateParts(currentDate);
+    const currentDay = Date.UTC(current.year, current.month - 1, current.day);
+    const messageDay = Date.UTC(resolvedDate.year, resolvedDate.month - 1, resolvedDate.day);
+    const daysDifference = Math.round((currentDay - messageDay) / 86_400_000);
+    const messageDate = new Date(messageDay);
+    const weekday = new Intl.DateTimeFormat('es-PE', { weekday: 'long', timeZone: 'UTC' }).format(messageDate);
+
+    if (daysDifference === 0) return timeLabel;
+    if (daysDifference === 1) return `Ayer \u2022 ${timeLabel}`;
+    if (daysDifference >= 2 && daysDifference <= 6) return `${weekday} \u2022 ${timeLabel}`;
+
+    const fullDate = new Intl.DateTimeFormat('es-PE', {
+        weekday: 'long',
+        day: 'numeric',
+        month: 'short',
+        timeZone: 'UTC',
+    }).format(messageDate);
+
+    return `${fullDate} \u2022 ${timeLabel}`;
 }
 
 export function buildSmsConversationTimestamp(
@@ -110,7 +136,7 @@ export function buildSmsDateSeparatorLabel(dateKey: string, time: string, curren
     }
 
     const fullLabel = formatSmsFullDate(dateKey, time);
-    const separatorIndex = fullLabel.lastIndexOf(' · ');
+    const separatorIndex = fullLabel.lastIndexOf('.');
 
     return {
         dateLabel: separatorIndex >= 0 ? fullLabel.slice(0, separatorIndex) : fullLabel,
@@ -143,15 +169,16 @@ export function buildSmsMessageTimestamp(
     conversationType: SmsConversationType = 'rcs',
 ): { kind: 'today' | 'full-date'; label: string; showChecks: boolean; showSmsLabel: boolean } {
     const dateKey = resolveSmsDateKey(message, data);
+    const formattedLabel = formatSmsMessageDateTime(dateKey, message.time, currentDate);
     const isToday = isSmsDateKeyToday(dateKey, currentDate);
     const showChecks = conversationType === 'rcs' && message.side === 'out';
     const showSmsLabel = conversationType === 'sms' && message.side === 'out';
 
     if (isToday) {
-        return { kind: 'today', label: formatSmsTime(message.time), showChecks, showSmsLabel };
+        return { kind: 'today', label: formattedLabel, showChecks, showSmsLabel };
     }
 
-    return { kind: 'full-date', label: formatSmsFullDate(dateKey, message.time), showChecks, showSmsLabel };
+    return { kind: 'full-date', label: formattedLabel, showChecks, showSmsLabel };
 }
 
 export function resolveSmsMessageStatus(
