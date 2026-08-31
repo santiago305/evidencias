@@ -1,7 +1,9 @@
-import { getSmsColors } from '../smsAppearance';
+import { useState } from 'react';
+import { getSmsColors, shouldShowSmsAccentPoint } from '../smsAppearance';
 
 export function SmsMobileInputBar({ themeMode }: { themeMode: 'light' | 'dark' }) {
     const colors = getSmsColors(themeMode);
+    const [showEmojiIndicator] = useState(() => shouldShowSmsAccentPoint());
 
     return (
         <div className="shrink-0 px-2 pt-1.5 pb-2.5" style={{ backgroundColor: colors.conversation }}>
@@ -66,10 +68,14 @@ export function SmsMobileInputBar({ themeMode }: { themeMode: 'light' | 'dark' }
                             />
 
                             {/* máscara */}
-                            <circle cx="22.7" cy="8.3" r="3.95" fill={colors.composer} stroke="none" />
+                            {showEmojiIndicator ? (
+                                <>
+                                    <circle cx="22.7" cy="8.3" r="3.95" fill={colors.composer} stroke="none" />
 
-                            {/* punto turquesa */}
-                            <circle cx="22.7" cy="8.3" r="3.45" fill={colors.tealPoint} stroke="none" />
+                                    {/* punto turquesa */}
+                                    <circle cx="22.7" cy="8.3" r="3.45" fill={colors.tealPoint} stroke="none" />
+                                </>
+                            ) : null}
                         </svg>
                     </button>
 

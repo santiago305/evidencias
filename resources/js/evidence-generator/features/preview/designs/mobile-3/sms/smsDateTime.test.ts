@@ -13,22 +13,22 @@ import {
 const data = { fechaHora: '2026-06-10T08:52', fechaHoraRegistro: '2026-06-10T09:43' } as const;
 
 test('formats backend times in the Spanish short-time format', () => {
-    assert.equal(formatSmsTime('16:47'), '4:47 p.\u00a0m.');
+    assert.equal(formatSmsTime('16:47'), '4:47 p.m.');
 });
 
 test('shows only the time for the conversation date when it is today', () => {
     assert.deepEqual(buildSmsConversationTimestamp('2026-06-10', '16:47', new Date('2026-06-10T23:30:00.000Z')), {
         kind: 'today',
-        label: '4:47 p.\u00a0m.',
-        timeLabel: '4:47 p.\u00a0m.',
+        label: '4:47 p.m.',
+        timeLabel: '4:47 p.m.',
     });
 });
 
 test('shows yesterday with a separate time label', () => {
     assert.deepEqual(buildSmsConversationTimestamp('2026-06-09', '16:47', new Date('2026-06-10T23:30:00.000Z')), {
         kind: 'yesterday',
-        label: '4:47 p.\u00a0m.',
-        timeLabel: '4:47 p.\u00a0m.',
+        label: '4:47 p.m.',
+        timeLabel: '4:47 p.m.',
     });
 });
 
@@ -36,19 +36,19 @@ test('formats today, yesterday, and older SMS date separators', () => {
     const currentDate = new Date('2026-08-29T17:00:00.000Z');
 
     assert.deepEqual(buildSmsDateSeparatorLabel('2026-08-29', '15:57', currentDate), {
-        dateLabel: 'Hoy',
-        timeLabel: '3:57 p.\u00a0m.',
+        dateLabel: '',
+        timeLabel: '3:57 p.m.',
     });
     assert.deepEqual(buildSmsDateSeparatorLabel('2026-08-28', '15:57', currentDate), {
         dateLabel: 'Ayer',
-        timeLabel: '3:57 p.\u00a0m.',
+        timeLabel: '3:57 p.m.',
     });
 });
 
 test('keeps the separator on the Peru calendar day around UTC midnight', () => {
     const result = buildSmsDateSeparatorLabel('2026-08-28', '23:58', new Date('2026-08-29T04:30:00.000Z'));
 
-    assert.equal(result.dateLabel, 'Hoy');
+    assert.equal(result.dateLabel, '');
 });
 
 test('uses the existing friendly date format for older separators', () => {
@@ -56,7 +56,7 @@ test('uses the existing friendly date format for older separators', () => {
     const fullDate = formatSmsFullDate('2026-07-01', '20:32');
 
     assert.equal(result.dateLabel, fullDate.slice(0, fullDate.lastIndexOf(' · ')));
-    assert.equal(result.timeLabel, '8:32 p.\u00a0m.');
+    assert.equal(result.timeLabel, '8:32 p.m.');
 });
 
 test('builds the RCS conversation header variant', () => {
@@ -89,13 +89,19 @@ test('shows the full date for older conversations', () => {
 test('shows checks for an outgoing final-message candidate from today', () => {
     const result = buildSmsMessageTimestamp({ side: 'out', dateKey: '2026-06-10', time: '16:47' }, data, new Date('2026-06-10T23:30:00.000Z'));
 
-    assert.deepEqual(result, { kind: 'today', label: '4:47 p.\u00a0m.', showChecks: true, showSmsLabel: false });
+    assert.deepEqual(result, { kind: 'today', label: '4:47 p.m.', showChecks: true, showSmsLabel: false });
 });
 
 test('shows the SMS label and suppresses RCS indicators for a traditional SMS conversation', () => {
     const result = buildSmsMessageTimestamp({ side: 'out', dateKey: '2026-06-10', time: '10:22' }, data, new Date('2026-06-10T23:30:00.000Z'), 'sms');
 
-    assert.deepEqual(result, { kind: 'today', label: '10:22 a.\u00a0m.', showChecks: false, showSmsLabel: true });
+    assert.deepEqual(result, { kind: 'today', label: '10:22 a.m.', showChecks: false, showSmsLabel: true });
+});
+
+test('does not show the SMS label on an incoming client message', () => {
+    const result = buildSmsMessageTimestamp({ side: 'in', dateKey: '2026-06-10', time: '10:22' }, data, new Date('2026-06-10T23:30:00.000Z'), 'sms');
+
+    assert.equal(result.showSmsLabel, false);
 });
 
 test('does not show the SMS label for an RCS conversation', () => {
@@ -108,7 +114,7 @@ test('does not show the SMS label for an RCS conversation', () => {
 test('shows only time for an incoming message from today', () => {
     const result = buildSmsMessageTimestamp({ side: 'in', dateKey: '2026-06-10', time: '09:15' }, data, new Date('2026-06-10T23:30:00.000Z'));
 
-    assert.deepEqual(result, { kind: 'today', label: '9:15 a.\u00a0m.', showChecks: false, showSmsLabel: false });
+    assert.deepEqual(result, { kind: 'today', label: '9:15 a.m.', showChecks: false, showSmsLabel: false });
 });
 
 test('shows the complete date and checks for an outgoing message from another day', () => {
