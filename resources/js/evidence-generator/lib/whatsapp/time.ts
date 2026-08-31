@@ -144,7 +144,7 @@ export function formatTimeShort(date: Date) {
     const hours24 = date.getHours();
     const hours12 = hours24 % 12 || 12;
     const minutes = String(date.getMinutes()).padStart(2, '0');
-    const period = hours24 >= 12 ? 'p. m.' : 'a. m.';
+    const period = hours24 >= 12 ? 'p.m.' : 'a.m.';
     return `${hours12}:${minutes} ${period}`;
 }
 

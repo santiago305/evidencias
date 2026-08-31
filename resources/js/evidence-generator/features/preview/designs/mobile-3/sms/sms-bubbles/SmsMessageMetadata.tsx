@@ -9,9 +9,9 @@ function DoubleCheckIcon({ foregroundColor, backgroundColor }: { foregroundColor
             <circle cx="9.5" cy="10" r="7.2" fill={backgroundColor} />
             <circle cx="9.5" cy="10" r="7.2" stroke={foregroundColor} strokeWidth="1.65" />
             <path d="m6.1 10.1 2.6 2.4 4.4-4.6" stroke={foregroundColor} strokeWidth="1.55" strokeLinecap="round" strokeLinejoin="round" />
-            <circle cx="19.8" cy="10" r="8.15" fill={backgroundColor} />
-            <circle cx="19.8" cy="10" r="7.2" fill={backgroundColor} stroke={foregroundColor} strokeWidth="1.65" />
-            <path d="m16.4 10.1 2.6 2.4 4.4-4.6" stroke={foregroundColor} strokeWidth="1.55" strokeLinecap="round" strokeLinejoin="round" />
+            <circle cx="18.3" cy="10" r="8.15" fill={backgroundColor} />
+            <circle cx="18.3" cy="10" r="7.2" fill={backgroundColor} stroke={foregroundColor} strokeWidth="1.65" />
+            <path d="m14.9 10.1 2.6 2.4 4.4-4.6" stroke={foregroundColor} strokeWidth="1.55" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
     );
 }

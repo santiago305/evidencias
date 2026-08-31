@@ -180,12 +180,13 @@ type Mobile1PreviewHeaderProps = {
     themeMode: PreviewThemeMode;
     notificationSeed?: string;
     notificationIds?: MobileNotificationIconId[];
-    variant?: 'default' | 'whatsapp';
+    variant?: 'default' | 'whatsapp' | 'sms';
 };
 
 export function Mobile1PreviewHeader({ themeMode, notificationSeed, notificationIds, variant = 'default' }: Mobile1PreviewHeaderProps) {
     const isDark = themeMode === 'dark';
     const isWhatsappVariant = variant === 'whatsapp' && isDark;
+    const isSmsVariant = variant === 'sms' && isDark;
     const [time, setTime] = useState('');
     const [batteryLevel, setBatteryLevel] = useState<BatteryLevel>(getBatteryLevel());
 
@@ -227,7 +228,13 @@ export function Mobile1PreviewHeader({ themeMode, notificationSeed, notification
         <div
             className={[
                 'shrink-0 px-[25px] py-[5px]',
-                isWhatsappVariant ? 'bg-[#0B1014] text-white' : isDark ? 'bg-[#070c0f] text-white' : 'bg-white text-[#5f6368]',
+                isWhatsappVariant
+                    ? 'bg-[#0B1014] text-white'
+                    : isSmsVariant
+                      ? 'bg-[#1C2023] text-white'
+                      : isDark
+                        ? 'bg-[#070c0f] text-white'
+                        : 'bg-white text-[#5f6368]',
             ].join(' ')}
         >
             <div

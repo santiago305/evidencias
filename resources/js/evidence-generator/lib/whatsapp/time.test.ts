@@ -56,7 +56,7 @@ test('getDayChipTextForDate labels generated message days relative to the curren
 });
 
 test('formatWhatsappTimeValue converts backend 24-hour times to WhatsApp short times', () => {
-    assert.equal(formatWhatsappTimeValue('14:35'), '2:35 p. m.');
-    assert.equal(formatWhatsappTimeValue('08:01'), '8:01 a. m.');
-    assert.equal(formatWhatsappTimeValue('8:01 a. m.'), '8:01 a. m.');
+    assert.equal(formatWhatsappTimeValue('14:35'), '2:35 p.m.');
+    assert.equal(formatWhatsappTimeValue('08:01'), '8:01 a.m.');
+    assert.equal(formatWhatsappTimeValue('8:01 a. m.'), '8:01 a.m.');
 });

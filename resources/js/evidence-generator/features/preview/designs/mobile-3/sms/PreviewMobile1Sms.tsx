@@ -12,12 +12,17 @@ export function PreviewMobile1Sms({ data, themeMode }: PreviewProps) {
     const colors = getSmsColors(themeMode);
 
     return (
-        <Mobile1PreviewFrame themeMode={themeMode} notificationIds={buildMobilePreviewNotificationIds(data, 'mobile-3', 'sms')}>
+        <Mobile1PreviewFrame
+            themeMode={themeMode}
+            notificationIds={buildMobilePreviewNotificationIds(data, 'mobile-3', 'sms')}
+            headerVariant="sms"
+            footerVariant="sms"
+        >
             <div
                 className="flex h-full min-h-0 flex-col overflow-hidden"
                 style={{
                     backgroundColor: colors.shell,
-                    fontFamily: 'Roboto, "Google Sans", "Noto Sans", Arial, Helvetica, sans-serif',
+                    fontFamily: 'Roboto, sans-serif',
                 }}
             >
                 <SmsMobileHeader data={data} themeMode={themeMode} />

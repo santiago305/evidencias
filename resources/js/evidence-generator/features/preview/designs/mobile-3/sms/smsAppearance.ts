@@ -1,26 +1,31 @@
 import type { PreviewThemeMode } from '../../../../../types';
 import type { SmsColors } from './smsTypes';
 
+export function shouldShowSmsAccentPoint(randomValue = Math.random()): boolean {
+    return randomValue < 0.5;
+}
+
 export function getSmsColors(themeMode: PreviewThemeMode): SmsColors {
     if (themeMode === 'dark') {
         return {
-            shell: '#1B1F22',
-            header: '#1B1F22',
-            conversation: '#0D1215',
-            receivedBubble: '#1C2124',
-            sentBubble: '#00627D',
-            primaryText: '#E6E1E6',
+            shell: '#1C2023',
+            header: '#1C2023',
+            conversation: '#101417',
+            receivedBubble: '#1C2023',
+            sentBubble: '#014C69',
+            primaryText: '#E0E1E5',
+            sentText: '#E8F5FA',
             secondaryText: '#BFC0C5',
-            headerIcon: '#C5C7CF',
-            composer: '#1C2124',
+            headerIcon: '#C0C7CD',
+            composer: '#1C2023',
             tealPoint: '#70B9D1',
             link: '#68B8D0',
-            audioBackground: '#51456D',
+            audioBackground: '#484264',
             audioIcon: '#E4DDEF',
             redPoint: '#E9A0A5',
             statusCheck: '#C8C8CF',
-            readReceiptBackground: '#70B9D1',
-            readReceiptForeground: '#16333D',
+            readReceiptBackground: '#101417',
+            readReceiptForeground: '#E0E1E5',
             metadataIcon: '#BFC0C5',
         };
     }
@@ -31,6 +36,7 @@ export function getSmsColors(themeMode: PreviewThemeMode): SmsColors {
         conversation: '#F6FAFD',
         receivedBubble: '#E9EEF2',
         sentBubble: '#00688D',
+        sentText: '#F8FCFF',
         primaryText: '#202124',
         secondaryText: '#5F6368',
         headerIcon: '#303438',

@@ -1,19 +1,40 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { buildSmsMessages, shouldShowSmsDateSeparator, shouldShowSmsMessageMetadata, toggleSmsMetadataVisibility } from './smsMessages.ts';
+import {
+    buildSmsMessages,
+    getSmsGroupPosition,
+    shouldShowSmsDateSeparator,
+    shouldShowSmsMessageMetadata,
+    toggleSmsMetadataVisibility,
+} from './smsMessages.ts';
 
-test('shows a separator only when the calendar date changes', () => {
+test('shows a separator at conversation start and when the calendar date changes', () => {
     const currentDate = new Date('2026-08-29T17:00:00.000Z');
 
-    assert.equal(shouldShowSmsDateSeparator(undefined, '2026-08-29', currentDate), false);
+    assert.equal(shouldShowSmsDateSeparator(undefined, '2026-08-29', currentDate), true);
     assert.equal(shouldShowSmsDateSeparator(undefined, '2026-08-28', currentDate), true);
     assert.equal(shouldShowSmsDateSeparator(undefined, '2026-08-27', currentDate), true);
     assert.equal(shouldShowSmsDateSeparator('2026-08-28', '2026-08-28', currentDate), false);
-    assert.equal(shouldShowSmsDateSeparator('2026-08-28', '2026-08-29', currentDate), false);
+    assert.equal(shouldShowSmsDateSeparator('2026-08-28', '2026-08-29', currentDate), true);
 });
 
 test('separates calendar dates even when messages are four minutes apart', () => {
     assert.equal(shouldShowSmsDateSeparator('2026-08-27', '2026-08-28', new Date('2026-08-29T17:00:00.000Z')), true);
+});
+
+test('groups consecutive messages by sender and calendar date', () => {
+    const messages = [
+        { side: 'in', dateKey: '2026-08-29' },
+        { side: 'in', dateKey: '2026-08-29' },
+        { side: 'out', dateKey: '2026-08-29' },
+        { side: 'out', dateKey: '2026-08-29' },
+        { side: 'out', dateKey: '2026-08-30' },
+    ] as never;
+
+    assert.deepEqual(
+        messages.map((_: unknown, index: number) => getSmsGroupPosition(messages, index)),
+        ['first', 'last', 'first', 'last', 'single'],
+    );
 });
 
 test('shows message metadata only for the final conversation message', () => {

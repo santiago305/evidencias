@@ -41,7 +41,8 @@ export function formatSmsTime(time: string): string {
         timeZone: 'UTC',
     })
         .format(new Date(Date.UTC(2000, 0, 1, hours, minutes)))
-        .toLowerCase();
+        .toLowerCase()
+        .replace(/([ap])\.\s*m\./i, '$1.m.');
 }
 
 export function formatSmsFullDate(dateKey: string, time: string): string {
@@ -101,7 +102,7 @@ export function buildSmsDateSeparatorLabel(dateKey: string, time: string, curren
     const dayDifference = Math.round((currentDay - messageDay) / 86_400_000);
 
     if (dayDifference === 0) {
-        return { dateLabel: 'Hoy', timeLabel };
+        return { dateLabel: '', timeLabel };
     }
 
     if (dayDifference === 1) {
@@ -144,7 +145,7 @@ export function buildSmsMessageTimestamp(
     const dateKey = resolveSmsDateKey(message, data);
     const isToday = isSmsDateKeyToday(dateKey, currentDate);
     const showChecks = conversationType === 'rcs' && message.side === 'out';
-    const showSmsLabel = conversationType === 'sms';
+    const showSmsLabel = conversationType === 'sms' && message.side === 'out';
 
     if (isToday) {
         return { kind: 'today', label: formatSmsTime(message.time), showChecks, showSmsLabel };

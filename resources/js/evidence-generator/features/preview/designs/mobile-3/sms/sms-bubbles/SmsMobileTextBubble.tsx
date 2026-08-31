@@ -1,41 +1,53 @@
 import { useState } from 'react';
 import { toggleSmsMetadataVisibility } from '../smsMessages';
-import type { SmsColors, SmsConversationMessage, SmsConversationType, SmsData } from '../smsTypes';
+import type { SmsColors, SmsConversationMessage, SmsConversationType, SmsData, SmsGroupPosition } from '../smsTypes';
 import { SmsMessageMetadata } from './SmsMessageMetadata';
 
 export function SmsMobileTextBubble({
     message,
-    isFirstInGroup,
-    isLastInGroup,
     showMetadata,
     showLock,
     conversationType,
     data,
     colors,
     currentDate,
+    groupPosition,
 }: {
     message: SmsConversationMessage;
-    isFirstInGroup: boolean;
-    isLastInGroup: boolean;
     showMetadata: boolean;
     showLock: boolean;
     conversationType: SmsConversationType;
     data: SmsData;
     colors: SmsColors;
     currentDate?: Date;
+    groupPosition: SmsGroupPosition;
 }) {
     const [isMetadataVisible, setIsMetadataVisible] = useState(showMetadata);
     const isOutgoing = message.side === 'out';
     const backgroundColor = isOutgoing ? colors.sentBubble : colors.receivedBubble;
-    const textColor = isOutgoing ? '#F8FCFF' : colors.primaryText;
+    const textColor = isOutgoing ? colors.sentText : colors.primaryText;
     const radius = isOutgoing
-        ? `${isFirstInGroup ? 'rounded-t-[23px]' : 'rounded-t-[21px]'} rounded-bl-[21px] ${isLastInGroup ? 'rounded-br-[5px]' : 'rounded-br-[5px]'}`
-        : `${isFirstInGroup ? 'rounded-t-[23px]' : 'rounded-t-[21px]'} rounded-br-[21px] ${isLastInGroup ? 'rounded-bl-[5px]' : 'rounded-bl-[5px]'}`;
+        ? {
+              single: 'rounded-tl-[23px] rounded-tr-[23px] rounded-bl-[21px] rounded-br-[23px]',
+              first: 'rounded-tl-[23px] rounded-tr-[23px] rounded-bl-[21px] rounded-br-[4px]',
+              middle: 'rounded-tl-[8px] rounded-tr-[4px] rounded-br-[4px] rounded-bl-[21px]',
+              last: 'rounded-tl-[23px] rounded-tr-[4px] rounded-bl-[21px] rounded-br-[5px]',
+          }[groupPosition]
+        : {
+              single: 'rounded-tl-[23px] rounded-tr-[23px] rounded-br-[21px] rounded-br-[23px]',
+              first: 'rounded-tl-[23px] rounded-tr-[23px] rounded-br-[21px] rounded-bl-[4px]',
+              middle: 'rounded-tl-[4px] rounded-tr-[23px] rounded-br-[21px] rounded-bl-[4px]',
+              last: 'rounded-tl-[5px] rounded-tr-[23px] rounded-br-[21px] rounded-bl-[23px]',
+          }[groupPosition];
 
     return (
         <div
             id={message.id}
-            className={['flex px-[9px]', isOutgoing ? 'justify-end' : 'justify-start', isLastInGroup ? 'mb-[18px]' : 'mb-[2px]'].join(' ')}
+            className={[
+                'flex px-[9px]',
+                isOutgoing ? 'justify-end' : 'justify-start',
+                groupPosition === 'single' || groupPosition === 'last' ? 'mb-[18px]' : 'mb-[2px]',
+            ].join(' ')}
             onClick={() => {
                 setIsMetadataVisible((current) => toggleSmsMetadataVisibility(current));
             }}
@@ -61,7 +73,7 @@ export function SmsMobileTextBubble({
                         conversationType={conversationType}
                         conversationColor={colors.readReceiptBackground}
                         textColor={colors.secondaryText}
-                        checkColor={colors.readReceiptForeground}
+                        checkColor={colors.metadataIcon}
                         lockColor={colors.metadataIcon}
                         showLock={showLock}
                     />

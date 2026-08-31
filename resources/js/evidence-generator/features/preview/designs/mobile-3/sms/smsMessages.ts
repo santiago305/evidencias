@@ -1,6 +1,6 @@
 import type { GeneratedMessage } from '../../../../../types';
-import { isSmsDateKeyToday, resolveSmsDateKey, resolveSmsMessageStatus } from './smsDateTime.ts';
-import type { SmsConversationMessage, SmsData } from './smsTypes';
+import { resolveSmsDateKey, resolveSmsMessageStatus } from './smsDateTime.ts';
+import type { SmsConversationMessage, SmsData, SmsGroupPosition } from './smsTypes';
 
 export function buildSmsMessages(data: SmsData): SmsConversationMessage[] {
     const fallbackStatus = data.previewSnapshot?.messageStatus;
@@ -15,8 +15,24 @@ export function buildSmsMessages(data: SmsData): SmsConversationMessage[] {
     }));
 }
 
-export function shouldShowSmsDateSeparator(previousDateKey: string | undefined, currentDateKey: string, currentDate = new Date()): boolean {
-    return !isSmsDateKeyToday(currentDateKey, currentDate) && (previousDateKey === undefined || previousDateKey !== currentDateKey);
+export function shouldShowSmsDateSeparator(previousDateKey: string | undefined, currentDateKey: string, _currentDate = new Date()): boolean {
+    void _currentDate;
+
+    return previousDateKey === undefined || previousDateKey !== currentDateKey;
+}
+
+export function getSmsGroupPosition(messages: SmsConversationMessage[], index: number): SmsGroupPosition {
+    const message = messages[index];
+    const previous = messages[index - 1];
+    const next = messages[index + 1];
+    const sameAsPrevious = previous?.side === message?.side && previous?.dateKey === message?.dateKey;
+    const sameAsNext = next?.side === message?.side && next?.dateKey === message?.dateKey;
+
+    if (!sameAsPrevious && !sameAsNext) return 'single';
+    if (!sameAsPrevious && sameAsNext) return 'first';
+    if (sameAsPrevious && sameAsNext) return 'middle';
+
+    return 'last';
 }
 
 export function shouldShowSmsMessageMetadata(messageIndex: number, messageCount: number): boolean {
