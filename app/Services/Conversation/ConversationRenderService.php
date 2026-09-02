@@ -59,9 +59,11 @@ class ConversationRenderService
             ? trim($input['previewSeed'])
             : null;
 
+        $registrationGapMin = max(0, (int) config('conversation.registration_gap_minutes.min', 3));
+        $registrationGapMax = max($registrationGapMin, (int) config('conversation.registration_gap_minutes.max', 10));
         $registrationGap = $previewSeed !== null
-            ? $this->seededInt($previewSeed.'|start', 3, 10)
-            : random_int(3, 10);
+            ? $this->seededInt($previewSeed.'|start', $registrationGapMin, $registrationGapMax)
+            : random_int($registrationGapMin, $registrationGapMax);
 
         $conversationMessages = $conversation->messages->values();
         $durationMinutes = $this->parseDurationMinutes($input);
@@ -70,8 +72,8 @@ class ConversationRenderService
             ? $this->subtractWorkingMinutes($lastMessageDate, $durationMinutes)
             : $minimumDate->copy()->addMinutes($registrationGap);
 
-        if ($durationMinutes !== null && $registrationGap > 3 && $startDate->lessThan($minimumDate)) {
-            $registrationGap = 3;
+        if ($durationMinutes !== null && $registrationGap > $registrationGapMin && $startDate->lessThan($minimumDate)) {
+            $registrationGap = $registrationGapMin;
             $lastMessageDate = $registrationDate->copy()->subMinutes($registrationGap);
             $startDate = $this->subtractWorkingMinutes($lastMessageDate, $durationMinutes);
         }
@@ -288,7 +290,7 @@ class ConversationRenderService
             'dni' => (string) ($input['dni'] ?? ''),
             'dni_cliente' => (string) ($input['dniCliente'] ?? ''),
             'telefono' => (string) ($input['telefono'] ?? ''),
-            'monto' => $this->formatFlexibleAmount($monto, $previewSeed),
+            'monto' => $this->formatFlexibleAmount($monto),
             'monto_formateado' => $this->formatMoney($monto),
             'cuota' => $cuota,
             'cuota_formateada' => $this->formatMoney($cuota),
@@ -403,7 +405,7 @@ class ConversationRenderService
         return number_format($number, 2, '.', ',');
     }
 
-    private function formatFlexibleAmount(string $value, ?string $previewSeed): string
+    private function formatFlexibleAmount(string $value): string
     {
         $digits = preg_replace('/\D/', '', $value);
         if ($digits === null || $digits === '') {
@@ -414,17 +416,7 @@ class ConversationRenderService
             return $digits;
         }
 
-        $variant = $previewSeed !== null
-            ? $this->seededInt("{$previewSeed}|monto-format|{$digits}", 0, 2)
-            : random_int(0, 2);
-
-        if ($variant === 0) {
-            return $digits;
-        }
-
-        $separator = $variant === 1 ? ',' : ' ';
-
-        return (string) preg_replace('/\B(?=(\d{3})+(?!\d))/', $separator, $digits);
+        return (string) preg_replace('/\B(?=(\d{3})+(?!\d))/', ',', $digits);
     }
 
     private function seededInt(string $seed, int $min, int $max): int

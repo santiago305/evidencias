@@ -121,7 +121,7 @@ export function buildWhatsappConversation(data: WhatsappData, messageStatus?: Ms
     const nombreCliente = data.nombre?.trim() ? data.nombre.trim() : 'Pedro Vazquez';
     const nombreAsesor = data.nombreAsesor?.trim() ? data.nombreAsesor.trim() : 'Maria Perez';
 
-    const useThousandsMonto = rng() < 0.5;
+    const useThousandsMonto = true;
     const useThousandsCuota = rng() < 0.5;
     const formattedMonto = data.monto?.trim() ? formatMoneyValue(data.monto, useThousandsMonto) : null;
     const formattedCuota = data.cuota?.trim() ? formatMoneyValue(data.cuota, useThousandsCuota) : null;

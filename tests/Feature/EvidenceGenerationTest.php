@@ -14,6 +14,13 @@ afterEach(function () {
     Carbon::setTestNow();
 });
 
+beforeEach(function () {
+    config([
+        'conversation.registration_gap_minutes.min' => 3,
+        'conversation.registration_gap_minutes.max' => 10,
+    ]);
+});
+
 function createConversationForTest(string $code, array $messages, string $status = 'production'): Conversation
 {
     $conversation = Conversation::query()->create([
@@ -608,7 +615,7 @@ test('generate evidence keeps the submitted phone number when rendering phone va
         ->assertJsonPath('messages.0.lines.0', 'Telefono cliente 987654321');
 });
 
-test('generate evidence renders amount variable with a flexible thousands separator', function () {
+test('generate evidence renders amount variable with comma thousands separator', function () {
     $user = User::factory()->create();
 
     createConversationForTest('conv_monto_variable_001', [
@@ -623,14 +630,10 @@ test('generate evidence renders amount variable with a flexible thousands separa
 
     $response->assertOk();
 
-    expect($response->json('messages.0.lines.0'))->toBeIn([
-        'Monto S/99999',
-        'Monto S/99,999',
-        'Monto S/99 999',
-    ]);
+    expect($response->json('messages.0.lines.0'))->toBe('Monto S/99,999');
 });
 
-test('generate evidence can render four digit amount variable with a flexible thousands separator', function () {
+test('generate evidence can render four digit amount variable with comma thousands separator', function () {
     $user = User::factory()->create();
 
     createConversationForTest('conv_monto_variable_002', [
@@ -645,11 +648,7 @@ test('generate evidence can render four digit amount variable with a flexible th
 
     $response->assertOk();
 
-    expect($response->json('messages.0.lines.0'))->toBeIn([
-        'Monto S/3250',
-        'Monto S/3,250',
-        'Monto S/3 250',
-    ]);
+    expect($response->json('messages.0.lines.0'))->toBe('Monto S/3,250');
 });
 
 test('generate evidence renders gendered advisor variables and capitalizes messages', function () {
@@ -1425,4 +1424,28 @@ test('generated conversation rejects durations that start before the minimum tim
 
     $response->assertUnprocessable();
     $response->assertJsonValidationErrorFor('duracion');
+});
+
+test('registration gap can be configured to allow a one minute duration window', function () {
+    config([
+        'conversation.registration_gap_minutes.min' => 0,
+        'conversation.registration_gap_minutes.max' => 0,
+    ]);
+
+    $conversation = createConversationForTest('conv_one_minute_window_001', [
+        ['side' => 'out', 'delay_minutes' => 0, 'lines' => ['Inicio']],
+        ['side' => 'in', 'delay_minutes' => 1, 'lines' => ['Fin']],
+    ]);
+
+    $messages = app(ConversationRenderService::class)->render($conversation, [
+        ...evidencePayload(),
+        'fechaHora' => '2026-06-10T10:00',
+        'fechaHoraRegistro' => '2026-06-10T10:01',
+        'duracion' => '1',
+        'previewSeed' => 'one-minute-window',
+    ]);
+
+    expect($messages[0]['dateKey'])->toBe('2026-06-10')
+        ->and($messages[0]['time'])->toBe('10:00')
+        ->and($messages[1]['time'])->toBe('10:01');
 });
