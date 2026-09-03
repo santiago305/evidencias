@@ -83,3 +83,29 @@ test('uses the exact mobile 2 dark SMS palette', () => {
         systemNavigationForeground: '#FFFFFF',
     });
 });
+
+test('uses the exact mobile 1 light SMS palette', () => {
+    const colors = getSmsColors('light', 'mobile-1');
+
+    assert.equal(colors.shell, '#EAEDF2');
+    assert.equal(colors.header, '#EAEDF2');
+    assert.equal(colors.conversation, '#F5FAFE');
+    assert.equal(colors.receivedBubble, '#EAEDF2');
+    assert.equal(colors.sentBubble, '#296389');
+    assert.equal(colors.audioBackground, '#EBDBFF');
+    assert.equal(colors.avatarBackground, '#5CB973');
+    assert.equal(colors.quickReplyBorder, '#C0C7CD');
+});
+
+test('uses the exact mobile 1 dark SMS palette', () => {
+    const colors = getSmsColors('dark', 'mobile-1');
+
+    assert.equal(colors.shell, '#1C2023');
+    assert.equal(colors.header, '#1C2023');
+    assert.equal(colors.conversation, '#101817');
+    assert.equal(colors.receivedBubble, '#1C2023');
+    assert.equal(colors.sentBubble, '#004B72');
+    assert.equal(colors.audioBackground, '#4C4161');
+    assert.equal(colors.avatarBackground, '#5CB973');
+    assert.equal(colors.quickReplyBorder, '#42474D');
+});

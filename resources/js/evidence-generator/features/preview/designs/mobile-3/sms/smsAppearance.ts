@@ -6,6 +6,13 @@ export function shouldShowSmsAccentPoint(randomValue = Math.random()): boolean {
 }
 
 export function getSmsColors(themeMode: PreviewThemeMode, variant: SmsDesignVariant = 'mobile-3'): SmsColors {
+    if (variant === 'mobile-1') {
+        if (themeMode === 'dark') {
+            return { shell: '#1C2023', header: '#1C2023', conversation: '#101817', receivedBubble: '#1C2023', sentBubble: '#004B72', sentText: '#FFFFFF', primaryText: '#E0E3E8', secondaryText: '#C2C7CD', headerIcon: '#C0C7CF', headerActionIcon: '#C0C7CF', composer: '#1C2023', tealPoint: '#70B9D1', link: '#C2C7CD', audioBackground: '#4C4161', audioIcon: '#EBDBFF', redPoint: '#E9A0A5', menuIndicator: '#E9A0A5', statusCheck: '#C2C7CD', readReceiptBackground: '#101817', readReceiptForeground: '#C2C7CD', metadataIcon: '#C2C7CD', avatarBackground: '#5CB973', avatarForeground: '#202125', systemNavigationForeground: '#C0C7CF', quickReplyBorder: '#42474D' };
+        }
+        return { shell: '#EAEDF2', header: '#EAEDF2', conversation: '#F5FAFE', receivedBubble: '#EAEDF2', sentBubble: '#296389', sentText: '#FFFFFF', primaryText: '#181B20', secondaryText: '#42474D', headerIcon: '#42474D', headerActionIcon: '#42474D', composer: '#EAEDF2', tealPoint: '#70B9D1', link: '#42474D', audioBackground: '#EBDBFF', audioIcon: '#211634', redPoint: '#B3261E', menuIndicator: '#B3261E', statusCheck: '#42474D', readReceiptBackground: '#F5FAFE', readReceiptForeground: '#42474D', metadataIcon: '#42474D', avatarBackground: '#5CB973', avatarForeground: '#FFFFFF', systemNavigationForeground: '#42474D', quickReplyBorder: '#C0C7CD' };
+    }
+
     if (variant === 'mobile-2') {
         if (themeMode === 'dark') {
             return {

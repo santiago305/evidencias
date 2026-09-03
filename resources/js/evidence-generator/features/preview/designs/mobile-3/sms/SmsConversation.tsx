@@ -26,6 +26,7 @@ export function SmsConversation({
     const [conversationHeader] = useState(() => buildSmsConversationHeader(data));
     const [draft, setDraft] = useState('');
     const suggestions = getSmsQuickReplies(data.generatedMessages);
+    const supportsQuickReplies = variant === 'mobile-1' || variant === 'mobile-2';
 
     return (
         <main
@@ -89,7 +90,7 @@ export function SmsConversation({
                     );
                 })}
             </div>
-            {variant === 'mobile-2' ? (
+            {supportsQuickReplies ? (
                 <SmsQuickReplies
                     suggestions={suggestions}
                     color={colors.secondaryText}

@@ -1,46 +1,23 @@
 import type { PreviewProps } from '../../../../../types';
 import { EmptyState } from '../../../components/EmptyState';
-import { Row } from '../../../components/Row';
 import { buildMobilePreviewNotificationIds } from '../../../mobileNotifications';
 import { Mobile1PreviewFrame } from '../Mobile1PreviewFrame';
+import { SmsMobileHeader } from '../../mobile-3/sms/sms-header';
+import { getSmsColors } from '../../mobile-3/sms/smsAppearance';
+import { SmsConversation } from '../../mobile-3/sms/SmsConversation';
 
 export function PreviewMobile1Sms({ data, themeMode }: PreviewProps) {
     if (!data) {
         return <EmptyState />;
     }
 
-    const isDark = themeMode === 'dark';
+    const colors = getSmsColors(themeMode, 'mobile-1');
 
     return (
-        <Mobile1PreviewFrame themeMode={themeMode} notificationIds={buildMobilePreviewNotificationIds(data, 'mobile-1', 'sms')}>
-            <div className={['flex h-full flex-col', isDark ? 'bg-[#0f172a]' : 'bg-[#f6f7fb]'].join(' ')}>
-                <div
-                    className={[
-                        'border-b px-5 py-3.75',
-                        isDark ? 'border-white/10 bg-[#111827] text-white' : 'border-slate-200 bg-white text-slate-950',
-                    ].join(' ')}
-                >
-                    <div className="text-[17.5px] font-semibold">SMS</div>
-                    <div className={['text-[13.75px]', isDark ? 'text-slate-400' : 'text-slate-500'].join(' ')}>{data.telefono}</div>
-                </div>
-
-                <div className="flex-1 space-y-[15px] overflow-y-auto p-5">
-                    <div
-                        className={[
-                            'max-w-[78%] rounded-[20px] rounded-tl-[7.5px] px-3.75 py-2.5 text-[15px]',
-                            isDark ? 'bg-slate-700 text-white' : 'bg-white text-slate-900 shadow-sm',
-                        ].join(' ')}
-                    >
-                        Hola {data.nombre || 'cliente'}, tenemos informacion sobre tu solicitud.
-                    </div>
-                    <div className="ml-auto max-w-[78%] rounded-[20px] rounded-tr-[7.5px] bg-[#007aff] px-3.75 py-2.5 text-[15px] text-white">
-                        Monto: {data.monto || '-'} | Cuota: {data.cuota || '-'}
-                    </div>
-                    <div className="grid gap-2.5 pt-3.75">
-                        <Row k="Asesor" v={data.nombreAsesor} themeMode={themeMode} />
-                        <Row k="DNI" v={data.dni} themeMode={themeMode} />
-                    </div>
-                </div>
+        <Mobile1PreviewFrame themeMode={themeMode} notificationIds={buildMobilePreviewNotificationIds(data, 'mobile-1', 'sms')} headerVariant="sms" footerVariant="sms">
+            <div className="flex h-full min-h-0 flex-col overflow-hidden" style={{ backgroundColor: colors.shell, fontFamily: 'Roboto, sans-serif' }}>
+                <SmsMobileHeader data={data} themeMode={themeMode} variant="mobile-1" showVideoCall={true} />
+                <SmsConversation data={data} themeMode={themeMode} variant="mobile-1" />
             </div>
         </Mobile1PreviewFrame>
     );
