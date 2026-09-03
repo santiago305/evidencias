@@ -12,6 +12,7 @@ export function SmsMobileTextBubble({
     colors,
     currentDate,
     groupPosition,
+    compactBottomSpacing = false,
 }: {
     message: SmsConversationMessage;
     showMetadata: boolean;
@@ -21,6 +22,7 @@ export function SmsMobileTextBubble({
     colors: SmsColors;
     currentDate?: Date;
     groupPosition: SmsGroupPosition;
+    compactBottomSpacing?: boolean;
 }) {
     const [isMetadataVisible, setIsMetadataVisible] = useState(showMetadata);
     const isOutgoing = message.side === 'out';
@@ -46,7 +48,7 @@ export function SmsMobileTextBubble({
             className={[
                 'flex px-[9px]',
                 isOutgoing ? 'justify-end' : 'justify-start',
-                groupPosition === 'single' || groupPosition === 'last' ? 'mb-[18px]' : 'mb-[2px]',
+                groupPosition === 'single' || groupPosition === 'last' ? (compactBottomSpacing ? 'mb-[4px]' : 'mb-[18px]') : 'mb-[2px]',
             ].join(' ')}
             onClick={() => {
                 setIsMetadataVisible((current) => toggleSmsMetadataVisibility(current));
