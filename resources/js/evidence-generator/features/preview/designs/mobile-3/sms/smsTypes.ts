@@ -1,7 +1,7 @@
 import type { GeneratedMessage, PreviewProps } from '../../../../../types';
 
 export type SmsData = NonNullable<PreviewProps['data']>;
-export type SmsDesignVariant = 'mobile-2' | 'mobile-3';
+export type SmsDesignVariant = 'mobile-1' | 'mobile-2' | 'mobile-3';
 export type SmsMessageStatus = NonNullable<GeneratedMessage['status']>;
 export type SmsConversationType = 'rcs' | 'sms';
 export type SmsGroupPosition = 'single' | 'first' | 'middle' | 'last';
