@@ -12,7 +12,8 @@ type Mobile2PreviewFrameProps = {
     hideSystemFooter?: boolean;
     notificationSeed?: string;
     notificationIds?: MobileNotificationIconId[];
-    headerVariant?: 'default' | 'whatsapp';
+    headerVariant?: 'default' | 'whatsapp' | 'sms';
+    footerVariant?: 'default' | 'sms';
 };
 
 export function Mobile2PreviewFrame({
@@ -24,6 +25,7 @@ export function Mobile2PreviewFrame({
     notificationSeed,
     notificationIds,
     headerVariant = 'default',
+    footerVariant = 'default',
 }: Mobile2PreviewFrameProps) {
     const isDark = themeMode === 'dark';
 
@@ -45,7 +47,7 @@ export function Mobile2PreviewFrame({
                     />
                 ) : null}
                 <div className={['min-h-0 flex-1 overflow-hidden', contentClassName].filter(Boolean).join(' ')}>{children}</div>
-                {!hideSystemFooter ? <Mobile2PreviewFooter themeMode={themeMode} /> : null}
+                {!hideSystemFooter ? <Mobile2PreviewFooter themeMode={themeMode} variant={footerVariant} /> : null}
             </div>
         </div>
     );

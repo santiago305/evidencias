@@ -26,6 +26,7 @@ import type { ComponentType, SVGProps } from 'react';
 import { mulberry32 } from '../../../../lib/whatsapp/random';
 import type { PreviewThemeMode } from '../../../../types';
 import type { MobileNotificationIconId } from '../../mobileNotifications';
+import { getSmsColors } from '../mobile-3/sms/smsAppearance';
 import { AndroidBatteryIcon } from './components/AndroidBatteryIcon';
 
 type BatteryLevel = 10 | 20 | 30 | 40 | 50 | 60 | 70 | 80 | 90 | 100;
@@ -131,12 +132,14 @@ type Mobile2PreviewHeaderProps = {
     themeMode: PreviewThemeMode;
     notificationSeed?: string;
     notificationIds?: MobileNotificationIconId[];
-    variant?: 'default' | 'whatsapp';
+    variant?: 'default' | 'whatsapp' | 'sms';
 };
 
 export function Mobile2PreviewHeader({ themeMode, notificationSeed, notificationIds, variant = 'default' }: Mobile2PreviewHeaderProps) {
     const isDark = themeMode === 'dark';
     const isWhatsappVariant = variant === 'whatsapp' && isDark;
+    const isSmsVariant = variant === 'sms';
+    const smsColors = getSmsColors(themeMode, 'mobile-2');
 
     const [time, setTime] = useState('');
     const [batteryLevel, setBatteryLevel] = useState<BatteryLevel>(getBatteryLevel());
@@ -179,8 +182,9 @@ export function Mobile2PreviewHeader({ themeMode, notificationSeed, notification
         <div
             className={[
                 'shrink-0 px-[25px] py-[5px]',
-                isWhatsappVariant ? 'bg-[#0B1014] text-white' : isDark ? 'bg-[#070c0f] text-white' : 'bg-white text-[#5f6368]',
+                isWhatsappVariant ? 'bg-[#0B1014] text-white' : isSmsVariant ? '' : isDark ? 'bg-[#070c0f] text-white' : 'bg-white text-[#5f6368]',
             ].join(' ')}
+            style={isSmsVariant ? { backgroundColor: smsColors.header, color: smsColors.headerIcon } : undefined}
         >
             <div
                 className="flex h-[25px] items-center justify-between"
@@ -192,7 +196,7 @@ export function Mobile2PreviewHeader({ themeMode, notificationSeed, notification
                     <span
                         className={[
                             'text-[17.5px] leading-none font-medium tracking-[-0.01em]',
-                            isWhatsappVariant ? 'text-white' : isDark ? 'text-white' : 'text-[#5f6368]',
+                            isWhatsappVariant ? 'text-white' : isSmsVariant ? 'text-current' : isDark ? 'text-white' : 'text-[#5f6368]',
                         ].join(' ')}
                     >
                         {time}

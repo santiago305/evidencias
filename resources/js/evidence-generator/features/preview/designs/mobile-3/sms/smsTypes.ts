@@ -1,6 +1,7 @@
 import type { GeneratedMessage, PreviewProps } from '../../../../../types';
 
 export type SmsData = NonNullable<PreviewProps['data']>;
+export type SmsDesignVariant = 'mobile-2' | 'mobile-3';
 export type SmsMessageStatus = NonNullable<GeneratedMessage['status']>;
 export type SmsConversationType = 'rcs' | 'sms';
 export type SmsGroupPosition = 'single' | 'first' | 'middle' | 'last';
@@ -24,14 +25,20 @@ export interface SmsColors {
     primaryText: string;
     secondaryText: string;
     headerIcon: string;
+    headerActionIcon: string;
     composer: string;
     tealPoint: string;
     link: string;
     audioBackground: string;
     audioIcon: string;
     redPoint: string;
+    menuIndicator: string;
     statusCheck: string;
     readReceiptBackground: string;
     readReceiptForeground: string;
     metadataIcon: string;
+    avatarBackground: string;
+    avatarForeground: string;
+    systemNavigationForeground: string;
+    quickReplyBorder: string;
 }

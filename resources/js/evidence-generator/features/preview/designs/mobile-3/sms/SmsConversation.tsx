@@ -2,20 +2,36 @@ import { Fragment, useState } from 'react';
 import type { PreviewThemeMode } from '../../../../../types';
 import { EncryptionLockIcon, SmsMobileTextBubble } from './sms-bubbles';
 import { SmsDateSeparator } from './sms-date';
-import { SmsMobileInputBar } from './sms-footer';
+import { SmsMobileInputBar, SmsQuickReplies } from './sms-footer';
 import { getSmsColors } from './smsAppearance';
 import { buildSmsConversationHeader } from './smsDateTime';
 import { buildSmsMessages, getSmsGroupPosition, shouldShowSmsDateSeparator, shouldShowSmsMessageMetadata } from './smsMessages';
-import type { SmsData } from './smsTypes';
+import { getSmsQuickReplies } from './smsQuickReplies';
+import type { SmsData, SmsDesignVariant } from './smsTypes';
 
-export function SmsConversation({ data, themeMode, currentDate }: { data: SmsData; themeMode: PreviewThemeMode; currentDate?: Date }) {
-    const colors = getSmsColors(themeMode);
+export function SmsConversation({
+    data,
+    themeMode,
+    currentDate,
+    variant = 'mobile-3',
+}: {
+    data: SmsData;
+    themeMode: PreviewThemeMode;
+    currentDate?: Date;
+    variant?: SmsDesignVariant;
+}) {
+    const colors = getSmsColors(themeMode, variant);
     const messages = buildSmsMessages(data);
     const firstMessage = messages[0];
     const [conversationHeader] = useState(() => buildSmsConversationHeader(data));
+    const [draft, setDraft] = useState('');
+    const suggestions = getSmsQuickReplies(data.generatedMessages);
 
     return (
-        <main className="relative flex min-h-0 flex-1 flex-col overflow-hidden rounded-t-[28px]" style={{ backgroundColor: colors.conversation }}>
+        <main
+            className="group relative flex min-h-0 flex-1 flex-col overflow-hidden rounded-t-[28px]"
+            style={{ backgroundColor: colors.conversation }}
+        >
             <div className="flex-1 [scrollbar-width:none] overflow-y-auto px-2 pt-5 pb-[15px] [&::-webkit-scrollbar]:hidden">
                 {firstMessage ? (
                     <SmsDateSeparator
@@ -67,12 +83,23 @@ export function SmsConversation({ data, themeMode, currentDate }: { data: SmsDat
                                 colors={colors}
                                 currentDate={currentDate}
                                 groupPosition={getSmsGroupPosition(messages, index)}
+                                compactBottomSpacing={variant === 'mobile-2' && index === messages.length - 1}
                             />
                         </Fragment>
                     );
                 })}
             </div>
-            <SmsMobileInputBar themeMode={themeMode} />
+            {variant === 'mobile-2' ? (
+                <SmsQuickReplies
+                    suggestions={suggestions}
+                    color={colors.secondaryText}
+                    borderColor={colors.quickReplyBorder}
+                    className="hidden flex-row-reverse justify-start group-focus-within:flex"
+                    variant={variant}
+                    onSuggestionClick={(suggestion) => setDraft(suggestion.label)}
+                />
+            ) : null}
+            <SmsMobileInputBar themeMode={themeMode} variant={variant} draft={draft} onDraftChange={setDraft} />
         </main>
     );
 }

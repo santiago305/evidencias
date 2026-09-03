@@ -1,8 +1,19 @@
 import { useState } from 'react';
 import { getSmsColors, shouldShowSmsAccentPoint } from '../smsAppearance';
+import type { SmsDesignVariant } from '../smsTypes';
 
-export function SmsMobileInputBar({ themeMode }: { themeMode: 'light' | 'dark' }) {
-    const colors = getSmsColors(themeMode);
+export function SmsMobileInputBar({
+    themeMode,
+    variant = 'mobile-3',
+    draft = '',
+    onDraftChange,
+}: {
+    themeMode: 'light' | 'dark';
+    variant?: SmsDesignVariant;
+    draft?: string;
+    onDraftChange?: (value: string) => void;
+}) {
+    const colors = getSmsColors(themeMode, variant);
     const [showEmojiIndicator] = useState(() => shouldShowSmsAccentPoint());
 
     return (
@@ -22,9 +33,14 @@ export function SmsMobileInputBar({ themeMode }: { themeMode: 'light' | 'dark' }
                             <circle cx="22.2" cy="8.8" r="3.55" fill={colors.tealPoint} />
                         </svg>
                     </button>
-                    <div className="min-w-0 flex-1 truncate pl-px text-[15.7px] tracking-[-0.12px]" style={{ color: colors.secondaryText }}>
-                        Mensaje RCS
-                    </div>
+                    <input
+                        value={draft}
+                        onChange={(event) => onDraftChange?.(event.target.value)}
+                        placeholder="Mensaje RCS"
+                        aria-label="Mensaje RCS"
+                        className="min-w-0 flex-1 bg-transparent pl-px text-[15.7px] tracking-[-0.12px] outline-none placeholder:opacity-100"
+                        style={{ color: colors.primaryText, caretColor: colors.primaryText }}
+                    />
                     {/* ==========================================
                             EMOJI
                         ========================================== */}
