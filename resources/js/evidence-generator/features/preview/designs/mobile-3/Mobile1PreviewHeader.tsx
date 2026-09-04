@@ -83,6 +83,27 @@ const notificationIconPool: NotificationIcon[] = [
     { id: 'notification-dot', Icon: NotificationDotIcon },
 ];
 
+export function MobileNotificationIcons({
+    notificationIds,
+    className = 'h-[15px] w-[15px] text-current',
+}: {
+    notificationIds: MobileNotificationIconId[];
+    className?: string;
+}) {
+    const iconById = new Map(notificationIconPool.map((icon) => [icon.id, icon]));
+
+    return (
+        <>
+            {notificationIds
+                .map((id) => iconById.get(id))
+                .filter((icon): icon is NotificationIcon => icon !== undefined)
+                .map(({ id, Icon: NotificationIcon }, index) => (
+                    <NotificationIcon key={`${id}-${index}`} className={className} aria-hidden="true" />
+                ))}
+        </>
+    );
+}
+
 function hashString(value: string): number {
     let hash = 2166136261;
 

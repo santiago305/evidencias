@@ -68,3 +68,14 @@ test('uses any registered global design in tests when the user has no assigned d
         'mobile-1',
     );
 });
+
+test('supports mobile four as a selectable complete mobile design', () => {
+    assert.equal(
+        resolveActiveMobileDesignKey({
+            availableMobileDesigns: ['mobile-1', 'mobile-2', 'mobile-3', 'mobile-4'],
+            globalMobileDesigns: ['mobile-1', 'mobile-2', 'mobile-3'],
+            registeredMobileDesigns: [],
+        }),
+        'mobile-4',
+    );
+});

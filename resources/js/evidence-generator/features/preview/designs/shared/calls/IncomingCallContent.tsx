@@ -1,0 +1,36 @@
+import type { PreviewProps } from '../../../../../types';
+
+export function IncomingCallContent({ data, themeMode }: PreviewProps) {
+    const isDark = themeMode === 'dark';
+
+    if (!data) {
+        return null;
+    }
+
+    return (
+        <div
+            className={[
+                'flex h-full flex-col items-center justify-between px-10 py-[60px] text-center',
+                isDark ? 'bg-[#07111f] text-white' : 'bg-[#f8fafc] text-slate-950',
+            ].join(' ')}
+        >
+            <div>
+                <div className={['text-[15px]', isDark ? 'text-slate-400' : 'text-slate-500'].join(' ')}>Llamada entrante</div>
+                <div className="mt-[30px] grid h-[120px] w-[120px] place-items-center rounded-full bg-emerald-500 text-[37.5px] font-semibold text-white">
+                    {(data.nombre || 'C').trim().slice(0, 1).toUpperCase()}
+                </div>
+                <div className="mt-[25px] text-[30px] font-semibold">{data.nombre || 'Cliente'}</div>
+                <div className={['mt-[5px] text-[17.5px]', isDark ? 'text-slate-300' : 'text-slate-500'].join(' ')}>{data.telefono}</div>
+            </div>
+
+            <div className="grid w-full grid-cols-2 gap-10">
+                <button type="button" className="grid h-20 w-20 place-self-center rounded-full bg-red-500 text-[17.5px] font-semibold text-white">
+                    <span className="m-auto">No</span>
+                </button>
+                <button type="button" className="grid h-20 w-20 place-self-center rounded-full bg-emerald-500 text-[17.5px] font-semibold text-white">
+                    <span className="m-auto">Si</span>
+                </button>
+            </div>
+        </div>
+    );
+}

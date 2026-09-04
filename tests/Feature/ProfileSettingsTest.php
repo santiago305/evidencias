@@ -103,6 +103,28 @@ test('users can choose their mobile design from profile settings', function () {
     ]);
 });
 
+test('users can choose mobile 4 from profile settings', function () {
+    $user = User::factory()->create();
+    MobileDesign::create([
+        'design_key' => 'mobile-4',
+    ]);
+
+    $this->actingAs($user)->patch('/settings/profile', [
+        'name' => $user->name,
+        'dni' => $user->dni,
+        'sexualidad' => $user->sexualidad,
+        'mobile_design_key' => 'mobile-4',
+        'whatsapp_desktop_scale' => 80,
+        'evidence_theme_mode' => 'light',
+        'evidence_device_mode' => 'mobile',
+    ])->assertRedirect(route('profile.edit', absolute: false));
+
+    $this->assertDatabaseHas('user_mobile_designs', [
+        'user_id' => $user->id,
+        'design_key' => 'mobile-4',
+    ]);
+});
+
 test('users can remove their selected mobile design from profile settings', function () {
     $user = User::factory()->create();
     MobileDesign::create([
