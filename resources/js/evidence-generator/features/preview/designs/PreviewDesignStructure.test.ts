@@ -32,6 +32,11 @@ test('preview designs are isolated by target design folder', () => {
     assert.equal(existsSync(resolve(designsDir, 'mobile-3', 'sms', 'PreviewMobile1Sms.tsx')), true);
     assert.equal(existsSync(resolve(designsDir, 'mobile-3', 'calls', 'design-1', 'PreviewMobile1CallDesign1.tsx')), true);
     assert.equal(existsSync(resolve(designsDir, 'mobile-3', 'calls', 'design-2', 'PreviewMobile1CallDesign2.tsx')), true);
+    assert.equal(existsSync(resolve(designsDir, 'mobile-4', 'Mobile4PreviewFrame.tsx')), true);
+    assert.equal(existsSync(resolve(designsDir, 'mobile-4', 'whatsapp', 'PreviewMobile4Whatsapp.tsx')), true);
+    assert.equal(existsSync(resolve(designsDir, 'mobile-4', 'sms', 'PreviewMobile4Sms.tsx')), true);
+    assert.equal(existsSync(resolve(designsDir, 'mobile-4', 'calls', 'design-1', 'PreviewMobile4CallDesign1.tsx')), true);
+    assert.equal(existsSync(resolve(designsDir, 'shared', 'whatsapp', 'whatsappPreviewRuntime.ts')), true);
 });
 
 test('preview channel entry points use design folders directly', () => {
@@ -45,6 +50,15 @@ test('preview channel entry points use design folders directly', () => {
     assert.doesNotMatch(previewChannelsSource, /preview\/whatsapp|\.\.\/whatsapp/);
     assert.doesNotMatch(desktopSource, /preview\/whatsapp|\.\.\/\.\.\/whatsapp|deviceMode=/);
     assert.doesNotMatch(mobileSource, /preview\/whatsapp|\.\.\/\.\.\/\.\.\/whatsapp/);
+});
+
+test('mobile 4 is selected explicitly for all supported mobile channels', () => {
+    const previewChannelsSource = readFileSync(resolve(previewDir, 'components', 'PreviewChannels.tsx'), 'utf8');
+
+    assert.match(previewChannelsSource, /PreviewMobile4CallDesign1/);
+    assert.match(previewChannelsSource, /PreviewMobile4Whatsapp/);
+    assert.match(previewChannelsSource, /PreviewMobile4Sms/);
+    assert.match(previewChannelsSource, /mobileDesignKey === 'mobile-4'/);
 });
 
 test('desktop WhatsApp tray clock uses current Peru time instead of snapshot time', () => {

@@ -2,16 +2,16 @@ import type { PreviewProps } from '../../../../../../types';
 import { EmptyState } from '../../../../components/EmptyState';
 import { buildMobilePreviewNotificationIds } from '../../../../mobileNotifications';
 import { IncomingCallContent } from '../../../shared/calls/IncomingCallContent';
-import { Mobile1PreviewFrame } from '../../Mobile1PreviewFrame';
+import { Mobile4PreviewFrame } from '../../Mobile4PreviewFrame';
 
-export function PreviewMobile1CallDesign1({ data, themeMode }: PreviewProps) {
+export function PreviewMobile4CallDesign1({ data, themeMode }: PreviewProps) {
     if (!data) {
         return <EmptyState />;
     }
 
     return (
-        <Mobile1PreviewFrame themeMode={themeMode} notificationIds={buildMobilePreviewNotificationIds(data, 'mobile-3', 'call')}>
+        <Mobile4PreviewFrame themeMode={themeMode} notificationIds={buildMobilePreviewNotificationIds(data, 'mobile-4', 'call')}>
             <IncomingCallContent data={data} themeMode={themeMode} />
-        </Mobile1PreviewFrame>
+        </Mobile4PreviewFrame>
     );
 }

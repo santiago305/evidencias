@@ -6,6 +6,7 @@ import {
     PreviewMobile1Sms as PreviewMobile3Sms,
     PreviewMobile1Whatsapp as PreviewMobile3Whatsapp,
 } from '../designs/mobile-3';
+import { PreviewMobile4CallDesign1, PreviewMobile4Sms, PreviewMobile4Whatsapp } from '../designs/mobile-4';
 import { PreviewWhatsappDesktop } from '../designs/whatsapp-desktop';
 
 interface PreviewWhatsappProps extends PreviewProps {
@@ -28,6 +29,10 @@ export function PreviewWhatsApp({ data, deviceMode, mobileDesignKey, whatsappDes
         return <PreviewMobile3Whatsapp data={data} themeMode={themeMode} />;
     }
 
+    if (mobileDesignKey === 'mobile-4') {
+        return <PreviewMobile4Whatsapp data={data} themeMode={themeMode} />;
+    }
+
     return <PreviewMobile1Whatsapp data={data} themeMode={themeMode} />;
 }
 
@@ -41,6 +46,10 @@ export function PreviewLlamada({ data, themeMode, mobileDesignKey }: PreviewProp
         return <PreviewMobile3CallDesign1 data={data} themeMode={themeMode} />;
     }
 
+    if (mobileDesignKey === 'mobile-4') {
+        return <PreviewMobile4CallDesign1 data={data} themeMode={themeMode} />;
+    }
+
     return <PreviewMobile1CallDesign1 data={data} themeMode={themeMode} />;
 }
 
@@ -52,6 +61,10 @@ export function PreviewSMS({ data, themeMode, mobileDesignKey }: PreviewProps & 
 
     if (mobileDesignKey === 'mobile-3') {
         return <PreviewMobile3Sms data={data} themeMode={themeMode} />;
+    }
+
+    if (mobileDesignKey === 'mobile-4') {
+        return <PreviewMobile4Sms data={data} themeMode={themeMode} />;
     }
 
     return <PreviewMobile1Sms data={data} themeMode={themeMode} />;
