@@ -1,3 +1,1 @@
-import type { PreviewBlockProps } from '../../../../../types';
-
-export type WhatsappData = NonNullable<PreviewBlockProps['data']>;
+export type { WhatsappData } from '../../shared/whatsapp/whatsappTypes';

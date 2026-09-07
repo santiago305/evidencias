@@ -1,5 +1,6 @@
 import React from 'react';
 import type { PreviewThemeMode } from '../../../../../types';
+import { useWhatsappColorProfile } from '../../shared/whatsapp/whatsappColorProfile';
 import { WhatsappMobileTextBubble } from './whatsapp-bubbles/WhatsappMobileTextBubble';
 
 export function MessageGroup({ children, className = '' }: { children: React.ReactNode; className?: string }) {
@@ -8,14 +9,18 @@ export function MessageGroup({ children, className = '' }: { children: React.Rea
 
 export function DayChip({ text, themeMode = 'light' }: { text: string; themeMode?: PreviewThemeMode }) {
     const isDark = themeMode === 'dark';
+    const colors = useWhatsappColorProfile();
 
     return (
         <div className="sticky top-[2.5px] z-20 my-[5px] flex justify-center">
             <span
                 className={[
                     'rounded-[5px] px-2.5 py-[2.5px] text-[12.5px] font-medium shadow',
-                    isDark ? 'bg-[#12181C] text-[#767C80]' : 'bg-[#fefdfc] text-[#667781]',
-                ].join(' ')}
+                    colors ? '' : isDark ? 'bg-[#12181C] text-[#767C80]' : 'bg-[#fefdfc] text-[#667781]',
+                ]
+                    .filter(Boolean)
+                    .join(' ')}
+                style={colors ? { backgroundColor: colors.dateChipBackground, color: colors.dateChipText } : undefined}
             >
                 {text}
             </span>
@@ -66,7 +71,9 @@ export function PanelItem({ label, value }: { label: string; value: string }) {
     );
 }
 
-export type MsgStatus = 'sent' | 'delivered' | 'read';
+import type { WhatsappMessageStatus } from '../../shared/whatsapp/whatsappTypes';
+
+export type MsgStatus = WhatsappMessageStatus;
 
 export type QuotedMessage = {
     author: string;

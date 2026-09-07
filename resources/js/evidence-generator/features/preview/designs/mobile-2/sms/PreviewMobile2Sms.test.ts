@@ -8,7 +8,7 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import { createServer, type ViteDevServer } from 'vite';
 import type { PreviewThemeMode } from '../../../../../types';
 import type { MobileNotificationIconId } from '../../../mobileNotifications';
-import type { SmsData, SmsDesignVariant } from '../../mobile-3/sms/smsTypes';
+import type { SmsData, SmsDesignVariant } from '../../shared/sms/smsTypes';
 
 type SmsHeaderProps = {
     data: SmsData;
@@ -60,10 +60,10 @@ before(async () => {
     server = await createServer({ server: { middlewareMode: true }, appType: 'custom' });
 
     const smsHeaderModule = await server.ssrLoadModule(
-        '/resources/js/evidence-generator/features/preview/designs/mobile-3/sms/sms-header/SmsMobileHeader.tsx',
+        '/resources/js/evidence-generator/features/preview/designs/shared/sms/sms-header/SmsMobileHeader.tsx',
     );
     const smsConversationModule = await server.ssrLoadModule(
-        '/resources/js/evidence-generator/features/preview/designs/mobile-3/sms/SmsConversation.tsx',
+        '/resources/js/evidence-generator/features/preview/designs/shared/sms/SmsConversation.tsx',
     );
     const mobile2HeaderModule = await server.ssrLoadModule(
         '/resources/js/evidence-generator/features/preview/designs/mobile-2/Mobile2PreviewHeader.tsx',
@@ -193,25 +193,29 @@ test('mobile 2 SMS system bars use SMS colors and Android square-circle-triangle
     assertMarkupIncludes(darkHeader, ['#271D1E', '#D7C1C3']);
     assertMarkupIncludes(lightFooter, ['#FFF6F7', '#747274']);
     assertMarkupIncludes(darkFooter, ['#1C1010', '#FFFFFF']);
-    assert.match(
-        lightFooter,
-        /data-android-navigation-icon="recents"[\s\S]*data-android-navigation-icon="home"[\s\S]*data-android-navigation-icon="back"/,
-    );
-    assert.match(
-        defaultFooter,
-        /data-android-navigation-icon="back"[\s\S]*data-android-navigation-icon="home"[\s\S]*data-android-navigation-icon="recents"/,
-    );
+    const expectedOrder =
+        /data-android-navigation-icon="recents"[\s\S]*data-android-navigation-icon="home"[\s\S]*data-android-navigation-icon="back"/;
+
+    assert.match(lightFooter, expectedOrder);
+    assert.match(darkFooter, expectedOrder);
+    assert.match(defaultFooter, expectedOrder);
 });
 
 test('mobile 2 SMS entry point uses the Mobile 2 frame and shared Mobile 3 SMS implementation', () => {
-    const previewSource = readFileSync(resolve(smsDirectory, 'PreviewMobile2Sms.tsx'), 'utf8');
+    const previewSource = readFileSync(resolve(smsDirectory, '..', '..', 'shared', 'mobile-preview', 'MobileSmsPreview.tsx'), 'utf8');
+    const profilesSource = readFileSync(resolve(smsDirectory, '..', '..', 'mobilePreviewProfiles.tsx'), 'utf8');
+    const frameRendererSource = readFileSync(resolve(smsDirectory, '..', '..', 'shared', 'mobile-preview', 'frameRenderers.tsx'), 'utf8');
     const frameSource = readFileSync(resolve(mobile2Directory, 'Mobile2PreviewFrame.tsx'), 'utf8');
 
-    assert.match(previewSource, /<Mobile2PreviewFrame/);
-    assert.match(previewSource, /headerVariant="sms"/);
-    assert.match(previewSource, /footerVariant="sms"/);
-    assert.match(previewSource, /<SmsMobileHeader[^>]*variant="mobile-2"[^>]*showVideoCall=\{false\}/);
-    assert.match(previewSource, /<SmsConversation[^>]*variant="mobile-2"/);
+    assert.match(previewSource, /SmsMobileHeader/);
+    assert.match(previewSource, /SmsConversation/);
+    assert.match(previewSource, /buildMobilePreviewNotificationIds\(data, profile\.key, 'sms'\)/);
+    assert.match(profilesSource, /'mobile-2':/);
+    assert.match(profilesSource, /variant: 'mobile-2'/);
+    assert.match(profilesSource, /showVideoCall: false/);
+    assert.match(frameRendererSource, /renderMobile2Frame/);
+    assert.match(frameRendererSource, /channel === 'sms' \? 'sms'/);
+    assert.match(frameRendererSource, /footerVariant=\{channel === 'sms' \? 'sms'/);
     assert.doesNotMatch(previewSource, /\bRow\b|Monto:|tenemos informacion sobre tu solicitud/);
     assert.match(frameSource, /h-\[875px\]/);
     assert.match(frameSource, /w-\[418\.75px\]/);

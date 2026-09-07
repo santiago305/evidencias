@@ -2,11 +2,11 @@
 
 use App\Models\MobileDesign;
 use App\Support\MobileDesignCatalog;
-use Database\Seeders\DatabaseSeeder;
+use Database\Seeders\MobileDesignSeeder;
 
 test('database seeding loads every catalog mobile design without duplicates', function () {
-    $this->seed(DatabaseSeeder::class);
-    $this->seed(DatabaseSeeder::class);
+    $this->seed(MobileDesignSeeder::class);
+    $this->seed(MobileDesignSeeder::class);
 
     $seededDesignKeys = MobileDesign::query()
         ->orderBy('design_key')

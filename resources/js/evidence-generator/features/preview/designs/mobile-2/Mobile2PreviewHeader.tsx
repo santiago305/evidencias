@@ -26,7 +26,7 @@ import type { ComponentType, SVGProps } from 'react';
 import { mulberry32 } from '../../../../lib/whatsapp/random';
 import type { PreviewThemeMode } from '../../../../types';
 import type { MobileNotificationIconId } from '../../mobileNotifications';
-import { getSmsColors } from '../mobile-3/sms/smsAppearance';
+import { getSmsColors } from '../shared/sms/smsAppearance';
 import { AndroidBatteryIcon } from './components/AndroidBatteryIcon';
 
 type BatteryLevel = 10 | 20 | 30 | 40 | 50 | 60 | 70 | 80 | 90 | 100;

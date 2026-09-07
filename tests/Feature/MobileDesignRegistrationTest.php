@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\User;
+use Database\Seeders\MobileDesignSeeder;
 
 test('authenticated users can register a mobile design globally', function () {
     $user = User::factory()->create();
@@ -64,6 +65,21 @@ test('registering the same mobile design twice is idempotent', function () {
     ])->assertSuccessful();
 
     $this->assertDatabaseCount('mobile_designs', 1);
+});
+
+test('unsupported catalog rows are not exposed as selectable designs', function () {
+    $user = User::factory()->create();
+
+    $this->seed(MobileDesignSeeder::class);
+    App\Models\MobileDesign::query()->create(['design_key' => 'mobile-legacy']);
+
+    $this->actingAs($user)
+        ->get('/inicio')
+        ->assertOk()
+        ->assertInertia(fn (\Inertia\Testing\AssertableInertia $page) => $page
+            ->component('evidence-generator')
+            ->where('globalMobileDesigns', ['mobile-1', 'mobile-2', 'mobile-3', 'mobile-4', 'mobile-5'])
+        );
 });
 
 test('unknown mobile designs cannot be registered globally', function () {

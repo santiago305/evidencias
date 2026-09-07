@@ -1,9 +1,20 @@
 import { Paperclip } from 'lucide-react';
+import type { ReactNode } from 'react';
 import { useState } from 'react';
 import type { PreviewThemeMode } from '../../../../../../types';
+import { useWhatsappColorProfile } from '../../../shared/whatsapp/whatsappColorProfile';
 
-export function WhatsappMobileInputBar({ themeMode = 'light' }: { themeMode?: PreviewThemeMode }) {
+export function WhatsappMobileInputBar({
+    themeMode = 'light',
+    composerAccessory,
+    composerLayout,
+}: {
+    themeMode?: PreviewThemeMode;
+    composerAccessory?: ReactNode;
+    composerLayout?: { messageAreaMaxWidth?: string };
+}) {
     const isDark = themeMode === 'dark';
+    const colors = useWhatsappColorProfile();
     const [messageValue, setMessageValue] = useState('');
     const hasMessageValue = messageValue.length > 0;
 
@@ -13,8 +24,11 @@ export function WhatsappMobileInputBar({ themeMode = 'light' }: { themeMode?: Pr
                 <div
                     className={[
                         'flex min-h-[50px] flex-1 items-center gap-2.5 rounded-full p-[7.5px]',
-                        isDark ? 'bg-[#202c33] text-[#8E9699]' : 'bg-white text-[#54656f]',
-                    ].join(' ')}
+                        colors ? '' : isDark ? 'bg-[#202c33] text-[#8E9699]' : 'bg-white text-[#54656f]',
+                    ]
+                        .filter(Boolean)
+                        .join(' ')}
+                    style={colors ? { backgroundColor: colors.composerBackground, color: colors.composerText } : undefined}
                 >
                     <button type="button" aria-label="Emojis" className="grid h-[35px] w-[35px] shrink-0 place-items-center rounded-full">
                         <svg viewBox="0 0 24 24" height="22.5" width="22.5" preserveAspectRatio="xMidYMid meet" fill="none" aria-hidden="true">
@@ -41,6 +55,7 @@ export function WhatsappMobileInputBar({ themeMode = 'light' }: { themeMode?: Pr
                         className="min-w-0 flex-1 bg-transparent text-[16.25px] text-current outline-none placeholder:text-current/70"
                         placeholder="Mensaje"
                         spellCheck={false}
+                        style={{ maxWidth: composerLayout?.messageAreaMaxWidth }}
                         type="text"
                         value={messageValue}
                         onChange={(event) => setMessageValue(event.target.value)}
@@ -73,6 +88,8 @@ export function WhatsappMobileInputBar({ themeMode = 'light' }: { themeMode?: Pr
                                 </svg>
                             </button>
                         )}
+
+                        {composerAccessory}
                     </div>
                 </div>
 
@@ -81,8 +98,11 @@ export function WhatsappMobileInputBar({ themeMode = 'light' }: { themeMode?: Pr
                     aria-label="Grabar audio"
                     className={[
                         'grid h-[50px] w-[50px] shrink-0 place-items-center rounded-full transition-colors',
-                        isDark ? 'bg-[#21C161] text-[#091219]' : 'bg-[#1DAB61] text-white',
-                    ].join(' ')}
+                        colors ? '' : isDark ? 'bg-[#21C161] text-[#091219]' : 'bg-[#1DAB61] text-white',
+                    ]
+                        .filter(Boolean)
+                        .join(' ')}
+                    style={colors ? { backgroundColor: colors.microphoneBackground, color: colors.microphoneIcon } : undefined}
                 >
                     <svg viewBox="0 0 24 24" height="25" width="25" preserveAspectRatio="xMidYMid meet" fill="currentColor" aria-hidden="true">
                         <path d="M12 14.5C11.05 14.5 10.24 14.16 9.57 13.49C8.9 12.82 8.56 12.01 8.56 11.06V5.44C8.56 4.49 8.9 3.68 9.57 3.01C10.24 2.34 11.05 2 12 2C12.95 2 13.76 2.34 14.43 3.01C15.1 3.68 15.44 4.49 15.44 5.44V11.06C15.44 12.01 15.1 12.82 14.43 13.49C13.76 14.16 12.95 14.5 12 14.5Z" />

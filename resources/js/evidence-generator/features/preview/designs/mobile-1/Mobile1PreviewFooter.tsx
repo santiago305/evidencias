@@ -1,5 +1,5 @@
 import type { PreviewThemeMode } from '../../../../types';
-import { getSmsColors } from '../mobile-3/sms/smsAppearance';
+import { getSmsColors } from '../shared/sms/smsAppearance';
 
 export function Mobile1PreviewFooter({ themeMode }: { themeMode: PreviewThemeMode; variant?: 'default' | 'sms' }) {
     return <Mobile1SamsungNavigationFooter themeMode={themeMode} />;

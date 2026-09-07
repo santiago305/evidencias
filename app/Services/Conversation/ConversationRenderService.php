@@ -76,11 +76,11 @@ class ConversationRenderService
             $startDate = $this->subtractWorkingMinutes($lastMessageDate, $durationMinutes);
         }
 
-        if ($startDate->lessThan($minimumDate)) {
-            throw ValidationException::withMessages([
-                'duracion' => 'La duración hace que la conversación empiece antes de la fecha y hora indicada.',
-            ]);
-        }
+        // if ($startDate->lessThan($minimumDate)) {
+        //     throw ValidationException::withMessages([
+        //         'duracion' => 'La duración hace que la conversación empiece antes de la fecha y hora indicada.',
+        //     ]);
+        // }
 
         $clock = $startDate->copy();
         $variables = $this->buildVariables($input, $startDate);

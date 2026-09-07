@@ -1,1 +1,1 @@
-export { buildContactIdentityDisplay, formatTelefonoPE } from '../../whatsapp-desktop/contactIdentityDisplay.shared';
+export { buildContactIdentityDisplay, formatTelefonoPE } from '../../shared/whatsapp/contactIdentityDisplay';

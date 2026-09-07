@@ -1,5 +1,5 @@
 import type { PreviewThemeMode } from '../../../../types';
-import { getSmsColors } from '../mobile-3/sms/smsAppearance';
+import { getSmsColors } from '../shared/sms/smsAppearance';
 
 function AndroidBackIcon({ color }: { color: string }) {
     return (
@@ -32,17 +32,11 @@ export function Mobile2PreviewFooter({ themeMode, variant = 'default' }: { theme
 
     const bg = isSmsVariant ? smsColors.conversation : isDark ? '#05090C' : '#F7F8FA';
     const color = isSmsVariant ? smsColors.systemNavigationForeground : isDark ? '#B8BABC' : '#777777';
-    const navigationIcons = isSmsVariant
-        ? [
-              <AndroidRecentsIcon key="recents" color={color} />,
-              <AndroidHomeIcon key="home" color={color} />,
-              <AndroidBackIcon key="back" color={color} />,
-          ]
-        : [
-              <AndroidBackIcon key="back" color={color} />,
-              <AndroidHomeIcon key="home" color={color} />,
-              <AndroidRecentsIcon key="recents" color={color} />,
-          ];
+    const navigationIcons = [
+        <AndroidRecentsIcon key="recents" color={color} />,
+        <AndroidHomeIcon key="home" color={color} />,
+        <AndroidBackIcon key="back" color={color} />,
+    ];
 
     return (
         <div className="flex h-[50px] shrink-0 items-center justify-center gap-[95px]" style={{ backgroundColor: bg }}>

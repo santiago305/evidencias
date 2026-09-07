@@ -46,9 +46,7 @@ test('WhatsApp avatar dark mode uses its own palette and keeps timer badge dark 
 test('WhatsApp avatar seeds use client identity and keep desktop/mobile color logic isolated', () => {
     const seedSources = [
         resolve(designsDir, 'whatsapp-desktop', 'whatsappAppearance.ts'),
-        resolve(designsDir, 'mobile-1', 'whatsapp', 'whatsappAppearance.ts'),
-        resolve(designsDir, 'mobile-2', 'whatsapp', 'whatsappAppearance.ts'),
-        resolve(designsDir, 'mobile-3', 'whatsapp', 'whatsappAppearance.ts'),
+        resolve(designsDir, 'shared', 'whatsapp', 'whatsappAppearance.ts'),
     ];
 
     for (const sourcePath of seedSources) {
@@ -62,7 +60,7 @@ test('WhatsApp avatar seeds use client identity and keep desktop/mobile color lo
     }
 
     const desktopConversation = readFileSync(resolve(designsDir, 'whatsapp-desktop', 'WhatsappConversation.tsx'), 'utf8');
-    const mobileConversation = readFileSync(resolve(designsDir, 'mobile-1', 'whatsapp', 'WhatsappConversation.tsx'), 'utf8');
+    const mobileConversation = readFileSync(resolve(designsDir, 'shared', 'whatsapp', 'WhatsappConversation.tsx'), 'utf8');
 
     assert.match(desktopConversation, /buildWhatsappClientQuoteTheme/);
     assert.match(mobileConversation, /buildMobileClientQuoteTheme/);

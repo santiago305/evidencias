@@ -18,47 +18,71 @@ test('preview designs are isolated by target design folder', () => {
     assert.equal(existsSync(resolve(designsDir, 'whatsapp-desktop', 'whatsapp-footer', 'WhatsappDesktopInputBar.tsx')), true);
 
     assert.equal(existsSync(resolve(designsDir, 'mobile-1', 'Mobile1PreviewFrame.tsx')), true);
-    assert.equal(existsSync(resolve(designsDir, 'mobile-1', 'whatsapp', 'PreviewMobile1Whatsapp.tsx')), true);
-    assert.equal(existsSync(resolve(designsDir, 'mobile-1', 'sms', 'PreviewMobile1Sms.tsx')), true);
-    assert.equal(existsSync(resolve(designsDir, 'mobile-1', 'calls', 'design-1', 'PreviewMobile1CallDesign1.tsx')), true);
-    assert.equal(existsSync(resolve(designsDir, 'mobile-1', 'calls', 'design-2', 'PreviewMobile1CallDesign2.tsx')), true);
     assert.equal(existsSync(resolve(designsDir, 'mobile-2', 'Mobile2PreviewFrame.tsx')), true);
-    assert.equal(existsSync(resolve(designsDir, 'mobile-2', 'whatsapp', 'PreviewMobile2Whatsapp.tsx')), true);
-    assert.equal(existsSync(resolve(designsDir, 'mobile-2', 'sms', 'PreviewMobile2Sms.tsx')), true);
-    assert.equal(existsSync(resolve(designsDir, 'mobile-2', 'calls', 'design-1', 'PreviewMobile2CallDesign1.tsx')), true);
-    assert.equal(existsSync(resolve(designsDir, 'mobile-2', 'calls', 'design-2', 'PreviewMobile2CallDesign2.tsx')), true);
     assert.equal(existsSync(resolve(designsDir, 'mobile-3', 'Mobile1PreviewFrame.tsx')), true);
-    assert.equal(existsSync(resolve(designsDir, 'mobile-3', 'whatsapp', 'PreviewMobile1Whatsapp.tsx')), true);
-    assert.equal(existsSync(resolve(designsDir, 'mobile-3', 'sms', 'PreviewMobile1Sms.tsx')), true);
-    assert.equal(existsSync(resolve(designsDir, 'mobile-3', 'calls', 'design-1', 'PreviewMobile1CallDesign1.tsx')), true);
-    assert.equal(existsSync(resolve(designsDir, 'mobile-3', 'calls', 'design-2', 'PreviewMobile1CallDesign2.tsx')), true);
     assert.equal(existsSync(resolve(designsDir, 'mobile-4', 'Mobile4PreviewFrame.tsx')), true);
     assert.equal(existsSync(resolve(designsDir, 'mobile-4', 'whatsapp', 'PreviewMobile4Whatsapp.tsx')), true);
-    assert.equal(existsSync(resolve(designsDir, 'mobile-4', 'sms', 'PreviewMobile4Sms.tsx')), true);
-    assert.equal(existsSync(resolve(designsDir, 'mobile-4', 'calls', 'design-1', 'PreviewMobile4CallDesign1.tsx')), true);
+    assert.equal(existsSync(resolve(designsDir, 'mobile-5', 'mobile5Colors.ts')), true);
     assert.equal(existsSync(resolve(designsDir, 'shared', 'whatsapp', 'whatsappPreviewRuntime.ts')), true);
+    assert.equal(existsSync(resolve(designsDir, 'shared', 'sms', 'SmsConversation.tsx')), true);
+    assert.equal(existsSync(resolve(designsDir, 'shared', 'mobile-preview', 'MobileWhatsappPreview.tsx')), true);
+    assert.equal(existsSync(resolve(designsDir, 'shared', 'mobile-preview', 'MobileSmsPreview.tsx')), true);
+    assert.equal(existsSync(resolve(designsDir, 'shared', 'mobile-preview', 'MobileCallPreview.tsx')), true);
+    assert.equal(existsSync(resolve(designsDir, 'shared', 'mobile-preview', 'buildMobilePreviewRegistry.tsx')), true);
+    assert.equal(existsSync(resolve(designsDir, 'mobilePreviewProfiles.tsx')), true);
+
+    for (const designKey of ['mobile-1', 'mobile-2', 'mobile-3']) {
+        assert.equal(existsSync(resolve(designsDir, designKey, 'whatsapp', 'PreviewMobile1Whatsapp.tsx')), false);
+        assert.equal(existsSync(resolve(designsDir, designKey, 'sms', 'PreviewMobile1Sms.tsx')), false);
+    }
 });
 
 test('preview channel entry points use design folders directly', () => {
     const previewChannelsSource = readFileSync(resolve(previewDir, 'components', 'PreviewChannels.tsx'), 'utf8');
     const desktopSource = readFileSync(resolve(designsDir, 'whatsapp-desktop', 'PreviewWhatsappDesktop.tsx'), 'utf8');
-    const mobileSource = readFileSync(resolve(designsDir, 'mobile-2', 'whatsapp', 'PreviewMobile2Whatsapp.tsx'), 'utf8');
+    const profilesSource = readFileSync(resolve(designsDir, 'mobilePreviewProfiles.tsx'), 'utf8');
+    const sharedWhatsappSource = readFileSync(resolve(designsDir, 'shared', 'mobile-preview', 'MobileWhatsappPreview.tsx'), 'utf8');
 
     assert.match(previewChannelsSource, /from ["']\.\.\/designs\/whatsapp-desktop["']/);
-    assert.match(previewChannelsSource, /from ["']\.\.\/designs\/mobile-2["']/);
-    assert.match(previewChannelsSource, /from ["']\.\.\/designs\/mobile-3["']/);
-    assert.doesNotMatch(previewChannelsSource, /preview\/whatsapp|\.\.\/whatsapp/);
+    assert.match(previewChannelsSource, /mobilePreviewRegistry/);
+    assert.match(previewChannelsSource, /mobilePreviewProfiles/);
+    assert.doesNotMatch(previewChannelsSource, /designs\/mobile-[123]["']/);
     assert.doesNotMatch(desktopSource, /preview\/whatsapp|\.\.\/\.\.\/whatsapp|deviceMode=/);
-    assert.doesNotMatch(mobileSource, /preview\/whatsapp|\.\.\/\.\.\/\.\.\/whatsapp/);
+    assert.match(profilesSource, /satisfies Record<MobileDesignKey, MobilePreviewDesignProfile>/);
+    assert.match(sharedWhatsappSource, /buildWhatsappPreviewRuntime/);
+    assert.match(sharedWhatsappSource, /WhatsappConversation/);
 });
 
 test('mobile 4 is selected explicitly for all supported mobile channels', () => {
     const previewChannelsSource = readFileSync(resolve(previewDir, 'components', 'PreviewChannels.tsx'), 'utf8');
 
-    assert.match(previewChannelsSource, /PreviewMobile4CallDesign1/);
-    assert.match(previewChannelsSource, /PreviewMobile4Whatsapp/);
-    assert.match(previewChannelsSource, /PreviewMobile4Sms/);
-    assert.match(previewChannelsSource, /mobileDesignKey === 'mobile-4'/);
+    assert.match(previewChannelsSource, /mobilePreviewRegistry/);
+    assert.match(readFileSync(resolve(designsDir, 'mobilePreviewProfiles.tsx'), 'utf8'), /PreviewMobile4Whatsapp/);
+    assert.match(readFileSync(resolve(designsDir, 'mobilePreviewProfiles.tsx'), 'utf8'), /'mobile-4':\s*\{/);
+    assert.match(readFileSync(resolve(designsDir, 'mobilePreviewProfiles.tsx'), 'utf8'), /kind: 'custom'/);
+});
+
+test('mobile 5 is configured through the shared profile registry without copied entrypoints', () => {
+    const profilesSource = readFileSync(resolve(designsDir, 'mobilePreviewProfiles.tsx'), 'utf8');
+    const registrySource = readFileSync(resolve(designsDir, 'shared', 'mobile-preview', 'buildMobilePreviewRegistry.tsx'), 'utf8');
+
+    assert.match(profilesSource, /mobile5WhatsappFamily/);
+    assert.match(profilesSource, /'mobile-5':\s*\{/);
+    assert.match(profilesSource, /renderFrame: renderMobile3Frame/);
+    assert.match(profilesSource, /sms: mobile3SmsFamily/);
+    assert.match(profilesSource, /call: \{ missedSpacingVariant: 'standard' \}/);
+    assert.match(registrySource, /buildMobilePreviewRegistry/);
+    assert.equal(existsSync(resolve(designsDir, 'mobile-5', 'whatsapp', 'PreviewMobile5Whatsapp.tsx')), false);
+    assert.equal(existsSync(resolve(designsDir, 'mobile-5', 'sms', 'PreviewMobile5Sms.tsx')), false);
+    assert.equal(existsSync(resolve(designsDir, 'mobile-5', 'calls', 'design-1', 'PreviewMobile5CallDesign1.tsx')), false);
+});
+
+test('shared WhatsApp and Calls implementations are the channel sources of truth', () => {
+    assert.equal(existsSync(resolve(designsDir, 'shared', 'whatsapp', 'WhatsappConversation.tsx')), true);
+    assert.equal(existsSync(resolve(designsDir, 'shared', 'whatsapp', 'buildWhatsappConversation.tsx')), true);
+    assert.equal(existsSync(resolve(designsDir, 'shared', 'calls', 'IncomingCallContent.tsx')), true);
+    assert.equal(existsSync(resolve(designsDir, 'shared', 'calls', 'MissedCallContent.tsx')), true);
+    assert.doesNotMatch(readFileSync(resolve(previewDir, 'components', 'PreviewChannels.tsx'), 'utf8'), /if \(mobileDesignKey ===/);
 });
 
 test('desktop WhatsApp tray clock uses current Peru time instead of snapshot time', () => {
@@ -279,19 +303,12 @@ test('desktop WhatsApp input bar matches the message bubble text rhythm', () => 
 
 test('whatsapp typography platform is configured at the preview entry point', () => {
     const typographySource = readFileSync(resolve(designsDir, 'whatsappTypography.ts'), 'utf8');
-    const mobile1Source = readFileSync(resolve(designsDir, 'mobile-1', 'whatsapp', 'PreviewMobile1Whatsapp.tsx'), 'utf8');
-    const mobile2Source = readFileSync(resolve(designsDir, 'mobile-2', 'whatsapp', 'PreviewMobile2Whatsapp.tsx'), 'utf8');
-    const mobile3Source = readFileSync(resolve(designsDir, 'mobile-3', 'whatsapp', 'PreviewMobile1Whatsapp.tsx'), 'utf8');
+    const mobileWhatsappSource = readFileSync(resolve(designsDir, 'shared', 'mobile-preview', 'MobileWhatsappPreview.tsx'), 'utf8');
     const desktopSource = readFileSync(resolve(designsDir, 'whatsapp-desktop', 'PreviewWhatsappDesktop.tsx'), 'utf8');
     const appCssSource = readFileSync(resolve(designsDir, '..', '..', '..', '..', '..', 'css', 'app.css'), 'utf8');
 
     assert.match(typographySource, /type WhatsappTypographyPlatform = 'android' \| 'ios' \| 'windows';/);
-    assert.match(mobile1Source, /const whatsappTypographyPlatform: WhatsappTypographyPlatform = 'android';/);
-    assert.match(mobile1Source, /data-whatsapp-platform={whatsappTypographyPlatform}/);
-    assert.match(mobile2Source, /const whatsappTypographyPlatform: WhatsappTypographyPlatform = 'android';/);
-    assert.match(mobile2Source, /data-whatsapp-platform={whatsappTypographyPlatform}/);
-    assert.match(mobile3Source, /const whatsappTypographyPlatform: WhatsappTypographyPlatform = 'android';/);
-    assert.match(mobile3Source, /data-whatsapp-platform={whatsappTypographyPlatform}/);
+    assert.match(mobileWhatsappSource, /data-whatsapp-platform="android"/);
     assert.match(desktopSource, /const whatsappTypographyPlatform: WhatsappTypographyPlatform = 'windows';/);
     assert.match(desktopSource, /data-whatsapp-platform={whatsappTypographyPlatform}/);
     assert.match(appCssSource, /\[data-whatsapp-platform='android'\]/);

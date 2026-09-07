@@ -12,13 +12,14 @@ import type { WhatsappData } from '../mobile-3/whatsapp/whatsappTypes';
 const mobile4Directory = dirname(fileURLToPath(import.meta.url));
 const whatsappSource = readFileSync(resolve(mobile4Directory, 'whatsapp', 'PreviewMobile4Whatsapp.tsx'), 'utf8');
 const whatsappRuntimeSource = readFileSync(resolve(mobile4Directory, 'whatsapp', 'mobile4WhatsappRuntime.ts'), 'utf8');
-const smsSource = readFileSync(resolve(mobile4Directory, 'sms', 'PreviewMobile4Sms.tsx'), 'utf8');
+const smsSource = readFileSync(resolve(mobile4Directory, '..', 'shared', 'mobile-preview', 'MobileSmsPreview.tsx'), 'utf8');
+const profilesSource = readFileSync(resolve(mobile4Directory, '..', 'mobilePreviewProfiles.tsx'), 'utf8');
+const frameRendererSource = readFileSync(resolve(mobile4Directory, '..', 'shared', 'mobile-preview', 'frameRenderers.tsx'), 'utf8');
 const frameSource = readFileSync(resolve(mobile4Directory, 'Mobile4PreviewFrame.tsx'), 'utf8');
 const headerSource = readFileSync(resolve(mobile4Directory, 'Mobile4PreviewHeader.tsx'), 'utf8');
 const colorsSource = readFileSync(resolve(mobile4Directory, 'mobile4Colors.ts'), 'utf8');
-const callSource = readFileSync(resolve(mobile4Directory, 'calls', 'design-1', 'PreviewMobile4CallDesign1.tsx'), 'utf8');
+const callSource = readFileSync(resolve(mobile4Directory, '..', 'shared', 'mobile-preview', 'MobileCallPreview.tsx'), 'utf8');
 const sharedRuntimeSource = readFileSync(resolve(mobile4Directory, '..', 'shared', 'whatsapp', 'whatsappPreviewRuntime.ts'), 'utf8');
-const mobile3WhatsappSource = readFileSync(resolve(mobile4Directory, '..', 'mobile-3', 'whatsapp', 'PreviewMobile1Whatsapp.tsx'), 'utf8');
 
 let server: ViteDevServer;
 let buildMobile4WhatsappRuntime: (data: WhatsappData) => {
@@ -28,7 +29,7 @@ let buildMobile4WhatsappRuntime: (data: WhatsappData) => {
 };
 let buildWhatsappPreviewRuntime: (data: WhatsappData) => ReturnType<typeof buildMobile4WhatsappRuntime>;
 let getMobile4BatteryProgressWidth: (level: number) => number;
-let Mobile4BatteryIcon: (props: { level: number; themeMode: 'light' | 'dark' }) => React.ReactElement;
+let Mobile4BatteryIcon: (props: { level: number; themeMode: 'light' | 'dark'; progressColor?: string }) => React.ReactElement;
 let Mobile4PreviewHeader: (props: { themeMode: 'light' | 'dark'; notificationIds?: string[] }) => React.ReactElement;
 
 before(async () => {
@@ -70,14 +71,17 @@ test('mobile 4 WhatsApp uses the shared runtime behavior contract', () => {
     assert.match(sharedRuntimeSource, /buildContactIdentityDisplay/);
     assert.doesNotMatch(whatsappSource, /data\.nombre\?\.trim\(\)/);
     assert.doesNotMatch(whatsappSource, /data-whatsapp-platform/);
-    assert.match(whatsappSource, /mobile-3\/whatsapp\/WhatsappConversation/);
-    assert.doesNotMatch(whatsappSource, /mobile-1\/whatsapp\/WhatsappConversation/);
+    assert.match(whatsappSource, /shared\/whatsapp\/WhatsappConversation/);
+    assert.match(whatsappSource, /mobile3WhatsappVisualAdapter/);
 });
 
 test('mobile 4 SMS uses mobile 2 content and mobile 3 SMS footer', () => {
-    assert.match(smsSource, /getSmsColors\(themeMode, ['"]mobile-2['"]\)/);
-    assert.match(smsSource, /<SmsMobileHeader[^>]*variant="mobile-2"[^>]*showVideoCall=\{false\}/);
-    assert.match(smsSource, /<SmsConversation[^>]*variant="mobile-2"/);
+    assert.match(profilesSource, /'mobile-4':/);
+    assert.match(profilesSource, /variant: 'mobile-2'/);
+    assert.match(profilesSource, /showVideoCall: false/);
+    assert.match(smsSource, /getSmsColors\(themeMode, profile\.sms\.variant\)/);
+    assert.match(smsSource, /SmsMobileHeader/);
+    assert.match(smsSource, /SmsConversation/);
     assert.match(frameSource, /Mobile1PreviewFooter/);
     assert.match(frameSource, /<Mobile1PreviewFooter themeMode=\{themeMode\} \/>/);
     assert.doesNotMatch(frameSource, /Mobile4PreviewFooter/);
@@ -141,7 +145,7 @@ test('mobile 3 and mobile 4 use the same WhatsApp runtime output', () => {
         Math.random = originalRandom;
     }
 
-    assert.match(mobile3WhatsappSource, /\.\.\/shared\/whatsapp\/whatsappPreviewRuntime/);
+    assert.match(whatsappSource, /shared\/whatsapp\/WhatsappConversation/);
 });
 
 test('mobile 4 keeps its own battery with mobile 3 signal and wifi', () => {
@@ -190,6 +194,18 @@ test('mobile 4 battery progress remains visibly proportional in both themes', ()
     }
 });
 
+test('mobile 4 battery keeps default progress colors and accepts an optional override', () => {
+    const lightDefaultMarkup = renderToStaticMarkup(createElement(Mobile4BatteryIcon, { level: 40, themeMode: 'light' }));
+    const darkDefaultMarkup = renderToStaticMarkup(createElement(Mobile4BatteryIcon, { level: 40, themeMode: 'dark' }));
+    const lightOverrideMarkup = renderToStaticMarkup(createElement(Mobile4BatteryIcon, { level: 40, themeMode: 'light', progressColor: '#AEB4BA' }));
+    const darkOverrideMarkup = renderToStaticMarkup(createElement(Mobile4BatteryIcon, { level: 40, themeMode: 'dark', progressColor: '#C7CDD4' }));
+
+    assert.match(lightDefaultMarkup, /width="15\.2[^"]*"[^>]*fill="#8A9198"/);
+    assert.match(darkDefaultMarkup, /width="15\.2[^"]*"[^>]*fill="#AEB7C2"/);
+    assert.match(lightOverrideMarkup, /width="15\.2[^"]*"[^>]*fill="#AEB4BA"/);
+    assert.match(darkOverrideMarkup, /width="15\.2[^"]*"[^>]*fill="#C7CDD4"/);
+});
+
 test('mobile 4 light status bar shares the WhatsApp chat background', () => {
     assert.match(colorsSource, /export const mobile4WhatsappLightBackground = ['"]#efeae2['"]/);
     assert.match(headerSource, /mobile4WhatsappLightBackground/);
@@ -198,9 +214,10 @@ test('mobile 4 light status bar shares the WhatsApp chat background', () => {
 });
 
 test('mobile 4 calls use the mobile 4 frame and shared call content', () => {
-    assert.match(callSource, /Mobile4PreviewFrame/);
     assert.match(callSource, /IncomingCallContent/);
-    assert.match(callSource, /buildMobilePreviewNotificationIds\(data, 'mobile-4', 'call'\)/);
+    assert.match(callSource, /buildMobilePreviewNotificationIds\(data, profile\.key, 'call'\)/);
+    assert.match(profilesSource, /'mobile-4':/);
+    assert.match(frameRendererSource, /renderMobile4Frame/);
     assert.match(frameSource, /id="CAPTURA"/);
 });
 
@@ -222,7 +239,7 @@ test('mobile 4 header renders the notification ids received by its frame', () =>
 });
 
 test('mobile 4 SMS light passes its shell color only to the system status bar', () => {
-    assert.match(smsSource, /statusBarBackground={themeMode === 'light' \? colors\.shell : undefined}/);
+    assert.match(frameRendererSource, /statusBarBackground=\{channel === 'sms' && themeMode === 'light' \? smsShellColor : undefined\}/);
     assert.match(frameSource, /statusBarBackground\?: string/);
     assert.match(frameSource, /statusBarBackground={statusBarBackground}/);
     assert.match(headerSource, /statusBarBackground\?: string/);

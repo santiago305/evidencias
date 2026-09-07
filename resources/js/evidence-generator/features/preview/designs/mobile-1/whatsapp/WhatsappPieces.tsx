@@ -66,7 +66,9 @@ export function PanelItem({ label, value }: { label: string; value: string }) {
     );
 }
 
-export type MsgStatus = 'sent' | 'delivered' | 'read';
+import type { WhatsappMessageStatus } from '../../shared/whatsapp/whatsappTypes';
+
+export type MsgStatus = WhatsappMessageStatus;
 
 export type QuotedMessage = {
     author: string;

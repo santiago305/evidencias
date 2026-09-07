@@ -15,11 +15,18 @@ export function getMobile4BatteryProgressWidth(level: number): number {
     return INNER_WIDTH * (value / 100);
 }
 
-export function Mobile4BatteryIcon({ level, themeMode }: { level: number; themeMode: 'light' | 'dark' }) {
+export type Mobile4BatteryIconProps = {
+    level: number;
+    themeMode: 'light' | 'dark';
+    progressColor?: string;
+};
+
+export function Mobile4BatteryIcon({ level, themeMode, progressColor }: Mobile4BatteryIconProps) {
     const value = Math.max(0, Math.min(100, Math.round(level)));
     const clipId = `mobile4-battery-${useId().replace(/:/g, '')}`;
     const progressWidth = getMobile4BatteryProgressWidth(level);
     const color = themeMode === 'dark' ? '#F5F7FA' : '#3C4043';
+    const resolvedProgressColor = progressColor ?? (themeMode === 'dark' ? PROGRESS_COLOR_DARK : PROGRESS_COLOR_LIGHT);
 
     return (
         <svg viewBox="0 0 48 24" className="h-[15px] w-[30px] shrink-0" fill="none" aria-label={`Batería ${value}%`} role="img">
@@ -35,7 +42,7 @@ export function Mobile4BatteryIcon({ level, themeMode }: { level: number; themeM
                 height={INNER_HEIGHT}
                 rx={INNER_RADIUS}
                 clipPath={`url(#${clipId})`}
-                fill={themeMode === 'dark' ? PROGRESS_COLOR_DARK : PROGRESS_COLOR_LIGHT}
+                fill={resolvedProgressColor}
             />
             <rect x="1.5" y="3" width="40" height="18" rx="4.5" stroke={color} strokeWidth="2" />
             <rect x="43" y="8" width="3" height="8" rx="1.5" fill={color} />

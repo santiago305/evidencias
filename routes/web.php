@@ -17,17 +17,19 @@ Route::get('/', function () {
 Route::middleware(['auth'])->group(function () {
     Route::get('/inicio', function () {
         $user = auth()->user();
+        $globalMobileDesigns = MobileDesignCatalog::filterSupported(
+            MobileDesign::query()->orderBy('design_key')->pluck('design_key')->all(),
+        );
 
         return Inertia::render('evidence-generator', [
             'availableMobileDesigns' => MobileDesignCatalog::keys(),
-            'globalMobileDesigns' => MobileDesign::query()
-                ->orderBy('design_key')
-                ->pluck('design_key')
-                ->values(),
-            'registeredMobileDesigns' => $user?->mobileDesigns()
-                ->orderBy('design_key')
-                ->pluck('design_key')
-                ->values() ?? [],
+            'globalMobileDesigns' => $globalMobileDesigns,
+            'registeredMobileDesigns' => array_values(array_intersect(
+                $globalMobileDesigns,
+                MobileDesignCatalog::filterSupported(
+                    $user?->mobileDesigns()->orderBy('design_key')->pluck('design_key')->all() ?? [],
+                ),
+            )),
         ]);
     })->name('home');
 

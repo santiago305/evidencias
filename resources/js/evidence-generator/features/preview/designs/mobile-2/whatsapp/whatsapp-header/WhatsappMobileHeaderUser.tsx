@@ -7,8 +7,6 @@ import { buildWhatsappAvatarSeed } from '../whatsappAppearance';
 import type { MsgStatus } from '../WhatsappPieces';
 import type { WhatsappData } from '../whatsappTypes';
 
-type Status = { type: 'hidden' } | { type: 'online' };
-
 type WhatsappMobileHeaderUserProps = {
     data: WhatsappData;
     status?: MsgStatus;
@@ -19,20 +17,11 @@ type WhatsappMobileHeaderUserProps = {
 
 export function WhatsappMobileHeaderUser({
     data,
-    status,
     showTemporaryIndicator = true,
     displayTitle,
     themeMode = 'light',
 }: WhatsappMobileHeaderUserProps) {
     const isDark = themeMode === 'dark';
-    const headerStatus = useMemo<Status>(() => {
-        if (status) {
-            return status === 'read' ? { type: 'online' } : { type: 'hidden' };
-        }
-
-        return Math.random() < 0.5 ? { type: 'online' } : { type: 'hidden' };
-    }, [status]);
-
     const avatarTheme = useMemo(() => createWhatsappAvatarTheme(buildWhatsappAvatarSeed(data), themeMode), [data, themeMode]);
 
     const headerTitle = displayTitle ?? (data.nombre?.trim() ? data.nombre : 'Aracely MD');
