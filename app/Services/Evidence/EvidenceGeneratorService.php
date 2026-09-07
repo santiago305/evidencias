@@ -99,6 +99,8 @@ class EvidenceGeneratorService
      */
     public function generate(User $user, array $input): array
     {
+        $conversationType = trim((string) ($input['conversationType'] ?? ''));
+        $conversationType = $conversationType === 'sms' ? 'sms' : 'whatsapp';
         $seedCode = isset($input['seedCode']) ? trim((string) $input['seedCode']) : '';
         $conversationCode = isset($input['conversationCode']) ? trim((string) $input['conversationCode']) : '';
         $isReplay = $seedCode !== '';
@@ -184,6 +186,7 @@ class EvidenceGeneratorService
                 ->with('messages')
                 ->where('is_active', true)
                 ->where('code', $conversationCode)
+                ->where('type', $conversationType)
                 ->first();
 
             if (! $conversation) {
@@ -191,10 +194,10 @@ class EvidenceGeneratorService
                     'conversationCode' => 'No se encontró una conversación activa con ese código.',
                 ]);
             }
-        } elseif ($fixedConversation = $this->resolveFixedConversation()) {
+        } elseif ($fixedConversation = $this->resolveFixedConversation($conversationType)) {
             $conversation = $fixedConversation;
         } else {
-            $selected = $this->bagService->takeNextForUser($user);
+            $selected = $this->bagService->takeNextForUser($user, $conversationType);
             $conversation = $selected['conversation'];
             $cycle = (int) $selected['progress']->cycle;
         }
@@ -209,8 +212,17 @@ class EvidenceGeneratorService
             $returnedSeedCode = $this->storeEvidenceWithUniqueSeed($user, $conversation, $cycle, $renderInput, $previewSeed);
         }
 
-        $progress = UserConversationProgress::query()->where('user_id', $user->id)->first();
-        $pending = is_array($progress?->pending_ids) ? count($progress->pending_ids) : Conversation::query()->where('is_active', true)->where('status', 'production')->count();
+        $progress = UserConversationProgress::query()
+            ->where('user_id', $user->id)
+            ->where('conversation_type', $conversationType)
+            ->first();
+        $pending = is_array($progress?->pending_ids)
+            ? count($progress->pending_ids)
+            : Conversation::query()
+                ->where('type', $conversationType)
+                ->where('is_active', true)
+                ->where('status', 'production')
+                ->count();
         $used = is_array($progress?->used_ids) ? count($progress->used_ids) : 0;
         $progressCycle = (int) ($progress?->cycle ?? 1);
 
@@ -229,16 +241,21 @@ class EvidenceGeneratorService
                 'cycle' => $progressCycle,
                 'used' => $used,
                 'pending' => $pending,
-                'total' => Conversation::query()->where('is_active', true)->where('status', 'production')->count(),
+                'total' => Conversation::query()
+                    ->where('type', $conversationType)
+                    ->where('is_active', true)
+                    ->where('status', 'production')
+                    ->count(),
             ],
             'trayProfile' => $trayProfile,
         ];
     }
 
-    private function resolveFixedConversation(): ?Conversation
+    private function resolveFixedConversation(string $conversationType): ?Conversation
     {
         return Conversation::query()
             ->with('messages')
+            ->where('type', $conversationType)
             ->where('is_active', true)
             ->where('status', 'fixed')
             ->orderByDesc('updated_at')

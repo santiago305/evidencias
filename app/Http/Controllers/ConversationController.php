@@ -7,15 +7,22 @@ use App\Models\Conversation;
 use App\Models\ConversationMessage;
 use App\Services\Conversation\ConversationDelayDistributionService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 
 class ConversationController extends Controller
 {
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
+        $type = $request->validate([
+            'type' => ['sometimes', Rule::in(['whatsapp', 'sms'])],
+        ])['type'] ?? 'whatsapp';
+
         $conversations = Conversation::query()
             ->with('messages')
+            ->where('type', $type)
             ->orderByDesc('updated_at')
             ->orderByDesc('id')
             ->get();
@@ -35,11 +42,12 @@ class ConversationController extends Controller
 
         $conversation = DB::transaction(function () use ($validated, $delays, $conversationCode) {
             if ($validated['status'] === 'fixed') {
-                $this->clearFixedConversations();
+                $this->clearFixedConversations($validated['type']);
             }
 
             $conversation = Conversation::query()->create([
                 'code' => $conversationCode,
+                'type' => $validated['type'],
                 'is_active' => true,
                 'status' => $validated['status'],
             ]);
@@ -66,7 +74,7 @@ class ConversationController extends Controller
 
         DB::transaction(function () use ($conversation, $validated, $messages, $delays) {
             if ($validated['status'] === 'fixed') {
-                $this->clearFixedConversations($conversation);
+                $this->clearFixedConversations($conversation->type, $conversation);
             }
 
             $conversation->status = $validated['status'];
@@ -106,9 +114,10 @@ class ConversationController extends Controller
         }
     }
 
-    private function clearFixedConversations(?Conversation $exceptConversation = null): void
+    private function clearFixedConversations(string $type, ?Conversation $exceptConversation = null): void
     {
         Conversation::query()
+            ->where('type', $type)
             ->where('status', 'fixed')
             ->when(
                 $exceptConversation !== null,

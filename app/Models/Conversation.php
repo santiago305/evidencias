@@ -12,6 +12,7 @@ class Conversation extends Model
 
     protected $fillable = [
         'code',
+        'type',
         'is_active',
         'status',
     ];
