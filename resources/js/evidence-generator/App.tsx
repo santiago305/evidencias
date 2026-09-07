@@ -21,6 +21,7 @@ import type {
     ActiveDesign,
     ConversationProgressSummary,
     ConversationStatus,
+    ConversationType,
     FormInputKey,
     FormState,
     GeneratedMessage,
@@ -58,6 +59,7 @@ interface ConversationsIndexResponse {
 interface ConversationApiModel {
     id: number;
     code: string;
+    type: ConversationType;
     status: ConversationStatus;
     messages: Array<{
         side: 'in' | 'out';
@@ -93,6 +95,7 @@ interface StoreConversationResponse {
     data: {
         id: number;
         code: string;
+        type: ConversationType;
         status: ConversationStatus;
     };
 }
@@ -108,6 +111,7 @@ interface StoreMobileDesignResponse {
 interface ConversationListItem {
     id: number;
     code: string;
+    type: ConversationType;
     status: ConversationStatus;
     messages: ConversationModalMessageDraft[];
 }
@@ -174,6 +178,7 @@ export default function App({
     const [conversations, setConversations] = useState<ConversationListItem[]>([]);
     const [editingConversation, setEditingConversation] = useState<ConversationListItem | null>(null);
     const replayLookupSeedRef = useRef('');
+    const activeConversationType: ConversationType = activeDesign === 'sms' ? 'sms' : 'whatsapp';
 
     const hasRegisteredMobileDesign = registeredMobileDesigns.length > 0;
     const testMobileDesignKey = resolveActiveMobileDesignKey({
@@ -240,12 +245,18 @@ export default function App({
         });
     };
 
-    const loadConversations = async () => {
+    const loadConversations = async (conversationType: ConversationType, isCurrent: () => boolean = () => true) => {
         try {
-            const response = await getJson<ConversationsIndexResponse>(route('conversations.index'));
+            const response = await getJson<ConversationsIndexResponse>(route('conversations.index', { type: conversationType }));
+
+            if (!isCurrent()) {
+                return;
+            }
+
             const normalizedConversations: ConversationListItem[] = response.data.map((conversation) => ({
                 id: conversation.id,
                 code: conversation.code,
+                type: conversation.type,
                 status: conversation.status,
                 messages: conversation.messages.map((message) => ({
                     side: message.side,
@@ -257,13 +268,21 @@ export default function App({
             setConversations(normalizedConversations);
             setConversationsCount(normalizedConversations.length);
         } catch {
-            setFeedbackMessage('No se pudo cargar el listado de conversaciones.');
+            if (isCurrent()) {
+                setFeedbackMessage('No se pudo cargar el listado de conversaciones.');
+            }
         }
     };
 
     useEffect(() => {
-        void loadConversations();
-    }, []);
+        let cancelled = false;
+
+        void loadConversations(activeConversationType, () => !cancelled);
+
+        return () => {
+            cancelled = true;
+        };
+    }, [activeConversationType]);
 
     useEffect(() => {
         if (!hasRegisteredMobileDesign && activeDesign !== 'whatsapp') {
@@ -356,6 +375,7 @@ export default function App({
                 ...requestForm,
                 ...(seedCodeInput.trim() !== '' ? { seedCode: seedCodeInput.trim() } : {}),
                 ...(seedCodeInput.trim() === '' && conversationCodeInput.trim() !== '' ? { conversationCode: conversationCodeInput.trim() } : {}),
+                ...(activeDesign === 'whatsapp' || activeDesign === 'sms' ? { conversationType: activeDesign } : {}),
             };
 
             Object.entries(requestData).forEach(([key, value]) => {
@@ -452,9 +472,10 @@ export default function App({
 
         try {
             const isEditingConversation = editingConversation !== null;
+            const requestPayload = isEditingConversation ? payload : { ...payload, type: activeConversationType };
             const response = isEditingConversation
                 ? await putJson<StoreConversationResponse>(route('conversations.update', { conversation: editingConversation.id }), payload)
-                : await postJson<StoreConversationResponse>(route('conversations.store'), payload);
+                : await postJson<StoreConversationResponse>(route('conversations.store'), requestPayload);
 
             setIsConversationModalOpen(false);
             setEditingConversation(null);
@@ -463,7 +484,7 @@ export default function App({
                     ? `Conversacion ${response.data.code} actualizada correctamente.`
                     : `Conversacion ${response.data.code} guardada correctamente.`,
             );
-            await loadConversations();
+            await loadConversations(activeConversationType);
         } catch (error) {
             const errorPayload = error as {
                 errors?: Record<string, string[]>;
@@ -492,7 +513,7 @@ export default function App({
             });
 
             setConversations((previous) => previous.map((item) => (item.id === conversationId ? { ...item, status } : item)));
-            await loadConversations();
+            await loadConversations(activeConversationType);
             setFeedbackMessage(`Conversacion ${conversation.code} marcada como ${getConversationStatusLabel(status)}.`);
         } catch (error) {
             const errorPayload = error as {

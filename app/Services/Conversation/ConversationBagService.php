@@ -16,9 +16,10 @@ class ConversationBagService
      *   progress: UserConversationProgress
      * }
      */
-    public function takeNextForUser(User $user): array
+    public function takeNextForUser(User $user, string $conversationType): array
     {
         $allIds = Conversation::query()
+            ->where('type', $conversationType)
             ->where('is_active', true)
             ->where('status', 'production')
             ->orderBy('id')
@@ -30,20 +31,22 @@ class ConversationBagService
         }
 
         $conversationId = null;
-        $progress = DB::transaction(function () use ($user, $allIds, &$conversationId): UserConversationProgress {
+        $progress = DB::transaction(function () use ($user, $conversationType, $allIds, &$conversationId): UserConversationProgress {
             $progress = UserConversationProgress::query()
                 ->where('user_id', $user->id)
+                ->where('conversation_type', $conversationType)
                 ->lockForUpdate()
                 ->first();
 
             if (! $progress) {
                 $progress = new UserConversationProgress([
                     'user_id' => $user->id,
+                    'conversation_type' => $conversationType,
                     'cycle' => 1,
                 ]);
             }
 
-            $startConversationId = $this->resolveStartConversationId($progress, $allIds, $user);
+            $startConversationId = $this->resolveStartConversationId($progress, $allIds, $user, $conversationType);
             $pending = $this->normalizePendingIds($progress, $allIds, $startConversationId);
             $used = array_values(array_map('intval', (array) ($progress->used_ids ?? [])));
 
@@ -150,7 +153,7 @@ class ConversationBagService
     /**
      * @param  list<int>  $allIds
      */
-    private function resolveStartConversationId(UserConversationProgress $progress, array $allIds, User $user): int
+    private function resolveStartConversationId(UserConversationProgress $progress, array $allIds, User $user, string $conversationType): int
     {
         $currentStart = (int) ($progress->start_conversation_id ?? 0);
         if ($currentStart !== 0 && in_array($currentStart, $allIds, true)) {
@@ -163,6 +166,7 @@ class ConversationBagService
         }
 
         $takenStartIds = UserConversationProgress::query()
+            ->where('conversation_type', $conversationType)
             ->whereNotNull('start_conversation_id')
             ->where('user_id', '!=', $user->id)
             ->lockForUpdate()

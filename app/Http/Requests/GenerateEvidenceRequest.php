@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\Validator;
 
 class GenerateEvidenceRequest extends FormRequest
@@ -24,6 +25,7 @@ class GenerateEvidenceRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'conversationType' => ['sometimes', Rule::in(['whatsapp', 'sms'])],
             'seedCode' => ['nullable', 'string', 'max:100'],
             'conversationCode' => ['nullable', 'string', 'max:100'],
             'telefono' => ['required_without:seedCode', 'nullable', 'string', 'regex:/^9\d{8}$/'],

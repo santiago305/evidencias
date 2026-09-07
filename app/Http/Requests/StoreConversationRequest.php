@@ -19,10 +19,18 @@ class StoreConversationRequest extends FormRequest
 
     protected function prepareForValidation(): void
     {
+        $defaults = [];
+
         if (! $this->has('status')) {
-            $this->merge([
-                'status' => 'development',
-            ]);
+            $defaults['status'] = 'development';
+        }
+
+        if (! $this->has('type')) {
+            $defaults['type'] = 'whatsapp';
+        }
+
+        if ($defaults !== []) {
+            $this->merge($defaults);
         }
     }
 
@@ -36,6 +44,7 @@ class StoreConversationRequest extends FormRequest
         $messagesRule = $this->isMethod('post') ? 'required' : 'sometimes';
 
         return [
+            'type' => [$this->isMethod('post') ? 'required' : 'sometimes', Rule::in(['whatsapp', 'sms'])],
             'status' => ['required', Rule::in(['production', 'development', 'fixed'])],
             'messages' => [$messagesRule, 'array', 'min:1'],
             'messages.*.side' => ['required', Rule::in(['in', 'out'])],

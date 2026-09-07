@@ -14,6 +14,7 @@ class UserConversationProgress extends Model
 
     protected $fillable = [
         'user_id',
+        'conversation_type',
         'cycle',
         'pending_ids',
         'used_ids',
