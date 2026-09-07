@@ -1,6 +1,7 @@
 import { ArrowLeft } from 'lucide-react';
 import { useMemo } from 'react';
 import type { PreviewThemeMode } from '../../../../../../types';
+import { useWhatsappColorProfile } from '../../../shared/whatsapp/whatsappColorProfile';
 import { WhatsappAvatarImage } from '../../../WhatsappAvatarImage';
 import { createWhatsappAvatarTheme } from '../avatarTheme';
 import { buildWhatsappAvatarSeed } from '../whatsappAppearance';
@@ -25,6 +26,7 @@ export function WhatsappMobileHeaderUser({
     themeMode = 'light',
 }: WhatsappMobileHeaderUserProps) {
     const isDark = themeMode === 'dark';
+    const colors = useWhatsappColorProfile();
     const headerStatus = useMemo<Status>(() => {
         if (status) {
             return status === 'read' ? { type: 'online' } : { type: 'hidden' };
@@ -43,7 +45,13 @@ export function WhatsappMobileHeaderUser({
     }, [headerTitle]);
 
     return (
-        <div className={['w-full border-b px-[5px] py-[12.5px]', isDark ? 'border-white/5 bg-[#0B1014]' : 'border-black/10 bg-white'].join(' ')}>
+        <div
+            className={[
+                'w-full border-b px-[5px] py-[12.5px]',
+                colors ? (isDark ? 'border-white/5' : 'border-black/10') : isDark ? 'border-white/5 bg-[#0B1014]' : 'border-black/10 bg-white',
+            ].join(' ')}
+            style={colors ? { backgroundColor: colors.headerBackground } : undefined}
+        >
             <div className="flex items-center justify-between gap-2.5">
                 <div className="flex min-w-0 flex-1 items-center gap-2.5">
                     <button
@@ -67,9 +75,9 @@ export function WhatsappMobileHeaderUser({
                                         className="grid h-full w-full place-items-center rounded-full border text-[22.5px] leading-none font-bold"
                                         data-avatar-initial="true"
                                         style={{
-                                            backgroundColor: avatarTheme.bg,
+                                            backgroundColor: colors?.avatarBackground ?? avatarTheme.bg,
                                             borderColor: avatarTheme.border,
-                                            color: avatarTheme.icon,
+                                            color: colors?.avatarText ?? avatarTheme.icon,
                                         }}
                                     >
                                         {mobileAvatarInitial}
@@ -83,14 +91,14 @@ export function WhatsappMobileHeaderUser({
                                             preserveAspectRatio="xMidYMid meet"
                                             className="h-full w-full rounded-full"
                                             style={{
-                                                backgroundColor: avatarTheme.bg,
+                                                backgroundColor: colors?.avatarBackground ?? avatarTheme.bg,
                                             }}
                                             fill="none"
                                         >
                                             <title>default-contact-refreshed</title>
                                             <path
                                                 d="M24 23q-1.857 0-3.178-1.322Q19.5 20.357 19.5 18.5t1.322-3.178T24 14t3.178 1.322Q28.5 16.643 28.5 18.5t-1.322 3.178T24 23m-6.75 10q-.928 0-1.59-.66-.66-.662-.66-1.59v-.9q0-.956.492-1.758A3.3 3.3 0 0 1 16.8 26.87a16.7 16.7 0 0 1 3.544-1.308q1.8-.435 3.656-.436 1.856 0 3.656.436T31.2 26.87q.816.422 1.308 1.223T33 29.85v.9q0 .928-.66 1.59-.662.66-1.59.66z"
-                                                fill={avatarTheme.icon}
+                                                fill={colors?.avatarText ?? avatarTheme.icon}
                                             />
                                         </svg>
                                     </span>
@@ -139,8 +147,9 @@ export function WhatsappMobileHeaderUser({
                         <div
                             className={[
                                 'truncate pb-[1.25px] text-[16.25px] leading-[21.25px] font-medium tracking-tight',
-                                isDark ? 'text-white' : 'text-[#111b21]',
+                                colors ? '' : isDark ? 'text-white' : 'text-[#111b21]',
                             ].join(' ')}
+                            style={colors ? { color: colors.headerText } : undefined}
                         >
                             {headerTitle}
                         </div>
@@ -157,7 +166,8 @@ export function WhatsappMobileHeaderUser({
                     <span
                         aria-hidden="true"
                         data-icon="video-call-refreshed"
-                        className={['h-[31.25px] w-[31.25px]', isDark ? 'text-slate-200' : 'text-black'].join(' ')}
+                        className={['h-[31.25px] w-[31.25px]', colors ? '' : isDark ? 'text-slate-200' : 'text-black'].filter(Boolean).join(' ')}
+                        style={colors ? { color: colors.headerIcons } : undefined}
                     >
                         <svg viewBox="0 0 22 22" height="25" width="25" fill="none">
                             <title>video-call-refreshed</title>
@@ -171,7 +181,8 @@ export function WhatsappMobileHeaderUser({
                     <span
                         aria-hidden="true"
                         data-icon="audio-call-refreshed"
-                        className={['h-[31.25px] w-[31.25px]', isDark ? 'text-slate-200' : 'text-black'].join(' ')}
+                        className={['h-[31.25px] w-[31.25px]', colors ? '' : isDark ? 'text-slate-200' : 'text-black'].filter(Boolean).join(' ')}
+                        style={colors ? { color: colors.headerIcons } : undefined}
                     >
                         <svg viewBox="0 0 22 22" height="25" width="25" preserveAspectRatio="xMidYMid meet" fill="currentColor">
                             <title>ic-call</title>
@@ -186,8 +197,15 @@ export function WhatsappMobileHeaderUser({
                         type="button"
                         className={[
                             'grid h-[25px] w-[25px] place-items-center rounded-full transition',
-                            isDark ? 'text-slate-200 hover:bg-white/10 active:bg-white/15' : 'text-black hover:bg-black/5 active:bg-black/10',
+                            colors
+                                ? isDark
+                                    ? 'hover:bg-white/10 active:bg-white/15'
+                                    : 'hover:bg-black/5 active:bg-black/10'
+                                : isDark
+                                  ? 'text-slate-200 hover:bg-white/10 active:bg-white/15'
+                                  : 'text-black hover:bg-black/5 active:bg-black/10',
                         ].join(' ')}
+                        style={colors ? { color: colors.headerIcons } : undefined}
                         aria-label="Menu"
                         title="Menu"
                     >

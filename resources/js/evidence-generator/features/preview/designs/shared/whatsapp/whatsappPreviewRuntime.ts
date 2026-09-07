@@ -1,8 +1,7 @@
 import type { PreviewTemporalBehavior } from '../../../../../types';
-import { buildContactIdentityDisplay } from '../../mobile-3/whatsapp/contactIdentityDisplay';
-import { buildWhatsappAvatarSeed } from '../../mobile-3/whatsapp/whatsappAppearance';
-import type { MsgStatus } from '../../mobile-3/whatsapp/WhatsappPieces';
-import type { WhatsappData } from '../../mobile-3/whatsapp/whatsappTypes';
+import { buildContactIdentityDisplay } from './contactIdentityDisplay';
+import { buildWhatsappAvatarSeed } from './whatsappAppearance';
+import type { WhatsappData, WhatsappMessageStatus } from './whatsappTypes';
 
 export function hashString(value: string): number {
     let hash = 2166136261;
@@ -28,7 +27,7 @@ export function createSeededRandom(seed: number): () => number {
     };
 }
 
-export function buildWhatsappMessageStatus(userSeed: string, snapshotStatus?: MsgStatus): MsgStatus {
+export function buildWhatsappMessageStatus(userSeed: string, snapshotStatus?: WhatsappMessageStatus): WhatsappMessageStatus {
     if (snapshotStatus) {
         return snapshotStatus;
     }

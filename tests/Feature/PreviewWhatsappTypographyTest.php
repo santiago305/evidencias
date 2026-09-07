@@ -3,21 +3,18 @@
 test('whatsapp previews declare their typography platform at the entry point', function () {
     $designsPath = base_path('resources/js/evidence-generator/features/preview/designs');
 
-    $mobile1 = file_get_contents($designsPath.'/mobile-1/whatsapp/PreviewMobile1Whatsapp.tsx');
-    $mobile2 = file_get_contents($designsPath.'/mobile-2/whatsapp/PreviewMobile2Whatsapp.tsx');
-    $mobile3 = file_get_contents($designsPath.'/mobile-3/whatsapp/PreviewMobile1Whatsapp.tsx');
+    $mobileWhatsapp = file_get_contents($designsPath.'/shared/mobile-preview/MobileWhatsappPreview.tsx');
+    $mobileProfiles = file_get_contents($designsPath.'/mobilePreviewProfiles.tsx');
     $desktop = file_get_contents($designsPath.'/whatsapp-desktop/PreviewWhatsappDesktop.tsx');
     $typography = file_get_contents($designsPath.'/whatsappTypography.ts');
     $appCss = file_get_contents(base_path('resources/css/app.css'));
     $segoeCss = file_get_contents(base_path('resources/css/fonts/segoe-ui/stylesheet.css'));
 
     expect($typography)->toContain("type WhatsappTypographyPlatform = 'android' | 'ios' | 'windows';");
-    expect($mobile1)->toContain("const whatsappTypographyPlatform: WhatsappTypographyPlatform = 'android';");
-    expect($mobile1)->toContain('data-whatsapp-platform={whatsappTypographyPlatform}');
-    expect($mobile2)->toContain("const whatsappTypographyPlatform: WhatsappTypographyPlatform = 'android';");
-    expect($mobile2)->toContain('data-whatsapp-platform={whatsappTypographyPlatform}');
-    expect($mobile3)->toContain("const whatsappTypographyPlatform: WhatsappTypographyPlatform = 'android';");
-    expect($mobile3)->toContain('data-whatsapp-platform={whatsappTypographyPlatform}');
+    expect($mobileWhatsapp)->toContain('data-whatsapp-platform="android"');
+    expect($mobileProfiles)->toContain('mobile1WhatsappFamily');
+    expect($mobileProfiles)->toContain('mobile2WhatsappFamily');
+    expect($mobileProfiles)->toContain('mobile3WhatsappFamily');
     expect($desktop)->toContain("const whatsappTypographyPlatform: WhatsappTypographyPlatform = 'windows';");
     expect($desktop)->toContain('data-whatsapp-platform={whatsappTypographyPlatform}');
 
@@ -36,6 +33,7 @@ test('whatsapp previews declare their typography platform at the entry point', f
 
 test('whatsapp typography is inherited from the preview platform except desktop message bubbles', function () {
     $designPaths = [
+        base_path('resources/js/evidence-generator/features/preview/designs/shared/mobile-preview'),
         base_path('resources/js/evidence-generator/features/preview/designs/mobile-1/whatsapp'),
         base_path('resources/js/evidence-generator/features/preview/designs/mobile-2/whatsapp'),
         base_path('resources/js/evidence-generator/features/preview/designs/mobile-3/whatsapp'),

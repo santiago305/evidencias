@@ -1,12 +1,17 @@
 import fondoWhatsapp from '../../../../../../assets/voSdkk88H7C.svg';
+import type { WhatsappColorProfile } from '../../../shared/whatsapp/whatsappColorProfile';
 
-export function WhatsappLightConversationBackground() {
+export function WhatsappLightConversationBackground({ colors }: { colors?: WhatsappColorProfile }) {
     return (
-        <div className="absolute inset-0 overflow-hidden bg-[#F5F2ED]">
+        <div
+            className={['absolute inset-0 overflow-hidden', colors ? '' : 'bg-[#F5F2ED]'].filter(Boolean).join(' ')}
+            style={colors ? { backgroundColor: colors.conversationBackground } : undefined}
+        >
             <div
                 aria-hidden="true"
-                className="pointer-events-none absolute inset-0 bg-[#eee6dd]"
+                className={['pointer-events-none absolute inset-0', colors ? '' : 'bg-[#eee6dd]'].filter(Boolean).join(' ')}
                 style={{
+                    ...(colors ? { backgroundColor: colors.wallpaperPattern } : {}),
                     maskImage: `url(${fondoWhatsapp})`,
                     maskPosition: 'left top',
                     maskRepeat: 'repeat',

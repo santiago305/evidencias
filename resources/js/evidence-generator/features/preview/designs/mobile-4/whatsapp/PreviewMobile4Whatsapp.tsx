@@ -3,7 +3,9 @@ import type { PreviewProps } from '../../../../../types';
 import { EmptyState } from '../../../components/EmptyState';
 import { buildMobilePreviewNotificationIds } from '../../../mobileNotifications';
 import { WhatsappHeaderUser } from '../../mobile-1/whatsapp/whatsapp-header';
-import { WhatsappConversation } from '../../mobile-3/whatsapp/WhatsappConversation';
+import { WhatsappConversation } from '../../shared/whatsapp/WhatsappConversation';
+import { getWhatsappBehaviorProfile } from '../../shared/whatsapp/whatsappProfiles';
+import { mobile3WhatsappVisualAdapter } from '../../mobile-3/whatsapp/whatsappVisualAdapter';
 import { Mobile4PreviewFrame } from '../Mobile4PreviewFrame';
 import { mobile4FontFamily, mobile4WhatsappLightBackground } from '../mobile4Colors';
 import { buildMobile4WhatsappRuntime } from './mobile4WhatsappRuntime';
@@ -159,6 +161,8 @@ export function PreviewMobile4Whatsapp({ data, themeMode }: PreviewProps) {
                 />
                 <WhatsappConversation
                     data={data}
+                    behaviorProfile={getWhatsappBehaviorProfile('mobile-4')}
+                    visualAdapter={mobile3WhatsappVisualAdapter}
                     messageStatus={runtime.messageStatus}
                     messages={data.generatedMessages}
                     showDefaultTemporalMessage={runtime.temporalBehavior.showDefaultTemporalMessage}

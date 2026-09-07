@@ -79,3 +79,23 @@ test('supports mobile four as a selectable complete mobile design', () => {
         'mobile-4',
     );
 });
+
+test('supports mobile five as a selectable complete mobile design', () => {
+    assert.equal(
+        resolveActiveMobileDesignKey({
+            availableMobileDesigns: ['mobile-1', 'mobile-2', 'mobile-3', 'mobile-4', 'mobile-5'],
+            globalMobileDesigns: ['mobile-1', 'mobile-2', 'mobile-3', 'mobile-4'],
+            registeredMobileDesigns: [],
+        }),
+        'mobile-5',
+    );
+
+    assert.equal(
+        resolveActiveMobileDesignKey({
+            availableMobileDesigns: ['mobile-1', 'mobile-2', 'mobile-3', 'mobile-4', 'mobile-5'],
+            globalMobileDesigns: ['mobile-1', 'mobile-2', 'mobile-3', 'mobile-4', 'mobile-5'],
+            registeredMobileDesigns: ['mobile-5'],
+        }),
+        'mobile-5',
+    );
+});

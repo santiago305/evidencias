@@ -40,6 +40,16 @@ import type { ComponentType, SVGProps } from 'react';
 import { mulberry32 } from '../../../../lib/whatsapp/random';
 import type { PreviewThemeMode } from '../../../../types';
 import type { MobileNotificationIconId } from '../../mobileNotifications';
+import type { MobileBatteryRenderer } from '../shared/mobile-preview/mobilePreviewTypes';
+
+type MdiIconProps = {
+    path: string;
+    size: number;
+    color: string;
+    style: { transform: string };
+};
+
+const MdiIcon = ((Icon as unknown as { default?: ComponentType<MdiIconProps> }).default ?? Icon) as unknown as ComponentType<MdiIconProps>;
 
 const batteryIcons = {
     10: mdiBattery10,
@@ -186,7 +196,7 @@ function getBatteryLevel(): BatteryLevel {
 
 function BatteryIcon({ level }: { level: BatteryLevel }) {
     return (
-        <Icon
+        <MdiIcon
             path={batteryIcons[level]}
             size={0.9}
             color="currentColor"
@@ -202,9 +212,20 @@ type Mobile1PreviewHeaderProps = {
     notificationSeed?: string;
     notificationIds?: MobileNotificationIconId[];
     variant?: 'default' | 'whatsapp' | 'sms';
+    systemHeaderBackground?: string;
+    systemHeaderForeground?: string;
+    batteryRenderer?: MobileBatteryRenderer;
 };
 
-export function Mobile1PreviewHeader({ themeMode, notificationSeed, notificationIds, variant = 'default' }: Mobile1PreviewHeaderProps) {
+export function Mobile1PreviewHeader({
+    themeMode,
+    notificationSeed,
+    notificationIds,
+    variant = 'default',
+    systemHeaderBackground,
+    systemHeaderForeground,
+    batteryRenderer,
+}: Mobile1PreviewHeaderProps) {
     const isDark = themeMode === 'dark';
     const isWhatsappVariant = variant === 'whatsapp' && isDark;
     const isSmsVariant = variant === 'sms' && isDark;
@@ -249,14 +270,26 @@ export function Mobile1PreviewHeader({ themeMode, notificationSeed, notification
         <div
             className={[
                 'shrink-0 px-[25px] py-[5px]',
-                isWhatsappVariant
-                    ? 'bg-[#0B1014] text-white'
-                    : isSmsVariant
-                      ? 'bg-[#1C2023] text-white'
-                      : isDark
-                        ? 'bg-[#070c0f] text-white'
-                        : 'bg-white text-[#5f6368]',
-            ].join(' ')}
+                systemHeaderBackground
+                    ? ''
+                    : isWhatsappVariant
+                      ? 'bg-[#0B1014] text-white'
+                      : isSmsVariant
+                        ? 'bg-[#1C2023] text-white'
+                        : isDark
+                          ? 'bg-[#070c0f] text-white'
+                          : 'bg-white text-[#5f6368]',
+            ]
+                .filter(Boolean)
+                .join(' ')}
+            style={
+                systemHeaderBackground || systemHeaderForeground
+                    ? {
+                          backgroundColor: systemHeaderBackground,
+                          color: systemHeaderForeground,
+                      }
+                    : undefined
+            }
         >
             <div
                 className="flex h-[25px] items-center justify-between"
@@ -268,8 +301,10 @@ export function Mobile1PreviewHeader({ themeMode, notificationSeed, notification
                     <span
                         className={[
                             'text-[15px] leading-none font-normal tracking-[-0.01em]',
-                            isWhatsappVariant ? 'text-white' : isDark ? 'text-white' : 'text-[#5f6368]',
-                        ].join(' ')}
+                            systemHeaderForeground ? '' : isWhatsappVariant ? 'text-white' : isDark ? 'text-white' : 'text-[#5f6368]',
+                        ]
+                            .filter(Boolean)
+                            .join(' ')}
                     >
                         {time}
                     </span>
@@ -293,7 +328,7 @@ export function Mobile1PreviewHeader({ themeMode, notificationSeed, notification
 
                     <Signal className="h-[17.5px] w-[17.5px]" strokeWidth={2.2} />
 
-                    <BatteryIcon level={batteryLevel} />
+                    {batteryRenderer ? batteryRenderer(batteryLevel, themeMode) : <BatteryIcon level={batteryLevel} />}
                 </div>
             </div>
         </div>

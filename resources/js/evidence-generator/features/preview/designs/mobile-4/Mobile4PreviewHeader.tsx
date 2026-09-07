@@ -38,7 +38,7 @@ export function Mobile4PreviewHeader({ themeMode, notificationIds, statusBarBack
                         style={{
                             fontFamily: mobile4FontFamily,
                             fontSize: '16px',
-                            fontWeight: 500,
+                            fontWeight: 600,
                             lineHeight: 1,
                             letterSpacing: '-0.35px',
                             fontVariantNumeric: 'tabular-nums',
