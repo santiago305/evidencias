@@ -1,5 +1,6 @@
 import { Fragment, useState } from 'react';
 import type { PreviewThemeMode } from '../../../../../types';
+import { Mobile6SmsSaveContactCard } from '../../mobile-6/sms/Mobile6SmsSaveContactCard';
 import { EncryptionLockIcon, SmsMobileTextBubble } from './sms-bubbles';
 import { SmsDateSeparator } from './sms-date';
 import { SmsMobileInputBar, SmsQuickReplies } from './sms-footer';
@@ -64,6 +65,10 @@ export function SmsConversation({
             style={{ backgroundColor: colors.conversation }}
         >
             <div className="flex-1 [scrollbar-width:none] overflow-y-auto px-2 pt-5 pb-[15px] [&::-webkit-scrollbar]:hidden">
+                {isMobile6 && conversationHeader.kind === 'sms' ? (
+                    <Mobile6SmsSaveContactCard telefono={displayTelefono} themeMode={themeMode} />
+                ) : null}
+
                 {firstMessage ? (
                     <SmsDateSeparator
                         dateKey={firstMessage.dateKey}
