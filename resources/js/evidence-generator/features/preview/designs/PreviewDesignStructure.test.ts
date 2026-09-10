@@ -358,3 +358,46 @@ test('whatsapp typography platform is configured at the preview entry point', ()
     assert.match(appCssSource, /\[data-whatsapp-platform='windows'\]/);
     assert.match(appCssSource, /--whatsapp-font-family/);
 });
+
+test('mobile 6 SMS owns the save-contact card and renders it only for the SMS conversation branch', () => {
+    const cardPath = resolve(designsDir, 'mobile-6', 'sms', 'Mobile6SmsSaveContactCard.tsx');
+    const smsConversationPath = resolve(designsDir, 'shared', 'sms', 'SmsConversation.tsx');
+
+    assert.equal(existsSync(cardPath), true);
+
+    const cardSource = readFileSync(cardPath, 'utf8');
+    const smsConversationSource = readFileSync(smsConversationPath, 'utf8');
+
+    assert.match(cardSource, /¿Quieres guardar \{telefono\}\?/);
+    assert.match(cardSource, /Si guardas este número, se agregará un/);
+    assert.match(cardSource, /Denunciar spam/);
+    assert.match(cardSource, /Agregar contacto/);
+    assert.match(cardSource, /#EDEEF3/);
+    assert.match(cardSource, /#4D5C91/);
+    assert.doesNotMatch(cardSource, /Math\.random/);
+    assert.match(smsConversationSource, /Mobile6SmsSaveContactCard/);
+    assert.match(smsConversationSource, /isMobile6 \?/);
+    assert.match(smsConversationSource, /useState\(\(\) => buildSmsConversationHeader\(data\)\)/);
+});
+
+test('mobile 6 owns a centered compact three-button Android navigation footer', () => {
+    const footerPath = resolve(designsDir, 'mobile-6', 'Mobile6PreviewFooter.tsx');
+    const source = readFileSync(footerPath, 'utf8');
+    assert.match(source, /data-android-navigation-icon="back"/);
+    assert.match(source, /data-android-navigation-icon="home"/);
+    assert.match(source, /data-android-navigation-icon="recents"/);
+    assert.match(source, /h-\[50px\]/);
+    assert.match(source, /justify-center/);
+    assert.match(source, /gap-\[48px\]/);
+    assert.match(source, /data-mobile6-system-navigation="three-button"/);
+    const backRenderIndex = source.lastIndexOf('<AndroidBackIcon');
+    const homeRenderIndex = source.lastIndexOf('<AndroidHomeIcon');
+    const recentsRenderIndex = source.lastIndexOf('<AndroidRecentsIcon');
+    assert.ok(backRenderIndex !== -1);
+    assert.ok(homeRenderIndex !== -1);
+    assert.ok(recentsRenderIndex !== -1);
+    assert.ok(backRenderIndex < homeRenderIndex, 'Back must render before Home');
+    assert.ok(homeRenderIndex < recentsRenderIndex, 'Home must render before Recents');
+    assert.doesNotMatch(source, /Mobile2PreviewFooter/);
+    assert.doesNotMatch(source, /mobile-2/);
+});
