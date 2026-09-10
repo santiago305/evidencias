@@ -1,8 +1,8 @@
-export function EncryptionLockIcon({ color }: { color: string }) {
+export function EncryptionLockIcon({ color, className = 'size-[15px] shrink-0' }: { color: string; className?: string }) {
     return (
         <svg
             viewBox="0 0 24 24"
-            className="size-[15px] shrink-0"
+            className={className}
             fill="none"
             stroke={color}
             strokeWidth="1.65"

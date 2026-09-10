@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { toggleSmsMetadataVisibility } from '../smsMessages';
-import type { SmsColors, SmsConversationMessage, SmsConversationType, SmsData, SmsGroupPosition } from '../smsTypes';
+import type { SmsColors, SmsConversationMessage, SmsConversationType, SmsData, SmsDesignVariant, SmsGroupPosition } from '../smsTypes';
 import { SmsMessageMetadata } from './SmsMessageMetadata';
 
 export function SmsMobileTextBubble({
@@ -12,6 +12,7 @@ export function SmsMobileTextBubble({
     colors,
     currentDate,
     groupPosition,
+    variant,
     compactBottomSpacing = false,
 }: {
     message: SmsConversationMessage;
@@ -22,11 +23,17 @@ export function SmsMobileTextBubble({
     colors: SmsColors;
     currentDate?: Date;
     groupPosition: SmsGroupPosition;
+    variant: SmsDesignVariant;
     compactBottomSpacing?: boolean;
 }) {
     const [isMetadataVisible, setIsMetadataVisible] = useState(showMetadata);
     const isOutgoing = message.side === 'out';
-    const backgroundColor = isOutgoing ? colors.sentBubble : colors.receivedBubble;
+    const mobile6SmsBubbleBackground = '#314578';
+    const backgroundColor = isOutgoing
+        ? variant === 'mobile-6'
+            ? mobile6SmsBubbleBackground
+            : colors.sentBubble
+        : colors.receivedBubble;
     const textColor = isOutgoing ? colors.sentText : colors.primaryText;
     const radius = isOutgoing
         ? {
@@ -46,7 +53,7 @@ export function SmsMobileTextBubble({
         <div
             id={message.id}
             className={[
-                'flex px-[9px]',
+                'flex px-[5px]',
                 isOutgoing ? 'justify-end' : 'justify-start',
                 groupPosition === 'single' || groupPosition === 'last' ? (compactBottomSpacing ? 'mb-[4px]' : 'mb-[18px]') : 'mb-[2px]',
             ].join(' ')}
@@ -54,9 +61,9 @@ export function SmsMobileTextBubble({
                 setIsMetadataVisible((current) => toggleSmsMetadataVisibility(current));
             }}
         >
-            <div className="max-w-[78%]" style={{ color: textColor }}>
+            <div className="max-w-[85%]" style={{ color: textColor }}>
                 <div
-                    className={['rounded-[21px] px-[14px] py-2.5 text-[14.5px] leading-[1.39] tracking-[-0.18px]', radius].join(' ')}
+                    className={['rounded-[21px] px-[14px] py-2.5 text-[16px] font-light leading-[1.39] tracking-[-0.18px]', radius].join(' ')}
                     style={{ backgroundColor }}
                 >
                     <div className="break-words whitespace-pre-wrap">

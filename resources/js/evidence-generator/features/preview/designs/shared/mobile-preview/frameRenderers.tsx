@@ -5,6 +5,7 @@ import { Mobile2PreviewFrame } from '../../mobile-2/Mobile2PreviewFrame';
 import { Mobile1PreviewFrame as Mobile3PreviewFrame } from '../../mobile-3/Mobile1PreviewFrame';
 import { Mobile4PreviewFrame } from '../../mobile-4/Mobile4PreviewFrame';
 import { Mobile5PreviewFooter } from '../../mobile-5/Mobile5PreviewFooter';
+import { Mobile6PreviewFrame } from '../../mobile-6/Mobile6PreviewFrame';
 import type { MobileFrameRenderProps, MobileSystemFooterRenderer } from './mobilePreviewTypes';
 
 function resolveHeaderVariant(channel: MobileFrameRenderProps['channel']): 'default' | 'whatsapp' | 'sms' {
@@ -53,11 +54,7 @@ export function renderMobile3Frame({ systemChrome, batteryRenderer, footerRender
 }
 
 export const renderMobile5Footer: MobileSystemFooterRenderer = ({ themeMode, background, foreground }) => (
-    <Mobile5PreviewFooter
-        themeMode={themeMode}
-        systemFooterBackground={background}
-        systemFooterForeground={foreground}
-    />
+    <Mobile5PreviewFooter themeMode={themeMode} systemFooterBackground={background} systemFooterForeground={foreground} />
 );
 
 export function renderMobile4Frame({ children, themeMode, channel, notificationIds, smsShellColor }: MobileFrameRenderProps) {
@@ -69,6 +66,23 @@ export function renderMobile4Frame({ children, themeMode, channel, notificationI
         >
             {children}
         </Mobile4PreviewFrame>
+    );
+}
+
+export function renderMobile6Frame({ systemChrome, batteryRenderer, footerRenderer, frame, ...props }: MobileFrameRenderProps) {
+    return (
+        <Mobile6PreviewFrame
+            {...props}
+            headerVariant={resolveHeaderVariant(props.channel)}
+            footerVariant={props.channel === 'sms' ? 'sms' : 'default'}
+            systemHeaderBackground={systemChrome?.headerBackground}
+            systemHeaderForeground={systemChrome?.headerForeground}
+            systemFooterBackground={systemChrome?.footerBackground}
+            systemFooterForeground={systemChrome?.footerForeground}
+            batteryRenderer={batteryRenderer}
+            footerRenderer={footerRenderer}
+            frame={frame}
+        />
     );
 }
 
