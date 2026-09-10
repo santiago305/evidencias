@@ -1,5 +1,12 @@
 export { buildMobilePreviewRegistry } from './buildMobilePreviewRegistry';
-export { renderMobile1Frame, renderMobile2Frame, renderMobile3Frame, renderMobile4Frame, renderMobile5Footer } from './frameRenderers';
+export {
+    renderMobile1Frame,
+    renderMobile2Frame,
+    renderMobile3Frame,
+    renderMobile4Frame,
+    renderMobile5Footer,
+    renderMobile6Frame,
+} from './frameRenderers';
 export { MobileCallPreview } from './MobileCallPreview';
 export type {
     ComposedMobileWhatsappProfile,

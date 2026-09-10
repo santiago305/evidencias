@@ -122,7 +122,7 @@ function withDeterministicRuntime<T>(callback: () => T): T {
 function renderAllPreviewMarkups(): Record<string, string> {
     return withDeterministicRuntime(() => {
         const markups: Record<string, string> = {};
-        const designKeys = ['mobile-1', 'mobile-2', 'mobile-3', 'mobile-4', 'mobile-5'];
+        const designKeys = ['mobile-1', 'mobile-2', 'mobile-3', 'mobile-4', 'mobile-5', 'mobile-6'];
         const channels = ['whatsapp', 'sms', 'call'];
         const themes: PreviewThemeMode[] = ['light', 'dark'];
 

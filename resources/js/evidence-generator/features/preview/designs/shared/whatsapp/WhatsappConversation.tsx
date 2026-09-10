@@ -240,7 +240,9 @@ export function WhatsappConversation({
                             onScroll={updateScrollState}
                             className="scrollbar-mobile-soft h-full w-full overflow-y-auto pr-[5px]"
                         >
-                            {firstDayChipDateKey !== '' && <visualAdapter.DayChip text={getMobileDayChipTextForDate(firstDayChipDateKey)} themeMode={themeMode} />}
+                            {firstDayChipDateKey !== '' && (
+                                <visualAdapter.DayChip text={getMobileDayChipTextForDate(firstDayChipDateKey)} themeMode={themeMode} />
+                            )}
 
                             <visualAdapter.EncryptedMessage themeMode={themeMode} />
                             {showDefaultTemporalMessage && <visualAdapter.TempporalMessage themeMode={themeMode} />}
@@ -255,7 +257,7 @@ export function WhatsappConversation({
                                 const markerAfterCurrent = resolvedInlineTemporalInsertIndex === idx + 1;
                                 const isFirstInGroup = idx === 0 || markerBeforeCurrent || prev.side !== msg.side;
                                 const staysInSameGroup = !!next && !markerAfterCurrent && next.side === msg.side;
-                                const wrapperSpacing = staysInSameGroup ? 'mb-[2.5px]' : 'mb-5';
+                                const wrapperSpacing = staysInSameGroup ? 'mb-[3px]' : 'mb-3';
 
                                 const quoteColors =
                                     msg.quote?.side === 'out'
@@ -266,7 +268,9 @@ export function WhatsappConversation({
 
                                 return (
                                     <Fragment key={`message-${idx}-${msg.side}`}>
-                                        {showsDayChip && <visualAdapter.DayChip text={getMobileDayChipTextForDate(currentDateKey)} themeMode={themeMode} />}
+                                        {showsDayChip && (
+                                            <visualAdapter.DayChip text={getMobileDayChipTextForDate(currentDateKey)} themeMode={themeMode} />
+                                        )}
 
                                         <div className={wrapperSpacing}>
                                             <visualAdapter.Bubble
@@ -291,7 +295,9 @@ export function WhatsappConversation({
                                             </visualAdapter.Bubble>
                                         </div>
 
-                                        {markerAfterCurrent && inlineTemporalMode === 'active' && <visualAdapter.ActiveTemporalMessage themeMode={themeMode} />}
+                                        {markerAfterCurrent && inlineTemporalMode === 'active' && (
+                                            <visualAdapter.ActiveTemporalMessage themeMode={themeMode} />
+                                        )}
 
                                         {markerAfterCurrent && inlineTemporalMode === 'deactive' && (
                                             <visualAdapter.DesactiveTemporalMessage themeMode={themeMode} />

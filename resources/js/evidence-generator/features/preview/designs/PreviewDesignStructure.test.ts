@@ -1,11 +1,19 @@
 import assert from 'node:assert/strict';
-import { existsSync, readFileSync } from 'node:fs';
+import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import test from 'node:test';
 import { fileURLToPath } from 'node:url';
 
 const designsDir = dirname(fileURLToPath(import.meta.url));
 const previewDir = resolve(designsDir, '..');
+
+function collectSourceFiles(directory: string): string[] {
+    return readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {
+        const entryPath = resolve(directory, entry.name);
+
+        return entry.isDirectory() ? collectSourceFiles(entryPath) : [entryPath];
+    });
+}
 
 test('preview designs are isolated by target design folder', () => {
     assert.equal(existsSync(resolve(previewDir, 'whatsapp')), false);
@@ -23,6 +31,7 @@ test('preview designs are isolated by target design folder', () => {
     assert.equal(existsSync(resolve(designsDir, 'mobile-4', 'Mobile4PreviewFrame.tsx')), true);
     assert.equal(existsSync(resolve(designsDir, 'mobile-4', 'whatsapp', 'PreviewMobile4Whatsapp.tsx')), true);
     assert.equal(existsSync(resolve(designsDir, 'mobile-5', 'mobile5Colors.ts')), true);
+    assert.equal(existsSync(resolve(designsDir, 'mobile-6', 'Mobile6PreviewFrame.tsx')), true);
     assert.equal(existsSync(resolve(designsDir, 'shared', 'whatsapp', 'whatsappPreviewRuntime.ts')), true);
     assert.equal(existsSync(resolve(designsDir, 'shared', 'sms', 'SmsConversation.tsx')), true);
     assert.equal(existsSync(resolve(designsDir, 'shared', 'mobile-preview', 'MobileWhatsappPreview.tsx')), true);
@@ -35,6 +44,39 @@ test('preview designs are isolated by target design folder', () => {
         assert.equal(existsSync(resolve(designsDir, designKey, 'whatsapp', 'PreviewMobile1Whatsapp.tsx')), false);
         assert.equal(existsSync(resolve(designsDir, designKey, 'sms', 'PreviewMobile1Sms.tsx')), false);
     }
+});
+
+test('mobile 6 owns its Mobile 3 replica without importing Mobile 3', () => {
+    const mobile6Directory = resolve(designsDir, 'mobile-6');
+    const profilesSource = readFileSync(resolve(designsDir, 'mobilePreviewProfiles.tsx'), 'utf8');
+    const frameRenderersSource = readFileSync(resolve(designsDir, 'shared', 'mobile-preview', 'frameRenderers.tsx'), 'utf8');
+
+    for (const relativePath of [
+        'Mobile6PreviewFrame.tsx',
+        'Mobile6PreviewHeader.tsx',
+        'Mobile6PreviewFooter.tsx',
+        'whatsapp/whatsappVisualAdapter.ts',
+        'whatsapp/WhatsappPieces.tsx',
+        'whatsapp/whatsapp-header/WhatsappMobileHeaderUser.tsx',
+        'whatsapp/whatsapp-bubbles/WhatsappMobileTextBubble.tsx',
+        'whatsapp/whatsapp-background/WhatsappConversationBackground.tsx',
+        'whatsapp/whatsapp-footer/WhatsappMobileInputBar.tsx',
+    ]) {
+        assert.equal(existsSync(resolve(mobile6Directory, relativePath)), true, `Missing ${relativePath}`);
+    }
+
+    const mobile6Source = collectSourceFiles(mobile6Directory)
+        .map((filePath) => readFileSync(filePath, 'utf8'))
+        .join('\n');
+
+    assert.doesNotMatch(mobile6Source, /mobile-3|Mobile1Preview|mobile3Whatsapp/);
+    assert.match(profilesSource, /from ['"]\.\/mobile-6\//);
+    assert.match(profilesSource, /'mobile-6':\s*\{/);
+    assert.match(profilesSource, /renderFrame: renderMobile6Frame/);
+    assert.match(profilesSource, /whatsapp: mobile6WhatsappFamily/);
+    assert.match(profilesSource, /sms: \{ variant: 'mobile-6', showVideoCall: true \}/);
+    assert.doesNotMatch(profilesSource, /'mobile-6':[\s\S]*?mobile3WhatsappFamily/);
+    assert.match(frameRenderersSource, /from ['"]\.\.\/\.\.\/mobile-6\/Mobile6PreviewFrame['"]/);
 });
 
 test('preview channel entry points use design folders directly', () => {

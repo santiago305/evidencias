@@ -18,6 +18,8 @@ export function SmsMobileInputBar({
     };
 }) {
     const colors = getSmsColors(themeMode, variant);
+    const mobile6SmsMicrophoneBackground = '#5A3D59';
+    const mobile6SmsMicrophoneIconColor = '#F0CDED';
     const [showEmojiIndicator] = useState(() => shouldShowSmsAccentPoint());
 
     return (
@@ -115,7 +117,10 @@ export function SmsMobileInputBar({
                 <button
                     type="button"
                     className="flex size-[54px] shrink-0 items-center justify-center rounded-full"
-                    style={{ backgroundColor: colors.audioBackground, color: colors.audioIcon }}
+                    style={{
+                        backgroundColor: variant === 'mobile-6' ? mobile6SmsMicrophoneBackground : colors.audioBackground,
+                        color: variant === 'mobile-6' ? mobile6SmsMicrophoneIconColor : colors.audioIcon,
+                    }}
                     aria-label="Mensaje de voz"
                 >
                     <svg viewBox="0 0 30 30" className="size-[27px]" fill="currentColor" aria-hidden="true">

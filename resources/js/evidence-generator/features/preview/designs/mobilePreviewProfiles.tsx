@@ -7,12 +7,10 @@ import { WhatsappMobileHeaderUser as Mobile3WhatsappHeader } from './mobile-3/wh
 import { mobile3WhatsappVisualAdapter } from './mobile-3/whatsapp/whatsappVisualAdapter';
 import { Mobile4BatteryIcon } from './mobile-4/Mobile4BatteryIcon';
 import { PreviewMobile4Whatsapp } from './mobile-4/whatsapp/PreviewMobile4Whatsapp';
-import {
-    mobile5BatteryProgress,
-    mobile5SmsSystemChrome,
-    mobile5WhatsappColors,
-    mobile5WhatsappSystemChrome,
-} from './mobile-5/mobile5Colors';
+import { mobile5BatteryProgress, mobile5SmsSystemChrome, mobile5WhatsappColors, mobile5WhatsappSystemChrome } from './mobile-5/mobile5Colors';
+import { WhatsappMobileHeaderUser as Mobile6WhatsappHeader } from './mobile-6/whatsapp/whatsapp-header/WhatsappMobileHeaderUser';
+import { Mobile6QuickActionButton } from './mobile-6/whatsapp/whatsapp-footer';
+import { mobile6WhatsappVisualAdapter } from './mobile-6/whatsapp/whatsappVisualAdapter';
 import {
     buildMobilePreviewRegistry,
     renderMobile1Frame,
@@ -20,6 +18,7 @@ import {
     renderMobile3Frame,
     renderMobile4Frame,
     renderMobile5Footer,
+    renderMobile6Frame,
     type ComposedMobileWhatsappProfile,
     type MobileBatteryRenderer,
     type MobilePreviewDesignProfile,
@@ -77,6 +76,19 @@ export const mobile5WhatsappFamily: ComposedMobileWhatsappProfile = {
     },
 };
 
+export const mobile6WhatsappFamily: ComposedMobileWhatsappProfile = {
+    kind: 'composed',
+    Header: Mobile6WhatsappHeader,
+    behaviorProfile: getWhatsappBehaviorProfile('mobile-6'),
+    visualAdapter: mobile6WhatsappVisualAdapter,
+    composerLayout: {
+        messageAreaMaxWidth: '175px',
+    },
+    renderComposerAccessory: (themeMode) => (
+        <Mobile6QuickActionButton themeMode={themeMode} />
+    ),
+};
+
 export const mobile5BatteryRenderer: MobileBatteryRenderer = (level, themeMode) => (
     <Mobile4BatteryIcon level={level} themeMode={themeMode} progressColor={mobile5BatteryProgress[themeMode]} />
 );
@@ -132,6 +144,17 @@ export const mobilePreviewProfiles = {
                 messageAreaMaxWidth: '150px',
             },
         },
+        call: { missedSpacingVariant: 'standard' },
+    },
+    'mobile-6': {
+        key: 'mobile-6',
+        frame: {
+            width: '420px',
+            height: '950px',
+        },
+        renderFrame: renderMobile6Frame,
+        whatsapp: mobile6WhatsappFamily,
+        sms: { variant: 'mobile-6', showVideoCall: true },
         call: { missedSpacingVariant: 'standard' },
     },
 } satisfies Record<MobileDesignKey, MobilePreviewDesignProfile>;

@@ -5,6 +5,7 @@ import { SmsDateSeparator } from './sms-date';
 import { SmsMobileInputBar, SmsQuickReplies } from './sms-footer';
 import { getSmsColors } from './smsAppearance';
 import { buildSmsConversationHeader } from './smsDateTime';
+import { formatMobile6SmsPhone } from './formatSmsPhone';
 import { buildSmsMessages, getSmsGroupPosition, shouldShowSmsDateSeparator, shouldShowSmsMessageMetadata } from './smsMessages';
 import { getSmsQuickReplies } from './smsQuickReplies';
 import type { SmsData, SmsDesignVariant } from './smsTypes';
@@ -25,6 +26,31 @@ export function SmsConversation({
     };
 }) {
     const colors = getSmsColors(themeMode, variant);
+    const isMobile6 = variant === 'mobile-6';
+    const rawTelefono = data.telefono.trim() || '-';
+    const displayTelefono = isMobile6 ? formatMobile6SmsPhone(rawTelefono) : rawTelefono;
+
+    // ==================================================
+    // Mobile-6 SMS — RCS / Encryption
+    // ==================================================
+
+    const mobile6RcsTitleClassName =
+        'text-[10.5px] leading-[15px] font-normal';
+
+    const mobile6EncryptionTextClassName =
+        'text-[10.5px] leading-[14px] font-normal';
+
+    const mobile6MoreInfoClassName =
+        'font-semibold';
+
+    const mobile6EncryptionIconClassName =
+        'h-[16px] w-[16px]';
+
+    // Mobile-6 encryption layout:
+    // 48px = ancho lateral reservado para candado y balance derecho.
+    // px-[8px] = margen horizontal general.
+    const mobile6EncryptionSideColumnWidth = '48px';
+    const mobile6EncryptionHorizontalPaddingClassName = 'px-[8px]';
     const messages = buildSmsMessages(data);
     const firstMessage = messages[0];
     const [conversationHeader] = useState(() => buildSmsConversationHeader(data));
@@ -50,19 +76,55 @@ export function SmsConversation({
                     className={`text-center text-[11.5px] leading-4 ${conversationHeader.kind === 'sms' ? 'mb-[13px]' : 'mb-[0px]'}`}
                     style={{ color: colors.secondaryText }}
                 >
-                    {conversationHeader.kind === 'sms' ? conversationHeader.title : `Chat RCS con ${data.telefono.trim() || '-'}`}
+                    <span className={isMobile6 ? mobile6RcsTitleClassName : undefined}>
+                        {conversationHeader.kind === 'sms' ? conversationHeader.title : `Chat RCS con ${displayTelefono}`}
+                    </span>
                 </div>
                 {conversationHeader.kind === 'rcs' ? (
-                    <div
-                        className="mb-[26px] flex items-center justify-center gap-1.5 text-[10.5px] leading-[15px]"
-                        style={{ color: colors.secondaryText }}
-                    >
-                        <EncryptionLockIcon color={colors.metadataIcon} />
-                        <span>Ahora el chat está encriptado de extremo a extremo.</span>
-                        <span className="underline underline-offset-2" style={{ color: colors.link }}>
-                            Más información
-                        </span>
-                    </div>
+                    isMobile6 ? (
+                        <div
+                            className="mb-[21px] grid grid-cols-[48px_minmax(0,1fr)_18px] items-start px-[4px]"
+                            style={{ color: colors.secondaryText }}
+                        >
+                            <div className="flex justify-center pt-[0px]">
+                                <EncryptionLockIcon
+                                    color={colors.metadataIcon}
+                                    className={mobile6EncryptionIconClassName}
+                                />
+                            </div>
+
+                            <div
+                                className={`min-w-0 text-center ${mobile6EncryptionTextClassName}`}
+                            >
+                                <span>
+                                    Ahora el chat está encriptado de extremo a extremo.{' '}
+                                </span>
+                                <span
+                                    className={`underline underline-offset-2 ${mobile6MoreInfoClassName} text-[#B2BBD8]`}
+                                >
+                                    Más información
+                                </span>
+                            </div>
+
+                            <div aria-hidden="true" />
+                        </div>
+                    ) : (
+                        <div
+                            className="mb-[26px] flex items-center justify-center gap-1.5 text-[10.5px] leading-[15px]"
+                            style={{ color: colors.secondaryText }}
+                        >
+                            <EncryptionLockIcon color={colors.metadataIcon} />
+                            <span>
+                                Ahora el chat está encriptado de extremo a extremo.
+                            </span>
+                            <span
+                                className="underline underline-offset-2"
+                                style={{ color: colors.link }}
+                            >
+                                Más información
+                            </span>
+                        </div>
+                    )
                 ) : null}
 
                 {messages.map((message, index) => {
@@ -88,6 +150,7 @@ export function SmsConversation({
                                 colors={colors}
                                 currentDate={currentDate}
                                 groupPosition={getSmsGroupPosition(messages, index)}
+                                variant={variant}
                                 compactBottomSpacing={variant === 'mobile-2' && index === messages.length - 1}
                             />
                         </Fragment>
