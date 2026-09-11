@@ -1,5 +1,6 @@
 import { Fragment, useState } from 'react';
 import type { PreviewThemeMode } from '../../../../../types';
+import { Mobile7SmsSaveContactCard } from './Mobile7SmsSaveContactCard';
 import { EncryptionLockIcon, SmsMobileTextBubble } from './sms-bubbles';
 import { SmsDateSeparator } from './sms-date';
 import { SmsMobileInputBar, SmsQuickReplies } from './sms-footer';
@@ -23,30 +24,7 @@ export function SmsConversation({
     };
 }) {
     const colors = getSmsColors(themeMode);
-    const rawTelefono = data.telefono.trim() || '-';
-    const displayTelefono = rawTelefono;
-
-    // ==================================================
-    // Mobile-6 SMS — RCS / Encryption
-    // ==================================================
-
-    const mobile6RcsTitleClassName =
-        'text-[10.5px] leading-[15px] font-normal';
-
-    const mobile6EncryptionTextClassName =
-        'text-[10.5px] leading-[14px] font-normal';
-
-    const mobile6MoreInfoClassName =
-        'font-semibold';
-
-    const mobile6EncryptionIconClassName =
-        'h-[16px] w-[16px]';
-
-    // Mobile-6 encryption layout:
-    // 48px = ancho lateral reservado para candado y balance derecho.
-    // px-[8px] = margen horizontal general.
-    const mobile6EncryptionSideColumnWidth = '48px';
-    const mobile6EncryptionHorizontalPaddingClassName = 'px-[8px]';
+    const displayTelefono = data.telefono.trim() || '-';
     const messages = buildSmsMessages(data);
     const firstMessage = messages[0];
     const [conversationHeader] = useState(() => buildSmsConversationHeader(data));
@@ -60,6 +38,7 @@ export function SmsConversation({
             style={{ backgroundColor: colors.conversation }}
         >
             <div className="flex-1 [scrollbar-width:none] overflow-y-auto px-2 pt-5 pb-[15px] [&::-webkit-scrollbar]:hidden">
+                {conversationHeader.kind === 'sms' ? <Mobile7SmsSaveContactCard telefono={displayTelefono} themeMode={themeMode} /> : null}
 
                 {firstMessage ? (
                     <SmsDateSeparator
@@ -70,60 +49,26 @@ export function SmsConversation({
                     />
                 ) : null}
                 <div
-                    className={`text-center text-[11.5px] leading-4 ${conversationHeader.kind === 'sms' ? 'mb-[13px]' : 'mb-[0px]'}`}
+                    className={`text-center text-[10.7px] leading-4 ${conversationHeader.kind === 'sms' ? 'mb-[13px]' : 'mb-[0px]'}`}
                     style={{ color: colors.secondaryText }}
                 >
-                    <span>
-                        {conversationHeader.kind === 'sms' ? conversationHeader.title : `Chat RCS con ${displayTelefono}`}
-                    </span>
+                    <span>{conversationHeader.kind === 'sms' ? conversationHeader.title : `Chat RCS con ${displayTelefono}`}</span>
                 </div>
                 {conversationHeader.kind === 'rcs' ? (
-                    false ? (
-                        <div
-                            className="mb-[21px] grid grid-cols-[48px_minmax(0,1fr)_18px] items-start px-[4px]"
-                            style={{ color: colors.secondaryText }}
-                        >
-                            <div className="flex justify-center pt-[0px]">
-                                <EncryptionLockIcon
-                                    color={colors.metadataIcon}
-                                    className={mobile6EncryptionIconClassName}
-                                />
-                            </div>
-
-                            <div
-                                className={`min-w-0 text-center ${mobile6EncryptionTextClassName}`}
-                            >
-                                <span>
-                                    Ahora el chat está encriptado de extremo a extremo.{' '}
-                                </span>
-                                <span
-                                    className={`underline underline-offset-2 ${mobile6MoreInfoClassName} text-[#B2BBD8]`}
-                                >
-                                    Más información
-                                </span>
-                            </div>
-
-                            <div aria-hidden="true" />
+                    <div className="mb-[21px] grid grid-cols-[48px_minmax(0,1fr)_18px] items-start px-[4px]" style={{ color: colors.secondaryText }}>
+                        <div className="flex justify-center pt-[0px]">
+                            <EncryptionLockIcon color={colors.metadataIcon} className="h-[16px] w-[16px]" />
                         </div>
-                    ) : (
-                        <div
-                            className="mb-[26px] flex items-center justify-center gap-1.5 text-[10.5px] leading-[15px]"
-                            style={{ color: colors.secondaryText }}
-                        >
-                            <EncryptionLockIcon color={colors.metadataIcon} />
-                            <span>
-                                Ahora el chat está encriptado de extremo a extremo.
-                            </span>
-                            <span
-                                className="underline underline-offset-2"
-                                style={{ color: colors.link }}
-                            >
+
+                        <div className="min-w-0 text-center text-[10.5px] leading-[15px]">
+                            <span>Ahora el chat está encriptado de extremo a extremo. </span>
+                            <span className="underline underline-offset-2" style={{ color: colors.link }}>
                                 Más información
                             </span>
                         </div>
-                    )
+                        <div aria-hidden="true" />
+                    </div>
                 ) : null}
-
                 {messages.map((message, index) => {
                     const previous = messages[index - 1];
                     const showDateSeparator = index > 0 && shouldShowSmsDateSeparator(previous?.dateKey, message.dateKey, currentDate);
