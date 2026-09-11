@@ -9,11 +9,17 @@ function createRegistration(profile: MobilePreviewDesignProfile): MobilePreviewR
         profile.whatsapp.kind === 'custom'
             ? profile.whatsapp.Preview
             : (props: PreviewProps) => <MobileWhatsappPreview {...props} profile={profile} />;
+    const sms = profile.sms.kind === 'custom'
+        ? profile.sms.Preview
+        : (props: PreviewProps) => <MobileSmsPreview {...props} profile={profile} />;
+    const call = profile.call.kind === 'custom'
+        ? profile.call.Preview
+        : (props: PreviewProps) => <MobileCallPreview {...props} profile={profile} />;
 
     return {
         whatsapp,
-        sms: (props: PreviewProps) => <MobileSmsPreview {...props} profile={profile} />,
-        call: (props: PreviewProps) => <MobileCallPreview {...props} profile={profile} />,
+        sms,
+        call,
     };
 }
 

@@ -62,6 +62,17 @@ test('authenticated users can register mobile three globally', function () {
     $this->assertDatabaseHas('mobile_designs', [
         'design_key' => 'mobile-6',
     ]);
+
+    $this->actingAs($user)
+        ->postJson(route('mobile-designs.store'), [
+            'design_key' => 'mobile-7',
+        ])
+        ->assertSuccessful()
+        ->assertJsonPath('data.design_key', 'mobile-7');
+
+    $this->assertDatabaseHas('mobile_designs', [
+        'design_key' => 'mobile-7',
+    ]);
 });
 
 test('registering the same mobile design twice is idempotent', function () {
@@ -89,7 +100,7 @@ test('unsupported catalog rows are not exposed as selectable designs', function 
         ->assertOk()
         ->assertInertia(fn (\Inertia\Testing\AssertableInertia $page) => $page
             ->component('evidence-generator')
-            ->where('globalMobileDesigns', ['mobile-1', 'mobile-2', 'mobile-3', 'mobile-4', 'mobile-5', 'mobile-6'])
+            ->where('globalMobileDesigns', ['mobile-1', 'mobile-2', 'mobile-3', 'mobile-4', 'mobile-5', 'mobile-6', 'mobile-7'])
         );
 });
 
