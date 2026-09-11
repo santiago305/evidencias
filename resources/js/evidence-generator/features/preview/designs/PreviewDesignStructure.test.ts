@@ -32,6 +32,8 @@ test('preview designs are isolated by target design folder', () => {
     assert.equal(existsSync(resolve(designsDir, 'mobile-4', 'whatsapp', 'PreviewMobile4Whatsapp.tsx')), true);
     assert.equal(existsSync(resolve(designsDir, 'mobile-5', 'mobile5Colors.ts')), true);
     assert.equal(existsSync(resolve(designsDir, 'mobile-6', 'Mobile6PreviewFrame.tsx')), true);
+    assert.equal(existsSync(resolve(designsDir, 'mobile-7', 'Mobile7PreviewFrame.tsx')), true);
+    assert.equal(existsSync(resolve(designsDir, 'mobile-7', 'whatsapp', 'PreviewMobile7Whatsapp.tsx')), true);
     assert.equal(existsSync(resolve(designsDir, 'shared', 'whatsapp', 'whatsappPreviewRuntime.ts')), true);
     assert.equal(existsSync(resolve(designsDir, 'shared', 'sms', 'SmsConversation.tsx')), true);
     assert.equal(existsSync(resolve(designsDir, 'shared', 'mobile-preview', 'MobileWhatsappPreview.tsx')), true);
@@ -44,6 +46,36 @@ test('preview designs are isolated by target design folder', () => {
         assert.equal(existsSync(resolve(designsDir, designKey, 'whatsapp', 'PreviewMobile1Whatsapp.tsx')), false);
         assert.equal(existsSync(resolve(designsDir, designKey, 'sms', 'PreviewMobile1Sms.tsx')), false);
     }
+});
+
+test('mobile 7 owns its Mobile 4-based frame and WhatsApp entrypoint', () => {
+    const mobile7Directory = resolve(designsDir, 'mobile-7');
+    const source = collectSourceFiles(mobile7Directory).map((filePath) => readFileSync(filePath, 'utf8')).join('\n');
+    const profilesSource = readFileSync(resolve(designsDir, 'mobilePreviewProfiles.tsx'), 'utf8');
+
+    assert.match(profilesSource, /'mobile-7':\s*\{/);
+    assert.match(profilesSource, /renderFrame: renderMobile7Frame/);
+    assert.doesNotMatch(source, /from .*mobile-4|from .*mobile-6/);
+    assert.match(source, /Mobile7MoreVerticalIcon/);
+    assert.match(source, /Mobile7WifiIcon/);
+    assert.match(source, /Mobile7CellSignalIcon/);
+});
+
+test('mobile 7 WhatsApp owns an independent Mobile 6 composer copy', () => {
+    const mobile7Directory = resolve(designsDir, 'mobile-7');
+    const footerDirectory = resolve(mobile7Directory, 'whatsapp', 'whatsapp-footer');
+    const previewSource = readFileSync(resolve(mobile7Directory, 'whatsapp', 'PreviewMobile7Whatsapp.tsx'), 'utf8');
+    const inputBarSource = readFileSync(resolve(footerDirectory, 'WhatsappMobileInputBar.tsx'), 'utf8');
+    const quickActionSource = readFileSync(resolve(footerDirectory, 'Mobile7QuickActionButton.tsx'), 'utf8');
+
+    assert.equal(existsSync(resolve(footerDirectory, 'WhatsappMobileInputBar.tsx')), true);
+    assert.equal(existsSync(resolve(footerDirectory, 'Mobile7QuickActionButton.tsx')), true);
+    assert.match(previewSource, /from ['"]\.\/whatsapp-footer['"]/);
+    assert.match(previewSource, /Mobile7QuickActionButton/);
+    assert.match(previewSource, /WhatsappInputBar/);
+    assert.doesNotMatch(previewSource, /mobile-6|Mobile6/);
+    assert.doesNotMatch(inputBarSource, /mobile-6|Mobile6/);
+    assert.doesNotMatch(quickActionSource, /mobile-6|Mobile6/);
 });
 
 test('mobile 6 owns its Mobile 3 replica without importing Mobile 3', () => {

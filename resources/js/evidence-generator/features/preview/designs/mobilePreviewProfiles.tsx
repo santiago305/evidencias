@@ -7,6 +7,9 @@ import { WhatsappMobileHeaderUser as Mobile3WhatsappHeader } from './mobile-3/wh
 import { mobile3WhatsappVisualAdapter } from './mobile-3/whatsapp/whatsappVisualAdapter';
 import { Mobile4BatteryIcon } from './mobile-4/Mobile4BatteryIcon';
 import { PreviewMobile4Whatsapp } from './mobile-4/whatsapp/PreviewMobile4Whatsapp';
+import { PreviewMobile7Whatsapp } from './mobile-7/whatsapp/PreviewMobile7Whatsapp';
+import { PreviewMobile7Sms } from './mobile-7/sms/PreviewMobile7Sms';
+import { PreviewMobile7Call } from './mobile-7/calls/PreviewMobile7Call';
 import { mobile5BatteryProgress, mobile5SmsSystemChrome, mobile5WhatsappColors, mobile5WhatsappSystemChrome } from './mobile-5/mobile5Colors';
 import { WhatsappMobileHeaderUser as Mobile6WhatsappHeader } from './mobile-6/whatsapp/whatsapp-header/WhatsappMobileHeaderUser';
 import { Mobile6QuickActionButton } from './mobile-6/whatsapp/whatsapp-footer';
@@ -19,6 +22,7 @@ import {
     renderMobile4Frame,
     renderMobile5Footer,
     renderMobile6Frame,
+    renderMobile7Frame,
     type ComposedMobileWhatsappProfile,
     type MobileBatteryRenderer,
     type MobilePreviewDesignProfile,
@@ -156,6 +160,17 @@ export const mobilePreviewProfiles = {
         whatsapp: mobile6WhatsappFamily,
         sms: { variant: 'mobile-6', showVideoCall: true },
         call: { missedSpacingVariant: 'standard' },
+    },
+    'mobile-7': {
+        key: 'mobile-7',
+        frame: {
+            width: '120px',
+            height: '950px',
+        },
+        renderFrame: renderMobile7Frame,
+        whatsapp: { kind: 'custom', Preview: PreviewMobile7Whatsapp },
+        sms: { kind: 'custom', Preview: PreviewMobile7Sms },
+        call: { kind: 'custom', Preview: PreviewMobile7Call },
     },
 } satisfies Record<MobileDesignKey, MobilePreviewDesignProfile>;
 

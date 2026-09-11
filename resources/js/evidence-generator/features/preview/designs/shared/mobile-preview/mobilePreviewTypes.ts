@@ -76,6 +76,9 @@ export type CustomMobileWhatsappProfile = {
     Preview: ComponentType<PreviewProps>;
 };
 
+export type CustomMobileSmsProfile = { kind: 'custom'; Preview: ComponentType<PreviewProps> };
+export type CustomMobileCallProfile = { kind: 'custom'; Preview: ComponentType<PreviewProps> };
+
 export interface MobilePreviewDesignProfile {
     key: MobileDesignKey;
     renderFrame: MobileFrameRenderer;
@@ -85,14 +88,16 @@ export interface MobilePreviewDesignProfile {
     systemChrome?: Record<PreviewThemeMode, MobileSystemChromeProfile>;
     whatsapp: ComposedMobileWhatsappProfile | CustomMobileWhatsappProfile;
     sms: {
+        kind?: never;
         variant: SmsDesignVariant;
         showVideoCall: boolean;
         composerLayout?: SmsComposerLayout;
         systemChrome?: Record<PreviewThemeMode, MobileSystemChromeProfile>;
-    };
+    } | CustomMobileSmsProfile;
     call: {
+        kind?: never;
         missedSpacingVariant?: 'mobile-1' | 'standard';
-    };
+    } | CustomMobileCallProfile;
 }
 
 export interface MobilePreviewRegistration {

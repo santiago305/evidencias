@@ -6,6 +6,7 @@ import { Mobile1PreviewFrame as Mobile3PreviewFrame } from '../../mobile-3/Mobil
 import { Mobile4PreviewFrame } from '../../mobile-4/Mobile4PreviewFrame';
 import { Mobile5PreviewFooter } from '../../mobile-5/Mobile5PreviewFooter';
 import { Mobile6PreviewFrame } from '../../mobile-6/Mobile6PreviewFrame';
+import { Mobile7PreviewFrame } from '../../mobile-7/Mobile7PreviewFrame';
 import type { MobileFrameRenderProps, MobileSystemFooterRenderer } from './mobilePreviewTypes';
 
 function resolveHeaderVariant(channel: MobileFrameRenderProps['channel']): 'default' | 'whatsapp' | 'sms' {
@@ -83,6 +84,18 @@ export function renderMobile6Frame({ systemChrome, batteryRenderer, footerRender
             footerRenderer={footerRenderer}
             frame={frame}
         />
+    );
+}
+
+export function renderMobile7Frame({ children, themeMode, channel, notificationIds, smsShellColor }: MobileFrameRenderProps) {
+    return (
+        <Mobile7PreviewFrame
+            themeMode={themeMode}
+            notificationIds={notificationIds}
+            statusBarBackground={channel === 'sms' && themeMode === 'light' ? smsShellColor : undefined}
+        >
+            {children}
+        </Mobile7PreviewFrame>
     );
 }
 

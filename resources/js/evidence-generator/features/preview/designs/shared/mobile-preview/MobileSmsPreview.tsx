@@ -7,6 +7,7 @@ import { SmsConversation } from '../sms/SmsConversation';
 import type { MobilePreviewDesignProfile } from './mobilePreviewTypes';
 
 export function MobileSmsPreview({ data, themeMode, profile }: PreviewProps & { profile: MobilePreviewDesignProfile }) {
+    if (profile.sms.kind === 'custom') return null;
     if (!data) {
         return <EmptyState />;
     }
