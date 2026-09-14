@@ -7,6 +7,7 @@ export {
     renderMobile5Footer,
     renderMobile6Frame,
     renderMobile7Frame,
+    renderMobile8Frame,
 } from './frameRenderers';
 export { MobileCallPreview } from './MobileCallPreview';
 export type {

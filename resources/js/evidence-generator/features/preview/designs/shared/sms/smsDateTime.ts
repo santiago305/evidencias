@@ -158,7 +158,7 @@ export function buildSmsConversationHeader(
 
     return {
         kind: 'sms',
-        title: `Mensajes de texto con ${data.nombre.trim() || '-'} (SMS/MMS)`,
+        title: `Mensajes de texto con ${data.telefono.trim() || '-'} (SMS/MMS)`,
     };
 }
 

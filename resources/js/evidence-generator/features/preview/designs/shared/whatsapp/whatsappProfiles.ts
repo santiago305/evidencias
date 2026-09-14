@@ -8,6 +8,7 @@ export const whatsappBehaviorProfiles: Record<WhatsappDesignVariant, WhatsappBeh
     'mobile-5': 'standard',
     'mobile-6': 'standard',
     'mobile-7': 'standard',
+    'mobile-8': 'standard',
 };
 
 export function getWhatsappBehaviorProfile(variant: WhatsappDesignVariant): WhatsappBehaviorProfile {
