@@ -56,7 +56,7 @@ export function SmsMobileTextBubble({
         >
             <div className="max-w-[92%]" style={{ color: textColor }}>
                 <div
-                    className={['rounded-[21px] px-[16px] py-2.5 text-[15.2px] font-light leading-[1.39] tracking-[-0.18px]', radius].join(' ')}
+                    className={['rounded-[21px] px-[16px] py-2.5 text-[15.2px] !text-[#EDEDED] font-light leading-[1.39] tracking-[-0.18px]', radius].join(' ')}
                     style={{ backgroundColor }}
                 >
                     <div className="break-words whitespace-pre-wrap">
