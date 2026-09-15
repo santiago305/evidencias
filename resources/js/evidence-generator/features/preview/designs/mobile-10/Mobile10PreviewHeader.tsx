@@ -69,7 +69,7 @@ export function Mobile10PreviewHeader({ themeMode, notificationIds, statusBarBac
                     ) : null}
                 </div>
                 <div className="flex items-center gap-[0px]" style={{ color: statusBarForeground }}>
-                    <Mobile10CellSignalIcon themeMode={themeMode} className="h-[45.5px] w-[48px] object-contain" />
+                    <Mobile10CellSignalIcon themeMode={themeMode} className="h-[30.5px] w-[47px] object-contain" />
                     <Mobile10WifiIcon className="h-[18px] w-[28px] me-0" style={{ color: isDark ? statusBarForeground : Mobile10_STATUS_BAR_DARKER_FOREGROUND }} />
                     <Mobile10BatteryIcon level={batteryLevel} themeMode={themeMode} foregroundColor={statusBarForeground} />
                 </div>
