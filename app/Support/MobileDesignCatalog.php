@@ -55,6 +55,11 @@ class MobileDesignCatalog
                 'label' => 'Mobile 9',
                 'status' => 'development',
             ],
+            [
+                'key' => 'mobile-10',
+                'label' => 'Mobile 10',
+                'status' => 'development',
+            ],
         ];
     }
 
