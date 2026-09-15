@@ -16,6 +16,9 @@ import { PreviewMobile8Call } from './mobile-8/calls/PreviewMobile8Call';
 import { PreviewMobile9Whatsapp } from './mobile-9/whatsapp/PreviewMobile9Whatsapp';
 import { PreviewMobile9Sms } from './mobile-9/sms/PreviewMobile9Sms';
 import { PreviewMobile9Call } from './mobile-9/calls/PreviewMobile9Call';
+import { PreviewMobile10Whatsapp } from './mobile-10/whatsapp/PreviewMobile10Whatsapp';
+import { PreviewMobile10Sms } from './mobile-10/sms/PreviewMobile10Sms';
+import { PreviewMobile10Call } from './mobile-10/calls/PreviewMobile10Call';
 import { mobile5BatteryProgress, mobile5SmsSystemChrome, mobile5WhatsappColors, mobile5WhatsappSystemChrome } from './mobile-5/mobile5Colors';
 import { WhatsappMobileHeaderUser as Mobile6WhatsappHeader } from './mobile-6/whatsapp/whatsapp-header/WhatsappMobileHeaderUser';
 import { Mobile6QuickActionButton } from './mobile-6/whatsapp/whatsapp-footer';
@@ -31,6 +34,7 @@ import {
     renderMobile7Frame,
     renderMobile8Frame,
     renderMobile9Frame,
+    renderMobile10Frame,
     type ComposedMobileWhatsappProfile,
     type MobileBatteryRenderer,
     type MobilePreviewDesignProfile,
@@ -201,6 +205,17 @@ export const mobilePreviewProfiles = {
         whatsapp: { kind: 'custom', Preview: PreviewMobile9Whatsapp },
         sms: { kind: 'custom', Preview: PreviewMobile9Sms },
         call: { kind: 'custom', Preview: PreviewMobile9Call },
+    },
+    'mobile-10': {
+        key: 'mobile-10',
+        frame: {
+            width: '120px',
+            height: '950px',
+        },
+        renderFrame: renderMobile10Frame,
+        whatsapp: { kind: 'custom', Preview: PreviewMobile10Whatsapp },
+        sms: { kind: 'custom', Preview: PreviewMobile10Sms },
+        call: { kind: 'custom', Preview: PreviewMobile10Call },
     },
 } satisfies Record<MobileDesignKey, MobilePreviewDesignProfile>;
 
