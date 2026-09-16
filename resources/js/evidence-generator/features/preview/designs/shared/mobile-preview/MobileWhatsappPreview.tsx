@@ -43,6 +43,7 @@ export function MobileWhatsappPreview({ data, themeMode, profile }: PreviewProps
                 themeMode={themeMode}
                 composerAccessory={whatsappProfile.renderComposerAccessory?.(themeMode)}
                 composerLayout={whatsappProfile.composerLayout}
+                messageLineHeightClassName={profile.key === 'mobile-11' ? 'leading-[18.75px]' : undefined}
             />
         </div>
     );

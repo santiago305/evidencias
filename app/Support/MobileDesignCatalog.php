@@ -60,6 +60,11 @@ class MobileDesignCatalog
                 'label' => 'Mobile 10',
                 'status' => 'development',
             ],
+            [
+                'key' => 'mobile-11',
+                'label' => 'Mobile 11',
+                'status' => 'development',
+            ],
         ];
     }
 
@@ -72,7 +77,7 @@ class MobileDesignCatalog
     }
 
     /**
-     * @param iterable<string> $designKeys
+     * @param  iterable<string>  $designKeys
      * @return list<string>
      */
     public static function filterSupported(iterable $designKeys): array
@@ -86,7 +91,7 @@ class MobileDesignCatalog
     }
 
     /**
-     * @param iterable<string> $designKeys
+     * @param  iterable<string>  $designKeys
      * @return list<array{key: string, label: string, status: string}>
      */
     public static function registeredDefinitions(iterable $designKeys): array

@@ -19,6 +19,10 @@ import { PreviewMobile9Call } from './mobile-9/calls/PreviewMobile9Call';
 import { PreviewMobile10Whatsapp } from './mobile-10/whatsapp/PreviewMobile10Whatsapp';
 import { PreviewMobile10Sms } from './mobile-10/sms/PreviewMobile10Sms';
 import { PreviewMobile10Call } from './mobile-10/calls/PreviewMobile10Call';
+import { WhatsappMobileHeaderUser as Mobile11WhatsappHeader } from './mobile-11/whatsapp/whatsapp-header/WhatsappMobileHeaderUser';
+import { mobile11WhatsappVisualAdapter } from './mobile-11/whatsapp/whatsappVisualAdapter';
+import { PreviewMobile11CallDesign2 } from './mobile-11/calls/design-2';
+import { Mobile11QuickActionButton } from './mobile-11/whatsapp/whatsapp-footer';
 import { mobile5BatteryProgress, mobile5SmsSystemChrome, mobile5WhatsappColors, mobile5WhatsappSystemChrome } from './mobile-5/mobile5Colors';
 import { WhatsappMobileHeaderUser as Mobile6WhatsappHeader } from './mobile-6/whatsapp/whatsapp-header/WhatsappMobileHeaderUser';
 import { Mobile6QuickActionButton } from './mobile-6/whatsapp/whatsapp-footer';
@@ -35,6 +39,7 @@ import {
     renderMobile8Frame,
     renderMobile9Frame,
     renderMobile10Frame,
+    renderMobile11Frame,
     type ComposedMobileWhatsappProfile,
     type MobileBatteryRenderer,
     type MobilePreviewDesignProfile,
@@ -46,6 +51,14 @@ export const mobile1WhatsappFamily: ComposedMobileWhatsappProfile = {
     Header: Mobile1WhatsappHeader,
     behaviorProfile: getWhatsappBehaviorProfile('mobile-1'),
     visualAdapter: mobile1WhatsappVisualAdapter,
+};
+
+export const mobile11WhatsappFamily: ComposedMobileWhatsappProfile = {
+    kind: 'composed',
+    Header: Mobile11WhatsappHeader,
+    behaviorProfile: getWhatsappBehaviorProfile('mobile-11'),
+    visualAdapter: mobile11WhatsappVisualAdapter,
+    renderComposerAccessory: (themeMode) => <Mobile11QuickActionButton themeMode={themeMode} />,
 };
 
 export const mobile2WhatsappFamily: ComposedMobileWhatsappProfile = {
@@ -216,6 +229,13 @@ export const mobilePreviewProfiles = {
         whatsapp: { kind: 'custom', Preview: PreviewMobile10Whatsapp },
         sms: { kind: 'custom', Preview: PreviewMobile10Sms },
         call: { kind: 'custom', Preview: PreviewMobile10Call },
+    },
+    'mobile-11': {
+        key: 'mobile-11',
+        renderFrame: renderMobile11Frame,
+        whatsapp: mobile11WhatsappFamily,
+        sms: { variant: 'mobile-1', showVideoCall: true },
+        call: { kind: 'custom', Preview: PreviewMobile11CallDesign2 },
     },
 } satisfies Record<MobileDesignKey, MobilePreviewDesignProfile>;
 
