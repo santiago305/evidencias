@@ -1,7 +1,9 @@
 <?php
 
+use App\Models\MobileDesign;
 use App\Models\User;
 use Database\Seeders\MobileDesignSeeder;
+use Inertia\Testing\AssertableInertia;
 
 test('authenticated users can register a mobile design globally', function () {
     $user = User::factory()->create();
@@ -93,14 +95,14 @@ test('unsupported catalog rows are not exposed as selectable designs', function 
     $user = User::factory()->create();
 
     $this->seed(MobileDesignSeeder::class);
-    App\Models\MobileDesign::query()->create(['design_key' => 'mobile-legacy']);
+    MobileDesign::query()->create(['design_key' => 'mobile-legacy']);
 
     $this->actingAs($user)
         ->get('/inicio')
         ->assertOk()
-        ->assertInertia(fn (\Inertia\Testing\AssertableInertia $page) => $page
+        ->assertInertia(fn (AssertableInertia $page) => $page
             ->component('evidence-generator')
-            ->where('globalMobileDesigns', ['mobile-1', 'mobile-2', 'mobile-3', 'mobile-4', 'mobile-5', 'mobile-6', 'mobile-7', 'mobile-8', 'mobile-9'])
+            ->where('globalMobileDesigns', ['mobile-1', 'mobile-2', 'mobile-3', 'mobile-4', 'mobile-5', 'mobile-6', 'mobile-7', 'mobile-8', 'mobile-9', 'mobile-10', 'mobile-11'])
         );
 });
 

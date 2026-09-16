@@ -35,21 +35,21 @@ export function Mobile10SmsSaveContactCard({ telefono, themeMode }: Mobile10SmsS
                     <Mobile10SmsSaveContactIcon
                         className="block size-[40px]"
                         accentColor={isDark ? darkAccent : '#4D5C93'}
-                        foregroundColor={isDark ? darkAvatarForeground : '#FFFFFF'}
+                        foregroundColor={isDark ? darkAvatarForeground : '#EDEDED'}
                     />
                 </div>
 
                 <div className="absolute top-[17px] right-[42px] left-[72px]">
                     <div
                         className="text-[13.5px] leading-[21px] font-[500] tracking-[-0.1px] whitespace-nowrap"
-                        style={{ color: isDark ? darkPrimaryText : '#191A1F' }}
+                        style={{ color: isDark ? darkPrimaryText : '#EDEDED' }}
                     >
                         ¿Quieres guardar {telefono}?
                     </div>
 
                     <div
                         className="mt-[2px] text-[12.1px] leading-[20px] font-[400] tracking-[-0.05px]"
-                        style={{ color: isDark ? darkSecondaryText : '#5F6065' }}
+                        style={{ color: isDark ? darkSecondaryText : '#EDEDED' }}
                     >
                         Si guardas este número, se agregará un
                         <br />
@@ -73,7 +73,7 @@ export function Mobile10SmsSaveContactCard({ telefono, themeMode }: Mobile10SmsS
                     <button
                         type="button"
                         className="text-[13px] leading-[18px] font-[600] tracking-[0px] whitespace-nowrap"
-                        style={{ color: colors.link, textDecoration: 'none' }}
+                        style={{ color: "#7FA1B8", textDecoration: 'none' }}
                     >
                         Denunciar spam
                     </button>
@@ -81,7 +81,7 @@ export function Mobile10SmsSaveContactCard({ telefono, themeMode }: Mobile10SmsS
                     <button
                         type="button"
                         className="text-[13px] leading-[18px] font-[600] tracking-[0px] whitespace-nowrap"
-                        style={{ color: colors.link, textDecoration: 'none' }}
+                        style={{ color: "#7FA1B8", textDecoration: 'none' }}
                     >
                         Agregar contacto
                     </button>

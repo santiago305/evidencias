@@ -87,10 +87,10 @@ function renderFormattedLine(line: string, lineIndex: number, themeMode: Preview
     return parts;
 }
 
-function linesToSpans(lines: ReactNode[], themeMode: PreviewThemeMode) {
+function linesToSpans(lines: ReactNode[], themeMode: PreviewThemeMode, lineHeightClassName?: string) {
     return lines.map((line, idx) => {
         const key = `${idx}-${typeof line === 'string' ? line.slice(0, 8) : 'node'}`;
-        return <span key={key}>{typeof line === 'string' ? renderFormattedLine(line, idx, themeMode) : line}</span>;
+        return <span key={key} className={lineHeightClassName}>{typeof line === 'string' ? renderFormattedLine(line, idx, themeMode) : line}</span>;
     });
 }
 
@@ -124,6 +124,7 @@ export function WhatsappConversation({
     visualAdapter,
     composerAccessory,
     composerLayout,
+    messageLineHeightClassName,
 }: {
     visualAdapter: WhatsappMobileVisualAdapter;
     behaviorProfile?: WhatsappBehaviorProfile;
@@ -139,6 +140,7 @@ export function WhatsappConversation({
     composerLayout?: {
         messageAreaMaxWidth?: string;
     };
+    messageLineHeightClassName?: string;
 }) {
     const scrollContainerRef = useRef<HTMLDivElement | null>(null);
 
@@ -291,7 +293,7 @@ export function WhatsappConversation({
                                                         : undefined
                                                 }
                                             >
-                                                {linesToSpans(msg.lines, themeMode)}
+                                                {linesToSpans(msg.lines, themeMode, messageLineHeightClassName)}
                                             </visualAdapter.Bubble>
                                         </div>
 

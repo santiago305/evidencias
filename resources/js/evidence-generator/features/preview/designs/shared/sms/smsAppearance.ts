@@ -6,7 +6,7 @@ export function shouldShowSmsAccentPoint(randomValue = Math.random()): boolean {
 }
 
 export function getSmsColors(themeMode: PreviewThemeMode, variant: SmsDesignVariant = 'mobile-3'): SmsColors {
-    if (variant === 'mobile-1') {
+    if (variant === 'mobile-1' || variant === 'mobile-11') {
         if (themeMode === 'dark') {
             return {
                 shell: '#1C2023',

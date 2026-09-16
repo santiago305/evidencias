@@ -52,7 +52,7 @@ export function SmsMobileHeader({ data, themeMode, showVideoCall = false }: { da
             </div>
 
             <div className="min-w-0 flex-1 pl-[11px]">
-                <div className="truncate text-[19px] leading-none tracking-[-0.2px]">{displayTelefono}</div>
+                <div className="truncate text-[18px] leading-none tracking-[-0.2px]">{displayTelefono}</div>
             </div>
 
             <div className="flex items-center gap-[5px]">

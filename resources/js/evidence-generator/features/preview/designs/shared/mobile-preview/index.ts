@@ -10,6 +10,7 @@ export {
     renderMobile8Frame,
     renderMobile9Frame,
     renderMobile10Frame,
+    renderMobile11Frame,
 } from './frameRenderers';
 export { MobileCallPreview } from './MobileCallPreview';
 export type {

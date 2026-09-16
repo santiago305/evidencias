@@ -114,7 +114,7 @@ export function SmsMobileInputBar({
                     className="flex size-[54px] shrink-0 items-center justify-center rounded-full"
                     style={{
                         backgroundColor: colors.audioBackground,
-                        color: colors.audioIcon,
+                        color: '#42474D',
                     }}
                     aria-label="Mensaje de voz"
                 >
