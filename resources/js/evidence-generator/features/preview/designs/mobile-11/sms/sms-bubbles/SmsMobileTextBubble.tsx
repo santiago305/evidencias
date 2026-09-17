@@ -54,9 +54,9 @@ export function SmsMobileTextBubble({
                 setIsMetadataVisible((current) => toggleSmsMetadataVisibility(current));
             }}
         >
-            <div className="max-w-[92%]" style={{ color: textColor }}>
+            <div className="max-w-[87%]" style={{ color: textColor }}>
                 <div
-                    className={['rounded-[21px] px-[16px] py-2.5 text-[15.2px] font-light leading-[1.39] tracking-[-0.18px]', radius].join(' ')}
+                    className={['rounded-[21px] px-[16px] py-2.5 text-[15.2px] font-semibold leading-[1.39] tracking-[-0.18px]', radius].join(' ')}
                     style={{ backgroundColor }}
                 >
                     <div className="break-words whitespace-pre-wrap">

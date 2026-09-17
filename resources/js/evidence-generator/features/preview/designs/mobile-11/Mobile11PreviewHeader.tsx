@@ -147,10 +147,17 @@ type Mobile11PreviewHeaderProps = {
     backgroundColor?: string;
 };
 
-export function Mobile11PreviewHeader({ themeMode, notificationSeed, notificationIds, variant = 'default', backgroundColor }: Mobile11PreviewHeaderProps) {
+export function Mobile11PreviewHeader({
+    themeMode,
+    notificationSeed,
+    notificationIds,
+    variant = 'default',
+    backgroundColor,
+}: Mobile11PreviewHeaderProps) {
     const isDark = themeMode === 'dark';
     const isWhatsappVariant = variant === 'whatsapp' && isDark;
     const smsColors = variant === 'sms' ? getSmsColors(themeMode, 'mobile-11') : null;
+    const statusBarForeground = variant === 'sms' ? '#FFFFFF' : isWhatsappVariant ? '#F2F0F0' : isDark ? '#FFFFFF' : '#5F6368';
     const [time, setTime] = useState('');
     const [batteryLevel, setBatteryLevel] = useState<BatteryLevel>(getBatteryLevel());
 
@@ -190,13 +197,7 @@ export function Mobile11PreviewHeader({ themeMode, notificationSeed, notificatio
 
     return (
         <div
-            style={
-                smsColors
-                    ? { backgroundColor: smsColors.header, color: smsColors.headerIcon }
-                    : backgroundColor
-                      ? { backgroundColor }
-                      : undefined
-            }
+            style={smsColors ? { backgroundColor: smsColors.header, color: statusBarForeground } : backgroundColor ? { backgroundColor } : undefined}
             className={[
                 'shrink-0 px-6.25 py-1',
                 smsColors ? '' : isWhatsappVariant ? 'bg-[#0B1014] text-[#F2F0F0]' : isDark ? 'bg-[#070c0f] text-white' : 'bg-white text-[#5f6368]',
@@ -214,7 +215,7 @@ export function Mobile11PreviewHeader({ themeMode, notificationSeed, notificatio
                             'text-[15px] leading-none font-bold tracking-[-0.35px]',
                             smsColors ? '' : isWhatsappVariant ? 'text-[#F2F0F0]' : isDark ? 'text-white' : 'text-[#5f6368]',
                         ].join(' ')}
-                        style={smsColors ? { color: smsColors.headerIcon } : undefined}
+                        style={smsColors ? { color: statusBarForeground } : undefined}
                     >
                         {time}
                     </span>
@@ -232,7 +233,11 @@ export function Mobile11PreviewHeader({ themeMode, notificationSeed, notificatio
 
                     <Mobile11CellSignalIcon className="h-[17.5px] w-[23.5px]" />
 
-                    <Mobile11BatteryIcon batteryLevel={batteryLevel} />
+                    <Mobile11BatteryIcon
+                        batteryLevel={batteryLevel}
+                        foregroundColor={variant === 'sms' ? '#FFFFFF' : undefined}
+                        backgroundColor={variant === 'sms' ? '#929493' : undefined}
+                    />
                 </div>
             </div>
         </div>

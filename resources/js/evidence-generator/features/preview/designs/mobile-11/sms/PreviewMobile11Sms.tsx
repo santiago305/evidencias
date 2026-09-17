@@ -15,6 +15,7 @@ export function PreviewMobile11Sms({ data, themeMode }: PreviewProps) {
     return (
         <Mobile11PreviewFrame
             themeMode={themeMode}
+            headerVariant="sms"
             notificationIds={buildMobilePreviewNotificationIds(data, 'mobile-11', 'sms')}
             statusBarBackground={themeMode === 'light' ? colors.header : undefined}
             widthClassName="w-[366.75px]"
