@@ -14,11 +14,11 @@ export function Mobile11SmsSaveContactCard({ telefono, themeMode }: Mobile11SmsS
     const isDark = themeMode === 'dark';
     const colors = getSmsColors(themeMode);
 
-    const darkPrimaryText = '#E2E3E5';
-    const darkSecondaryText = '#C2C7CB';
-    const darkAccent = '#76D1FE';
+    const darkPrimaryText = '#131217';
+    const darkSecondaryText = '#131217';
+    const darkAccent = '#68B8D0';
     const darkAvatarForeground = '#003449';
-    const darkCloseIcon = '#E2E3E5';
+    const darkCloseIcon = '#000000';
 
     if (!isVisible) {
         return null;
@@ -41,14 +41,14 @@ export function Mobile11SmsSaveContactCard({ telefono, themeMode }: Mobile11SmsS
 
                 <div className="absolute top-[17px] right-[42px] left-[72px]">
                     <div
-                        className="text-[13.5px] leading-[21px] font-[500] tracking-[-0.1px] whitespace-nowrap"
+                        className="text-[13.5px] leading-[21px] font-[600] tracking-[-0.1px] whitespace-nowrap"
                         style={{ color: isDark ? darkPrimaryText : '#EDEDED' }}
                     >
                         ¿Quieres guardar {telefono}?
                     </div>
 
                     <div
-                        className="mt-[2px] text-[12.1px] leading-[20px] font-[400] tracking-[-0.05px]"
+                        className="mt-[2px] text-[12.1px] leading-[20px] font-[500] tracking-[-0.05px]"
                         style={{ color: isDark ? darkSecondaryText : '#EDEDED' }}
                     >
                         Si guardas este número, se agregará un
@@ -60,7 +60,7 @@ export function Mobile11SmsSaveContactCard({ telefono, themeMode }: Mobile11SmsS
                 <button
                     type="button"
                     className="absolute top-[17px] right-[17px] grid size-[24px] place-items-center"
-                    style={{ color: isDark ? darkCloseIcon : '#191A1F' }}
+                    style={{ color: isDark ? darkCloseIcon : '#1    ' }}
                     aria-label="Cerrar sugerencia"
                     onClick={() => setIsVisible(false)}
                 >
@@ -73,7 +73,7 @@ export function Mobile11SmsSaveContactCard({ telefono, themeMode }: Mobile11SmsS
                     <button
                         type="button"
                         className="text-[13px] leading-[18px] font-[600] tracking-[0px] whitespace-nowrap"
-                        style={{ color: "#7FA1B8", textDecoration: 'none' }}
+                        style={{ color: "#68B8D0", textDecoration: 'none' }}
                     >
                         Denunciar spam
                     </button>
@@ -81,7 +81,7 @@ export function Mobile11SmsSaveContactCard({ telefono, themeMode }: Mobile11SmsS
                     <button
                         type="button"
                         className="text-[13px] leading-[18px] font-[600] tracking-[0px] whitespace-nowrap"
-                        style={{ color: "#7FA1B8", textDecoration: 'none' }}
+                        style={{ color: "#68B8D0", textDecoration: 'none' }}
                     >
                         Agregar contacto
                     </button>

@@ -34,7 +34,10 @@ export function formatSmsTime(time: string): string {
     const minutes = Number(match[2]);
     if (hours > 23 || minutes > 59) return trimmedTime;
 
-    return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
+    const twelveHour = hours % 12 || 12;
+    const period = hours >= 12 ? 'pm' : 'am';
+
+    return `${twelveHour}:${String(minutes).padStart(2, '0')} ${period}`;
 }
 
 export function formatSmsFullDate(dateKey: string, time: string): string {
@@ -150,7 +153,7 @@ export function buildSmsConversationHeader(
 
     return {
         kind: 'sms',
-        title: `Mensajes de texto con ${data.telefono.trim() || '-'} (SMS/MMS)`,
+        title: `Escribiéndote con ${data.telefono.trim() || '-'} (SMS/MMS)`,
     };
 }
 

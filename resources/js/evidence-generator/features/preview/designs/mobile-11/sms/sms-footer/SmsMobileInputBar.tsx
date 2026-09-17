@@ -1,15 +1,18 @@
 import { useState } from 'react';
 import { getSmsColors, shouldShowSmsAccentPoint } from '../smsAppearance';
+import type { SmsConversationType } from '../smsTypes';
 
 export function SmsMobileInputBar({
     themeMode,
     draft = '',
     onDraftChange,
     composerLayout,
+    conversationType,
 }: {
     themeMode: 'light' | 'dark';
     draft?: string;
     onDraftChange?: (value: string) => void;
+    conversationType: SmsConversationType;
     composerLayout?: {
         messageAreaMaxWidth?: string;
     };
@@ -37,9 +40,9 @@ export function SmsMobileInputBar({
                     <input
                         value={draft}
                         onChange={(event) => onDraftChange?.(event.target.value)}
-                        placeholder="Mensaje RCS"
-                        aria-label="Mensaje RCS"
-                        className="min-w-0 flex-1 bg-transparent pl-px text-[15.7px] tracking-[-0.12px] outline-none placeholder:opacity-100"
+                        placeholder={conversationType === 'rcs' ? 'Mensaje RCS' : 'Mensaje de texto'}
+                        className="min-w-0 flex-1 bg-transparent pl-px text-[15.7px] tracking-[-0.12px] outline-none placeholder:opacity-100
+                        placeholder:text-[#C8C8D0] placeholder:font-semibold"
                         style={{ color: colors.primaryText, caretColor: colors.primaryText, maxWidth: composerLayout?.messageAreaMaxWidth }}
                     />
                     {/* ==========================================

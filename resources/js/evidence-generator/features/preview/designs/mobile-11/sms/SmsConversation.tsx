@@ -49,7 +49,7 @@ export function SmsConversation({
                     />
                 ) : null}
                 <div
-                    className={`text-center text-[10.7px] leading-4 ${conversationHeader.kind === 'sms' ? 'mb-[13px]' : 'mb-[0px]'}`}
+                    className={`text-center text-[10.7px] leading-4 font-medium ${conversationHeader.kind === 'sms' ? 'mb-[13px]' : 'mb-[0px]'}`}
                     style={{ color: colors.secondaryText }}
                 >
                     <span>{conversationHeader.kind === 'sms' ? conversationHeader.title : `Chat RCS con ${displayTelefono}`}</span>
@@ -107,7 +107,13 @@ export function SmsConversation({
                     onSuggestionClick={(suggestion) => setDraft(suggestion.label)}
                 />
             ) : null}
-            <SmsMobileInputBar themeMode={themeMode} draft={draft} onDraftChange={setDraft} composerLayout={composerLayout} />
+            <SmsMobileInputBar
+                themeMode={themeMode}
+                draft={draft}
+                onDraftChange={setDraft}
+                conversationType={conversationHeader.kind}
+                composerLayout={composerLayout}
+            />
         </main>
     );
 }
@@ -119,7 +125,5 @@ function formatMobile11SmsPhone(value: string): string {
         return '-';
     }
 
-    return /^\d{9}$/.test(trimmed)
-        ? trimmed.replace(/(\d{3})(\d{3})(\d{3})/, '$1 $2 $3')
-        : trimmed;
+    return /^\d{9}$/.test(trimmed) ? trimmed.replace(/(\d{3})(\d{3})(\d{3})/, '$1 $2 $3') : trimmed;
 }

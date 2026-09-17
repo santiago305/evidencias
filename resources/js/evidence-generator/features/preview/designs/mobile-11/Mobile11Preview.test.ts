@@ -35,10 +35,7 @@ test('mobile 11 does not import components from another mobile', () => {
 });
 
 test('mobile 11 keeps the message line height on every rendered line', () => {
-    const bubbleSource = readFileSync(
-        resolve(designDirectory, 'whatsapp', 'whatsapp-bubbles', 'WhatsappMobileTextBubble.tsx'),
-        'utf8',
-    );
+    const bubbleSource = readFileSync(resolve(designDirectory, 'whatsapp', 'whatsapp-bubbles', 'WhatsappMobileTextBubble.tsx'), 'utf8');
     const conversationSource = readFileSync(resolve(designDirectory, 'whatsapp', 'WhatsappConversation.tsx'), 'utf8');
 
     assert.match(bubbleSource, /data-testid="selectable-text"[\s\S]*leading-\[22\.5px\]/);
@@ -103,4 +100,15 @@ test('mobile 10 SMS header includes camera between phone and menu with controlle
     assert.match(headerSource, /M4 20C3\.45 20[\s\S]*L18 14\.5V18C18 18\.55[\s\S]*H4Z/);
     assert.doesNotMatch(headerSource, /H4ZM4 18H16V6H4V18Z/);
     assert.match(whatsappHeaderSource, /M4 20C3\.45 20[\s\S]*H4ZM4 18H16V6H4V18Z/);
+});
+
+test('mobile 11 SMS status bar uses white icons without changing WhatsApp', () => {
+    const headerSource = readFileSync(resolve(designDirectory, 'Mobile11PreviewHeader.tsx'), 'utf8');
+    const smsSource = readFileSync(resolve(designDirectory, 'sms', 'PreviewMobile11Sms.tsx'), 'utf8');
+    const profilesSource = readFileSync(resolve(designDirectory, '..', 'mobilePreviewProfiles.tsx'), 'utf8');
+
+    assert.match(smsSource, /headerVariant="sms"/);
+    assert.match(headerSource, /variant === 'sms' \? '#FFFFFF'/);
+    assert.match(profilesSource, /sms: \{ kind: 'custom', Preview: PreviewMobile11Sms \}/);
+    assert.doesNotMatch(profilesSource, /'mobile-11'[\s\S]*sms: \{ variant: 'mobile-1'/);
 });
