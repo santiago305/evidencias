@@ -12,7 +12,7 @@ export function SmsMobileInputBar({
     };
 }) {
     return (
-        <footer className="h-[107px] w-full shrink-0 bg-[#010101]">
+        <footer className="h-[60px] w-full shrink-0 bg-[#010101]">
             <div className="flex h-full items-end pl-[5.7%] pr-[5.75%] pb-[4px]">
                 <div className="flex h-8 shrink-0 items-center gap-[15px] mb-1">
                     <button type="button" className="grid size-8 shrink-0 place-items-center" aria-label="Galería">
