@@ -29,6 +29,7 @@ import type { MobileNotificationIconId } from '../../mobileNotifications';
 import { getSmsColors } from '../shared/sms/smsAppearance';
 import { Mobile11BatteryIcon } from './Mobile11BatteryIcon';
 import { Mobile11CellSignalIcon } from './components/status-bar/Mobile11CellSignalIcon';
+import { formatMobile11StatusBarTime } from './mobile11StatusBarTime';
 
 type BatteryLevel = 10 | 20 | 30 | 40 | 50 | 60 | 70 | 80 | 90 | 100;
 type NotificationIconComponent = ComponentType<SVGProps<SVGSVGElement>>;
@@ -165,13 +166,7 @@ export function Mobile11PreviewHeader({
         const updateStatus = () => {
             const now = new Date();
 
-            setTime(
-                now.toLocaleTimeString('es-PE', {
-                    hour: 'numeric',
-                    minute: '2-digit',
-                    hour12: false,
-                }),
-            );
+            setTime(formatMobile11StatusBarTime(now));
 
             setBatteryLevel(getBatteryLevel());
         };
@@ -212,7 +207,7 @@ export function Mobile11PreviewHeader({
                 <div className="flex items-center gap-[7.5px]">
                     <span
                         className={[
-                            'text-[15px] leading-none font-bold tracking-[-0.35px]',
+                            'text-[13px] leading-none font-bold tracking-[-0.35px]',
                             smsColors ? '' : isWhatsappVariant ? 'text-[#F2F0F0]' : isDark ? 'text-white' : 'text-[#5f6368]',
                         ].join(' ')}
                         style={smsColors ? { color: statusBarForeground } : undefined}

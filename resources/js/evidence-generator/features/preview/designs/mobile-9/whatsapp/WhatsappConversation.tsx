@@ -2,6 +2,7 @@ import { Fragment, useCallback, useEffect, useMemo, useRef, useState, type React
 import { formatWhatsappTimeValue, getDateKeyFromLocalDateTime, getMobileDayChipTextForDate } from '../../../../../lib/whatsapp/time';
 import type { GeneratedMessage, PreviewThemeMode } from '../../../../../types';
 import { shouldShowConversationMoreIndicator } from '../../whatsappConversationIndicator';
+import { formatMobile9MessageTime } from '../mobile9MessageTime';
 import type { WhatsappConversationMessage } from './buildWhatsappConversation';
 import { buildWhatsappConversation } from './buildWhatsappConversation';
 import { buildMobileAdvisorQuoteColors, buildMobileClientQuoteTheme } from './whatsappAppearance';
@@ -106,7 +107,7 @@ function normalizeGeneratedMessages(
 
     return messages.map((msg) => ({
         ...msg,
-        time: formatWhatsappTimeValue(msg.time),
+        time: formatMobile9MessageTime(formatWhatsappTimeValue(msg.time)),
         status: msg.side === 'out' ? (msg.status ?? messageStatus) : msg.status,
     }));
 }
@@ -177,7 +178,13 @@ export function WhatsappConversation({
     }, []);
 
     const conversationMessages = useMemo((): WhatsappConversationMessage[] => {
-        return normalizeGeneratedMessages(messages, messageStatus) ?? buildWhatsappConversation(data, messageStatus, behaviorProfile);
+        const normalizedMessages = normalizeGeneratedMessages(messages, messageStatus);
+        if (normalizedMessages) return normalizedMessages;
+
+        return buildWhatsappConversation(data, messageStatus, behaviorProfile).map((message) => ({
+            ...message,
+            time: formatMobile9MessageTime(message.time),
+        }));
     }, [behaviorProfile, data, messageStatus, messages]);
 
     const resolvedInlineTemporalInsertIndex = useMemo(() => {
