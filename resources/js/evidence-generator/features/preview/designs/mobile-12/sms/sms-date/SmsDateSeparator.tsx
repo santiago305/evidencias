@@ -9,7 +9,7 @@ export function SmsDateSeparator({ dateKey, time, color, currentDate }: { dateKe
     if (formattedLabel.length > 0) {
         return (
             <div className="my-5 flex justify-center" role="separator" aria-label={displayLabel}>
-                <span className="text-[12px] leading-none font-normal tracking-[-0.1px]" style={{ color }}>
+                <span className="text-[12px] leading-none font-medium tracking-[-0.1px]" style={{ color }}>
                     {displayLabel}
                 </span>
             </div>
