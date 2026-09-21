@@ -2,7 +2,7 @@ import type { PreviewThemeMode } from '../../../../../types';
 
 export function Mobile9EncryptedMessage({ themeMode = 'light' }: { themeMode?: PreviewThemeMode }) {
     const isDark = themeMode === 'dark';
-    const encryptedTextSize = 'text-[11px] !leading-[0px] !font-[470] text-gray-500';
+    const encryptedTextSize = 'text-[10.5px] !leading-[0px] !font-[470] text-gray-500';
     const horizontalPadding = 'px-8';
     const maxWidth = 'max-w-none';
 

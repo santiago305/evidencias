@@ -1,4 +1,5 @@
 import type { GeneratedMessage } from '../../../../../../types';
+import { formatMobile9MessageTime } from '../../mobile9MessageTime';
 import { buildSmsMessageTimestamp, formatSmsTime } from '../smsDateTime';
 import type { SmsConversationType, SmsData } from '../smsTypes';
 import { EncryptionLockIcon } from './EncryptionLockIcon';
@@ -47,7 +48,7 @@ export function SmsMessageMetadata({
             ].join(' ')}
             style={{ color: textColor }}
         >
-            <span>{formatSmsTime(message.time)}</span>
+            <span>{formatMobile9MessageTime(formatSmsTime(message.time))}</span>
             {timestamp.showSmsLabel ? <span>SMS</span> : null}
             {timestamp.showChecks ? <DoubleCheckIcon foregroundColor={checkColor} backgroundColor={conversationColor} /> : null}
             {showLock && conversationType === 'rcs' ? (

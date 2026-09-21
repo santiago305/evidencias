@@ -11,6 +11,7 @@ import { Mobile8PreviewFrame } from '../../mobile-8/Mobile8PreviewFrame';
 import { Mobile9PreviewFrame } from '../../mobile-9/Mobile9PreviewFrame';
 import { Mobile10PreviewFrame } from '../../mobile-10/Mobile10PreviewFrame';
 import { Mobile11PreviewFrame } from '../../mobile-11/Mobile11PreviewFrame';
+import { Mobile12PreviewFrame } from '../../mobile-12/Mobile12PreviewFrame';
 import type { MobileFrameRenderProps, MobileSystemFooterRenderer } from './mobilePreviewTypes';
 
 function resolveHeaderVariant(channel: MobileFrameRenderProps['channel']): 'default' | 'whatsapp' | 'sms' {
@@ -150,6 +151,37 @@ export function renderMobile11Frame({ children, themeMode, channel, notification
         >
             {children}
         </Mobile11PreviewFrame>
+    );
+}
+
+export function renderMobile12Frame({
+    children,
+    themeMode,
+    channel,
+    notificationIds,
+    smsShellColor,
+    systemChrome,
+    batteryRenderer,
+    footerRenderer,
+    frame,
+}: MobileFrameRenderProps) {
+    return (
+        <Mobile12PreviewFrame
+            themeMode={themeMode}
+            notificationIds={notificationIds}
+            headerVariant={resolveHeaderVariant(channel)}
+            footerVariant={channel === 'sms' ? 'sms' : 'default'}
+            systemHeaderBackground={channel === 'sms' && themeMode === 'light' ? smsShellColor : systemChrome?.headerBackground}
+            systemHeaderForeground={systemChrome?.headerForeground}
+            systemFooterBackground={systemChrome?.footerBackground}
+            systemFooterForeground={systemChrome?.footerForeground}
+            batteryRenderer={batteryRenderer}
+            footerRenderer={footerRenderer}
+            channel={channel}
+            frame={frame}
+        >
+            {children}
+        </Mobile12PreviewFrame>
     );
 }
 

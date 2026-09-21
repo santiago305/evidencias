@@ -1,0 +1,10 @@
+@font-face {
+    font-family: 'Mobile12Chococooky';
+    src: url('/fonts/Chococooky.ttf') format('truetype');
+    font-display: swap;
+}
+
+.mobile12-font,
+.mobile12-font * {
+    font-family: 'Mobile12Chococooky' !important;
+}

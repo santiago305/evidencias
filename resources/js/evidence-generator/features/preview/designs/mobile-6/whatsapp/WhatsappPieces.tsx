@@ -225,7 +225,7 @@ export function TempporalMessage({ themeMode = 'light' }: { themeMode?: PreviewT
     const isDark = themeMode === 'dark';
     const horizontalPadding = 'px-10';
     const maxWidth = 'max-w-none';
-    const messageTextSize = 'text-[12.5px] leading-[15px]';
+    const messageTextSize = 'text-[10.5px] leading-[15px]';
 
     return (
         <div className="relative">

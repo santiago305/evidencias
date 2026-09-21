@@ -1,9 +1,10 @@
-import { buildSmsDateSeparatorLabel, formatSmsMessageDateTime } from '../smsDateTime';
+import { formatMobile9MessageTime } from '../../mobile9MessageTime';
+import { buildSmsDateSeparatorLabel, formatSmsMessageDateTime, formatSmsTime } from '../smsDateTime';
 
 export function SmsDateSeparator({ dateKey, time, color, currentDate }: { dateKey: string; time: string; color: string; currentDate?: Date }) {
     const label = buildSmsDateSeparatorLabel(dateKey, time, currentDate);
     const dateLabelIncludesTime = label.dateLabel.includes(label.timeLabel);
-    const formattedLabel = formatSmsMessageDateTime(dateKey, time, currentDate);
+    const formattedLabel = formatSmsMessageDateTime(dateKey, time, currentDate).replace(formatSmsTime(time), formatMobile9MessageTime(time));
 
     if (formattedLabel.length > 0) {
         return (
@@ -23,7 +24,7 @@ export function SmsDateSeparator({ dateKey, time, color, currentDate }: { dateKe
                         {label.dateLabel} <span className="px-0.5 text-[14px] leading-none">·</span>{' '}
                     </>
                 ) : null}
-                {!dateLabelIncludesTime ? label.timeLabel : null}
+                {!dateLabelIncludesTime ? formatMobile9MessageTime(label.timeLabel) : null}
             </span>
         </div>
     );

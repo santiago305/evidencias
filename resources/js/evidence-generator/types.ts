@@ -9,7 +9,7 @@ export type ModoEntrada = 'informativo' | 'contactado';
 export type TipoCliente = 'apurado' | 'sereno' | 'desconfiado' | 'frio' | 'conversador' | 'indeciso';
 export type ConversationStatus = 'production' | 'development' | 'fixed';
 export type ConversationType = 'whatsapp' | 'sms';
-export type MobileDesignKey = 'mobile-1' | 'mobile-2' | 'mobile-3' | 'mobile-4' | 'mobile-5' | 'mobile-6' | 'mobile-7' | 'mobile-8' | 'mobile-9' | 'mobile-10' | 'mobile-11';
+export type MobileDesignKey = 'mobile-1' | 'mobile-2' | 'mobile-3' | 'mobile-4' | 'mobile-5' | 'mobile-6' | 'mobile-7' | 'mobile-8' | 'mobile-9' | 'mobile-10' | 'mobile-11' | 'mobile-12';
 
 export interface MobileDesignDefinition {
     key: MobileDesignKey;
