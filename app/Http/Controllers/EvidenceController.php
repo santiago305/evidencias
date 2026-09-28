@@ -24,6 +24,7 @@ class EvidenceController extends Controller
         }
 
         $validated = $request->validated();
+        $validated['nombre'] = (string) ($validated['nombre'] ?? '');
 
         if ($request->hasFile('img_64')) {
             $image = $request->file('img_64');

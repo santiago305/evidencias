@@ -1,7 +1,5 @@
 import type { FormState } from '../types';
 
-const MALE_CLIENT_NAMES = ['Juan Perez', 'Carlos Ramirez', 'Miguel Torres', 'Luis Garcia', 'Jorge Mendoza'] as const;
-
 function formatDateTimeLocal(date: Date): string {
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -10,12 +8,6 @@ function formatDateTimeLocal(date: Date): string {
     const minutes = String(date.getMinutes()).padStart(2, '0');
 
     return `${year}-${month}-${day}T${hours}:${minutes}`;
-}
-
-function pickClientName(random: () => number): string {
-    const index = Math.floor(random() * MALE_CLIENT_NAMES.length);
-
-    return MALE_CLIENT_NAMES[Math.min(index, MALE_CLIENT_NAMES.length - 1)] ?? MALE_CLIENT_NAMES[0];
 }
 
 function buildClientDni(random: () => number): string {
@@ -32,7 +24,7 @@ export function applyConversationTestDefaults(form: FormState, now = new Date(),
     return {
         ...form,
         telefono: form.telefono.trim() === '' ? '999999999' : form.telefono,
-        nombre: form.nombre.trim() === '' ? pickClientName(random) : form.nombre,
+        nombre: form.nombre.trim(),
         dniCliente: form.dniCliente.trim() === '' ? buildClientDni(random) : form.dniCliente,
         monto: form.monto.trim() === '' ? '99999' : form.monto,
         tasa: form.tasa.trim() === '' ? '9.99' : form.tasa,

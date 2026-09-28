@@ -29,7 +29,7 @@ class GenerateEvidenceRequest extends FormRequest
             'seedCode' => ['nullable', 'string', 'max:100'],
             'conversationCode' => ['nullable', 'string', 'max:100'],
             'telefono' => ['required_without:seedCode', 'nullable', 'string', 'regex:/^9\d{8}$/'],
-            'nombre' => ['required_without:seedCode', 'nullable', 'string', 'max:150'],
+            'nombre' => ['nullable', 'string', 'max:150'],
             'dniCliente' => ['required_without:seedCode', 'nullable', 'string', 'regex:/^\d{8}$/'],
             'monto' => ['required_without:seedCode', 'nullable', 'string', 'max:40'],
             'tasa' => ['required_without:seedCode', 'nullable', 'string', 'max:40'],

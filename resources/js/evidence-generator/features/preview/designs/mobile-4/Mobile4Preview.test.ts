@@ -88,10 +88,10 @@ test('mobile 4 SMS uses mobile 2 content and mobile 3 SMS footer', () => {
     assert.doesNotMatch(frameSource, /footerVariant/);
 });
 
-test('mobile 4 WhatsApp runtime is deterministic and honors its snapshot', () => {
+test('mobile 4 WhatsApp runtime keeps the supplied identity and honors its snapshot', () => {
     const data = {
         telefono: '999 111 222',
-        nombre: 'Nombre ignorado por el selector de identidad',
+        nombre: '  María José Rodríguez  ',
         dniCliente: '12345678',
         seedCode: 'mobile-4-runtime',
         fechaHora: '2026-09-02T10:00',
@@ -102,7 +102,10 @@ test('mobile 4 WhatsApp runtime is deterministic and honors its snapshot', () =>
 
     assert.equal(firstRuntime.messageStatus, secondRuntime.messageStatus);
     assert.deepEqual(firstRuntime.temporalBehavior, secondRuntime.temporalBehavior);
-    assert.equal(firstRuntime.contactIdentityDisplay.headerTitle, '+51 999 111 222');
+    assert.equal(firstRuntime.contactIdentityDisplay.headerTitle, 'María José Rodríguez');
+
+    const missingNameRuntime = buildMobile4WhatsappRuntime({ ...data, nombre: '' });
+    assert.equal(missingNameRuntime.contactIdentityDisplay.headerTitle, '+51 999 111 222');
 
     const snapshotRuntime = buildMobile4WhatsappRuntime({
         ...data,

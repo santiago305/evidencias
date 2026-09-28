@@ -347,6 +347,26 @@ test('generate evidence returns seed and rendered messages', function () {
     $this->assertDatabaseCount('generated_evidences', 1);
 });
 
+test('generate evidence accepts and stores an empty contact name', function () {
+    $user = User::factory()->create();
+
+    createConversationForTest('conv_empty_contact_name_001', [
+        ['side' => 'out', 'delay_minutes' => 0, 'lines' => ['Hola {nombre_cliente}']],
+    ]);
+
+    $payload = evidencePayload();
+    unset($payload['nombre']);
+
+    $response = $this->actingAs($user)->postJson(route('evidences.generate'), [
+        ...$payload,
+        'conversationCode' => 'conv_empty_contact_name_001',
+    ]);
+
+    $response->assertOk();
+
+    expect(GeneratedEvidence::query()->firstOrFail()->input_data['nombre'])->toBe('');
+});
+
 test('generate evidence stores visual seed metadata for new evidences', function () {
     $user = User::factory()->create([
         'name' => 'Ana Lopez',
