@@ -1,3 +1,4 @@
+import { resolveWhatsappHeaderIdentity } from '../../../shared/whatsapp/contactIdentityDisplay';
 import { ArrowLeft } from 'lucide-react';
 import { useMemo } from 'react';
 import type { PreviewThemeMode } from '../../../../../../types';
@@ -18,15 +19,15 @@ type WhatsappMobileHeaderUserProps = {
 export function WhatsappMobileHeaderUser({
     data,
     showTemporaryIndicator = true,
-    displayTitle,
     themeMode = 'light',
 }: WhatsappMobileHeaderUserProps) {
     const isDark = themeMode === 'dark';
     const avatarTheme = useMemo(() => createWhatsappAvatarTheme(buildWhatsappAvatarSeed(data), themeMode), [data, themeMode]);
 
-    const headerTitle = displayTitle ?? (data.nombre?.trim() ? data.nombre : 'Aracely MD');
+    const contactIdentity = resolveWhatsappHeaderIdentity(data);
+    const headerTitle = contactIdentity.title;
     const mobileAvatarInitial = useMemo(() => {
-        const firstCharacter = Array.from(headerTitle.trim())[0] ?? '';
+        const firstCharacter = contactIdentity.hasName ? (Array.from(headerTitle.trim())[0] ?? '') : '';
 
         return /^\p{L}$/u.test(firstCharacter) ? firstCharacter.toLocaleUpperCase('es-PE') : null;
     }, [headerTitle]);

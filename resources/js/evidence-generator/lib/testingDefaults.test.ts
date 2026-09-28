@@ -9,7 +9,7 @@ test('applyConversationTestDefaults fills empty evidence fields for conversation
 
     assert.deepEqual(form, {
         telefono: '999999999',
-        nombre: 'Juan Perez',
+        nombre: '',
         dniCliente: '10000000',
         monto: '99999',
         tasa: '9.99',
@@ -39,4 +39,14 @@ test('applyConversationTestDefaults keeps values already entered by the user', (
     assert.equal(form.monto, '3250');
     assert.equal(form.fechaHora, '2026-06-06T10:00');
     assert.equal(form.dniCliente, '10000000');
+});
+
+test('applyConversationTestDefaults trims but does not replace a missing name', () => {
+    const form = applyConversationTestDefaults(
+        { ...createInitialFormState(), nombre: '   ' },
+        new Date('2026-06-06T15:30:00'),
+        () => 0,
+    );
+
+    assert.equal(form.nombre, '');
 });

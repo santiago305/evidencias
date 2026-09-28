@@ -1,6 +1,7 @@
 import videoCallIcon from '../../components/icons/capt.png';
 import phoneIcon from '../../components/icons/tephon.png';
 import type { SmsData } from '../smsTypes';
+import { resolveSmsHeaderIdentity } from '../../../shared/sms/contactHeaderIdentity';
 
 type SmsMobileHeaderProps = {
     data: SmsData;
@@ -9,7 +10,7 @@ type SmsMobileHeaderProps = {
 };
 
 export function SmsMobileHeader({ data, showVideoCall = false }: SmsMobileHeaderProps) {
-    const displayTelefono = data.telefono.trim() || '-';
+    const displayTelefono = resolveSmsHeaderIdentity(data);
 
     return (
         <header

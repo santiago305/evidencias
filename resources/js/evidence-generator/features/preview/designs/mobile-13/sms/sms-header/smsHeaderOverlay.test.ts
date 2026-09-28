@@ -1,0 +1,57 @@
+import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
+import test from 'node:test';
+
+const headerSource = readFileSync(new URL('./SmsMobileHeader.tsx', import.meta.url), 'utf8');
+const previewSource = readFileSync(new URL('../PreviewMobile13Sms.tsx', import.meta.url), 'utf8');
+const conversationSource = readFileSync(new URL('../SmsConversation.tsx', import.meta.url), 'utf8');
+const glassSource = readFileSync(new URL('./SmsHeaderGlassPill.tsx', import.meta.url), 'utf8');
+const overlaySource = readFileSync(new URL('../SmsTopGlassOverlay.tsx', import.meta.url), 'utf8');
+const statusBarSource = readFileSync(new URL('../SmsStatusBar.tsx', import.meta.url), 'utf8');
+const layoutSource = readFileSync(new URL('../smsHeaderLayout.ts', import.meta.url), 'utf8');
+const frameSource = readFileSync(new URL('../../Mobile13PreviewFrame.tsx', import.meta.url), 'utf8');
+
+test('mobile 13 SMS composes one floating header and one local transparent status bar', () => {
+    assert.match(previewSource, /hideSystemHeader/);
+    assert.match(frameSource, /!hideSystemHeader\s*\?/);
+    assert.equal((previewSource.match(/<SmsStatusBar\b/g) ?? []).length, 1);
+    assert.match(previewSource, /<SmsStatusBar[\s\S]*?notificationIds=\{notificationIds\}/);
+    assert.ok(previewSource.indexOf('<SmsConversation') < previewSource.indexOf('<SmsTopGlassOverlay'));
+    assert.ok(previewSource.indexOf('<SmsTopGlassOverlay') < previewSource.indexOf('<SmsMobileHeader'));
+    assert.ok(previewSource.indexOf('<SmsMobileHeader') < previewSource.indexOf('<SmsStatusBar'));
+    assert.match(previewSource, /relative isolate flex h-full min-h-0 flex-col overflow-hidden/);
+    assert.match(headerSource, /data-mobile13-sms-floating-header="true"/);
+    assert.match(headerSource, /absolute inset-x-0 top-0 z-30 h-\[110px\]/);
+    assert.match(headerSource, /backgroundColor: 'transparent'/);
+    assert.doesNotMatch(headerSource, /-mb-\[/);
+    assert.match(headerSource, /pointer-events-none/);
+    assert.match(headerSource, /pointer-events-auto/);
+    assert.doesNotMatch(headerSource, /backdropFilter|WebkitBackdropFilter/);
+    assert.match(glassSource, /darkComposerMaterial/);
+});
+
+test('mobile 13 SMS messages scroll behind a progressive top blur without a hard edge', () => {
+    assert.match(conversationSource, /<main[\s\S]*?relative flex min-h-0 flex-1 flex-col overflow-hidden/);
+    assert.doesNotMatch(conversationSource, /rounded-t-\[28px\]/);
+    assert.match(conversationSource, /data-mobile13-sms-scroll-area="true"/);
+    assert.match(conversationSource, /overflow-y-auto/);
+    assert.match(conversationSource, /SMS_INITIAL_CONTENT_OFFSET/);
+    assert.doesNotMatch(conversationSource.match(/<main[^>]*>/)?.[0] ?? '', /pt-/);
+    assert.match(overlaySource, /pointer-events-none absolute inset-x-0 top-0 z-20/);
+    assert.match(overlaySource, /blur\(16px\) saturate\(1\.05\)/);
+    assert.match(overlaySource, /blur\(14px\) saturate\(1\.02\)/);
+    assert.match(overlaySource, /backdropFilter:/);
+    assert.match(overlaySource, /WebkitBackdropFilter:/);
+    assert.match(overlaySource, /maskImage:/);
+    assert.match(overlaySource, /WebkitMaskImage:/);
+    assert.match(overlaySource, /black 0%, black 35%, rgba\(0,0,0,0\.80\) 53%, rgba\(0,0,0,0\.20\) 78%, transparent 100%/);
+    assert.match(previewSource, /absolute inset-x-0 z-30/);
+    assert.match(previewSource, /absolute inset-x-0 top-0 z-40/);
+    assert.equal((previewSource.match(/<SmsTopGlassOverlay\b/g) ?? []).length, 1);
+    assert.match(statusBarSource, /backgroundColor: 'transparent'/);
+    assert.match(statusBarSource, /MobileNotificationIcons notificationIds=\{notificationIds\}/);
+    assert.match(layoutSource, /SMS_STATUS_BAR_HEIGHT = 40/);
+    assert.match(layoutSource, /SMS_HEADER_HEIGHT = 110/);
+    assert.match(layoutSource, /SMS_INITIAL_CONTENT_OFFSET = 150/);
+    assert.match(layoutSource, /SMS_BLUR_HEIGHT = 145/);
+});

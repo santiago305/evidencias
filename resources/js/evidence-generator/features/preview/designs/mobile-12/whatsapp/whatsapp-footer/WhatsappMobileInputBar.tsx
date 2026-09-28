@@ -30,7 +30,7 @@ export function WhatsappMobileInputBar({
                         .join(' ')}
                     style={colors ? { backgroundColor: colors.composerBackground, color: colors.composerText } : undefined}
                 >
-                    <button type="button" aria-label="Emojis" className="grid h-[35px] w-[35px] shrink-0 place-items-center rounded-full">
+                    <button type="button" aria-label="Emojis" className="grid h-[35px] w-[10px] shrink-0 place-items-center rounded-full">
                         <svg viewBox="0 0 24 24" height="30.5" width="40.5" preserveAspectRatio="xMidYMid meet" fill="none" aria-hidden="true">
                             <path
                                 d="M8.49893 10.2521C9.32736 10.2521 9.99893 9.5805 9.99893 8.75208C9.99893 7.92365 9.32736 7.25208 8.49893 7.25208C7.6705 7.25208 6.99893 7.92365 6.99893 8.75208C6.99893 9.5805 7.6705 10.2521 8.49893 10.2521Z"

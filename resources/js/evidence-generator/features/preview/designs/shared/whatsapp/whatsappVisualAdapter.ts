@@ -12,6 +12,7 @@ export type WhatsappQuotedMessage = {
 export type WhatsappBubbleProps = {
     side: 'in' | 'out';
     firstInGroup?: boolean;
+    lastInGroup?: boolean;
     time?: string;
     status?: 'sent' | 'delivered' | 'read';
     id?: string;
