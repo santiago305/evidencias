@@ -20,17 +20,21 @@ test('both SMS header pills use one glass surface with non-interactive, separate
     assert.equal((glassSource.match(/pointer-events-none/g) ?? []).length, 2);
     assert.match(glassSource, /top-\[1px\]/);
     assert.match(glassSource, /bottom-\[1px\]/);
-    assert.match(glassSource, /w-\[72%\]/);
-    assert.match(glassSource, /backdropFilter: 'blur\(8px\)'/);
-    assert.match(glassSource, /WebkitBackdropFilter: 'blur\(8px\)'/);
+    assert.match(glassSource, /w-\[68%\]/);
+    assert.match(glassSource, /backdropFilter: 'blur\(12px\) saturate\(1\.05\)'/);
+    assert.match(glassSource, /WebkitBackdropFilter: 'blur\(12px\) saturate\(1\.05\)'/);
 });
 
-test('mobile 13 SMS dark glass keeps its geometry and uses a subtle translucent surface', () => {
-    assert.match(glassSource, /backgroundColor: 'rgba\(30,30,32,0\.78\)'/);
-    assert.match(glassSource, /borderColor: 'rgba\(255,255,255,0\.08\)'/);
-    assert.match(glassSource, /boxShadow: 'inset 0 0 0\.5px rgba\(255,255,255,0\.14\), inset 0 -0\.5px 0\.5px rgba\(255,255,255,0\.10\), inset 0\.5px 0 0\.5px rgba\(255,255,255,0\.07\), inset -0\.5px 0 0\.5px rgba\(255,255,255,0\.07\)'/);
+test('mobile 13 SMS header glass stays translucent and preserves the dense-glass compatibility mode', () => {
+    assert.match(glassSource, /rgba\(38,38,40,0\.78\).*rgba\(30,30,32,0\.78\).*rgba\(32,32,34,0\.78\)/);
+    assert.match(glassSource, /rgba\(255,255,255,0\.76\).*rgba\(254,254,255,0\.72\).*rgba\(249,249,251,0\.70\)/);
+    assert.match(glassSource, /rgba\(37,37,39,0\.94\).*rgba\(31,31,33,0\.94\).*rgba\(35,35,37,0\.94\)/);
+    assert.match(glassSource, /backdropFilter: 'blur\(10px\) saturate\(1\.02\)'/);
+    assert.match(glassSource, /WebkitBackdropFilter: 'blur\(10px\) saturate\(1\.02\)'/);
+    assert.match(glassSource, /rgba\(19,19,21,0\.88\).*rgba\(12,12,14,0\.86\).*rgba\(15,15,17,0\.84\)/);
+    assert.match(glassSource, /rgba\(255,255,255,0\.88\).*rgba\(255,255,255,0\.84\).*rgba\(250,250,252,0\.82\)/);
+    assert.match(glassSource, /blur\(16px\) saturate\(1\.05\)/);
     assert.match(glassSource, /rounded-full border \$\{className\}/);
-    assert.match(glassSource, /rgba\(255,255,255,0\.78\) 0%/);
     assert.doesNotMatch(glassSource, /opacity:\s*0\.[0-9]+/);
 });
 

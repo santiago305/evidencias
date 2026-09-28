@@ -67,7 +67,7 @@ export function SmsMobileTextBubble({
                 setIsMetadataVisible((current) => toggleSmsMetadataVisibility(current));
             }}
         >
-            <div className="relative max-w-[87%] flex-none text-[11px] leading-[19px]">
+            <div className="relative max-w-[85%] flex-none text-[11px] leading-[19px]">
                 {isLastInGroup ? (
                     isOutgoing ? (
                         <OutgoingBubbleTail color={backgroundColor} />
