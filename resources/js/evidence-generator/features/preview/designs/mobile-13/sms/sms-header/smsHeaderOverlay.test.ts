@@ -39,12 +39,15 @@ test('mobile 13 SMS messages scroll behind a progressive top blur without a hard
     assert.doesNotMatch(conversationSource.match(/<main[^>]*>/)?.[0] ?? '', /pt-/);
     assert.match(overlaySource, /pointer-events-none absolute inset-x-0 top-0 z-20/);
     assert.match(overlaySource, /blur\(16px\) saturate\(1\.05\)/);
-    assert.match(overlaySource, /blur\(14px\) saturate\(1\.02\)/);
     assert.match(overlaySource, /backdropFilter:/);
     assert.match(overlaySource, /WebkitBackdropFilter:/);
+    assert.match(overlaySource, /pointerEvents: 'none'/);
+    assert.match(overlaySource, /rgba\(0,0,0,0\.22\).*rgba\(0,0,0,0\.12\)/);
+    assert.match(overlaySource, /rgba\(255,255,255,0\.25\).*rgba\(255,255,255,0\.12\)/);
     assert.match(overlaySource, /maskImage:/);
     assert.match(overlaySource, /WebkitMaskImage:/);
-    assert.match(overlaySource, /black 0%, black 35%, rgba\(0,0,0,0\.80\) 53%, rgba\(0,0,0,0\.20\) 78%, transparent 100%/);
+    assert.match(overlaySource, /black 0%, black 35%, rgba\(0,0,0,0\.85\) 55%, rgba\(0,0,0,0\.35\) 78%, transparent 100%/);
+    assert.match(overlaySource, /boxShadow: 'none'/);
     assert.match(previewSource, /absolute inset-x-0 z-30/);
     assert.match(previewSource, /absolute inset-x-0 top-0 z-40/);
     assert.equal((previewSource.match(/<SmsTopGlassOverlay\b/g) ?? []).length, 1);
@@ -53,5 +56,5 @@ test('mobile 13 SMS messages scroll behind a progressive top blur without a hard
     assert.match(layoutSource, /SMS_STATUS_BAR_HEIGHT = 40/);
     assert.match(layoutSource, /SMS_HEADER_HEIGHT = 110/);
     assert.match(layoutSource, /SMS_INITIAL_CONTENT_OFFSET = 150/);
-    assert.match(layoutSource, /SMS_BLUR_HEIGHT = 145/);
+    assert.match(layoutSource, /SMS_BLUR_HEIGHT = 150/);
 });

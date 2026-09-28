@@ -16,11 +16,11 @@ test('mobile 13 SMS dark glass is shared by footer and header pills', () => {
     assert.equal((footerSource.match(/darkComposerMaterial\b/g) ?? []).length, 2);
     assert.match(readFileSync(headerPath, 'utf8'), /<SmsHeaderGlassPill themeMode=\{themeMode\} darkComposerMaterial/);
     assert.match(readFileSync(contactPillPath, 'utf8'), /<SmsHeaderGlassPill[^>]*darkComposerMaterial/);
-    assert.match(glassSource, /isDark && darkComposerMaterial \? darkComposerSurface : surface/);
-    assert.match(glassSource, /background: 'rgba\(31, 31, 33, 0\.80\)'/);
-    assert.match(glassSource, /backdropFilter: 'blur\(0px\)'/);
-    assert.match(glassSource, /WebkitBackdropFilter: 'blur\(10px\)'/);
-    assert.match(glassSource, /inset 0 1px 1px rgba\(255,255,255,0\.10\)/);
+    assert.match(glassSource, /isDark && darkComposerMaterial/);
+    assert.match(glassSource, /background: 'linear-gradient\(180deg, rgba\(37,37,39,0\.94\) 0%, rgba\(31,31,33,0\.94\) 50%, rgba\(35,35,37,0\.94\) 100%\)'/);
+    assert.match(glassSource, /backdropFilter: 'blur\(10px\) saturate\(1\.02\)'/);
+    assert.match(glassSource, /WebkitBackdropFilter: 'blur\(10px\) saturate\(1\.02\)'/);
+    assert.match(glassSource, /inset 0 1px 0 rgba\(255,255,255,0\.035\)/);
     assert.doesNotMatch(glassSource.match(/const darkComposerSurface:[\s\S]*?\n\s*};/)?.[0] ?? '', /\bopacity:|boxShadow: '0 [2-9]px/);
 });
 
