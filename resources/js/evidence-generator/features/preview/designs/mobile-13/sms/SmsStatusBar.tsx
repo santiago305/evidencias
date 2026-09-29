@@ -39,7 +39,7 @@ export function SmsStatusBar({ themeMode, notificationIds }: SmsStatusBarProps) 
                         className="text-[16px] leading-none font-medium tracking-[-0.35px] tabular-nums"
                         style={{
                             fontFamily: mobile13FontFamily,
-                            fontWeight: 500,
+                            fontWeight: 400,
                             lineHeight: 1,
                             letterSpacing: '-0.35px',
                             fontVariantNumeric: 'tabular-nums',

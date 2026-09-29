@@ -64,11 +64,9 @@ export function SmsConversation({
                             ) : null}
                             <SmsMobileTextBubble
                                 message={message}
-                                showMetadata={false}
                                 colors={colors}
                                 groupPosition={getSmsGroupPosition(messages, index)}
                                 compactBottomSpacing={index === messages.length - 1}
-                                currentDate={currentDate}
                             />
                         </Fragment>
                     );

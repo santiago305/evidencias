@@ -27,8 +27,8 @@ test('both SMS header pills use one glass surface with non-interactive, separate
 
 test('mobile 13 SMS header glass stays translucent and preserves the dense-glass compatibility mode', () => {
     assert.match(glassSource, /rgba\(38,38,40,0\.78\).*rgba\(30,30,32,0\.78\).*rgba\(32,32,34,0\.78\)/);
-    assert.match(glassSource, /rgba\(255,255,255,0\.76\).*rgba\(254,254,255,0\.72\).*rgba\(249,249,251,0\.70\)/);
-    assert.match(glassSource, /rgba\(37,37,39,0\.94\).*rgba\(31,31,33,0\.94\).*rgba\(35,35,37,0\.94\)/);
+    assert.match(glassSource, /rgba\(255,255,255,0\.46\).*rgba\(254,254,255,0\.40\).*rgba\(249,249,251,0\.34\)/);
+    assert.match(glassSource, /rgba\(37,37,39,0\.58\).*rgba\(31,31,33,0\.52\).*rgba\(35,35,37,0\.46\)/);
     assert.match(glassSource, /backdropFilter: 'blur\(10px\) saturate\(1\.02\)'/);
     assert.match(glassSource, /WebkitBackdropFilter: 'blur\(10px\) saturate\(1\.02\)'/);
     assert.match(glassSource, /rgba\(19,19,21,0\.88\).*rgba\(12,12,14,0\.86\).*rgba\(15,15,17,0\.84\)/);
