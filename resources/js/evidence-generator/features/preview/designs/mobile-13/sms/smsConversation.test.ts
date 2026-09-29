@@ -18,10 +18,11 @@ test('mobile 13 SMS keeps the initial header clearance inside the scrolling cont
     assert.match(source, /style=\{\{ paddingTop: `\$\{SMS_INITIAL_CONTENT_OFFSET\}px` \}\}/);
 });
 
-test('mobile 13 SMS starts message metadata hidden until a bubble is clicked', () => {
+test('mobile 13 SMS renders messages without metadata controls', () => {
     const source = readFileSync(new URL('./SmsConversation.tsx', import.meta.url), 'utf8');
 
-    assert.match(source, /showMetadata=\{false\}/);
+    assert.match(source, /<SmsMobileTextBubble/);
+    assert.doesNotMatch(source, /showMetadata=/);
 });
 
 test('mobile 13 SMS hides quick replies while the input is focused', () => {

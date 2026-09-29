@@ -11,7 +11,7 @@ export function SmsMobileHeader({ data, themeMode }: { data: SmsData; themeMode:
     return (
         <header
             data-mobile13-sms-floating-header="true"
-            className="pointer-events-none absolute inset-x-0 top-0 z-30 h-[110px] bg-transparent px-3"
+            className="pointer-events-none absolute inset-x-0 top-1.5 z-30 h-[110px] bg-transparent px-3"
             style={{ color: colors.headerText, backgroundColor: 'transparent' }}
         >
             <div className="absolute top-[8px] left-[10px]">

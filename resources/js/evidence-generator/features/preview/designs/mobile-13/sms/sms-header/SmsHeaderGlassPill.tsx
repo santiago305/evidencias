@@ -18,16 +18,16 @@ export function SmsHeaderGlassPill({ children, className = '', contentClassName 
         boxShadow: ['inset 0 1px 0 rgba(255,255,255,0.045)', 'inset 0 -1px 0 rgba(255,255,255,0.035)'].join(', '),
     };
     const lightSurface: CSSProperties = {
-        background: 'linear-gradient(180deg, rgba(255,255,255,0.76) 0%, rgba(254,254,255,0.72) 45%, rgba(249,249,251,0.70) 100%)',
-        backdropFilter: 'blur(12px) saturate(1.05)',
+        background: 'linear-gradient(180deg, rgba(255,255,255,0.46) 0%, rgba(254,254,255,0.40) 45%, rgba(249,249,251,0.34) 100%)',
+        backdropFilter: 'blur(4px) saturate(1.05)',
         WebkitBackdropFilter: 'blur(12px) saturate(1.05)',
         borderColor: 'rgba(165,173,184,0.24)',
         boxShadow: ['inset 0 1px 0 rgba(255,255,255,0.60)', 'inset 0 -1px 0 rgba(175,185,198,0.10)'].join(', '),
     };
     const darkComposerSurface: CSSProperties = {
-        background: 'linear-gradient(180deg, rgba(37,37,39,0.94) 0%, rgba(31,31,33,0.94) 50%, rgba(35,35,37,0.94) 100%)',
+        background: 'linear-gradient(180deg, rgba(37,37,39,0.58) 0%, rgba(31,31,33,0.52) 50%, rgba(35,35,37,0.46) 100%)',
         backdropFilter: 'blur(10px) saturate(1.02)',
-        WebkitBackdropFilter: 'blur(10px) saturate(1.02)',
+        WebkitBackdropFilter: 'blur(4px) saturate(1.02)',
         borderColor: 'rgba(148,148,152,0.18)',
         boxShadow: ['inset 0 1px 0 rgba(255,255,255,0.035)', 'inset 0 -1px 0 rgba(255,255,255,0.025)'].join(', '),
     };
