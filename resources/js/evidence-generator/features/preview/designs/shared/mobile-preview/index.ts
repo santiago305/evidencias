@@ -13,6 +13,7 @@ export {
     renderMobile11Frame,
     renderMobile12Frame,
     renderMobile13Frame,
+    renderMobile14Frame,
 } from './frameRenderers';
 export { MobileCallPreview } from './MobileCallPreview';
 export type {

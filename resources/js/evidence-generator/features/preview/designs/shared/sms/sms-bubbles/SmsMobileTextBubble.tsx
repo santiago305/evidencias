@@ -39,14 +39,14 @@ export function SmsMobileTextBubble({
         ? {
               single: 'rounded-tl-[23px] rounded-tr-[23px] rounded-bl-[21px] rounded-br-[23px]',
               first: 'rounded-tl-[23px] rounded-tr-[23px] rounded-bl-[21px] rounded-br-[4px]',
-              middle: 'rounded-tl-[8px] rounded-tr-[4px] rounded-br-[4px] rounded-bl-[21px]',
-              last: 'rounded-tl-[23px] rounded-tr-[4px] rounded-bl-[21px] rounded-br-[5px]',
+              middle: 'rounded-tl-[21px] rounded-tr-[4px] rounded-br-[4px] rounded-bl-[21px]',
+              last: 'rounded-tl-[23px] rounded-tr-[4px] rounded-bl-[21px] rounded-br-[23px]',
           }[groupPosition]
         : {
-              single: 'rounded-tl-[23px] rounded-tr-[23px] rounded-br-[21px] rounded-br-[23px]',
+              single: 'rounded-tl-[23px] rounded-tr-[23px] rounded-br-[21px] rounded-bl-[23px]',
               first: 'rounded-tl-[23px] rounded-tr-[23px] rounded-br-[21px] rounded-bl-[4px]',
-              middle: 'rounded-tl-[4px] rounded-tr-[23px] rounded-br-[21px] rounded-bl-[4px]',
-              last: 'rounded-tl-[5px] rounded-tr-[23px] rounded-br-[21px] rounded-bl-[23px]',
+              middle: 'rounded-tl-[4px] rounded-tr-[21px] rounded-br-[21px] rounded-bl-[4px]',
+              last: 'rounded-tl-[4px] rounded-tr-[23px] rounded-br-[21px] rounded-bl-[23px]',
           }[groupPosition];
 
     return (
@@ -63,7 +63,7 @@ export function SmsMobileTextBubble({
         >
             <div className="max-w-[85%]" style={{ color: textColor }}>
                 <div
-                    className={['rounded-[21px] px-[14px] py-2.5 text-[16px] font-light leading-[1.39] tracking-[-0.18px]', radius].join(' ')}
+                    className={['px-[14px] py-2.5 text-[16px] font-light leading-[1.39] tracking-[-0.18px]', radius].join(' ')}
                     style={{ backgroundColor }}
                 >
                     <div className="break-words whitespace-pre-wrap">

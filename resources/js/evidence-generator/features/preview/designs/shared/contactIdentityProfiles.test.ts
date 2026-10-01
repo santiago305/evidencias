@@ -7,16 +7,16 @@ const designsDirectory = resolve('resources/js/evidence-generator/features/previ
 const profilesSource = readFileSync(resolve(designsDirectory, 'mobilePreviewProfiles.tsx'), 'utf8');
 const whatsappHeaderByProfile = [
     'mobile-1', 'mobile-2', 'mobile-3', 'mobile-1', 'mobile-3', 'mobile-6',
-    'mobile-7', 'mobile-8', 'mobile-9', 'mobile-10', 'mobile-11', 'mobile-12', 'mobile-13',
+    'mobile-7', 'mobile-8', 'mobile-9', 'mobile-10', 'mobile-11', 'mobile-12', 'mobile-13', 'mobile-14',
 ];
 const smsHeaderByProfile = [
     ['shared', 'mobile-1'], ['shared', 'mobile-2'], ['shared', 'mobile-3'], ['shared', 'mobile-2'], ['shared', 'mobile-3'], ['shared', 'mobile-6'],
     ['mobile-7', 'mobile-7'], ['mobile-8', 'mobile-8'], ['mobile-9', 'mobile-9'], ['mobile-10', 'mobile-10'],
-    ['mobile-11', 'mobile-11'], ['mobile-12', 'mobile-12'], ['mobile-13', 'mobile-13'],
+    ['mobile-11', 'mobile-11'], ['mobile-12', 'mobile-12'], ['mobile-13', 'mobile-13'], ['mobile-14', 'mobile-14'],
 ];
 
-test('all thirteen mobile profiles route WhatsApp and SMS headers through the shared resolver', () => {
-    for (let index = 1; index <= 13; index += 1) {
+test('all fourteen mobile profiles route WhatsApp and SMS headers through the shared resolver', () => {
+    for (let index = 1; index <= 14; index += 1) {
         const profile = `mobile-${index}`;
         assert.match(profilesSource, new RegExp(`['"]${profile}['"]\\s*:`));
 

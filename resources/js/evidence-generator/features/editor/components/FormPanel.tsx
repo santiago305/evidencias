@@ -27,6 +27,7 @@ interface FormPanelProps {
     showTestingPreviewControls: boolean;
     whatsappPreviewMode: PreviewDeviceMode;
     themeMode: PreviewThemeMode;
+    lockedThemeMode: PreviewThemeMode | null;
     onWhatsappPreviewModeChange: (mode: PreviewDeviceMode) => void;
     onThemeModeChange: (mode: PreviewThemeMode) => void;
     onChange: (key: FormInputKey) => (e: ChangeEvent<HTMLInputElement>) => void;
@@ -57,6 +58,7 @@ export function FormPanel({
     showTestingPreviewControls,
     whatsappPreviewMode,
     themeMode,
+    lockedThemeMode,
     onWhatsappPreviewModeChange,
     onThemeModeChange,
     onChange,
@@ -120,8 +122,10 @@ export function FormPanel({
                         <button
                             type="button"
                             onClick={() => onThemeModeChange(isDark ? 'light' : 'dark')}
+                            disabled={lockedThemeMode !== null}
                             className={[
-                                'inline-flex min-h-10 cursor-pointer items-center justify-center gap-1.5 rounded-lg border border-slate-200 bg-white px-2 text-[11px] font-semibold text-slate-700 shadow-sm transition hover:bg-slate-100',
+                                'inline-flex min-h-10 items-center justify-center gap-1.5 rounded-lg border border-slate-200 bg-white px-2 text-[11px] font-semibold text-slate-700 shadow-sm transition',
+                                lockedThemeMode === null ? 'cursor-pointer hover:bg-slate-100' : 'cursor-not-allowed opacity-60',
                                 activeDesign === 'sms' ? 'w-full' : '',
                             ].join(' ')}
                         >
