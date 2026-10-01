@@ -18,8 +18,8 @@ export function SmsMobileInputBar({
     };
 }) {
     const colors = getSmsColors(themeMode, variant);
-    const mobile6SmsMicrophoneBackground = '#5A3D59';
-    const mobile6SmsMicrophoneIconColor = '#F0CDED';
+    const mobile6SmsMicrophoneBackground = '#EBDBFF';
+    const mobile6SmsMicrophoneIconColor = '#211634';
     const [showEmojiIndicator] = useState(() => shouldShowSmsAccentPoint());
 
     return (

@@ -481,7 +481,7 @@ export function Mobile12PreviewHeader({
                     </span>
 
                     <Signal
-                        className="h-[17.5px] w-[17.5px]"
+                        className="h-[17.5px] w-[17.5px] mt-[6px]"
                         strokeWidth={2.2}
                     />
 

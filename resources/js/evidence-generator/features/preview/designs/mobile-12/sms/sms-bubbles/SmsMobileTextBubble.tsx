@@ -26,13 +26,13 @@ export function SmsMobileTextBubble({
         ? {
               single: 'rounded-tl-[23px] rounded-tr-[23px] rounded-bl-[21px] rounded-br-[23px]',
               first: 'rounded-tl-[23px] rounded-tr-[23px] rounded-bl-[21px] rounded-br-[4px]',
-              middle: 'rounded-tl-[8px] rounded-tr-[4px] rounded-br-[4px] rounded-bl-[21px]',
+              middle: 'rounded-tl-[21px] rounded-tr-[4px] rounded-br-[4px] rounded-bl-[21px]',
               last: 'rounded-tl-[23px] rounded-tr-[4px] rounded-bl-[21px] rounded-br-[23px]',
           }[groupPosition]
         : {
               single: 'rounded-tl-[23px] rounded-tr-[23px] rounded-br-[21px] rounded-bl-[23px]',
               first: 'rounded-tl-[23px] rounded-tr-[23px] rounded-br-[21px] rounded-bl-[4px]',
-              middle: 'rounded-tl-[4px] rounded-tr-[23px] rounded-br-[21px] rounded-bl-[4px]',
+              middle: 'rounded-tl-[4px] rounded-tr-[21px] rounded-br-[21px] rounded-bl-[4px]',
               last: 'rounded-tl-[4px] rounded-tr-[23px] rounded-br-[21px] rounded-bl-[23px]',
           }[groupPosition];
 
@@ -56,7 +56,7 @@ export function SmsMobileTextBubble({
             ) : null}
             <div className="min-w-0 max-w-[calc(100%_-110px)]" style={{ color: textColor }}>
                 <div
-                    className={['rounded-[21px] px-[16px] py-2.5 text-[16.2px] font-light leading-[1.20] tracking-[-0.18px]', radius].join(' ')}
+                    className={['px-[16px] py-2.5 text-[16.2px] font-light leading-[1.20] tracking-[-0.18px]', radius].join(' ')}
                     style={{ backgroundColor }}
                 >
                     <div className="break-words whitespace-pre-wrap">

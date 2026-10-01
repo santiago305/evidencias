@@ -14,7 +14,7 @@ import { getJson, postFormData, postJson, putJson } from './lib/api';
 import { createInitialFormState } from './lib/formState';
 import { resolveActiveMobileDesignKey } from './lib/mobileDesignSelection';
 import { resolvePreviewDeviceMode } from './lib/previewDeviceModeSelection';
-import { resolvePreviewThemeMode } from './lib/previewThemeModeSelection';
+import { resolveLockedMobilePreviewThemeMode, resolvePreviewThemeMode } from './lib/previewThemeModeSelection';
 import { hydrateReplayForm, isReplayGenerateBlocked, shouldApplyReplayLookupResult } from './lib/replayForm';
 import { applyConversationTestDefaults } from './lib/testingDefaults';
 import type {
@@ -200,15 +200,23 @@ export default function App({
         : hasRegisteredMobileDesign
           ? generatedWhatsappPreviewMode
           : 'desktop';
+    const activeMobileDesignKey = shouldUseTestMobileDesign ? testMobileDesignKey : userMobileDesignKey;
     const previewDeviceModeForTheme: PreviewDeviceMode = activeDesign === 'whatsapp' ? whatsappPreviewMode : 'mobile';
+    const lockedTestThemeMode = isTestingPreview
+        ? resolveLockedMobilePreviewThemeMode({
+              mobileDesignKey: activeMobileDesignKey,
+              activeDesign,
+              previewDeviceMode: previewDeviceModeForTheme,
+          })
+        : null;
+    const testThemeModeForPreview = lockedTestThemeMode ?? testPreviewThemeMode;
     const previewThemeMode = isTestingPreview
-        ? testPreviewThemeMode
+        ? testThemeModeForPreview
         : resolvePreviewThemeMode({
               previewDeviceMode: previewDeviceModeForTheme,
               desktopThemeMode: evidenceDesktopThemeMode,
               mobileThemeMode: evidenceMobileThemeMode,
           });
-    const activeMobileDesignKey = shouldUseTestMobileDesign ? testMobileDesignKey : userMobileDesignKey;
     const isTestMobileDesignGloballyRegistered = globalMobileDesignKeys.includes(testMobileDesignKey);
     const isGenerateDisabled = isReplayGenerateBlocked({
         isGenerating,
@@ -554,7 +562,8 @@ export default function App({
                         onSelectDesign={setActiveDesign}
                         showTestingPreviewControls={isTestingPreview}
                         whatsappPreviewMode={testWhatsappPreviewMode}
-                        themeMode={testPreviewThemeMode}
+                        themeMode={testThemeModeForPreview}
+                        lockedThemeMode={lockedTestThemeMode}
                         onWhatsappPreviewModeChange={setTestWhatsappPreviewMode}
                         onThemeModeChange={setTestPreviewThemeMode}
                         onChange={handleChange}
