@@ -153,7 +153,7 @@ test('mobile 7 SMS freezes Mobile 2 conversation behavior locally', () => {
     const bubbleSource = readFileSync(resolve(designDirectory, 'sms', 'sms-bubbles', 'SmsMobileTextBubble.tsx'), 'utf8');
     const appearanceSource = readFileSync(resolve(designDirectory, 'sms', 'smsAppearance.ts'), 'utf8');
 
-    assert.match(conversationSource, /const \[conversationHeader\] = useState\(\(\) => buildSmsConversationHeader\(data\)\)/);
+    assert.match(conversationSource, /const \[conversationHeader\] = useState\(\(\) => buildSmsConversationHeader\(\{ \.\.\.data, telefono: displayTelefono \}\)\)/);
     assert.match(conversationSource, /const supportsQuickReplies = true/);
     assert.match(conversationSource, /mb-\[26px\] flex items-center justify-center gap-1\.5 text-\[10\.5px\] leading-\[15px\]/);
     assert.match(conversationSource, /compactBottomSpacing=\{index === messages\.length - 1\}/);

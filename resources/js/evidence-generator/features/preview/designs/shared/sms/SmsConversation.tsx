@@ -54,7 +54,7 @@ export function SmsConversation({
     const mobile6EncryptionHorizontalPaddingClassName = 'px-[8px]';
     const messages = buildSmsMessages(data);
     const firstMessage = messages[0];
-    const [conversationHeader] = useState(() => buildSmsConversationHeader(data));
+    const [conversationHeader] = useState(() => buildSmsConversationHeader({ telefono: displayTelefono }));
     const [draft, setDraft] = useState('');
     const suggestions = getSmsQuickReplies(data.generatedMessages);
     const supportsQuickReplies = variant === 'mobile-1' || variant === 'mobile-2';

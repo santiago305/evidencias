@@ -2,11 +2,11 @@ import { useState, type ReactNode } from 'react';
 import { getSmsColors, shouldShowSmsAccentPoint } from '../smsAppearance';
 import type { SmsData } from '../smsTypes';
 import { Mobile11AvatarIcon } from './Mobile11AvatarIcon';
-import { resolveSmsHeaderIdentity } from '../../../shared/sms/contactHeaderIdentity';
+import { resolveSmsPhoneDisplay } from '../../../shared/sms/contactHeaderIdentity';
 
 export function SmsMobileHeader({ data, themeMode, showVideoCall = false }: { data: SmsData; themeMode: 'light' | 'dark'; showVideoCall?: boolean }) {
     const colors = getSmsColors(themeMode);
-    const displayTelefono = resolveSmsHeaderIdentity(data, formatMobile11SmsPhone);
+    const displayTelefono = resolveSmsPhoneDisplay(data, formatMobile11SmsPhone);
     const actionIconColor = '#BDBDBD';
     const menuActionClassName = 'flex h-[42px] w-[35px] shrink-0 items-center justify-center';
     const [showMenuIndicator] = useState(() => shouldShowSmsAccentPoint());

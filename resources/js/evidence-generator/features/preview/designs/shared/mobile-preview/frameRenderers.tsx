@@ -14,6 +14,8 @@ import { Mobile11PreviewFrame } from '../../mobile-11/Mobile11PreviewFrame';
 import { Mobile12PreviewFrame } from '../../mobile-12/Mobile12PreviewFrame';
 import { Mobile13PreviewFrame } from '../../mobile-13/Mobile13PreviewFrame';
 import { Mobile14PreviewFrame } from '../../mobile-14/Mobile14PreviewFrame';
+import { Mobile15PreviewFrame } from '../../mobile-15/Mobile15PreviewFrame';
+import { getSmsColors } from '../sms/smsAppearance';
 import type { MobileFrameRenderProps, MobileSystemFooterRenderer } from './mobilePreviewTypes';
 
 function resolveHeaderVariant(channel: MobileFrameRenderProps['channel']): 'default' | 'whatsapp' | 'sms' {
@@ -45,13 +47,15 @@ export function renderMobile2Frame(props: MobileFrameRenderProps) {
 }
 
 export function renderMobile3Frame({ systemChrome, batteryRenderer, footerRenderer, frame, ...props }: MobileFrameRenderProps) {
+    const smsColors = props.channel === 'sms' ? getSmsColors(props.themeMode, 'mobile-3') : undefined;
+
     return (
         <Mobile3PreviewFrame
             {...props}
             headerVariant={resolveHeaderVariant(props.channel)}
             footerVariant={props.channel === 'sms' ? 'sms' : 'default'}
-            systemHeaderBackground={systemChrome?.headerBackground}
-            systemHeaderForeground={systemChrome?.headerForeground}
+            systemHeaderBackground={systemChrome?.headerBackground ?? smsColors?.header}
+            systemHeaderForeground={systemChrome?.headerForeground ?? smsColors?.headerActionIcon}
             systemFooterBackground={systemChrome?.footerBackground}
             systemFooterForeground={systemChrome?.footerForeground}
             batteryRenderer={batteryRenderer}
@@ -208,6 +212,18 @@ export function renderMobile14Frame({ children, themeMode, channel, notification
         >
             {children}
         </Mobile14PreviewFrame>
+    );
+}
+
+export function renderMobile15Frame({ children, themeMode, channel, notificationIds, smsShellColor }: MobileFrameRenderProps) {
+    return (
+        <Mobile15PreviewFrame
+            themeMode={themeMode}
+            notificationIds={notificationIds}
+            statusBarBackground={channel === 'sms' && themeMode === 'light' ? smsShellColor : undefined}
+        >
+            {children}
+        </Mobile15PreviewFrame>
     );
 }
 

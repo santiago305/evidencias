@@ -75,7 +75,7 @@ test('mobile 13 whatsapp header matches the reference structure', () => {
     assert.doesNotMatch(headerSource, /from ['"].*mobile-(?:[1-9]|1[0-2])(?:\/|['"])/);
 });
 
-test('mobile 13 sms header uses the centered contact layout and whatsapp back arrow', () => {
+test('mobile 13 sms header preserves its floating layout and back arrow', () => {
     const headerSource = readFileSync(resolve(designDirectory, 'sms/sms-header/SmsMobileHeader.tsx'), 'utf8');
     const avatarSource = readFileSync(resolve(designDirectory, 'sms/sms-header/SmsHeaderAvatar.tsx'), 'utf8');
     const pillSource = readFileSync(resolve(designDirectory, 'sms/sms-header/SmsHeaderContactPill.tsx'), 'utf8');
@@ -83,34 +83,31 @@ test('mobile 13 sms header uses the centered contact layout and whatsapp back ar
 
     assert.match(headerSource, /SmsHeaderAvatar/);
     assert.match(headerSource, /SmsHeaderContactPill/);
+    assert.match(headerSource, /data-mobile13-sms-floating-header/);
+    assert.match(headerSource, /h-\[110px\]/);
     assert.match(headerSource, /M21 4L6 20L21 36/);
     assert.match(headerSource, /viewBox="0 0 28 40"/);
-    assert.match(headerSource, /relative flex h-\[40px\] w-\[40px\][\s\S]*rounded-full border px-\[9px\] transition/);
-    assert.match(headerSource, /border-white\/\[0\.10\] bg-\[#2F3533\] text-\[#F1F4F3\]/);
-    assert.match(headerSource, /border-black\/\[0\.10\] bg-\[#F7F6F0\] text-\[#111B21\]/);
-    assert.match(headerSource, /bg-\[linear-gradient\(to_bottom,rgba\(255,255,255,0\.11\)/);
-    assert.match(headerSource, /bg-\[linear-gradient\(to_top,rgba\(255,255,255,0\.11\)/);
-    assert.match(headerSource, /className="relative z-\[1\] me-1 h-\[20px\] w-\[14px\] shrink-0"/);
-    assert.doesNotMatch(headerSource, /Llamar|Videollamada|Opciones|showVideoCall/);
-    assert.doesNotMatch(headerSource, /<circle cx="24" cy="16"|<ellipse cx="24" cy="35"/);
-    assert.match(avatarSource, /WhatsappAvatarImage/);
-    assert.match(avatarSource, /resolveValidWhatsappAvatarImageSrc|createWhatsappAvatarTheme/);
-    assert.match(identitySource, /Array\.from\(displayName\)\[0\]/);
-    assert.match(avatarSource, /data\.img_64/);
+    assert.match(headerSource, /<SmsHeaderAvatar data=\{data\} themeMode=\{themeMode\} \/>/);
+    assert.match(avatarSource, /size-\[50px\]/);
+    assert.match(avatarSource, /<Mobile13SmsDefaultAvatar\s*\/>/);
+    assert.doesNotMatch(avatarSource, /data\.nombre|initial/);
+    assert.match(identitySource, /formatMobile13SmsPhone/);
+    assert.doesNotMatch(identitySource, /resolveSmsHeaderInitial|getSmsHeaderDisplayValue/);
     assert.match(pillSource, /formatMobile13SmsPhone/);
     assert.match(pillSource, /chevron|Chevron|path/);
 });
 
-test('mobile 13 sms header keeps name and phone resolution rules local to sms', () => {
+test('mobile 13 sms header displays the phone and uses the generic avatar', () => {
     const headerSource = readFileSync(resolve(designDirectory, 'sms/sms-header/SmsMobileHeader.tsx'), 'utf8');
     const avatarSource = readFileSync(resolve(designDirectory, 'sms/sms-header/SmsHeaderAvatar.tsx'), 'utf8');
     const pillSource = readFileSync(resolve(designDirectory, 'sms/sms-header/SmsHeaderContactPill.tsx'), 'utf8');
     const identitySource = readFileSync(resolve(designDirectory, 'sms/sms-header/smsHeaderIdentity.ts'), 'utf8');
 
-    assert.match(avatarSource, /const displayName = data\.nombre\.trim\(\)/);
-    assert.match(identitySource, /resolveContactHeaderIdentity/);
-    assert.match(avatarSource, /img64=\{data\.img_64\}/);
-    assert.match(pillSource, /getSmsHeaderDisplayValue\(data\.nombre, data\.telefono\)/);
+    assert.match(identitySource, /formatMobile13SmsPhone/);
+    assert.doesNotMatch(identitySource, /resolveSmsHeaderInitial|getSmsHeaderDisplayValue|resolveContactHeaderIdentity/);
+    assert.match(pillSource, /resolveSmsPhoneDisplay\(data, formatMobile13SmsPhone\)/);
+    assert.doesNotMatch(avatarSource, /data\.nombre|resolveSmsHeaderInitial|initial/);
+    assert.match(avatarSource, /<Mobile13SmsDefaultAvatar\s*\/>/);
     assert.match(headerSource, /getMobile13SmsHeaderColors/);
 });
 
@@ -210,6 +207,7 @@ test('mobile 13 whatsapp renders its contact profile card with shared identity a
     assert.match(cardSource, /aria-label="Bloquear"/);
     assert.match(cardSource, /aria-label="A.adir"/);
     assert.match(cardSource, /aria-hidden="true"/);
+    assert.match(previewSource, /<WhatsappConversation[\s\S]*?displayTitle=\{runtime\.contactIdentityDisplay\.profileTitle\}/);
     assert.match(previewSource, /profileTitle=\{runtime\.contactIdentityDisplay\.profileTitle\}/);
     assert.match(previewSource, /profileSubtitle=\{runtime\.contactIdentityDisplay\.profileSubtitle\}/);
     assert.match(previewSource, /showAddContactAction=\{runtime\.contactIdentityDisplay\.showAddContactAction\}/);

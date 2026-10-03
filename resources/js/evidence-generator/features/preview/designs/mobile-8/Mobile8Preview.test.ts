@@ -162,7 +162,7 @@ test('mobile 8 SMS preserves the cloned Mobile 7 conversation locally', () => {
     const bubbleSource = readFileSync(resolve(designDirectory, 'sms', 'sms-bubbles', 'SmsMobileTextBubble.tsx'), 'utf8');
     const appearanceSource = readFileSync(resolve(designDirectory, 'sms', 'smsAppearance.ts'), 'utf8');
 
-    assert.match(conversationSource, /const \[conversationHeader\] = useState\(\(\) => buildSmsConversationHeader\(data\)\)/);
+    assert.match(conversationSource, /const \[conversationHeader\] = useState\(\(\) => buildSmsConversationHeader\(\{ \.\.\.data, telefono: displayTelefono \}\)\)/);
     assert.match(conversationSource, /const supportsQuickReplies = true/);
     assert.match(conversationSource, /grid grid-cols-\[48px_minmax\(0,1fr\)_18px\]/);
     assert.match(conversationSource, /compactBottomSpacing=\{index === messages\.length - 1\}/);

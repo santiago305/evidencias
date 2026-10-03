@@ -30,7 +30,7 @@ test('mobile 13 SMS header glass stays translucent and preserves the dense-glass
     assert.match(glassSource, /rgba\(255,255,255,0\.46\).*rgba\(254,254,255,0\.40\).*rgba\(249,249,251,0\.34\)/);
     assert.match(glassSource, /rgba\(37,37,39,0\.58\).*rgba\(31,31,33,0\.52\).*rgba\(35,35,37,0\.46\)/);
     assert.match(glassSource, /backdropFilter: 'blur\(10px\) saturate\(1\.02\)'/);
-    assert.match(glassSource, /WebkitBackdropFilter: 'blur\(10px\) saturate\(1\.02\)'/);
+    assert.match(glassSource, /WebkitBackdropFilter: 'blur\(4px\) saturate\(1\.02\)'/);
     assert.match(glassSource, /rgba\(19,19,21,0\.88\).*rgba\(12,12,14,0\.86\).*rgba\(15,15,17,0\.84\)/);
     assert.match(glassSource, /rgba\(255,255,255,0\.88\).*rgba\(255,255,255,0\.84\).*rgba\(250,250,252,0\.82\)/);
     assert.match(glassSource, /blur\(16px\) saturate\(1\.05\)/);
@@ -44,14 +44,13 @@ test('back control remains a single interactive button inside the floating surfa
     assert.match(headerSource, /M21 4L6 20L21 36/);
 });
 
-test('contact keeps dynamic identity and anonymous SMS avatar uses the local iOS-style default', () => {
-    assert.match(contactSource, /getSmsHeaderDisplayValue\(data\.nombre, data\.telefono\)/);
-    assert.match(avatarSource, /resolveSmsHeaderInitial\(displayName\)/);
-    assert.match(avatarSource, /const shouldUseDefaultAnonymousAvatar = normalizedName === ['"]['"]?/);
+test('contact displays the phone and SMS avatar always uses the local iOS-style default', () => {
+    assert.match(contactSource, /resolveSmsPhoneDisplay\(data, formatMobile13SmsPhone\)/);
+    assert.doesNotMatch(avatarSource, /data\.nombre|resolveSmsHeaderInitial|initial/);
     assert.match(avatarSource, /<Mobile13SmsDefaultAvatar\s*\/>/);
     assert.match(avatarSource, /linear-gradient\(180deg, #A9B9E0/);
     assert.match(avatarSource, /#A9B9E0/);
-    assert.match(avatarSource, /#807CA9/);
+    assert.match(avatarSource, /#7F8CC6/);
     assert.match(avatarSource, /fill="#FFFFFF"/);
     assert.doesNotMatch(avatarSource, /WhatsappAvatarImage/);
     assert.match(avatarSource, /size-\[50px\]/);

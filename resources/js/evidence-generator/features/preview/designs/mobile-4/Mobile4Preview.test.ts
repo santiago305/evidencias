@@ -25,7 +25,7 @@ let server: ViteDevServer;
 let buildMobile4WhatsappRuntime: (data: WhatsappData) => {
     messageStatus: 'read' | 'delivered';
     temporalBehavior: PreviewTemporalBehavior;
-    contactIdentityDisplay: { headerTitle: string };
+    contactIdentityDisplay: { headerTitle: string; profileTitle: string };
 };
 let buildWhatsappPreviewRuntime: (data: WhatsappData) => ReturnType<typeof buildMobile4WhatsappRuntime>;
 let getMobile4BatteryProgressWidth: (level: number) => number;
@@ -102,10 +102,13 @@ test('mobile 4 WhatsApp runtime keeps the supplied identity and honors its snaps
 
     assert.equal(firstRuntime.messageStatus, secondRuntime.messageStatus);
     assert.deepEqual(firstRuntime.temporalBehavior, secondRuntime.temporalBehavior);
-    assert.equal(firstRuntime.contactIdentityDisplay.headerTitle, 'María José Rodríguez');
+    assert.equal(firstRuntime.contactIdentityDisplay.headerTitle, '+51 999 111 222');
+    assert.equal(firstRuntime.contactIdentityDisplay.profileTitle, 'María José Rodríguez');
 
     const missingNameRuntime = buildMobile4WhatsappRuntime({ ...data, nombre: '' });
     assert.equal(missingNameRuntime.contactIdentityDisplay.headerTitle, '+51 999 111 222');
+    assert.equal(missingNameRuntime.contactIdentityDisplay.profileTitle, '+51 999 111 222');
+    assert.match(whatsappSource, /<WhatsappConversation[\s\S]*?displayTitle=\{runtime\.contactIdentityDisplay\.profileTitle\}/);
 
     const snapshotRuntime = buildMobile4WhatsappRuntime({
         ...data,

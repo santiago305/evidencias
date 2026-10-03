@@ -18,6 +18,9 @@ import { PreviewMobile13Whatsapp } from './mobile-13/whatsapp/PreviewMobile13Wha
 import { PreviewMobile14Call } from './mobile-14/calls/PreviewMobile14Call';
 import { PreviewMobile14Sms } from './mobile-14/sms/PreviewMobile14Sms';
 import { PreviewMobile14Whatsapp } from './mobile-14/whatsapp/PreviewMobile14Whatsapp';
+import { PreviewMobile15Call } from './mobile-15/calls/PreviewMobile15Call';
+import { PreviewMobile15Sms } from './mobile-15/sms/PreviewMobile15Sms';
+import { PreviewMobile15Whatsapp } from './mobile-15/whatsapp/PreviewMobile15Whatsapp';
 import { WhatsappMobileHeaderUser as Mobile2WhatsappHeader } from './mobile-2/whatsapp/whatsapp-header/WhatsappMobileHeaderUser';
 import { mobile2WhatsappVisualAdapter } from './mobile-2/whatsapp/whatsappVisualAdapter';
 import { WhatsappMobileHeaderUser as Mobile3WhatsappHeader } from './mobile-3/whatsapp/whatsapp-header/WhatsappMobileHeaderUser';
@@ -44,6 +47,7 @@ import {
     renderMobile12Frame,
     renderMobile13Frame,
     renderMobile14Frame,
+    renderMobile15Frame,
     renderMobile1Frame,
     renderMobile2Frame,
     renderMobile3Frame,
@@ -276,6 +280,17 @@ export const mobilePreviewProfiles = {
         whatsapp: { kind: 'custom', Preview: PreviewMobile14Whatsapp },
         sms: { kind: 'custom', Preview: PreviewMobile14Sms },
         call: { kind: 'custom', Preview: PreviewMobile14Call },
+    },
+    'mobile-15': {
+        key: 'mobile-15',
+        frame: {
+            width: '120px',
+            height: '950px',
+        },
+        renderFrame: renderMobile15Frame,
+        whatsapp: { kind: 'custom', Preview: PreviewMobile15Whatsapp },
+        sms: { kind: 'custom', Preview: PreviewMobile15Sms },
+        call: { kind: 'custom', Preview: PreviewMobile15Call },
     },
 } satisfies Record<MobileDesignKey, MobilePreviewDesignProfile>;
 

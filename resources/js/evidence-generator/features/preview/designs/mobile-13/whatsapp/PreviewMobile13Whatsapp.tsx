@@ -165,7 +165,7 @@ export function PreviewMobile13Whatsapp({ data, themeMode }: PreviewProps) {
                     showDefaultTemporalMessage={runtime.temporalBehavior.showDefaultTemporalMessage}
                     inlineTemporalMode={runtime.temporalBehavior.inlineTemporalMode}
                     inlineTemporalInsertIndex={data.previewSnapshot?.inlineTemporalInsertIndex ?? null}
-                    displayTitle={runtime.contactIdentityDisplay.headerTitle}
+                    displayTitle={runtime.contactIdentityDisplay.profileTitle}
                     profileTitle={runtime.contactIdentityDisplay.profileTitle}
                     profileSubtitle={runtime.contactIdentityDisplay.profileSubtitle}
                     showAddContactAction={runtime.contactIdentityDisplay.showAddContactAction}

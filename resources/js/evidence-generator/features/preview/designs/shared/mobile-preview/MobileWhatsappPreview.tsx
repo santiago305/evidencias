@@ -39,7 +39,7 @@ export function MobileWhatsappPreview({ data, themeMode, profile }: PreviewProps
                 showDefaultTemporalMessage={runtime.temporalBehavior.showDefaultTemporalMessage}
                 inlineTemporalMode={runtime.temporalBehavior.inlineTemporalMode}
                 inlineTemporalInsertIndex={data.previewSnapshot?.inlineTemporalInsertIndex ?? null}
-                displayTitle={runtime.contactIdentityDisplay.headerTitle}
+                displayTitle={runtime.contactIdentityDisplay.profileTitle}
                 themeMode={themeMode}
                 composerAccessory={whatsappProfile.renderComposerAccessory?.(themeMode)}
                 composerLayout={whatsappProfile.composerLayout}

@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { resolveContactHeaderIdentity } from './contactHeaderIdentity.ts';
+import { resolveContactHeaderIdentity, resolveContactPhoneDisplay } from './contactHeaderIdentity.ts';
 
 test('prefers the trimmed contact name without changing its casing or internal spacing', () => {
     assert.deepEqual(resolveContactHeaderIdentity({ nombre: '  María   José Rodríguez  ', telefono: '987654321' }), {
@@ -24,4 +24,17 @@ test('uses a neutral marker when both identity fields are empty', () => {
         hasName: false,
         displaysPhone: false,
     });
+});
+
+test('resolves a formatted phone regardless of the contact name', () => {
+    const namedContact = { nombre: 'María José', telefono: ' 987654321 ' };
+
+    assert.equal(
+        resolveContactPhoneDisplay(namedContact, {
+            formatPhone: (phone) => `+51 ${phone.slice(0, 3)} ${phone.slice(3, 6)} ${phone.slice(6)}`,
+        }),
+        '+51 987 654 321',
+    );
+    assert.equal(resolveContactPhoneDisplay({ telefono: '   ' }), '-');
+    assert.equal(resolveContactPhoneDisplay({ telefono: null }), '-');
 });

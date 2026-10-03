@@ -13,6 +13,19 @@ export type ContactHeaderIdentity = {
     displaysPhone: boolean;
 };
 
+export function resolveContactPhoneDisplay(
+    data: Pick<ContactIdentityInput, 'telefono'>,
+    options: ContactIdentityOptions = {},
+): string {
+    const phone = data.telefono?.trim() ?? '';
+
+    if (!phone) {
+        return '-';
+    }
+
+    return options.formatPhone ? options.formatPhone(phone) : phone;
+}
+
 export function resolveContactHeaderIdentity(
     data: ContactIdentityInput,
     options: ContactIdentityOptions = {},
