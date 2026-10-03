@@ -27,7 +27,7 @@ export function SmsConversation({
     const displayTelefono = data.telefono.trim() || '-';
     const messages = buildSmsMessages(data);
     const firstMessage = messages[0];
-    const [conversationHeader] = useState(() => buildSmsConversationHeader(data));
+    const [conversationHeader] = useState(() => buildSmsConversationHeader({ ...data, telefono: displayTelefono }));
     const [draft, setDraft] = useState('');
     const suggestions = getSmsQuickReplies(data.generatedMessages);
     const supportsQuickReplies = true;

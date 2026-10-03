@@ -67,10 +67,10 @@ test('builds the RCS conversation header variant', () => {
     });
 });
 
-test('builds the SMS/MMS conversation header variant', () => {
+test('builds the SMS/MMS conversation header variant with the phone when a name exists', () => {
     assert.deepEqual(buildSmsConversationHeader({ telefono: '999999999', nombre: 'Sheyla' }, 0.8), {
         kind: 'sms',
-        title: 'Mensajes de texto con Sheyla (SMS/MMS)',
+        title: 'Mensajes de texto con 999999999 (SMS/MMS)',
     });
 });
 

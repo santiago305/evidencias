@@ -1,6 +1,7 @@
 import { formatDateKey, getPeruDateParts, parseDateKey, parsePeruDateOnly } from '../../../../../lib/whatsapp/time.ts';
 import type { GeneratedMessage } from '../../../../../types';
 import type { SmsConversationType, SmsData, SmsMessageStatus } from './smsTypes';
+import { resolveSmsPhoneDisplay } from './contactHeaderIdentity.ts';
 
 function isValidDateKey(dateKey: string | null): dateKey is string {
     return dateKey !== null && parseDateKey(dateKey) !== null;
@@ -145,20 +146,22 @@ export function buildSmsDateSeparatorLabel(dateKey: string, time: string, curren
 }
 
 export function buildSmsConversationHeader(
-    data: Pick<SmsData, 'telefono' | 'nombre'>,
+    data: Pick<SmsData, 'telefono'>,
     randomValue = Math.random(),
 ): { kind: 'rcs'; title: string; description: string } | { kind: 'sms'; title: string } {
+    const phone = resolveSmsPhoneDisplay(data);
+
     if (randomValue < 0.5) {
         return {
             kind: 'rcs',
-            title: `Chat RCS con ${data.telefono.trim() || '-'}`,
+            title: `Chat RCS con ${phone}`,
             description: 'Ahora el chat está encriptado de extremo a extremo.',
         };
     }
 
     return {
         kind: 'sms',
-        title: `Mensajes de texto con ${data.telefono.trim() || '-'} (SMS/MMS)`,
+        title: `Mensajes de texto con ${phone} (SMS/MMS)`,
     };
 }
 

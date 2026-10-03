@@ -8,6 +8,7 @@ const lockedMobileThemeModes: Partial<Record<MobileDesignKey, { whatsapp: Previe
     'mobile-10': { whatsapp: 'light', sms: 'light' },
     'mobile-11': { whatsapp: 'dark', sms: 'dark' },
     'mobile-12': { whatsapp: 'dark', sms: 'dark' },
+    'mobile-15': { whatsapp: 'light', sms: 'light' },
 };
 
 interface LockedMobilePreviewThemeModeSelection {

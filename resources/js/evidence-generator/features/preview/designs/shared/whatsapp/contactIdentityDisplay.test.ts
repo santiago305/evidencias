@@ -1,19 +1,20 @@
-﻿import assert from 'node:assert/strict';
+import assert from 'node:assert/strict';
 import test from 'node:test';
 import { buildContactIdentityDisplay, resolveWhatsappHeaderIdentity } from './contactIdentityDisplay.ts';
 
-test('WhatsApp identity preserves the supplied name and uses it in the contact profile', () => {
+test('WhatsApp header uses the formatted phone while the contact profile keeps the name', () => {
     const data = { nombre: '  María José Rodríguez  ', telefono: '987654321' };
     const display = buildContactIdentityDisplay(data);
 
     assert.deepEqual(resolveWhatsappHeaderIdentity(data), {
-        title: 'María José Rodríguez',
-        hasName: true,
-        displaysPhone: false,
+        title: '+51 987 654 321',
+        hasName: false,
+        displaysPhone: true,
     });
-    assert.equal(display.headerTitle, 'María José Rodríguez');
+    assert.equal(display.headerTitle, '+51 987 654 321');
     assert.equal(display.profileTitle, 'María José Rodríguez');
-    assert.equal(display.headerDisplaysPhone, false);
+    assert.equal(display.profileSubtitle, '+51 987 654 321');
+    assert.equal(display.headerDisplaysPhone, true);
     assert.equal(display.showAddContactAction, false);
 });
 

@@ -1,6 +1,6 @@
-import { resolveContactHeaderIdentity } from '../../../../../lib/contactHeaderIdentity.ts';
+import { resolveContactPhoneDisplay } from '../../../../../lib/contactHeaderIdentity.ts';
 import type { SmsData } from './smsTypes';
 
-export function resolveSmsHeaderIdentity(data: SmsData, formatPhone?: (phone: string) => string): string {
-    return resolveContactHeaderIdentity(data, { formatPhone }).title;
+export function resolveSmsPhoneDisplay(data: Pick<SmsData, 'telefono'>, formatPhone?: (phone: string) => string): string {
+    return resolveContactPhoneDisplay(data, formatPhone ? { formatPhone } : {});
 }

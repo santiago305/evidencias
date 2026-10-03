@@ -1,13 +1,12 @@
 import type { PreviewThemeMode } from '../../../../../../types';
 import { getMobile13SmsHeaderColors } from '../smsAppearance';
 import type { SmsData } from '../smsTypes';
+import { resolveSmsPhoneDisplay } from '../../../shared/sms/contactHeaderIdentity';
 import { SmsHeaderGlassPill } from './SmsHeaderGlassPill';
-import { getSmsHeaderDisplayValue } from './smsHeaderIdentity';
-
-export { formatMobile13SmsPhone } from './smsHeaderIdentity';
+import { formatMobile13SmsPhone } from './smsHeaderIdentity';
 
 export function SmsHeaderContactPill({ data, themeMode }: { data: SmsData; themeMode: PreviewThemeMode }) {
-    const displayValue = getSmsHeaderDisplayValue(data.nombre, data.telefono);
+    const displayValue = resolveSmsPhoneDisplay(data, formatMobile13SmsPhone);
     const colors = getMobile13SmsHeaderColors(themeMode);
 
     return (

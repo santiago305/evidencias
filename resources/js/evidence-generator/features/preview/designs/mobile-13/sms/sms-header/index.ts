@@ -1,3 +1,4 @@
 export { SmsHeaderAvatar } from './SmsHeaderAvatar';
-export { SmsHeaderContactPill, formatMobile13SmsPhone } from './SmsHeaderContactPill';
+export { SmsHeaderContactPill } from './SmsHeaderContactPill';
+export { formatMobile13SmsPhone } from './smsHeaderIdentity';
 export { SmsMobileHeader } from './SmsMobileHeader';

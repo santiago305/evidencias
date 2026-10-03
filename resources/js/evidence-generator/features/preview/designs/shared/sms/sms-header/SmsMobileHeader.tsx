@@ -1,7 +1,7 @@
 import { useState, type ReactNode } from 'react';
 import { getSmsColors, shouldShowSmsAccentPoint } from '../smsAppearance';
 import { formatMobile6SmsPhone } from '../formatSmsPhone';
-import { resolveSmsHeaderIdentity } from '../contactHeaderIdentity';
+import { resolveSmsPhoneDisplay } from '../contactHeaderIdentity';
 import type { SmsData, SmsDesignVariant } from '../smsTypes';
 
 export function SmsMobileHeader({
@@ -19,15 +19,15 @@ export function SmsMobileHeader({
     const isMobile6 = variant === 'mobile-6';
 
     // ==================================================
-    // Mobile-6 SMS — Header avatar
+    // Mobile-6 SMS â€” Header avatar
     // ==================================================
 
     const mobile6HeaderAvatarBackground = '#F6C33B';
     const mobile6HeaderAvatarForeground = '#1F2328';
-    const displayTelefono = resolveSmsHeaderIdentity(data, (phone) => (isMobile6 ? formatMobile6SmsPhone(phone) : phone));
+    const displayTelefono = resolveSmsPhoneDisplay(data, (phone) => (isMobile6 ? formatMobile6SmsPhone(phone) : phone));
 
     // ==================================================
-    // Mobile-6 SMS — action icon positioning
+    // Mobile-6 SMS â€” action icon positioning
     // ==================================================
 
     const mobile6PhoneActionClassName = 'relative -top-[2px] mr-[12px]';

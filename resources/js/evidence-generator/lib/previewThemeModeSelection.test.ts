@@ -33,6 +33,7 @@ test('locks the requested theme for mobile WhatsApp and SMS previews', () => {
         ['mobile-10', 'light', 'light'],
         ['mobile-11', 'dark', 'dark'],
         ['mobile-12', 'dark', 'dark'],
+        ['mobile-15', 'light', 'light'],
     ] as const;
 
     for (const [mobileDesignKey, whatsappMode, smsMode] of expectedModes) {

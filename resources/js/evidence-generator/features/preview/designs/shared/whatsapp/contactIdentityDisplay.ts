@@ -1,5 +1,5 @@
 import type { WhatsappData } from './whatsappTypes';
-import { resolveContactHeaderIdentity } from '../../../../../lib/contactHeaderIdentity.ts';
+import { resolveContactHeaderIdentity, resolveContactPhoneDisplay } from '../../../../../lib/contactHeaderIdentity.ts';
 
 export type ContactIdentityDisplay = {
     headerTitle: string;
@@ -25,20 +25,27 @@ export function formatTelefonoPE(phone?: string): string {
 }
 
 export function resolveWhatsappHeaderIdentity(data: WhatsappData) {
-    return resolveContactHeaderIdentity(data, {
-        formatPhone: (phone) => `+51 ${formatTelefonoPE(phone)}`,
-    });
+    const phone = data.telefono?.trim() ?? '';
+
+    return {
+        title: resolveContactPhoneDisplay(data, { formatPhone: (value) => `+51 ${formatTelefonoPE(value)}` }),
+        hasName: false,
+        displaysPhone: phone !== '',
+    };
 }
 
 export function buildContactIdentityDisplay(data: WhatsappData): ContactIdentityDisplay {
-    const identity = resolveWhatsappHeaderIdentity(data);
+    const headerIdentity = resolveWhatsappHeaderIdentity(data);
+    const profileIdentity = resolveContactHeaderIdentity(data, {
+        formatPhone: (phone) => `+51 ${formatTelefonoPE(phone)}`,
+    });
     const phoneLabel = data.telefono?.trim() ? `+51 ${formatTelefonoPE(data.telefono)}` : '-';
 
     return {
-        headerTitle: identity.title,
-        headerDisplaysPhone: identity.displaysPhone,
-        profileTitle: identity.title,
-        profileSubtitle: identity.hasName ? phoneLabel : '',
-        showAddContactAction: identity.displaysPhone,
+        headerTitle: headerIdentity.title,
+        headerDisplaysPhone: headerIdentity.displaysPhone,
+        profileTitle: profileIdentity.title,
+        profileSubtitle: profileIdentity.hasName ? phoneLabel : '',
+        showAddContactAction: profileIdentity.displaysPhone,
     };
 }

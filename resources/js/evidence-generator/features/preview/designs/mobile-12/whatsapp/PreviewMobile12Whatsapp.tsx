@@ -39,7 +39,7 @@ export function PreviewMobile12Whatsapp({ data, themeMode }: PreviewProps) {
                     showDefaultTemporalMessage={runtime.temporalBehavior.showDefaultTemporalMessage}
                     inlineTemporalMode={runtime.temporalBehavior.inlineTemporalMode}
                     inlineTemporalInsertIndex={data.previewSnapshot?.inlineTemporalInsertIndex ?? null}
-                    displayTitle={runtime.contactIdentityDisplay.headerTitle}
+                    displayTitle={runtime.contactIdentityDisplay.profileTitle}
                     themeMode={themeMode}
                     composerLayout={{ messageAreaMaxWidth: '175px' }}
                 />
