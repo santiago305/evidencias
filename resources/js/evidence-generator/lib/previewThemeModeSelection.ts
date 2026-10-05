@@ -1,6 +1,6 @@
 import type { ActiveDesign, MobileDesignKey, PreviewDeviceMode, PreviewThemeMode } from '../types';
 
-const lockedMobileThemeModes: Partial<Record<MobileDesignKey, { whatsapp: PreviewThemeMode; sms: PreviewThemeMode }>> = {
+const lockedMobileThemeModes: Partial<Record<MobileDesignKey, Partial<Record<'whatsapp' | 'sms', PreviewThemeMode>>>> = {
     'mobile-6': { whatsapp: 'light', sms: 'dark' },
     'mobile-7': { whatsapp: 'light', sms: 'light' },
     'mobile-8': { whatsapp: 'light', sms: 'light' },
@@ -8,7 +8,7 @@ const lockedMobileThemeModes: Partial<Record<MobileDesignKey, { whatsapp: Previe
     'mobile-10': { whatsapp: 'light', sms: 'light' },
     'mobile-11': { whatsapp: 'dark', sms: 'dark' },
     'mobile-12': { whatsapp: 'dark', sms: 'dark' },
-    'mobile-15': { whatsapp: 'light', sms: 'light' },
+    'mobile-15': { whatsapp: 'light' },
 };
 
 interface LockedMobilePreviewThemeModeSelection {

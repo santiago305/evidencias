@@ -32,32 +32,36 @@ test('uses the requested light palette for mobile 15 SMS', () => {
     });
 });
 
-test('keeps the existing dark mobile 15 SMS palette unchanged', () => {
-    assert.deepEqual(getMobile15SmsColors('dark'), {
-        shell: '#271D1E',
-        header: '#271D1E',
-        conversation: '#1C1010',
-        receivedBubble: '#271D1E',
-        sentBubble: '#FFA7A9',
-        sentText: '#2F0809',
-        primaryText: '#EEDEDE',
-        secondaryText: '#D4C4C4',
-        headerIcon: '#D7C1C3',
-        headerActionIcon: '#D7C1C3',
-        composer: '#271D1E',
+test('uses the reference dark palette for mobile 15 SMS', () => {
+    const darkColors = getMobile15SmsColors('dark');
+
+    assert.deepEqual(darkColors, {
+        shell: '#141318',
+        header: '#201F24',
+        conversation: '#141318',
+        receivedBubble: '#201F24',
+        receivedText: '#C7C5D0',
+        sentBubble: '#A9B5FF',
+        sentText: '#131318',
+        primaryText: '#F5F1F5',
+        secondaryText: '#C8C3CA',
+        headerIcon: '#C7C5D0',
+        headerActionIcon: '#C7C5D0',
+        composer: '#201F24',
         tealPoint: '#FF63B7',
-        link: '#D4C4C4',
-        audioBackground: '#5E421B',
-        audioIcon: '#FEDDB4',
+        link: '#C8C3CA',
+        audioBackground: '#5B3D57',
+        audioIcon: '#F5EAF5',
         redPoint: '#FF63B7',
         menuIndicator: '#FF63B7',
-        statusCheck: '#D4C4C4',
-        readReceiptBackground: '#1C1010',
-        readReceiptForeground: '#D4C4C4',
-        metadataIcon: '#D4C4C4',
-        avatarBackground: '#5CB973',
+        statusCheck: '#C8C3CA',
+        readReceiptBackground: '#141318',
+        readReceiptForeground: '#C8C3CA',
+        metadataIcon: '#C8C3CA',
+        avatarBackground: '#FF63B7',
         avatarForeground: '#202125',
-        systemNavigationForeground: '#FFFFFF',
-        quickReplyBorder: '#6E5A5B',
+        systemNavigationForeground: '#F5F1F5',
+        quickReplyBorder: '#49464D',
     });
+    assert.equal(darkColors.sentBubble, '#A9B5FF');
 });

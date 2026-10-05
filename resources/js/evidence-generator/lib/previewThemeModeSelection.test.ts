@@ -33,7 +33,6 @@ test('locks the requested theme for mobile WhatsApp and SMS previews', () => {
         ['mobile-10', 'light', 'light'],
         ['mobile-11', 'dark', 'dark'],
         ['mobile-12', 'dark', 'dark'],
-        ['mobile-15', 'light', 'light'],
     ] as const;
 
     for (const [mobileDesignKey, whatsappMode, smsMode] of expectedModes) {
@@ -43,6 +42,11 @@ test('locks the requested theme for mobile WhatsApp and SMS previews', () => {
         );
         assert.equal(resolveLockedMobilePreviewThemeMode({ mobileDesignKey, activeDesign: 'sms', previewDeviceMode: 'mobile' }), smsMode);
     }
+});
+
+test('unlocks only Mobile-15 SMS while keeping its WhatsApp theme locked', () => {
+    assert.equal(resolveLockedMobilePreviewThemeMode({ mobileDesignKey: 'mobile-15', activeDesign: 'whatsapp', previewDeviceMode: 'mobile' }), 'light');
+    assert.equal(resolveLockedMobilePreviewThemeMode({ mobileDesignKey: 'mobile-15', activeDesign: 'sms', previewDeviceMode: 'mobile' }), null);
 });
 
 test('keeps desktop WhatsApp, calls, and unlocked mobiles available for theme selection', () => {

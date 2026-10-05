@@ -3,14 +3,27 @@ import { getSmsColors, shouldShowSmsAccentPoint } from '../smsAppearance';
 import type { SmsData } from '../smsTypes';
 import { resolveSmsPhoneDisplay } from '../../../shared/sms/contactHeaderIdentity';
 
-export function SmsMobileHeader({ data, themeMode, showVideoCall = false }: { data: SmsData; themeMode: 'light' | 'dark'; showVideoCall?: boolean }) {
+export function SmsMobileHeader({
+    data,
+    themeMode,
+    showVideoCall = false,
+    lightPhoneTextClassName = 'text-black/80',
+    darkPhoneTextClassName = 'text-[#C7C5D0]',
+}: {
+    data: SmsData;
+    themeMode: 'light' | 'dark';
+    showVideoCall?: boolean;
+    lightPhoneTextClassName?: string;
+    darkPhoneTextClassName?: string;
+}) {
     const colors = getSmsColors(themeMode);
+    const phoneTextClassName = themeMode === 'dark' ? darkPhoneTextClassName : lightPhoneTextClassName;
     const displayTelefono = resolveSmsPhoneDisplay(data, formatMobile15SmsPhone);
     const menuActionClassName = 'flex h-[42px] w-[35px] shrink-0 items-center justify-center';
     const [showMenuIndicator] = useState(() => shouldShowSmsAccentPoint());
 
     return (
-        <header className="flex h-[72px] shrink-0 items-center px-3" style={{ backgroundColor: colors.header, color: colors.primaryText }}>
+        <header className="flex h-[66px] shrink-0 items-center px-3" style={{ backgroundColor: colors.header, color: colors.primaryText }}>
             <button
                 type="button"
                 className="mr-1 flex size-[42px] shrink-0 items-center justify-center rounded-full"
@@ -53,21 +66,19 @@ export function SmsMobileHeader({ data, themeMode, showVideoCall = false }: { da
             </div>
 
             <div className="min-w-0 flex-1 pl-[11px]">
-                <div className="truncate text-[17px] leading-none tracking-[-0.2px]">{displayTelefono}</div>
+                <div className={`truncate text-[18px] leading-none tracking-[-0.2px] ${phoneTextClassName}`}>{displayTelefono}</div>
             </div>
 
             <HeaderIcon label="Llamar" color={colors.headerActionIcon}>
                 <path d="M6.6 10.8a15.5 15.5 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.2 11.2 11.2 0 0 0 3.5.6 1 1 0 0 1 1 1v3.5a1 1 0 0 1-1 1C10.6 21 3 13.4 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1 11.2 11.2 0 0 0 .6 3.5 1 1 0 0 1-.2 1Z" />
             </HeaderIcon>
 
-            {showVideoCall ? (
-                <button type="button" className="flex size-[42px] shrink-0 items-center justify-center" aria-label="Videollamada">
-                    <svg viewBox="0 0 33 27" className="h-[18px] w-[22px]" fill={colors.headerActionIcon} aria-hidden="true">
-                        <rect x="0" y="0" width="27" height="27" rx="3.2" />
-                        <path d="M26.5 10.1L33 6.4V20.6L26.5 16.9Z" />
-                    </svg>
-                </button>
-            ) : null}
+            <button type="button" className="flex size-[42px] shrink-0 items-center justify-center ml-2 me-2.5" aria-label="Videollamada">
+                <svg viewBox="0 0 33 27" className="h-[18px] w-[19px]" fill={colors.headerActionIcon} aria-hidden="true">
+                    <rect x="0" y="0" width="27" height="27" rx="3.2" />
+                    <path d="M26.5 10.1L33 6.4V20.6L26.5 16.9Z" />
+                </svg>
+            </button>
 
             <button type="button" className={menuActionClassName} aria-label="Opciones">
                 <svg viewBox="0 0 32 32" className="size-[34px]" fill="none" aria-hidden="true">

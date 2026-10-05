@@ -19,9 +19,10 @@ type Mobile15PreviewHeaderProps = {
     themeMode: PreviewThemeMode;
     notificationIds?: MobileNotificationIconId[];
     statusBarBackground?: string;
+    statusBarForeground?: string;
 };
 
-export function Mobile15PreviewHeader({ themeMode, notificationIds, statusBarBackground }: Mobile15PreviewHeaderProps) {
+export function Mobile15PreviewHeader({ themeMode, notificationIds, statusBarBackground, statusBarForeground: providedStatusBarForeground }: Mobile15PreviewHeaderProps) {
     const [time, setTime] = useState('');
     const [batteryLevel, setBatteryLevel] = useState(90);
     useEffect(() => {
@@ -35,12 +36,12 @@ export function Mobile15PreviewHeader({ themeMode, notificationIds, statusBarBac
         return () => window.clearInterval(interval);
     }, []);
     const isDark = themeMode === 'dark';
-    const statusBarForeground = isDark
+    const statusBarForeground = providedStatusBarForeground ?? (isDark
         ? '#F5F7FA'
-        : MOBILE15_STATUS_BAR_LIGHT_FOREGROUND;
+        : MOBILE15_STATUS_BAR_LIGHT_FOREGROUND);
     return (
         <div
-            className="shrink-0 px-[25px] py-[5px]"
+            className="shrink-0 px-[25px] pt-[5px] pb-0"
             style={{
                 backgroundColor: statusBarBackground ?? (isDark ? '#0B1014' : mobile15WhatsappLightBackground),
                 color: statusBarForeground,
@@ -52,8 +53,8 @@ export function Mobile15PreviewHeader({ themeMode, notificationIds, statusBarBac
                         className="text-[16px] leading-none font-medium tracking-[-0.35px] tabular-nums"
                         style={{
                             fontFamily: mobile15FontFamily,
-                            fontSize: '16px',
-                            fontWeight: 600,
+                            fontSize: '12px',
+                            fontWeight: 500,
                             lineHeight: 1,
                             letterSpacing: '-0.35px',
                             fontVariantNumeric: 'tabular-nums',
