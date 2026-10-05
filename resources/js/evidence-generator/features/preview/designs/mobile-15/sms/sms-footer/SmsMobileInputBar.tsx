@@ -31,7 +31,7 @@ export function SmsMobileInputBar({
                             <circle cx="15" cy="16" r="10" stroke="currentColor" strokeWidth="2.1" />
                             <path d="M15 11v10M10 16h10" stroke="currentColor" strokeWidth="2.1" strokeLinecap="round" />
                             <circle cx="22.2" cy="8.8" r="4.05" fill={colors.composer} />
-                            <circle cx="22.2" cy="8.8" r="3.55" fill={colors.tealPoint} />
+                            <circle cx="22.2" cy="8.8" r="3.55" fill="#066783" />
                         </svg>
                     </button>
                     <input
@@ -39,7 +39,8 @@ export function SmsMobileInputBar({
                         onChange={(event) => onDraftChange?.(event.target.value)}
                         placeholder="Mensaje RCS"
                         aria-label="Mensaje RCS"
-                        className="min-w-0 flex-1 bg-transparent pl-px text-[15.7px] tracking-[-0.12px] outline-none placeholder:opacity-100"
+                        className="min-w-0 flex-1 bg-transparent pl-px text-[15.7px] tracking-[-0.12px] outline-none placeholder:opacity-100 
+                        placeholder:text-gray-600 placeholder:font-[450]"
                         style={{ color: colors.primaryText, caretColor: colors.primaryText, maxWidth: composerLayout?.messageAreaMaxWidth }}
                     />
                     {/* ==========================================
@@ -55,7 +56,7 @@ export function SmsMobileInputBar({
                     >
                         <svg
                             viewBox="0 0 32 32"
-                            className="h-[30px] w-[30px]"
+                            className="h-[28px] w-[28px]"
                             fill="none"
                             stroke="currentColor"
                             strokeWidth="2.1"
@@ -90,7 +91,7 @@ export function SmsMobileInputBar({
                                     <circle cx="22.7" cy="8.3" r="3.95" fill={colors.composer} stroke="none" />
 
                                     {/* punto turquesa */}
-                                    <circle cx="22.7" cy="8.3" r="3.45" fill={colors.tealPoint} stroke="none" />
+                                    <circle cx="22.7" cy="8.3" r="3.45" fill="#066783" stroke="none" />
                                 </>
                             ) : null}
                         </svg>
@@ -102,7 +103,7 @@ export function SmsMobileInputBar({
                         style={{ color: colors.headerIcon }}
                         aria-label="Galería"
                     >
-                        <svg viewBox="0 0 32 32" className="size-[30px]" fill="none" aria-hidden="true">
+                        <svg viewBox="0 0 32 32" className="size-[25px]" fill="none" aria-hidden="true">
                             <rect x="5" y="5" width="22" height="22" rx="3" stroke="currentColor" strokeWidth="2.1" />
                             <circle cx="11" cy="11" r="2.15" fill="currentColor" />
                             <path d="m7 24 4.4-5.4c.4-.5 1-.5 1.4 0l4.1 5.4 2.1-7.6c.4-.5 1.1-.5 1.5 0l5.5 7.6Z" fill="currentColor" />

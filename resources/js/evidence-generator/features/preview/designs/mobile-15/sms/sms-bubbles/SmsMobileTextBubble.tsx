@@ -27,7 +27,7 @@ export function SmsMobileTextBubble({
     const [isMetadataVisible, setIsMetadataVisible] = useState(showMetadata);
     const isOutgoing = message.side === 'out';
     const backgroundColor = isOutgoing ? colors.sentBubble : colors.receivedBubble;
-    const textColor = isOutgoing ? colors.sentText : colors.primaryText;
+    const textColor = isOutgoing ? colors.sentText : colors.receivedText ?? colors.primaryText;
     const radius = isOutgoing
         ? {
               single: 'rounded-tl-[23px] rounded-tr-[23px] rounded-bl-[21px] rounded-br-[23px]',

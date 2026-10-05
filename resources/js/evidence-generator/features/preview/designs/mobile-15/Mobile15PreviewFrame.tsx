@@ -10,6 +10,8 @@ type Mobile15PreviewFrameProps = {
     themeMode: PreviewThemeMode;
     notificationIds?: MobileNotificationIconId[];
     statusBarBackground?: string;
+    statusBarForeground?: string;
+    systemFooterBackground?: string;
     contentClassName?: string;
     hideSystemHeader?: boolean;
     hideSystemFooter?: boolean;
@@ -20,6 +22,8 @@ export function Mobile15PreviewFrame({
     themeMode,
     notificationIds,
     statusBarBackground,
+    statusBarForeground,
+    systemFooterBackground,
     contentClassName = '',
     hideSystemHeader = false,
     hideSystemFooter = false,
@@ -31,10 +35,15 @@ export function Mobile15PreviewFrame({
                 className="flex h-[875px] max-h-[calc(100vh-2.5rem)] w-[390.75px] max-w-full flex-col overflow-hidden bg-white shadow-2xl"
             >
                 {!hideSystemHeader ? (
-                    <Mobile15PreviewHeader themeMode={themeMode} notificationIds={notificationIds} statusBarBackground={statusBarBackground} />
+                    <Mobile15PreviewHeader
+                        themeMode={themeMode}
+                        notificationIds={notificationIds}
+                        statusBarBackground={statusBarBackground}
+                        statusBarForeground={statusBarForeground}
+                    />
                 ) : null}
                 <div className={['min-h-0 flex-1 overflow-hidden', contentClassName].filter(Boolean).join(' ')}>{children}</div>
-                {!hideSystemFooter ? <Mobile15PreviewFooter themeMode={themeMode} /> : null}
+                {!hideSystemFooter ? <Mobile15PreviewFooter themeMode={themeMode} systemFooterBackground={systemFooterBackground} /> : null}
             </div>
         </div>
     );

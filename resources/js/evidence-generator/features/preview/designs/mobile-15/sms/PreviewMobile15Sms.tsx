@@ -16,12 +16,14 @@ export function PreviewMobile15Sms({ data, themeMode }: PreviewProps) {
         <Mobile15PreviewFrame
             themeMode={themeMode}
             notificationIds={buildMobilePreviewNotificationIds(data, 'mobile-15', 'sms')}
-            statusBarBackground={themeMode === 'light' ? colors.header : undefined}
+            statusBarBackground={colors.header}
+            statusBarForeground={themeMode === 'dark' ? '#C7C5D0' : undefined}
+            systemFooterBackground={colors.conversation}
         >
             <div
                 className="flex h-full min-h-0 flex-col overflow-hidden"
                 style={{
-                    backgroundColor: colors.shell,
+                    backgroundColor: colors.header,
                     fontFamily: mobile15FontFamily,
                 }}
             >

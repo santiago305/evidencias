@@ -46,6 +46,85 @@ test('mobile 15 owns local previews for WhatsApp, SMS, calls and its status bar'
     }
 });
 
+test('mobile 15 SMS exposes the conversation top corners against the existing header color', () => {
+    const preview = readFileSync(resolve(designDirectory, 'sms', 'PreviewMobile15Sms.tsx'), 'utf8');
+    const conversation = readFileSync(resolve(designDirectory, 'sms', 'SmsConversation.tsx'), 'utf8');
+    const appearance = readFileSync(resolve(designDirectory, 'sms', 'smsAppearance.ts'), 'utf8');
+
+    assert.match(preview, /backgroundColor: colors\.header/);
+    assert.match(conversation, /overflow-hidden rounded-t-\[28px\]/);
+    assert.match(appearance, /shell: '#F1FCFF',[\s\S]*?header: '#E3F0F8',[\s\S]*?conversation: '#F1FCFF'/);
+});
+
+test('mobile 15 footer renders back, empty home circle, and horizontal recents in order', () => {
+    const footer = readFileSync(resolve(designDirectory, 'Mobile15PreviewFooter.tsx'), 'utf8');
+    const backPosition = footer.indexOf('data-android-navigation-icon="back"');
+    const homePosition = footer.indexOf('data-android-navigation-icon="home"');
+    const recentsPosition = footer.indexOf('data-android-navigation-icon="recents"');
+
+    assert.ok(backPosition >= 0 && backPosition < homePosition && homePosition < recentsPosition);
+    assert.match(footer, /d="M15\.8 6\.8L8\.2 12l7\.6 5\.2"[\s\S]*?fill="none"[\s\S]*?strokeLinecap="round"[\s\S]*?strokeLinejoin="round"/);
+    assert.match(footer, /<circle\s+cx="12"\s+cy="12"\s+r="6\.2"\s+fill="none"\s+stroke="currentColor"/);
+    assert.match(footer, /d="M5 7h14M5 12h14M5 17h14"/);
+    assert.doesNotMatch(footer, /<polygon|<rect/);
+    assert.match(footer, /systemFooterBackground/);
+    assert.match(footer, /systemFooterForeground/);
+});
+
+test('mobile 15 SMS footer uses the conversation background color', () => {
+    const frame = readFileSync(resolve(designDirectory, 'Mobile15PreviewFrame.tsx'), 'utf8');
+    const smsPreview = readFileSync(resolve(designDirectory, 'sms', 'PreviewMobile15Sms.tsx'), 'utf8');
+
+    assert.match(smsPreview, /systemFooterBackground=\{colors\.conversation\}/);
+    assert.match(frame, /<Mobile15PreviewFooter\s+themeMode=\{themeMode\}\s+systemFooterBackground=\{systemFooterBackground\}/);
+});
+
+test('mobile 15 SMS status bar always uses the SMS header background color', () => {
+    const smsPreview = readFileSync(resolve(designDirectory, 'sms', 'PreviewMobile15Sms.tsx'), 'utf8');
+
+    assert.match(smsPreview, /statusBarBackground=\{colors\.header\}/);
+});
+
+test('mobile 15 dark SMS phone and composer icons match the status bar foreground', () => {
+    const header = readFileSync(resolve(designDirectory, 'sms', 'sms-header', 'SmsMobileHeader.tsx'), 'utf8');
+    const inputBar = readFileSync(resolve(designDirectory, 'sms', 'sms-footer', 'SmsMobileInputBar.tsx'), 'utf8');
+    const appearance = readFileSync(resolve(designDirectory, 'sms', 'smsAppearance.ts'), 'utf8');
+
+    assert.match(header, /darkPhoneTextClassName = 'text-\[#C7C5D0\]'/);
+    assert.match(header, /truncate text-\[18px\] leading-none tracking-\[-0\.2px\] \$\{phoneTextClassName\}/);
+    assert.match(inputBar, /style=\{\{ color: colors\.headerIcon \}\}/);
+    assert.match(appearance, /headerIcon: '#C7C5D0'/);
+    assert.match(appearance, /headerActionIcon: '#C7C5D0'/);
+});
+
+test('mobile 15 dark client bubbles use the reference foreground while advisor bubbles keep their palette', () => {
+    const bubble = readFileSync(resolve(designDirectory, 'sms', 'sms-bubbles', 'SmsMobileTextBubble.tsx'), 'utf8');
+    const appearance = readFileSync(resolve(designDirectory, 'sms', 'smsAppearance.ts'), 'utf8');
+
+    assert.match(appearance, /receivedBubble: '#201F24',[\s\S]*?receivedText: '#C7C5D0',[\s\S]*?sentBubble: '#A9B5FF'/);
+    assert.match(bubble, /const backgroundColor = isOutgoing \? colors\.sentBubble : colors\.receivedBubble/);
+    assert.match(bubble, /const textColor = isOutgoing \? colors\.sentText : colors\.receivedText \?\? colors\.primaryText/);
+});
+
+test('mobile 15 SMS header accepts separate phone text classes for light and dark themes', () => {
+    const header = readFileSync(resolve(designDirectory, 'sms', 'sms-header', 'SmsMobileHeader.tsx'), 'utf8');
+
+    assert.match(header, /lightPhoneTextClassName\?: string/);
+    assert.match(header, /darkPhoneTextClassName\?: string/);
+    assert.match(header, /lightPhoneTextClassName = 'text-black'/);
+    assert.match(header, /darkPhoneTextClassName = 'text-\[#C7C5D0\]'/);
+    assert.match(header, /themeMode === 'dark' \? darkPhoneTextClassName : lightPhoneTextClassName/);
+    assert.match(header, /truncate text-\[18px\] leading-none tracking-\[-0\.2px\] \$\{phoneTextClassName\}/);
+});
+
+test('mobile 15 dark SMS status bar uses the requested foreground color', () => {
+    const frame = readFileSync(resolve(designDirectory, 'Mobile15PreviewFrame.tsx'), 'utf8');
+    const smsPreview = readFileSync(resolve(designDirectory, 'sms', 'PreviewMobile15Sms.tsx'), 'utf8');
+
+    assert.match(smsPreview, /statusBarForeground=\{themeMode === 'dark' \? '#C7C5D0' : undefined\}/);
+    assert.match(frame, /<Mobile15PreviewHeader[\s\S]*?statusBarForeground=\{statusBarForeground\}/);
+});
+
 test('mobile 15 renders local status bar icons in the requested order', () => {
     const header = readFileSync(resolve(designDirectory, 'Mobile15PreviewHeader.tsx'), 'utf8');
     const statusBarSources = [
