@@ -17,3 +17,24 @@ test('clearReplayHydratedForm clears TCEA from a previously hydrated replay', ()
 
     assert.equal(clearReplayHydratedForm(form).TCEA, '');
 });
+
+test('hydrateReplayForm restores client sex and birth date', () => {
+    const form = hydrateReplayForm(createInitialFormState(), {
+        sexo: 'F',
+        fecha_nacimiento: '2001-02-03',
+    });
+
+    assert.equal(form.sexo, 'F');
+    assert.equal(form.fecha_nacimiento, '2001-02-03');
+});
+
+test('clearReplayHydratedForm clears client sex and birth date', () => {
+    const form = clearReplayHydratedForm({
+        ...createInitialFormState(),
+        sexo: 'M',
+        fecha_nacimiento: '1995-08-21',
+    });
+
+    assert.equal(form.sexo, '');
+    assert.equal(form.fecha_nacimiento, '');
+});

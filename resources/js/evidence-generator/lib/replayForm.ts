@@ -3,6 +3,8 @@ import type { FormInputKey, FormState, ModoEntrada } from '../types.ts';
 const replayHydratedFields = [
     'telefono',
     'nombre',
+    'sexo',
+    'fecha_nacimiento',
     'dniCliente',
     'monto',
     'tasa',
@@ -33,6 +35,8 @@ export function clearReplayHydratedForm(previousForm: FormState): FormState {
         ...previousForm,
         telefono: '',
         nombre: '',
+        sexo: '',
+        fecha_nacimiento: '',
         dniCliente: '',
         monto: '',
         tasa: '',

@@ -26,6 +26,12 @@ class EvidenceController extends Controller
         $validated = $request->validated();
         $validated['nombre'] = (string) ($validated['nombre'] ?? '');
 
+        foreach (['sexo', 'fecha_nacimiento'] as $field) {
+            if (array_key_exists($field, $validated)) {
+                $validated[$field] = (string) ($validated[$field] ?? '');
+            }
+        }
+
         if ($request->hasFile('img_64')) {
             $image = $request->file('img_64');
             $extension = $image->getClientOriginalExtension() ?: 'png';

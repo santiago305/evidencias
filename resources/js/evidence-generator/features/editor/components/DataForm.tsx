@@ -7,7 +7,8 @@ interface DataFormProps {
     form: FormState;
     activeDesign: ActiveDesign;
     saved: SavedData | null;
-    onChange: (key: FormInputKey) => (e: ChangeEvent<HTMLInputElement>) => void;
+    onChange: (key: FormInputKey) => (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void;
+    onAmountBlur: () => void;
     onImageFileChange: (e: ChangeEvent<HTMLInputElement>) => void;
     imageFileInputKey: number;
     onGenerate: () => void;
@@ -29,6 +30,7 @@ interface DataFormProps {
 export function DataForm({
     form,
     onChange,
+    onAmountBlur,
     onImageFileChange,
     imageFileInputKey,
     onGenerate,
@@ -91,7 +93,6 @@ export function DataForm({
             />
 
             <Input label="Nombre" id="nombre-cliente" value={form.nombre} onChange={onChange('nombre')} placeholder="Ej: Juan Pérez" />
-
             <Input
                 label="DNI cliente"
                 id="DNI_CLIENTE"
@@ -102,9 +103,36 @@ export function DataForm({
                 inputMode="numeric"
                 pattern="[0-9]{8}"
             />
+            <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+                <label className="block">
+                    <span className="text-xs font-semibold text-slate-700">Sexo</span>
+                    <select
+                        id="sexo"
+                        value={form.sexo}
+                        onChange={onChange('sexo')}
+                        className="mt-1 w-full rounded-sm border border-slate-200 bg-white p-2 text-xs text-slate-900 shadow-sm focus:border-slate-300 focus:ring-2 focus:ring-slate-900/10 focus:outline-none"
+                    >
+                        <option value="M">M</option>
+                        <option value="F">F</option>
+                        <option value="">Vacío</option>
+                    </select>
+                </label>
+                <div className="mt-[5px]">
+                    <Input label="Fecha de nacimiento" id="fecha_nacimiento" type="date" value={form.fecha_nacimiento} onChange={onChange('fecha_nacimiento')} />
+                </div>
+            </div>
 
             <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-                <Input label="Monto" id="monto" value={form.monto} onChange={onChange('monto')} placeholder="Ej: 1500" />
+                <Input
+                    type="text"
+                    label="Monto"
+                    id="monto"
+                    value={form.monto}
+                    onChange={onChange('monto')}
+                    onBlur={onAmountBlur}
+                    placeholder="Ej: 1500.50"
+                    inputMode="decimal"
+                />
 
                 <Input label="Tasa" id="tasa" value={form.tasa} onChange={onChange('tasa')} placeholder="Ej: 2.5%" />
             </div>

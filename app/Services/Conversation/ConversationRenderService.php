@@ -40,6 +40,7 @@ class ConversationRenderService
 
     public function __construct(
         private readonly ConversationDelayDistributionService $delayDistributionService,
+        private readonly SpanishGenderInflector $spanishGenderInflector,
     ) {}
 
     /**
@@ -86,6 +87,7 @@ class ConversationRenderService
 
         $clock = $startDate->copy();
         $variables = $this->buildVariables($input, $startDate);
+        $sexoCliente = is_string($input['sexo'] ?? null) ? $input['sexo'] : null;
         $rendered = [];
         $usesConfiguredTimeline = $durationMinutes === null
             && $conversationMessages->contains(
@@ -123,7 +125,7 @@ class ConversationRenderService
 
             $lines = [];
             foreach ((array) $message->lines as $line) {
-                $lines[] = $this->uppercaseFirstLetter($this->interpolate((string) $line, $variables));
+                $lines[] = $this->uppercaseFirstLetter($this->interpolate((string) $line, $variables, $sexoCliente));
             }
 
             $renderedMessage = [
@@ -275,10 +277,11 @@ class ConversationRenderService
         $previewSeed = isset($input['previewSeed']) && is_string($input['previewSeed']) && trim($input['previewSeed']) !== ''
             ? trim($input['previewSeed'])
             : null;
-        $monto = (string) ($input['monto'] ?? '');
+        $monto = $this->formatConversationAmount((string) ($input['monto'] ?? ''));
         $cuota = (string) ($input['cuota'] ?? '');
         $asesor = trim((string) ($input['nombreAsesor'] ?? ''));
         $cliente = trim((string) ($input['nombre'] ?? ''));
+        $sexoCliente = $input['sexo'] ?? null;
         $asesorFormatted = $this->toTitleCase($asesor);
         $clienteFormatted = $this->toTitleCase($cliente);
 
@@ -290,8 +293,14 @@ class ConversationRenderService
             'dni' => (string) ($input['dni'] ?? ''),
             'dni_cliente' => (string) ($input['dniCliente'] ?? ''),
             'telefono' => (string) ($input['telefono'] ?? ''),
-            'monto' => $this->formatFlexibleAmount($monto),
-            'monto_formateado' => $this->formatMoney($monto),
+            'cliente(cliente)' => match ($sexoCliente) {
+                'M' => 'Sr',
+                'F' => 'Sra',
+                default => 'Sr/a',
+            },
+            'fecha_nacimiento' => $this->formatBirthDate($input['fecha_nacimiento'] ?? null),
+            'monto' => $monto,
+            'monto_formateado' => $monto,
             'cuota' => $cuota,
             'cuota_formateada' => $this->formatMoney($cuota),
             'plazo' => (string) ($input['plazo'] ?? ''),
@@ -330,10 +339,32 @@ class ConversationRenderService
         return is_array($parts) && isset($parts[0]) && $parts[0] !== '' ? $parts[0] : $fallback;
     }
 
+    private function formatConversationAmount(string $value): string
+    {
+        $amountWithoutWhitespace = (string) preg_replace('/[\s\p{Z}]+/u', '', $value);
+
+        return preg_match('/^-?\d+$/D', $amountWithoutWhitespace) === 1
+            ? $amountWithoutWhitespace.'.00'
+            : $amountWithoutWhitespace;
+    }
+
+    private function formatBirthDate(mixed $value): string
+    {
+        if (! is_string($value) || $value === '') {
+            return '';
+        }
+
+        $date = \DateTimeImmutable::createFromFormat('!Y-m-d', $value);
+
+        return $date !== false && $date->format('Y-m-d') === $value
+            ? $date->format('d/m/Y')
+            : '';
+    }
+
     /**
      * @param  array<string, string>  $variables
      */
-    private function interpolate(string $line, array $variables): string
+    private function interpolate(string $line, array $variables, ?string $sexoCliente): string
     {
         $line = (string) preg_replace_callback('/\{s_asesor\(([^{}()]*)\)\}/u', function ($matches) use ($variables) {
             $word = trim((string) ($matches[1] ?? ''));
@@ -343,6 +374,21 @@ class ConversationRenderService
             }
 
             return $this->genderAdvisorWord($word, $variables['sexualidad_asesor'] ?? 'M');
+        }, $line);
+
+        $line = str_replace('{s_cliente(cliente)}', $variables['cliente(cliente)'] ?? 'Sr/a', $line);
+
+        $line = (string) preg_replace_callback('/\{s_cliente\(([^{}()]*)\)\}/u', function ($matches) use ($sexoCliente) {
+            $word = trim((string) ($matches[1] ?? ''));
+            if (class_exists(\Normalizer::class)) {
+                $word = \Normalizer::normalize($word, \Normalizer::FORM_C) ?: $word;
+            }
+
+            if (preg_match('/^[A-Za-zÁÉÍÓÚÜÑáéíóúüñ]+$/u', $word) !== 1) {
+                return $matches[0];
+            }
+
+            return $this->spanishGenderInflector->inflect($word, $sexoCliente);
         }, $line);
 
         return (string) preg_replace_callback('/\{([a-zA-Z0-9_]+)\}/', function ($matches) use ($variables) {
@@ -403,20 +449,6 @@ class ConversationRenderService
         $number = (float) $normalized;
 
         return number_format($number, 2, '.', ',');
-    }
-
-    private function formatFlexibleAmount(string $value): string
-    {
-        $digits = preg_replace('/\D/', '', $value);
-        if ($digits === null || $digits === '') {
-            return $value;
-        }
-
-        if (strlen($digits) < 4) {
-            return $digits;
-        }
-
-        return (string) preg_replace('/\B(?=(\d{3})+(?!\d))/', ',', $digits);
     }
 
     private function seededInt(string $seed, int $min, int $max): int

@@ -6,7 +6,7 @@ import respuestasAsesorDespedidaData from '../../../../data/respuestasAsesorDesp
 import respuestasClienteData from '../../../../data/respuestasCliente.json';
 import respuestasClienteDespedidaData from '../../../../data/respuestasClienteDespedida.json';
 import respuestasContinuacionAsesorData from '../../../../data/respuestasContinuacionAsesor.json';
-import { formatMoneyValue } from '../../../../lib/whatsapp/format';
+import { formatConversationAmount, formatMoneyValue } from '../../../../lib/whatsapp/format';
 import { mulberry32, pick, pickWithFallback } from '../../../../lib/whatsapp/random';
 import { buildWhatsappTemplateValues, interpolateTemplate } from '../../../../lib/whatsapp/templates';
 import { formatDateKeyFromDate, formatTimeShort, getTimeOfDayParts, parseLocalDateTime } from '../../../../lib/whatsapp/time';
@@ -121,9 +121,8 @@ export function buildWhatsappConversation(data: WhatsappData, messageStatus?: Ms
     const nombreCliente = data.nombre?.trim() ? data.nombre.trim() : 'Pedro Vazquez';
     const nombreAsesor = data.nombreAsesor?.trim() ? data.nombreAsesor.trim() : 'Maria Perez';
 
-    const useThousandsMonto = true;
     const useThousandsCuota = rng() < 0.5;
-    const formattedMonto = data.monto?.trim() ? formatMoneyValue(data.monto, useThousandsMonto) : null;
+    const formattedMonto = data.monto?.trim() ? formatConversationAmount(data.monto) : null;
     const formattedCuota = data.cuota?.trim() ? formatMoneyValue(data.cuota, useThousandsCuota) : null;
     const tasaValue = data.tasa?.trim() ? data.tasa.trim() : null;
     const plazoValue = data.plazo?.trim() ? data.plazo.trim() : null;
@@ -136,6 +135,8 @@ export function buildWhatsappConversation(data: WhatsappData, messageStatus?: Ms
         tramo,
         montoFormateado: formattedMonto,
         sexualidadAsesor: data.sexualidadAsesor,
+        sexoCliente: data.sexo,
+        fechaNacimiento: data.fecha_nacimiento,
     });
     const extendedTemplateValues = {
         ...templateValues,
@@ -146,7 +147,7 @@ export function buildWhatsappConversation(data: WhatsappData, messageStatus?: Ms
         TCEA: tceaValue ?? 'N/A',
     };
 
-    const normalizeReply = (lines: string[]) => lines.map((line) => interpolateTemplate(line, extendedTemplateValues));
+    const normalizeReply = (lines: string[]) => lines.map((line) => interpolateTemplate(line, extendedTemplateValues, data.sexo));
     const normalizeReplyVariant = (reply: string | string[]) => normalizeReply(Array.isArray(reply) ? reply : [reply]);
 
     const modeConfig = getWhatsappConversationModeConfig(data.modoEntrada, data.tipoCliente);

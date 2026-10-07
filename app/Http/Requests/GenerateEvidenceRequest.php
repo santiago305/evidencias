@@ -30,6 +30,8 @@ class GenerateEvidenceRequest extends FormRequest
             'conversationCode' => ['nullable', 'string', 'max:100'],
             'telefono' => ['required_without:seedCode', 'nullable', 'string', 'regex:/^9\d{8}$/'],
             'nombre' => ['nullable', 'string', 'max:150'],
+            'sexo' => ['sometimes', 'nullable', 'string', Rule::in(['M', 'F'])],
+            'fecha_nacimiento' => ['sometimes', 'nullable', 'date_format:Y-m-d', 'before_or_equal:today'],
             'dniCliente' => ['required_without:seedCode', 'nullable', 'string', 'regex:/^\d{8}$/'],
             'monto' => ['required_without:seedCode', 'nullable', 'string', 'max:40'],
             'tasa' => ['required_without:seedCode', 'nullable', 'string', 'max:40'],

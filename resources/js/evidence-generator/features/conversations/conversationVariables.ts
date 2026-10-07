@@ -30,6 +30,10 @@ export function buildConversationVariables(): ConversationVariable[] {
             placeholder: '{s_asesor(asesor)}',
         },
         {
+            key: 'cliente_tratamiento',
+            placeholder: '{s_cliente(cliente)}',
+        },
+        {
             key: 'telefono',
             placeholder: '{telefono}',
         },
@@ -56,6 +60,10 @@ export function buildConversationVariables(): ConversationVariable[] {
         {
             key: 'TCEA',
             placeholder: '{TCEA}',
+        },
+        {
+            key: 'fecha_nacimiento',
+            placeholder: '{fecha_nacimiento}',
         },
     ];
 }

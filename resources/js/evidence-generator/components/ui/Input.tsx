@@ -7,6 +7,7 @@ export function Input({
   id,
   value,
   onChange,
+  onBlur,
   placeholder,
   hint,
   readOnly = false,
@@ -27,6 +28,7 @@ export function Input({
           type={type}
           value={value}
           onChange={onChange}
+          onBlur={onBlur}
           readOnly={readOnly}
           placeholder={placeholder ?? label}
           maxLength={maxLength}
