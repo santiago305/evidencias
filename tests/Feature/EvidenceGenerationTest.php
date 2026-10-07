@@ -6,6 +6,7 @@ use App\Models\GeneratedEvidence;
 use App\Models\User;
 use App\Models\UserConversationProgress;
 use App\Services\Conversation\ConversationRenderService;
+use App\Services\Conversation\SpanishGenderInflector;
 use Carbon\Carbon;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
@@ -635,7 +636,7 @@ test('generate evidence keeps the submitted phone number when rendering phone va
         ->assertJsonPath('messages.0.lines.0', 'Telefono cliente 987654321');
 });
 
-test('generate evidence renders amount variable with comma thousands separator', function () {
+test('generate evidence appends decimal zeros to a five digit integer amount', function () {
     $user = User::factory()->create();
 
     createConversationForTest('conv_monto_variable_001', [
@@ -650,10 +651,10 @@ test('generate evidence renders amount variable with comma thousands separator',
 
     $response->assertOk();
 
-    expect($response->json('messages.0.lines.0'))->toBe('Monto S/99,999');
+    expect($response->json('messages.0.lines.0'))->toBe('Monto S/99999.00');
 });
 
-test('generate evidence can render four digit amount variable with comma thousands separator', function () {
+test('generate evidence appends decimal zeros to a four digit integer amount', function () {
     $user = User::factory()->create();
 
     createConversationForTest('conv_monto_variable_002', [
@@ -668,7 +669,40 @@ test('generate evidence can render four digit amount variable with comma thousan
 
     $response->assertOk();
 
-    expect($response->json('messages.0.lines.0'))->toBe('Monto S/3,250');
+    expect($response->json('messages.0.lines.0'))->toBe('Monto S/3250.00');
+});
+
+test('generate evidence appends decimal zeros to integer amounts and preserves other values', function () {
+    $user = User::factory()->create();
+
+    createConversationForTest('conv_monto_literal_001', [
+        ['side' => 'out', 'delay_minutes' => 0, 'lines' => ['Monto S/{monto}; detalle S/{monto_formateado}']],
+    ]);
+
+    foreach ([
+        ['100', '100.00'],
+        ['1500', '1500.00'],
+        ['1500.50', '1500.50'],
+        ['1500.75', '1500.75'],
+        ['100.0', '100.0'],
+        ['100,00', '100,00'],
+        ['1500,50', '1500,50'],
+        ['1500,75', '1500,75'],
+        ['12,0', '12,0'],
+        ['1 2000,00', '12000,00'],
+    ] as [$input, $expected]) {
+        $response = $this->actingAs($user)->postJson(route('evidences.generate'), [
+            ...evidencePayload(),
+            'conversationCode' => 'conv_monto_literal_001',
+            'monto' => $input,
+        ]);
+
+        $response->assertOk()->assertJsonPath('messages.0.lines.0', "Monto S/{$expected}; detalle S/{$expected}");
+
+        $evidence = GeneratedEvidence::query()->where('seed_code', $response->json('seedCode'))->firstOrFail();
+
+        expect($evidence->input_data['monto'])->toBe($input);
+    }
 });
 
 test('generate evidence renders gendered advisor variables and capitalizes messages', function () {
@@ -1468,4 +1502,157 @@ test('registration gap can be configured to allow a one minute duration window',
     expect($messages[0]['dateKey'])->toBe('2026-06-10')
         ->and($messages[0]['time'])->toBe('10:00')
         ->and($messages[1]['time'])->toBe('10:01');
+});
+
+test('sexo selects client treatment and fecha_nacimiento is stored in ISO format', function () {
+    $user = User::factory()->create();
+
+    createConversationForTest('conv_client_treatment_001', [
+        ['side' => 'out', 'delay_minutes' => 0, 'lines' => ['Trato {s_cliente(cliente)}; nacimiento {fecha_nacimiento}']],
+    ]);
+
+    foreach ([
+        ['M', 'Sr'],
+        ['F', 'Sra'],
+        ['', 'Sr/a'],
+    ] as [$sexo, $treatment]) {
+        $response = $this->actingAs($user)->postJson(route('evidences.generate'), [
+            ...evidencePayload(),
+            'conversationCode' => 'conv_client_treatment_001',
+            'sexo' => $sexo,
+            'fecha_nacimiento' => '1995-08-21',
+        ]);
+
+        $response->assertOk()->assertJsonPath('messages.0.lines.0', "Trato {$treatment}; nacimiento 21/08/1995");
+
+        $evidence = GeneratedEvidence::query()->where('seed_code', $response->json('seedCode'))->firstOrFail();
+
+        expect($evidence->input_data['sexo'])->toBe($sexo)
+            ->and($evidence->input_data['fecha_nacimiento'])->toBe('1995-08-21');
+    }
+});
+
+test('s_cliente sustantivos usa sexo interno y conserva el tratamiento', function () {
+    $user = User::factory()->create();
+    createConversationForTest('conv_client_nouns_001', [
+        ['side' => 'out', 'delay_minutes' => 0, 'lines' => [
+            'Trato {s_cliente(cliente)}: {s_cliente(profesor)}, {s_cliente(niño)}, {s_cliente(estudiante)}, {s_cliente(actor)}',
+            'Incompleto {s_cliente()}; inválido {s_cliente(dos palabras)}',
+            "La {s_cliente(me\u{0301}dico)}",
+        ]],
+    ]);
+
+    foreach ([
+        ['M', 'Trato Sr: profesor, niño, estudiante, actor'],
+        ['F', 'Trato Sra: profesora, niña, estudiante, actriz'],
+        ['', 'Trato Sr/a: profesor(a), niño(a), estudiante, actor/actriz'],
+    ] as [$sexo, $expected]) {
+        $this->actingAs($user)->postJson(route('evidences.generate'), [
+            ...evidencePayload(),
+            'conversationCode' => 'conv_client_nouns_001',
+            'sexo' => $sexo,
+        ])->assertOk()
+            ->assertJsonPath('messages.0.lines.0', $expected)
+            ->assertJsonPath('messages.0.lines.1', 'Incompleto {s_cliente()}; inválido {s_cliente(dos palabras)}')
+            ->assertJsonPath('messages.0.lines.2', $sexo === 'F' ? 'La médica' : ($sexo === 'M' ? 'La médico' : 'La médico(a)'));
+    }
+
+    $inflector = app(SpanishGenderInflector::class);
+    foreach ([
+        ['profesor', 'profesora', 'profesor(a)'],
+        ['niño', 'niña', 'niño(a)'],
+        ['doctor', 'doctora', 'doctor(a)'],
+        ['ingeniero', 'ingeniera', 'ingeniero(a)'],
+        ['médico', 'médica', 'médico(a)'],
+        ['presidente', 'presidenta', 'presidente(a)'],
+        ['español', 'española', 'español(a)'],
+        ['actor', 'actriz', 'actor/actriz'],
+        ['rey', 'reina', 'rey/reina'],
+        ['campeón', 'campeona', 'campeón/campeona'],
+        ['guardián', 'guardiana', 'guardián/guardiana'],
+        ['bailarín', 'bailarina', 'bailarín/bailarina'],
+        ['portugués', 'portuguesa', 'portugués/portuguesa'],
+        ['periodista', 'periodista', 'periodista'],
+        ['artista', 'artista', 'artista'],
+        ['mesa', 'mesa', 'mesa'],
+    ] as [$masculine, $feminine, $dual]) {
+        expect($inflector->inflect($masculine, 'F'))->toBe($feminine)
+            ->and($inflector->inflect($feminine, 'M'))->toBe($masculine)
+            ->and($inflector->inflect($masculine, null))->toBe($dual)
+            ->and($inflector->inflect($feminine, null))->toBe($dual);
+    }
+
+    expect($inflector->inflect('PROFESOR', null))->toBe('PROFESOR(A)')
+        ->and($inflector->inflect('  Médico  ', null))->toBe('  Médico(a)  ')
+        ->and($inflector->inflect("me\u{0301}dico", null))->toBe('médico(a)');
+});
+
+test('sexo and fecha_nacimiento missing from older input use safe conversation values', function () {
+    $user = User::factory()->create();
+
+    createConversationForTest('conv_client_treatment_legacy_001', [
+        ['side' => 'out', 'delay_minutes' => 0, 'lines' => ['Trato {s_cliente(cliente)}; nacimiento [{fecha_nacimiento}]']],
+    ]);
+
+    $this->actingAs($user)->postJson(route('evidences.generate'), [
+        ...evidencePayload(),
+        'conversationCode' => 'conv_client_treatment_legacy_001',
+    ])->assertOk()->assertJsonPath('messages.0.lines.0', 'Trato Sr/a; nacimiento []');
+});
+
+test('sexo input does not expose an extra generic conversation variable', function () {
+    $user = User::factory()->create();
+
+    createConversationForTest('conv_client_treatment_no_raw_sex_001', [
+        ['side' => 'out', 'delay_minutes' => 0, 'lines' => ['Dato {sexo_cliente}; trato {s_cliente(cliente)}']],
+    ]);
+
+    $this->actingAs($user)->postJson(route('evidences.generate'), [
+        ...evidencePayload(),
+        'conversationCode' => 'conv_client_treatment_no_raw_sex_001',
+        'sexo' => 'M',
+    ])->assertOk()->assertJsonPath('messages.0.lines.0', 'Dato {sexo_cliente}; trato Sr');
+});
+
+test('sexo and fecha_nacimiento reject invalid values', function (string $field, string $value) {
+    $user = User::factory()->create();
+
+    $this->actingAs($user)->postJson(route('evidences.generate'), [
+        ...evidencePayload(),
+        $field => $value,
+    ])->assertUnprocessable()->assertJsonValidationErrorFor($field);
+})->with([
+    ['sexo', 'X'],
+    ['fecha_nacimiento', '21/08/1995'],
+    ['fecha_nacimiento', '1995-02-30'],
+    ['fecha_nacimiento', today()->addDay()->toDateString()],
+]);
+
+test('sexo and fecha_nacimiento can be cleared when replaying evidence', function () {
+    $user = User::factory()->create();
+
+    createConversationForTest('conv_client_treatment_replay_001', [
+        ['side' => 'out', 'delay_minutes' => 0, 'lines' => ['Trato {s_cliente(cliente)}; nacimiento [{fecha_nacimiento}]']],
+    ]);
+
+    $first = $this->actingAs($user)->postJson(route('evidences.generate'), [
+        ...evidencePayload(),
+        'conversationCode' => 'conv_client_treatment_replay_001',
+        'sexo' => 'M',
+        'fecha_nacimiento' => '1995-08-21',
+    ])->assertOk();
+
+    $replay = $this->actingAs($user)->post(route('evidences.generate'), [
+        ...evidencePayload(),
+        'seedCode' => $first->json('seedCode'),
+        'sexo' => '',
+        'fecha_nacimiento' => '',
+    ]);
+
+    $replay->assertOk()->assertJsonPath('messages.0.lines.0', 'Trato Sr/a; nacimiento []');
+
+    $evidence = GeneratedEvidence::query()->where('seed_code', $first->json('seedCode'))->firstOrFail();
+
+    expect($evidence->input_data['sexo'])->toBe('')
+        ->and($evidence->input_data['fecha_nacimiento'])->toBe('');
 });

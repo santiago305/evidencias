@@ -1,4 +1,4 @@
-import type { ChangeEvent } from 'react';
+import type { ChangeEvent, FocusEvent } from 'react';
 
 export type ActiveDesign = 'whatsapp' | 'llamada' | 'sms';
 export type PreviewDeviceMode = 'desktop' | 'mobile';
@@ -20,6 +20,8 @@ export interface MobileDesignDefinition {
 export interface FormState {
     telefono: string;
     nombre: string;
+    sexo: string;
+    fecha_nacimiento: string;
     dniCliente: string;
     monto: string;
     tasa: string;
@@ -118,6 +120,7 @@ export interface InputProps {
     id?: string;
     value: string;
     onChange: (e: ChangeEvent<HTMLInputElement>) => void;
+    onBlur?: (e: FocusEvent<HTMLInputElement>) => void;
     placeholder?: string;
     hint?: string;
     readOnly?: boolean;

@@ -30,7 +30,8 @@ interface FormPanelProps {
     lockedThemeMode: PreviewThemeMode | null;
     onWhatsappPreviewModeChange: (mode: PreviewDeviceMode) => void;
     onThemeModeChange: (mode: PreviewThemeMode) => void;
-    onChange: (key: FormInputKey) => (e: ChangeEvent<HTMLInputElement>) => void;
+    onChange: (key: FormInputKey) => (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void;
+    onAmountBlur: () => void;
     onImageFileChange: (e: ChangeEvent<HTMLInputElement>) => void;
     imageFileInputKey: number;
     onGenerate: () => void;
@@ -62,6 +63,7 @@ export function FormPanel({
     onWhatsappPreviewModeChange,
     onThemeModeChange,
     onChange,
+    onAmountBlur,
     onImageFileChange,
     imageFileInputKey,
     onGenerate,
@@ -140,6 +142,7 @@ export function FormPanel({
                     activeDesign={activeDesign}
                     saved={saved}
                     onChange={onChange}
+                    onAmountBlur={onAmountBlur}
                     onImageFileChange={onImageFileChange}
                     imageFileInputKey={imageFileInputKey}
                     onGenerate={onGenerate}

@@ -12,3 +12,20 @@ export function formatMoneyValue(value: string, useThousands: boolean) {
     useGrouping: useThousands,
   });
 }
+
+export function formatConversationAmount(value: string): string {
+  const amountWithoutWhitespace = value.replace(/[\s\p{Z}]+/gu, '');
+
+  return /^-?\d+$/u.test(amountWithoutWhitespace) ? `${amountWithoutWhitespace}.00` : amountWithoutWhitespace;
+}
+
+export function completeAmountDecimals(value: string): string {
+  const amountWithoutWhitespace = value.replace(/[\s\p{Z}]+/gu, '');
+  const match = amountWithoutWhitespace.match(/^(-?\d+)(?:([.,])(\d*))?$/u);
+
+  if (!match) {
+    return value;
+  }
+
+  return `${match[1]}${match[2] ?? '.'}${(match[3] ?? '').padEnd(2, '0')}`;
+}

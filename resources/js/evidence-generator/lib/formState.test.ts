@@ -6,6 +6,8 @@ test('createInitialFormState returns an empty form ready for a new evidence', ()
     assert.deepEqual(createInitialFormState(), {
         telefono: '',
         nombre: '',
+        sexo: '',
+        fecha_nacimiento: '',
         dniCliente: '',
         monto: '',
         tasa: '',

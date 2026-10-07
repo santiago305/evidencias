@@ -162,6 +162,12 @@ class EvidenceGeneratorService
                 ->filter(static fn (mixed $value): bool => $value !== null && $value !== '')
                 ->all();
 
+            foreach (['sexo', 'fecha_nacimiento'] as $field) {
+                if (array_key_exists($field, $input)) {
+                    $editableInput[$field] = (string) ($input[$field] ?? '');
+                }
+            }
+
             $renderInput = [
                 ...$storedInput,
                 ...$editableInput,
@@ -174,10 +180,15 @@ class EvidenceGeneratorService
                 'previewSeed' => $previewSeed,
             ];
 
-            if (array_key_exists('TCEA', $editableInput)) {
+            $persistedInput = array_intersect_key(
+                $editableInput,
+                array_flip(['TCEA', 'sexo', 'fecha_nacimiento']),
+            );
+
+            if ($persistedInput !== []) {
                 $replayEvidence->input_data = [
                     ...$storedInput,
-                    'TCEA' => (string) $editableInput['TCEA'],
+                    ...$persistedInput,
                 ];
                 $replayEvidence->save();
             }

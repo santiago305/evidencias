@@ -1,6 +1,7 @@
 import type { ChangeEvent } from 'react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { pickRandomClientProfile } from './config/whatsapp/clientProfiles';
+import { getDesignTabItems } from './lib/designTabItems';
 import { ConversationsListModal } from './features/conversations/components/ConversationsListModal';
 import {
     NewConversationModal,
@@ -12,6 +13,7 @@ import { FormPanel } from './features/editor/components/FormPanel';
 import { PreviewPanel } from './features/preview/components/PreviewPanel';
 import { getJson, postFormData, postJson, putJson } from './lib/api';
 import { createInitialFormState } from './lib/formState';
+import { completeAmountDecimals } from './lib/whatsapp/format';
 import { resolveActiveMobileDesignKey } from './lib/mobileDesignSelection';
 import { resolvePreviewDeviceMode } from './lib/previewDeviceModeSelection';
 import { resolveLockedMobilePreviewThemeMode, resolvePreviewThemeMode } from './lib/previewThemeModeSelection';
@@ -224,7 +226,7 @@ export default function App({
         seedCodeInput,
     });
 
-    const handleChange = (key: FormInputKey) => (e: ChangeEvent<HTMLInputElement>) => {
+    const handleChange = (key: FormInputKey) => (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const value =
             key === 'dniCliente'
                 ? e.target.value.replace(/\D/g, '').slice(0, 8)
@@ -235,6 +237,10 @@ export default function App({
                     : e.target.value;
 
         setForm((prev) => ({ ...prev, [key]: value }));
+    };
+
+    const handleAmountBlur = () => {
+        setForm((prev) => ({ ...prev, monto: completeAmountDecimals(prev.monto) }));
     };
 
     const handleImageFileChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -534,19 +540,7 @@ export default function App({
         }
     };
 
-    const tabItems = useMemo(
-        () =>
-            [
-                { key: 'whatsapp' as const, label: 'WhatsApp', accent: 'bg-emerald-600' },
-                ...(hasRegisteredMobileDesign
-                    ? [
-                          { key: 'llamada' as const, label: 'Llamada', accent: 'bg-sky-600' },
-                          { key: 'sms' as const, label: 'SMS', accent: 'bg-indigo-600' },
-                      ]
-                    : []),
-            ] as const,
-        [hasRegisteredMobileDesign],
-    );
+    const tabItems = useMemo(() => getDesignTabItems(hasRegisteredMobileDesign), [hasRegisteredMobileDesign]);
 
     const conversationVariables = useMemo(() => buildConversationVariables(), []);
 
@@ -567,6 +561,7 @@ export default function App({
                         onWhatsappPreviewModeChange={setTestWhatsappPreviewMode}
                         onThemeModeChange={setTestPreviewThemeMode}
                         onChange={handleChange}
+                        onAmountBlur={handleAmountBlur}
                         onImageFileChange={handleImageFileChange}
                         imageFileInputKey={imageFileInputKey}
                         onGenerate={handleGenerate}
