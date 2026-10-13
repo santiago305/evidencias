@@ -49,6 +49,8 @@ class GenerateEvidenceRequest extends FormRequest
     {
         return [
             function (Validator $validator): void {
+                $this->validateNumericFields($validator);
+
                 $image = $this->file('img_64');
 
                 if ($image === null || $this->filled('conversationCode') || $this->filled('seedCode')) {
@@ -64,6 +66,66 @@ class GenerateEvidenceRequest extends FormRequest
                 }
             },
         ];
+    }
+
+    private function validateNumericFields(Validator $validator): void
+    {
+        $this->validateDecimalField($validator, 'monto', false, 99999);
+        $this->validateDecimalField($validator, 'cuota', false, 99999);
+        $this->validateDecimalField($validator, 'tasa', true);
+        $this->validateDecimalField($validator, 'TCEA', true);
+
+        $plazo = trim((string) $this->input('plazo', ''));
+
+        if ($plazo !== '' && ! preg_match('/^\d+$/', $plazo)) {
+            $validator->errors()->add('plazo', 'El plazo debe ser un número entero sin decimales.');
+        }
+    }
+
+    private function validateDecimalField(Validator $validator, string $field, bool $allowPercentage, ?float $max = null): void
+    {
+        $value = trim((string) $this->input($field, ''));
+
+        if ($value === '') {
+            return;
+        }
+
+        $normalized = $this->normalizeDecimalValue($value, $allowPercentage);
+
+        if ($normalized === null || ! preg_match('/^\d+(?:\.\d{1,2})?$/', $normalized)) {
+            $label = match ($field) {
+                'monto' => 'El monto',
+                'cuota' => 'La cuota',
+                'tasa' => 'La tasa',
+                default => 'La TCEA',
+            };
+            $suffix = $allowPercentage ? ' porcentaje' : '';
+
+            $validator->errors()->add($field, "{$label} debe ser un número{$suffix} con máximo 2 decimales.");
+
+            return;
+        }
+
+        if ($max !== null && (float) $normalized > $max) {
+            $label = $field === 'monto' ? 'El monto' : 'La cuota';
+
+            $validator->errors()->add($field, "{$label} no puede superar 99999.00.");
+        }
+    }
+
+    private function normalizeDecimalValue(string $value, bool $allowPercentage): ?string
+    {
+        $normalized = (string) preg_replace('/[\s\p{Z}]+/u', '', $value);
+
+        if ($allowPercentage && str_ends_with($normalized, '%')) {
+            $normalized = substr($normalized, 0, -1);
+        }
+
+        if (str_contains($normalized, '%')) {
+            return null;
+        }
+
+        return str_replace(',', '.', $normalized);
     }
 
     private function withoutLeadingZeros(string $value): string

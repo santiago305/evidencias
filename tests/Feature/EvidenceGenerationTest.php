@@ -783,6 +783,26 @@ test('generate evidence requires a nine digit phone starting with nine', functio
     'contains spaces' => '999 999999',
 ]);
 
+test('generate evidence validates financial precision and limits', function (string $field, string $value) {
+    $user = User::factory()->create();
+
+    $response = $this->actingAs($user)->postJson(route('evidences.generate'), [
+        ...evidencePayload(),
+        $field => $value,
+    ]);
+
+    $response->assertUnprocessable()
+        ->assertJsonValidationErrorFor($field);
+})->with([
+    'amount over the limit' => ['monto', '100000'],
+    'amount with more than two decimals' => ['monto', '99999.001'],
+    'installment over the limit' => ['cuota', '100000.01'],
+    'installment with more than two decimals' => ['cuota', '250.123'],
+    'rate with more than two decimals' => ['tasa', '2.123'],
+    'tcea with more than two decimals' => ['TCEA', '45.201%'],
+    'term with decimals' => ['plazo', '12.5'],
+]);
+
 test('generate evidence requires a positive numeric duration', function (string $duracion) {
     $user = User::factory()->create();
 
@@ -1586,6 +1606,42 @@ test('s_cliente sustantivos usa sexo interno y conserva el tratamiento', functio
         ->and($inflector->inflect('  Médico  ', null))->toBe('  Médico(a)  ')
         ->and($inflector->inflect("me\u{0301}dico", null))->toBe('médico(a)');
 });
+
+test('s_cliente adapts the Sr honorific to the client sex', function (string $sexo, string $expected) {
+    $user = User::factory()->create();
+
+    createConversationForTest('conv_client_honorific_001', [
+        ['side' => 'out', 'delay_minutes' => 0, 'lines' => ['Tratamiento {s_cliente(Sr)}']],
+    ]);
+
+    $this->actingAs($user)->postJson(route('evidences.generate'), [
+        ...evidencePayload(),
+        'conversationCode' => 'conv_client_honorific_001',
+        'sexo' => $sexo,
+    ])->assertOk()->assertJsonPath('messages.0.lines.0', "Tratamiento {$expected}");
+})->with([
+    'masculine' => ['M', 'Sr'],
+    'feminine' => ['F', 'Sra'],
+    'unspecified' => ['', 'Sr(a)'],
+]);
+
+test('s_cliente adapts ayudarlo to the client sex', function (string $sexo, string $expected) {
+    $user = User::factory()->create();
+
+    createConversationForTest('conv_client_clitic_001', [
+        ['side' => 'out', 'delay_minutes' => 0, 'lines' => ['Debe {s_cliente(ayudarlo)}']],
+    ]);
+
+    $this->actingAs($user)->postJson(route('evidences.generate'), [
+        ...evidencePayload(),
+        'conversationCode' => 'conv_client_clitic_001',
+        'sexo' => $sexo,
+    ])->assertOk()->assertJsonPath('messages.0.lines.0', "Debe {$expected}");
+})->with([
+    'masculine' => ['M', 'ayudarlo'],
+    'feminine' => ['F', 'ayudarla'],
+    'unspecified' => ['', 'ayudarle'],
+]);
 
 test('sexo and fecha_nacimiento missing from older input use safe conversation values', function () {
     $user = User::factory()->create();

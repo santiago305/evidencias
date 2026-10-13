@@ -81,3 +81,39 @@ test('client noun marker receives sex internally and keeps the legacy treatment'
     );
     assert.equal(interpolateTemplate('La {s_cliente(me\u0301dico)}', values, 'F'), 'La médica');
 });
+
+test('client honorific marker inflects Sr according to client sex', () => {
+    const values = buildWhatsappTemplateValues({
+        nombreCliente: 'Juan Perez',
+        nombreAsesor: 'Ana Lopez',
+        saludo: 'Buenos dias',
+        tramo: 'manana',
+        montoFormateado: '1500',
+    });
+
+    for (const [sex, expected] of [
+        ['M', 'Tratamiento Sr'],
+        ['F', 'Tratamiento Sra'],
+        ['', 'Tratamiento Sr(a)'],
+    ] as const) {
+        assert.equal(interpolateTemplate('Tratamiento {s_cliente(Sr)}', values, sex), expected, sex);
+    }
+});
+
+test('client clitic marker inflects ayudarlo according to client sex', () => {
+    const values = buildWhatsappTemplateValues({
+        nombreCliente: 'Juan Perez',
+        nombreAsesor: 'Ana Lopez',
+        saludo: 'Buenos dias',
+        tramo: 'manana',
+        montoFormateado: '1500',
+    });
+
+    for (const [sex, expected] of [
+        ['M', 'Tratamiento ayudarlo'],
+        ['F', 'Tratamiento ayudarla'],
+        ['', 'Tratamiento ayudarle'],
+    ] as const) {
+        assert.equal(interpolateTemplate('Tratamiento {s_cliente(ayudarlo)}', values, sex), expected, sex);
+    }
+});

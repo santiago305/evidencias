@@ -122,6 +122,15 @@ test('accepts m and f in the two-argument API while preserving long-form calls',
     assert.equal(s_cliente('profesor', 'femenino'), 'profesora');
 });
 
+test('inflects the irregular ayudarlo and ayudarla forms by client gender', () => {
+    assert.equal(s_cliente('ayudarlo', 'm'), 'ayudarlo');
+    assert.equal(s_cliente('ayudarlo', 'f'), 'ayudarla');
+    assert.equal(s_cliente('ayudarlo'), 'ayudarle');
+    assert.equal(s_cliente('ayudarla', 'm'), 'ayudarlo');
+    assert.equal(s_cliente('ayudarla', 'f'), 'ayudarla');
+    assert.equal(s_cliente('ayudarla'), 'ayudarle');
+});
+
 test('applies the productive gender rules in both directions', () => {
     const pairs = [
         ['autor', 'autora'],
@@ -304,6 +313,8 @@ test('represents both recognized forms when gender is omitted', () => {
         ['español', 'español(a)'],
         ['actor', 'actor/actriz'],
         ['actriz', 'actor/actriz'],
+        ['ayudarlo', 'ayudarle'],
+        ['ayudarla', 'ayudarle'],
         ['rey', 'rey/reina'],
         ['reina', 'rey/reina'],
         ['hombre', 'hombre/mujer'],

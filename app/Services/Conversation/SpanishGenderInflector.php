@@ -6,6 +6,8 @@ class SpanishGenderInflector
 {
     /** Mirrors the linguistic data in resources/js/lib/spanishGenderExceptions.ts and spanishGenderRules.ts. */
     private const EXCEPTION_PAIRS = [
+        'sr' => 'sra',
+        'ayudarlo' => 'ayudarla',
         'actor' => 'actriz',
         'rey' => 'reina',
         'héroe' => 'heroína',
@@ -45,6 +47,11 @@ class SpanishGenderInflector
         'testigo', 'modelo', 'soldado', 'persona', 'víctima', 'criatura',
         'lechuza', 'ruiseñor', 'gerenta', 'atleta', 'astronauta', 'colega',
         'guía', 'pediatra', 'poeta', 'profeta',
+    ];
+
+    private const NEUTRAL_EXCEPTION_FORMS = [
+        'ayudarlo' => 'ayudarle',
+        'ayudarla' => 'ayudarle',
     ];
 
     private const RESTRICTED_RULES = [
@@ -105,6 +112,13 @@ class SpanishGenderInflector
 
         if (preg_match('/^(\s*)([A-Za-zÁÉÍÓÚÜÑáéíóúüñ]+)(\s*)$/u', $normalized, $parts) !== 1) {
             return $word;
+        }
+
+        $neutral = self::NEUTRAL_EXCEPTION_FORMS[mb_strtolower($parts[2], 'UTF-8')] ?? null;
+        if ($neutral !== null) {
+            $cased = $this->restoreCase($parts[2], $neutral);
+
+            return $cased === null ? $word : $parts[1].$cased.$parts[3];
         }
 
         $masculine = $this->inflect($parts[2], 'M');

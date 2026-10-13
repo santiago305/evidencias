@@ -1,7 +1,6 @@
 import type { ChangeEvent } from 'react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { pickRandomClientProfile } from './config/whatsapp/clientProfiles';
-import { getDesignTabItems } from './lib/designTabItems';
 import { ConversationsListModal } from './features/conversations/components/ConversationsListModal';
 import {
     NewConversationModal,
@@ -12,8 +11,9 @@ import { buildConversationVariables } from './features/conversations/conversatio
 import { FormPanel } from './features/editor/components/FormPanel';
 import { PreviewPanel } from './features/preview/components/PreviewPanel';
 import { getJson, postFormData, postJson, putJson } from './lib/api';
+import { getDesignTabItems } from './lib/designTabItems';
+import { getFormNumericValidationMessage, normalizeTwoDecimalInput, sanitizeDecimalInput, type DecimalFormField } from './lib/formInputFormatting';
 import { createInitialFormState } from './lib/formState';
-import { completeAmountDecimals } from './lib/whatsapp/format';
 import { resolveActiveMobileDesignKey } from './lib/mobileDesignSelection';
 import { resolvePreviewDeviceMode } from './lib/previewDeviceModeSelection';
 import { resolveLockedMobilePreviewThemeMode, resolvePreviewThemeMode } from './lib/previewThemeModeSelection';
@@ -52,6 +52,10 @@ interface AppProps {
     evidenceDesktopThemeMode?: PreviewThemeMode;
     evidenceMobileThemeMode?: PreviewThemeMode;
     evidenceDeviceMode?: PreviewDevicePreference;
+}
+
+function isDecimalFormField(key: FormInputKey): key is DecimalFormField {
+    return key === 'monto' || key === 'tasa' || key === 'cuota' || key === 'TCEA';
 }
 
 interface ConversationsIndexResponse {
@@ -220,11 +224,13 @@ export default function App({
               mobileThemeMode: evidenceMobileThemeMode,
           });
     const isTestMobileDesignGloballyRegistered = globalMobileDesignKeys.includes(testMobileDesignKey);
-    const isGenerateDisabled = isReplayGenerateBlocked({
-        isGenerating,
-        isReplayLookupPending,
-        seedCodeInput,
-    });
+    const numericValidationMessage = getFormNumericValidationMessage(form);
+    const isGenerateDisabled =
+        isReplayGenerateBlocked({
+            isGenerating,
+            isReplayLookupPending,
+            seedCodeInput,
+        }) || numericValidationMessage !== null;
 
     const handleChange = (key: FormInputKey) => (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const value =
@@ -234,13 +240,18 @@ export default function App({
                   ? e.target.value.replace(/\D/g, '').slice(0, 9)
                   : key === 'duracion'
                     ? e.target.value.replace(/\D/g, '')
-                    : e.target.value;
+                    : isDecimalFormField(key)
+                      ? sanitizeDecimalInput(e.target.value, key === 'tasa' || key === 'TCEA', key === 'monto' || key === 'cuota' ? 5 : undefined)
+                      : e.target.value;
 
         setForm((prev) => ({ ...prev, [key]: value }));
     };
 
-    const handleAmountBlur = () => {
-        setForm((prev) => ({ ...prev, monto: completeAmountDecimals(prev.monto) }));
+    const handleDecimalBlur = (key: DecimalFormField) => {
+        setForm((previous) => ({
+            ...previous,
+            [key]: normalizeTwoDecimalInput(previous[key], key === 'tasa' || key === 'TCEA'),
+        }));
     };
 
     const handleImageFileChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -377,16 +388,32 @@ export default function App({
             return;
         }
 
-        setIsGenerating(true);
-        setFeedbackMessage(null);
         const isReplayGeneration = seedCodeInput.trim() !== '';
         const shouldUseConversationDefaults = seedCodeInput.trim() === '' && conversationCodeInput.trim() !== '';
         const requestForm = shouldUseConversationDefaults ? applyConversationTestDefaults(form) : form;
+        const requestValidationMessage = getFormNumericValidationMessage(requestForm);
+
+        if (requestValidationMessage) {
+            setFeedbackMessage(requestValidationMessage);
+
+            return;
+        }
+
+        const normalizedRequestForm = {
+            ...requestForm,
+            monto: normalizeTwoDecimalInput(requestForm.monto),
+            tasa: normalizeTwoDecimalInput(requestForm.tasa, true),
+            cuota: normalizeTwoDecimalInput(requestForm.cuota),
+            TCEA: normalizeTwoDecimalInput(requestForm.TCEA, true),
+        };
+
+        setIsGenerating(true);
+        setFeedbackMessage(null);
 
         try {
             const payload = new FormData();
             const requestData = {
-                ...requestForm,
+                ...normalizedRequestForm,
                 ...(seedCodeInput.trim() !== '' ? { seedCode: seedCodeInput.trim() } : {}),
                 ...(seedCodeInput.trim() === '' && conversationCodeInput.trim() !== '' ? { conversationCode: conversationCodeInput.trim() } : {}),
                 ...(activeDesign === 'whatsapp' || activeDesign === 'sms' ? { conversationType: activeDesign } : {}),
@@ -398,8 +425,8 @@ export default function App({
                 }
 
                 if (key === 'img_64') {
-                    if (requestForm.img_64_file) {
-                        payload.append('img_64', requestForm.img_64_file);
+                    if (normalizedRequestForm.img_64_file) {
+                        payload.append('img_64', normalizedRequestForm.img_64_file);
                     }
 
                     return;
@@ -414,11 +441,11 @@ export default function App({
             setLastGeneratedFromConversationCode(shouldUseConversationDefaults);
             setGeneratedWhatsappPreviewMode(resolvedWhatsappPreviewMode);
             setSaved({
-                ...requestForm,
+                ...normalizedRequestForm,
                 nombreAsesor: resolvedCurrentUser.name,
                 dni: resolvedCurrentUser.dni,
                 sexualidadAsesor: resolvedCurrentUser.sexualidad,
-                modoEntrada: requestForm.modoEntrada,
+                modoEntrada: normalizedRequestForm.modoEntrada,
                 tipoCliente: pickRandomClientProfile(),
                 conversationId: response.conversationId,
                 seedCode: response.seedCode,
@@ -547,7 +574,7 @@ export default function App({
     return (
         <div className="h-screen w-full bg-slate-50">
             <div className="h-full min-h-0 w-full overflow-hidden">
-                <div className="grid h-full min-h-0 grid-cols-1 gap-4 lg:grid-cols-8">
+                <div className="grid h-full min-h-0 grid-cols-1 gap-4 lg:grid-cols-10">
                     <FormPanel
                         activeDesign={activeDesign}
                         form={form}
@@ -561,7 +588,7 @@ export default function App({
                         onWhatsappPreviewModeChange={setTestWhatsappPreviewMode}
                         onThemeModeChange={setTestPreviewThemeMode}
                         onChange={handleChange}
-                        onAmountBlur={handleAmountBlur}
+                        onDecimalBlur={handleDecimalBlur}
                         onImageFileChange={handleImageFileChange}
                         imageFileInputKey={imageFileInputKey}
                         onGenerate={handleGenerate}
@@ -573,6 +600,7 @@ export default function App({
                         conversationCodeInput={conversationCodeInput}
                         onConversationCodeInputChange={setConversationCodeInput}
                         progress={progress}
+                        numericValidationMessage={numericValidationMessage}
                         conversationsCount={conversationsCount}
                         onOpenConversationModal={() => {
                             setEditingConversation(null);

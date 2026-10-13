@@ -1,5 +1,6 @@
 import type { ChangeEvent } from 'react';
 import { Input } from '../../../components/ui/Input';
+import type { DecimalFormField } from '../../../lib/formInputFormatting';
 import { getGenerateEvidenceActionLabel, isReplayGenerateBlocked } from '../../../lib/replayForm';
 import type { ActiveDesign, ConversationProgressSummary, FormInputKey, FormState, SavedData } from '../../../types';
 
@@ -8,7 +9,7 @@ interface DataFormProps {
     activeDesign: ActiveDesign;
     saved: SavedData | null;
     onChange: (key: FormInputKey) => (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void;
-    onAmountBlur: () => void;
+    onDecimalBlur: (field: DecimalFormField) => void;
     onImageFileChange: (e: ChangeEvent<HTMLInputElement>) => void;
     imageFileInputKey: number;
     onGenerate: () => void;
@@ -20,9 +21,7 @@ interface DataFormProps {
     conversationCodeInput: string;
     onConversationCodeInputChange: (value: string) => void;
     progress: ConversationProgressSummary | null;
-    conversationsCount: number;
-    onOpenConversationModal: () => void;
-    onOpenConversationsListModal: () => void;
+    numericValidationMessage: string | null;
     feedbackMessage: string | null;
 }
 
@@ -30,7 +29,7 @@ interface DataFormProps {
 export function DataForm({
     form,
     onChange,
-    onAmountBlur,
+    onDecimalBlur,
     onImageFileChange,
     imageFileInputKey,
     onGenerate,
@@ -41,16 +40,15 @@ export function DataForm({
     onSeedCodeInputChange,
     conversationCodeInput,
     onConversationCodeInputChange,
-    conversationsCount,
-    onOpenConversationModal,
-    onOpenConversationsListModal,
     feedbackMessage,
+    numericValidationMessage,
 }: DataFormProps) {
-    const isGenerateDisabled = isReplayGenerateBlocked({
-        isGenerating,
-        isReplayLookupPending,
-        seedCodeInput,
-    });
+    const isGenerateDisabled =
+        isReplayGenerateBlocked({
+            isGenerating,
+            isReplayLookupPending,
+            seedCodeInput,
+        }) || numericValidationMessage !== null;
     const generateButtonLabel = getGenerateEvidenceActionLabel({
         isGenerating,
         isReplayLookupPending,
@@ -59,28 +57,6 @@ export function DataForm({
 
     return (
         <div className="grid min-h-0 flex-1 grid-cols-1 gap-2 overflow-y-auto p-3">
-            <div className="grid grid-cols-2 gap-2">
-                <button
-                    type="button"
-                    onClick={onOpenConversationModal}
-                    className="inline-flex cursor-pointer items-center justify-center rounded-sm border border-slate-300 bg-white p-2 text-xs font-semibold text-slate-800 shadow-sm transition hover:bg-slate-50"
-                >
-                    Nueva conversación
-                </button>
-
-                <button
-                    type="button"
-                    onClick={onOpenConversationsListModal}
-                    className="inline-flex cursor-pointer items-center justify-center rounded-sm border border-slate-300 bg-white p-2 text-xs font-semibold text-slate-800 shadow-sm transition hover:bg-slate-50"
-                >
-                    Ver conversaciones
-                </button>
-
-                <div className="col-span-2 text-center text-[10px] text-slate-500">
-                    Conversaciones registradas: <b>{conversationsCount}</b>
-                </div>
-            </div>
-
             <Input
                 label="Telefono"
                 id="telefono"
@@ -105,20 +81,28 @@ export function DataForm({
             />
             <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
                 <label className="block">
-                    <span className="text-xs font-semibold text-slate-700">Sexo</span>
+                    <span className="text-xs font-semibold text-slate-700">
+                        Sexo <span className="font-normal text-slate-500">(opcional)</span>
+                    </span>
                     <select
                         id="sexo"
                         value={form.sexo}
                         onChange={onChange('sexo')}
                         className="mt-1 w-full rounded-sm border border-slate-200 bg-white p-2 text-xs text-slate-900 shadow-sm focus:border-slate-300 focus:ring-2 focus:ring-slate-900/10 focus:outline-none"
                     >
-                        <option value="M">M</option>
-                        <option value="F">F</option>
-                        <option value="">Vacío</option>
+                        <option value="">Sin seleccionar</option>
+                        <option value="M">Masculino</option>
+                        <option value="F">Femenino</option>
                     </select>
                 </label>
                 <div className="mt-[5px]">
-                    <Input label="Fecha de nacimiento" id="fecha_nacimiento" type="date" value={form.fecha_nacimiento} onChange={onChange('fecha_nacimiento')} />
+                    <Input
+                        label="Fecha de nacimiento (opcional)"
+                        id="fecha_nacimiento"
+                        type="date"
+                        value={form.fecha_nacimiento}
+                        onChange={onChange('fecha_nacimiento')}
+                    />
                 </div>
             </div>
 
@@ -129,21 +113,71 @@ export function DataForm({
                     id="monto"
                     value={form.monto}
                     onChange={onChange('monto')}
-                    onBlur={onAmountBlur}
+                    onBlur={() => onDecimalBlur('monto')}
                     placeholder="Ej: 1500.50"
+                    maxLength={8}
                     inputMode="decimal"
+                    pattern="[0-9]+([.,][0-9]{1,2})?"
+                    hint="Máximo 99999.00"
                 />
 
-                <Input label="Tasa" id="tasa" value={form.tasa} onChange={onChange('tasa')} placeholder="Ej: 2.5%" />
+                <Input
+                    label="Tasa (%)"
+                    id="tasa"
+                    value={form.tasa}
+                    onChange={onChange('tasa')}
+                    onBlur={() => onDecimalBlur('tasa')}
+                    placeholder="Ej: 2.50"
+                    inputMode="decimal"
+                    pattern="[0-9]+([.,][0-9]{1,2})?%?"
+                    hint="Máximo 2 decimales"
+                />
             </div>
 
             <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-                <Input label="Cuota" id="cuota" value={form.cuota} onChange={onChange('cuota')} placeholder="Ej: 250" />
+                <Input
+                    label="Cuota"
+                    id="cuota"
+                    value={form.cuota}
+                    onChange={onChange('cuota')}
+                    onBlur={() => onDecimalBlur('cuota')}
+                    placeholder="Ej: 250.00"
+                    maxLength={8}
+                    inputMode="decimal"
+                    pattern="[0-9]+([.,][0-9]{1,2})?"
+                    hint="Máximo 99999.00"
+                />
 
-                <Input label="Plazo" id="plazo" value={form.plazo} onChange={onChange('plazo')} placeholder="Ej: 12 meses" />
+                <Input
+                    label="TCEA (%)"
+                    id="TCEA"
+                    value={form.TCEA}
+                    onChange={onChange('TCEA')}
+                    onBlur={() => onDecimalBlur('TCEA')}
+                    placeholder="Ej: 45.20"
+                    inputMode="decimal"
+                    pattern="[0-9]+([.,][0-9]{1,2})?%?"
+                    hint="Máximo 2 decimales"
+                />
             </div>
 
-            <Input label="TCEA" id="TCEA" value={form.TCEA} onChange={onChange('TCEA')} placeholder="Ej: 45.20%" />
+            <Input
+                label="Plazo"
+                id="plazo"
+                type="number"
+                value={form.plazo}
+                onChange={onChange('plazo')}
+                placeholder="Ej: 12"
+                inputMode="numeric"
+                pattern="[0-9]+"
+                hint="Solo números enteros"
+            />
+
+            {numericValidationMessage ? (
+                <p className="text-xs font-medium text-rose-700" role="alert">
+                    {numericValidationMessage}
+                </p>
+            ) : null}
 
             <Input label="Fecha y hora" id="fecha-hora" type="datetime-local" value={form.fechaHora} onChange={onChange('fechaHora')} />
 
@@ -194,7 +228,7 @@ export function DataForm({
                 value={seedCodeInput}
                 onChange={(e) => onSeedCodeInputChange(e.target.value)}
                 placeholder="Ej: EVC2-C020-U01-R03-AB12CD34-Z9Q7K3A1B2"
-                hint="Carga una evidencia guardada para regenerarla"
+                hint="Carga una evidencia guardada"
             />
 
             <Input
@@ -203,7 +237,7 @@ export function DataForm({
                 value={conversationCodeInput}
                 onChange={(e) => onConversationCodeInputChange(e.target.value)}
                 placeholder="Ej: conv_20260605123000_ab12"
-                hint="Sirve para probar una conversación específica"
+                hint="Probar una conversación"
             />
 
             <button

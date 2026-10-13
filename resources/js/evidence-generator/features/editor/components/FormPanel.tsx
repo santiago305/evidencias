@@ -1,5 +1,6 @@
-import type { ChangeEvent } from 'react';
 import { Monitor, Moon, Smartphone, Sun } from 'lucide-react';
+import type { ChangeEvent } from 'react';
+import type { DecimalFormField } from '../../../lib/formInputFormatting';
 import type {
     ActiveDesign,
     ConversationProgressSummary,
@@ -31,7 +32,7 @@ interface FormPanelProps {
     onWhatsappPreviewModeChange: (mode: PreviewDeviceMode) => void;
     onThemeModeChange: (mode: PreviewThemeMode) => void;
     onChange: (key: FormInputKey) => (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void;
-    onAmountBlur: () => void;
+    onDecimalBlur: (field: DecimalFormField) => void;
     onImageFileChange: (e: ChangeEvent<HTMLInputElement>) => void;
     imageFileInputKey: number;
     onGenerate: () => void;
@@ -43,6 +44,7 @@ interface FormPanelProps {
     conversationCodeInput: string;
     onConversationCodeInputChange: (value: string) => void;
     progress: ConversationProgressSummary | null;
+    numericValidationMessage: string | null;
     conversationsCount: number;
     onOpenConversationModal: () => void;
     onOpenConversationsListModal: () => void;
@@ -63,7 +65,7 @@ export function FormPanel({
     onWhatsappPreviewModeChange,
     onThemeModeChange,
     onChange,
-    onAmountBlur,
+    onDecimalBlur,
     onImageFileChange,
     imageFileInputKey,
     onGenerate,
@@ -75,6 +77,7 @@ export function FormPanel({
     conversationCodeInput,
     onConversationCodeInputChange,
     progress,
+    numericValidationMessage,
     conversationsCount,
     onOpenConversationModal,
     onOpenConversationsListModal,
@@ -85,7 +88,14 @@ export function FormPanel({
     return (
         <div className="min-h-0 lg:col-span-2">
             <div className="flex h-full min-h-0 flex-col overflow-hidden border border-slate-200 bg-white shadow-sm">
-                <DesignTabs activeDesign={activeDesign} tabItems={tabItems} onSelect={onSelectDesign} />
+                <DesignTabs
+                    activeDesign={activeDesign}
+                    tabItems={tabItems}
+                    onSelect={onSelectDesign}
+                    conversationsCount={conversationsCount}
+                    onOpenConversationModal={onOpenConversationModal}
+                    onOpenConversationsListModal={onOpenConversationsListModal}
+                />
 
                 {showTestingPreviewControls && (activeDesign === 'whatsapp' || activeDesign === 'sms') ? (
                     <div
@@ -96,28 +106,28 @@ export function FormPanel({
                     >
                         {activeDesign === 'whatsapp' ? (
                             <div className="col-span-2 grid grid-cols-2 gap-1 rounded-lg border border-slate-200 bg-white p-0.5">
-                            {[
-                                { mode: 'desktop' as const, label: 'PC', icon: Monitor },
-                                { mode: 'mobile' as const, label: 'Celular', icon: Smartphone },
-                            ].map((item) => {
-                                const Icon = item.icon;
-                                const active = whatsappPreviewMode === item.mode;
+                                {[
+                                    { mode: 'desktop' as const, label: 'PC', icon: Monitor },
+                                    { mode: 'mobile' as const, label: 'Celular', icon: Smartphone },
+                                ].map((item) => {
+                                    const Icon = item.icon;
+                                    const active = whatsappPreviewMode === item.mode;
 
-                                return (
-                                    <button
-                                        key={item.mode}
-                                        type="button"
-                                        onClick={() => onWhatsappPreviewModeChange(item.mode)}
-                                        className={[
-                                            'inline-flex min-h-9 cursor-pointer items-center justify-center gap-1.5 rounded-md px-2 text-[11px] font-semibold transition',
-                                            active ? 'bg-slate-900 text-white shadow-sm' : 'text-slate-600 hover:bg-slate-100',
-                                        ].join(' ')}
-                                    >
-                                        <Icon className="h-4 w-4" aria-hidden="true" />
-                                        {item.label}
-                                    </button>
-                                );
-                            })}
+                                    return (
+                                        <button
+                                            key={item.mode}
+                                            type="button"
+                                            onClick={() => onWhatsappPreviewModeChange(item.mode)}
+                                            className={[
+                                                'inline-flex min-h-9 cursor-pointer items-center justify-center gap-1.5 rounded-md px-2 text-[11px] font-semibold transition',
+                                                active ? 'bg-slate-900 text-white shadow-sm' : 'text-slate-600 hover:bg-slate-100',
+                                            ].join(' ')}
+                                        >
+                                            <Icon className="h-4 w-4" aria-hidden="true" />
+                                            {item.label}
+                                        </button>
+                                    );
+                                })}
                             </div>
                         ) : null}
 
@@ -142,7 +152,7 @@ export function FormPanel({
                     activeDesign={activeDesign}
                     saved={saved}
                     onChange={onChange}
-                    onAmountBlur={onAmountBlur}
+                    onDecimalBlur={onDecimalBlur}
                     onImageFileChange={onImageFileChange}
                     imageFileInputKey={imageFileInputKey}
                     onGenerate={onGenerate}
@@ -154,9 +164,7 @@ export function FormPanel({
                     conversationCodeInput={conversationCodeInput}
                     onConversationCodeInputChange={onConversationCodeInputChange}
                     progress={progress}
-                    conversationsCount={conversationsCount}
-                    onOpenConversationModal={onOpenConversationModal}
-                    onOpenConversationsListModal={onOpenConversationsListModal}
+                    numericValidationMessage={numericValidationMessage}
                     feedbackMessage={feedbackMessage}
                 />
             </div>

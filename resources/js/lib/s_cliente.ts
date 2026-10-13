@@ -6,6 +6,11 @@ export type GeneroNormalizado = 'masculino' | 'femenino';
 
 const exceptionForms = new Map<string, Record<GeneroNormalizado, string>>();
 
+const neutralExceptionForms = new Map<string, string>([
+    ['ayudarlo', 'ayudarle'],
+    ['ayudarla', 'ayudarle'],
+]);
+
 for (const pair of exceptionPairs) {
     exceptionForms.set(pair.masculine, { masculino: pair.masculine, femenino: pair.feminine });
     exceptionForms.set(pair.feminine, { masculino: pair.masculine, femenino: pair.feminine });
@@ -58,6 +63,12 @@ function neutralize(palabra: string): string {
     }
 
     const [, prefix, word, suffix] = parts;
+    const neutralException = neutralExceptionForms.get(word.toLocaleLowerCase('es'));
+    if (neutralException !== undefined) {
+        const cased = restoreCase(word, neutralException);
+        return cased === null ? palabra : prefix + cased + suffix;
+    }
+
     const masculine = s_cliente(word, 'm');
     const feminine = s_cliente(word, 'f');
     if (masculine === feminine) {

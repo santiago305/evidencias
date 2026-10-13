@@ -1,11 +1,7 @@
-import { Button } from '@/components/ui/button';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { UserMenuContent } from '@/components/user-menu-content';
 import EvidenceGeneratorApp from '@/evidence-generator/App';
 import type { MobileDesignKey, PreviewDevicePreference, PreviewThemeMode, WhatsappDesktopScale } from '@/evidence-generator/types';
 import { type SharedData } from '@/types';
 import { Head, usePage } from '@inertiajs/react';
-import { UserRound } from 'lucide-react';
 
 interface EvidenceGeneratorPageProps extends SharedData {
     availableMobileDesigns: MobileDesignKey[];
@@ -24,19 +20,6 @@ export default function EvidenceGeneratorPage() {
     return (
         <div className="relative min-h-screen">
             <Head title="Inicio" />
-
-            <div className="absolute top-1 left-1 z-[500]">
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button className="h-10 gap-2 rounded-xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-slate-800">
-                            <UserRound className="size-4" />
-                        </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent className="w-56" align="end">
-                        <UserMenuContent user={auth.user} />
-                    </DropdownMenuContent>
-                </DropdownMenu>
-            </div>
 
             <EvidenceGeneratorApp
                 currentUser={auth.user}

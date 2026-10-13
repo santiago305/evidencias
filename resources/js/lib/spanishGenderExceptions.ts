@@ -1,5 +1,7 @@
 /** Irregular pairs whose counterpart cannot be derived by a productive rule. */
 export const exceptionPairs = [
+    { masculine: 'sr', feminine: 'sra' },
+    { masculine: 'ayudarlo', feminine: 'ayudarla' },
     { masculine: 'actor', feminine: 'actriz' },
     { masculine: 'rey', feminine: 'reina' },
     { masculine: 'héroe', feminine: 'heroína' },
