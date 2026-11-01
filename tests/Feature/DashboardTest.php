@@ -24,3 +24,15 @@ test('evidence generator receives available mobile designs in catalog order', fu
             ->where('availableMobileDesigns', ['mobile-1', 'mobile-2', 'mobile-3', 'mobile-4', 'mobile-5', 'mobile-6', 'mobile-7', 'mobile-8', 'mobile-9', 'mobile-10', 'mobile-11', 'mobile-12', 'mobile-13', 'mobile-14', 'mobile-15'])
         );
 });
+
+test('evidence generator identifies the selected channel in the URL', function (string $channel) {
+    $user = User::factory()->create();
+
+    $this->actingAs($user)
+        ->get("/inicio/{$channel}")
+        ->assertOk()
+        ->assertInertia(fn (AssertableInertia $page) => $page
+            ->component('evidence-generator')
+            ->where('initialDesign', $channel)
+        );
+})->with(['whatsapp', 'sms']);

@@ -15,13 +15,14 @@ Route::get('/', function () {
 })->name('root');
 
 Route::middleware(['auth'])->group(function () {
-    Route::get('/inicio', function () {
+    Route::get('/inicio/{channel?}', function (?string $channel = null) {
         $user = auth()->user();
         $globalMobileDesigns = MobileDesignCatalog::filterSupported(
             MobileDesign::query()->orderBy('design_key')->pluck('design_key')->all(),
         );
 
         return Inertia::render('evidence-generator', [
+            'initialDesign' => in_array($channel, ['whatsapp', 'sms'], true) ? $channel : 'whatsapp',
             'availableMobileDesigns' => MobileDesignCatalog::keys(),
             'globalMobileDesigns' => $globalMobileDesigns,
             'registeredMobileDesigns' => array_values(array_intersect(
@@ -31,7 +32,7 @@ Route::middleware(['auth'])->group(function () {
                 ),
             )),
         ]);
-    })->name('home');
+    })->whereIn('channel', ['whatsapp', 'sms'])->name('home');
 
     Route::get('/api/conversations', [ConversationController::class, 'index'])->name('conversations.index');
     Route::post('/api/conversations', [ConversationController::class, 'store'])->name('conversations.store');

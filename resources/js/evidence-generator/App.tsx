@@ -44,6 +44,7 @@ interface CurrentUser {
 
 interface AppProps {
     currentUser?: CurrentUser;
+    initialDesign?: ActiveDesign;
     availableMobileDesigns?: MobileDesignKey[];
     globalMobileDesigns?: MobileDesignKey[];
     registeredMobileDesigns?: MobileDesignKey[];
@@ -144,6 +145,7 @@ function revokePreviewImage(form: FormState): void {
 // Componente raiz que coordina estado, tabs y vistas.
 export default function App({
     currentUser,
+    initialDesign = 'whatsapp',
     availableMobileDesigns = ['mobile-1'],
     globalMobileDesigns = [],
     registeredMobileDesigns = [],
@@ -158,7 +160,7 @@ export default function App({
         dni: '00000000',
         sexualidad: 'F' as const,
     };
-    const [activeDesign, setActiveDesign] = useState<ActiveDesign>('whatsapp');
+    const [activeDesign, setActiveDesign] = useState<ActiveDesign>(initialDesign);
     const [testWhatsappPreviewMode, setTestWhatsappPreviewMode] = useState<PreviewDeviceMode>('desktop');
     const [testPreviewThemeMode, setTestPreviewThemeMode] = useState<PreviewThemeMode>('light');
     const [form, setForm] = useState<FormState>(() => createInitialFormState());
@@ -314,6 +316,19 @@ export default function App({
             setActiveDesign('whatsapp');
         }
     }, [activeDesign, hasRegisteredMobileDesign]);
+
+    useEffect(() => {
+        const handlePopState = () => {
+            const channel = window.location.pathname.split('/').filter(Boolean).at(-1);
+            setActiveDesign(channel === 'sms' ? 'sms' : 'whatsapp');
+        };
+
+        window.addEventListener('popstate', handlePopState);
+
+        return () => {
+            window.removeEventListener('popstate', handlePopState);
+        };
+    }, []);
 
     useEffect(() => {
         const trimmedSeedCode = seedCodeInput.trim();
@@ -569,6 +584,17 @@ export default function App({
 
     const tabItems = useMemo(() => getDesignTabItems(hasRegisteredMobileDesign), [hasRegisteredMobileDesign]);
 
+    const handleSelectDesign = (design: ActiveDesign) => {
+        setActiveDesign(design);
+
+        if (design === 'whatsapp' || design === 'sms') {
+            const nextPath = `/inicio/${design}`;
+            if (window.location.pathname !== nextPath) {
+                window.history.pushState({}, '', nextPath);
+            }
+        }
+    };
+
     const conversationVariables = useMemo(() => buildConversationVariables(), []);
 
     return (
@@ -580,7 +606,7 @@ export default function App({
                         form={form}
                         saved={saved}
                         tabItems={tabItems}
-                        onSelectDesign={setActiveDesign}
+                        onSelectDesign={handleSelectDesign}
                         showTestingPreviewControls={isTestingPreview}
                         whatsappPreviewMode={testWhatsappPreviewMode}
                         themeMode={testThemeModeForPreview}

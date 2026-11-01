@@ -97,7 +97,7 @@ export function DataForm({
                 </label>
                 <div className="mt-[5px]">
                     <Input
-                        label="Fecha de nacimiento (opcional)"
+                        label="Fecha de nacimiento"
                         id="fecha_nacimiento"
                         type="date"
                         value={form.fecha_nacimiento}
@@ -130,7 +130,6 @@ export function DataForm({
                     placeholder="Ej: 2.50"
                     inputMode="decimal"
                     pattern="[0-9]+([.,][0-9]{1,2})?%?"
-                    hint="Máximo 2 decimales"
                 />
             </div>
 
@@ -157,7 +156,6 @@ export function DataForm({
                     placeholder="Ej: 45.20"
                     inputMode="decimal"
                     pattern="[0-9]+([.,][0-9]{1,2})?%?"
-                    hint="Máximo 2 decimales"
                 />
             </div>
 
