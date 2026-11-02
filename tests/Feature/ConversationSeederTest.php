@@ -2,15 +2,32 @@
 
 use App\Models\Conversation;
 use App\Services\Conversation\ConversationRenderService;
-use Database\Seeders\ConversationSeeder;
 
-test('the demo conversation seeder renders messages across several calendar days', function () {
-    $this->seed(ConversationSeeder::class);
+function createConversationRenderTimelineForTest(): Conversation
+{
+    $conversation = Conversation::query()->create([
+        'code' => 'conversation-render-timeline',
+        'type' => 'whatsapp',
+        'is_active' => true,
+        'status' => 'production',
+    ]);
 
-    $conversation = Conversation::query()
-        ->with('messages')
-        ->where('code', 'CONVERSACION-DEMO-001')
-        ->firstOrFail();
+    $conversation->messages()->createMany(
+        collect(range(1, 20))->map(fn (int $position): array => [
+            'position' => $position,
+            'side' => $position % 2 === 1 ? 'in' : 'out',
+            'delay_minutes' => $position === 1
+                ? 0
+                : (in_array($position, [5, 9, 13, 17], true) ? 1440 : 5),
+            'lines' => ["Mensaje {$position}"],
+        ])->all(),
+    );
+
+    return $conversation->load('messages');
+}
+
+test('the conversation render service renders messages across several calendar days', function () {
+    $conversation = createConversationRenderTimelineForTest();
 
     expect($conversation->messages)->toHaveCount(20)
         ->and($conversation->messages->where('side', 'in'))->toHaveCount(10)
@@ -28,13 +45,8 @@ test('the demo conversation seeder renders messages across several calendar days
     expect(collect($messages)->pluck('dateKey')->unique())->toHaveCount(5);
 });
 
-test('an explicit duration overrides the demo conversation timeline', function () {
-    $this->seed(ConversationSeeder::class);
-
-    $conversation = Conversation::query()
-        ->with('messages')
-        ->where('code', 'CONVERSACION-DEMO-001')
-        ->firstOrFail();
+test('an explicit duration overrides the configured conversation timeline', function () {
+    $conversation = createConversationRenderTimelineForTest();
 
     $messages = app(ConversationRenderService::class)->render($conversation, [
         'fechaHora' => '2026-08-29T08:00',
